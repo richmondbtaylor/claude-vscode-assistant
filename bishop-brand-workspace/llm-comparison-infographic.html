@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM Comparison – promptanything.io</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Variables ─────────────────────────────────────────────── */
+    :root {
+      --navy:      #000814;
+      --navy-card: #1E2333;
+      --white:     #FAFBFA;
+      --off-white: #E6E2DE;
+      --gold:      #E0B848;
+      --blue:      #1894C9;
+      --gold-dim:  rgba(224,184,72,.12);
+      --blue-dim:  rgba(24,148,201,.12);
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    /* ─── Wrapper ────────────────────────────────────────────────── */
+    .infographic {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 56px 40px 80px;
+    }
+
+    /* ─── Utility ────────────────────────────────────────────────── */
+    .tag {
+      display: inline-block;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+    .tag-gold { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold); }
+    .tag-blue  { background: var(--blue-dim);  color: var(--blue);  border: 1px solid var(--blue); }
+
+    /* ─── Hero ───────────────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .hero .eyebrow {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .hero h1 span { color: var(--gold); }
+    .hero p {
+      font-size: 17px;
+      color: var(--off-white);
+      max-width: 680px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    /* ─── Divider ────────────────────────────────────────────────── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 48px 0;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(224,184,72,.3));
+    }
+    .divider::after {
+      background: linear-gradient(270deg, transparent, rgba(224,184,72,.3));
+    }
+    .divider-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+
+    /* ─── Section titles ─────────────────────────────────────────── */
+    .section-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: var(--off-white);
+      margin-bottom: 32px;
+    }
+
+    /* ─── Problem strip ──────────────────────────────────────────── */
+    .problem-strip {
+      background: var(--navy-card);
+      border: 1px solid rgba(224,184,72,.2);
+      border-radius: 16px;
+      padding: 36px 40px;
+      margin-bottom: 56px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px;
+    }
+    @media (max-width: 700px) { .problem-strip { grid-template-columns: 1fr; } }
+
+    .problem-item { display: flex; gap: 16px; align-items: flex-start; }
+    .problem-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      background: var(--gold-dim);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .problem-item h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px; font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .problem-item p { font-size: 13px; color: var(--off-white); line-height: 1.55; }
+
+    /* ─── LLM Grid ───────────────────────────────────────────────── */
+    .llm-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 700px) { .llm-grid { grid-template-columns: 1fr 1fr; } }
+
+    .llm-card {
+      background: var(--navy-card);
+      border: 1px solid rgba(24,148,201,.25);
+      border-radius: 14px;
+      padding: 24px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .llm-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue), transparent);
+    }
+    .llm-card .model-logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px; font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+    .llm-card .model-maker {
+      font-size: 11px;
+      color: rgba(250,251,250,.45);
+      margin-bottom: 14px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .llm-card .strength-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .llm-card ul {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .llm-card ul li {
+      font-size: 12px;
+      color: var(--off-white);
+      padding-left: 14px;
+      position: relative;
+      line-height: 1.45;
+    }
+    .llm-card ul li::before {
+      content: '▸';
+      position: absolute; left: 0;
+      color: var(--blue);
+      font-size: 10px; top: 1px;
+    }
+    .llm-card .weakness {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .llm-card .weakness-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(200,80,80,.9);
+      margin-bottom: 5px;
+    }
+    .llm-card .weakness ul li::before { color: rgba(200,80,80,.7); }
+
+    /* ─── Arrow bridge ───────────────────────────────────────────── */
+    .bridge {
+      text-align: center;
+      padding: 32px 0 24px;
+    }
+    .bridge .bridge-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      margin-bottom: 12px;
+    }
+    .bridge svg { display: block; margin: 0 auto; }
+
+    /* ─── promptanything hero card ───────────────────────────────── */
+    .pa-card {
+      background: linear-gradient(135deg, #0d1220 0%, #1E2333 100%);
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      padding: 40px 48px;
+      margin-bottom: 56px;
+      position: relative;
+      overflow: hidden;
+    }
+    .pa-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(224,184,72,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .pa-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(24,148,201,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .pa-card .pa-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .pa-logo-block { flex-shrink: 0; }
+    .pa-logo-block .pa-name {
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px; font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .pa-logo-block .pa-tagline {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px; font-weight: 600;
+      color: var(--blue);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .pa-intro {
+      font-size: 15px;
+      color: var(--off-white);
+      line-height: 1.65;
+      max-width: 560px;
+    }
+    .pa-intro strong { color: var(--white); }
+
+    /* advantage pills */
+    .pa-advantages {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 600px) { .pa-advantages { grid-template-columns: 1fr; } }
+
+    .adv-pill {
+      background: rgba(0,8,20,.5);
+      border: 1px solid rgba(224,184,72,.25);
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .adv-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: var(--gold-dim);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+    }
+    .adv-pill h4 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px; font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .adv-pill p { font-size: 12px; color: var(--off-white); line-height: 1.5; }
+
+    /* ─── Use-case matrix ────────────────────────────────────────── */
+    .usecase-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 56px;
+    }
+    @media (max-width: 700px) { .usecase-grid { grid-template-columns: 1fr 1fr; } }
+
+    .uc-card {
+      background: var(--navy-card);
+      border: 1px solid rgba(24,148,201,.2);
+      border-radius: 14px;
+      padding: 24px 18px;
+      text-align: center;
+    }
+    .uc-card .uc-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .uc-card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px; font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .uc-card p {
+      font-size: 12px; color: var(--off-white); line-height: 1.5;
+    }
+    .uc-card .llm-pick {
+      display: inline-block;
+      margin-top: 12px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--gold-dim);
+      border: 1px solid rgba(224,184,72,.3);
+      border-radius: 100px;
+      padding: 3px 10px;
+    }
+
+    /* ─── Comparison table ───────────────────────────────────────── */
+    .table-wrap {
+      background: var(--navy-card);
+      border: 1px solid rgba(224,184,72,.2);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 56px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: rgba(224,184,72,.08);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid rgba(224,184,72,.2);
+    }
+    thead th:first-child { color: var(--off-white); }
+    tbody tr:not(:last-child) td {
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    tbody td {
+      padding: 13px 18px;
+      font-size: 13px;
+      color: var(--off-white);
+      vertical-align: middle;
+    }
+    tbody td:first-child {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px; font-weight: 700;
+      color: var(--white);
+    }
+    .check { color: #5fd97e; font-size: 16px; }
+    .cross { color: #e05555; font-size: 16px; }
+    .partial { color: var(--gold); font-size: 16px; }
+    tbody tr.pa-row td { background: rgba(224,184,72,.06); }
+    tbody tr.pa-row td:first-child { color: var(--gold); }
+
+    /* ─── Stats strip ────────────────────────────────────────────── */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(224,184,72,.15);
+      border: 1px solid rgba(224,184,72,.2);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 56px;
+    }
+    @media (max-width: 600px) { .stats-strip { grid-template-columns: 1fr 1fr; } }
+
+    .stat-cell {
+      background: var(--navy-card);
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .stat-cell .stat-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 36px; font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-cell .stat-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      line-height: 1.4;
+    }
+
+    /* ─── How it works ───────────────────────────────────────────── */
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+      margin-bottom: 56px;
+    }
+    @media (max-width: 700px) { .how-steps { grid-template-columns: 1fr 1fr; gap: 16px; } }
+
+    .how-steps::before {
+      content: '';
+      position: absolute;
+      top: 28px; left: 12%; right: 12%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--blue));
+      z-index: 0;
+    }
+    @media (max-width: 700px) { .how-steps::before { display: none; } }
+
+    .step {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 0 12px;
+    }
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px; font-weight: 800;
+      margin: 0 auto 16px;
+    }
+    .step:nth-child(1) .step-num { background: var(--gold); color: var(--navy); }
+    .step:nth-child(2) .step-num { background: #c49a30; color: var(--navy); }
+    .step:nth-child(3) .step-num { background: var(--blue); color: var(--navy); }
+    .step:nth-child(4) .step-num { background: #127faa; color: var(--navy); }
+
+    .step h4 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px; font-weight: 700;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+    .step p { font-size: 12px; color: var(--off-white); line-height: 1.5; }
+
+    /* ─── Footer CTA ─────────────────────────────────────────────── */
+    .footer-cta {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(224,184,72,.08) 0%, rgba(24,148,201,.06) 100%);
+      border: 1px solid rgba(224,184,72,.3);
+      border-radius: 20px;
+      padding: 48px 40px;
+    }
+    .footer-cta h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(22px, 4vw, 34px);
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .footer-cta h2 span { color: var(--gold); }
+    .footer-cta p {
+      font-size: 15px; color: var(--off-white);
+      max-width: 540px; margin: 0 auto 28px;
+      line-height: 1.65;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--navy);
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px; font-weight: 700;
+      padding: 14px 36px;
+      border-radius: 100px;
+      text-decoration: none;
+      letter-spacing: .02em;
+    }
+    .cta-url {
+      margin-top: 14px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      color: var(--blue);
+      letter-spacing: .05em;
+    }
+
+    /* ─── Print / export helper ──────────────────────────────────── */
+    @media print {
+      body { background: #000814 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .infographic { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="infographic">
+
+  <!-- ══ HERO ══════════════════════════════════════════════════════ -->
+  <div class="hero">
+    <div class="eyebrow">The Intelligent Prompt Layer</div>
+    <h1>Why <span>promptanything.io</span><br>Outperforms Any Single LLM</h1>
+    <p>Every AI model has a sweet spot — and a blind spot. promptanything.io engineers the perfect prompt <em>and</em> routes it to the best model for your exact use case, every time.</p>
+  </div>
+
+  <!-- ══ PROBLEM ════════════════════════════════════════════════════ -->
+  <div class="divider"><span class="divider-label">The Problem with Picking Just One LLM</span></div>
+
+  <div class="problem-strip">
+    <div class="problem-item">
+      <div class="problem-icon">⚠️</div>
+      <div>
+        <h3>No single model wins everything</h3>
+        <p>Claude excels at nuanced reasoning; GPT-4o at coding; Gemini at search-grounded research. Forcing one model to do it all costs you quality.</p>
+      </div>
+    </div>
+    <div class="problem-item">
+      <div class="problem-icon">✍️</div>
+      <div>
+        <h3>Prompt quality changes everything</h3>
+        <p>Even the best model gives mediocre results with a weak prompt. Most users never unlock 80 % of an LLM's capability.</p>
+      </div>
+    </div>
+    <div class="problem-item">
+      <div class="problem-icon">🔀</div>
+      <div>
+        <h3>Workflows need different models</h3>
+        <p>Agents, web apps, skills, and automation pipelines each have different speed, cost, and reasoning requirements.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LLM COMPARISON ════════════════════════════════════════════ -->
+  <div class="divider"><span class="divider-label">What Each LLM Does Best — and Where It Falls Short</span></div>
+
+  <p class="section-sub" style="text-align:center; margin-bottom: 28px;">Six leading models. Six distinct strengths. Zero one-size-fits-all answers.</p>
+
+  <div class="llm-grid">
+
+    <!-- Claude -->
+    <div class="llm-card">
+      <div class="model-logo">Claude (Sonnet / Opus)</div>
+      <div class="model-maker">Anthropic</div>
+      <div class="strength-label">Strengths</div>
+      <ul>
+        <li>Long-document reasoning & analysis</li>
+        <li>Nuanced writing & editing</li>
+        <li>Instruction-following accuracy</li>
+        <li>Safe, thoughtful outputs</li>
+      </ul>
+      <div class="weakness">
+        <div class="weakness-label">Watch out for</div>
+        <ul>
+          <li>Not fastest for real-time tasks</li>
+          <li>Limited live web access</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- GPT-4o -->
+    <div class="llm-card">
+      <div class="model-logo">GPT-4o</div>
+      <div class="model-maker">OpenAI</div>
+      <div class="strength-label">Strengths</div>
+      <ul>
+        <li>Code generation & debugging</li>
+        <li>Multimodal (image + text)</li>
+        <li>Function / tool calling</li>
+        <li>Broad general knowledge</li>
+      </ul>
+      <div class="weakness">
+        <div class="weakness-label">Watch out for</div>
+        <ul>
+          <li>Cost at scale</li>
+          <li>Verbose when concision needed</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Gemini -->
+    <div class="llm-card">
+      <div class="model-logo">Gemini 1.5 Pro</div>
+      <div class="model-maker">Google DeepMind</div>
+      <div class="strength-label">Strengths</div>
+      <ul>
+        <li>Massive 1M+ token context</li>
+        <li>Search-grounded responses</li>
+        <li>Multimodal + video understanding</li>
+        <li>Google Workspace integration</li>
+      </ul>
+      <div class="weakness">
+        <div class="weakness-label">Watch out for</div>
+        <ul>
+          <li>Reasoning depth vs. Claude/GPT</li>
+          <li>Less predictable instruction following</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Llama -->
+    <div class="llm-card">
+      <div class="model-logo">Llama 3.3 70B</div>
+      <div class="model-maker">Meta AI</div>
+      <div class="strength-label">Strengths</div>
+      <ul>
+        <li>Open-source & self-hostable</li>
+        <li>Privacy / on-premise deployment</li>
+        <li>Cost-efficient at scale</li>
+        <li>Strong multilingual capability</li>
+      </ul>
+      <div class="weakness">
+        <div class="weakness-label">Watch out for</div>
+        <ul>
+          <li>Requires infrastructure investment</li>
+          <li>Lags frontier models on complex tasks</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Mistral -->
+    <div class="llm-card">
+      <div class="model-logo">Mistral Large</div>
+      <div class="model-maker">Mistral AI</div>
+      <div class="strength-label">Strengths</div>
+      <ul>
+        <li>Speed + low-latency inference</li>
+        <li>EU data-privacy compliance</li>
+        <li>Efficient for structured outputs</li>
+        <li>Strong coding (Codestral)</li>
+      </ul>
+      <div class="weakness">
+        <div class="weakness-label">Watch out for</div>
+        <ul>
+          <li>Smaller ecosystem than OpenAI</li>
+          <li>Less creative writing depth</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Grok -->
+    <div class="llm-card">
+      <div class="model-logo">Grok 3</div>
+      <div class="model-maker">xAI</div>
+      <div class="strength-label">Strengths</div>
+      <ul>
+        <li>Real-time X/Twitter data access</li>
+        <li>Up-to-the-minute current events</li>
+        <li>STEM reasoning (DeepSearch)</li>
+        <li>Less content filtering</li>
+      </ul>
+      <div class="weakness">
+        <div class="weakness-label">Watch out for</div>
+        <ul>
+          <li>Tied to X platform ecosystem</li>
+          <li>Smaller fine-tuning community</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /llm-grid -->
+
+  <!-- ══ BRIDGE ═════════════════════════════════════════════════════ -->
+  <div class="bridge">
+    <div class="bridge-label">The solution isn't choosing one — it's orchestrating all of them</div>
+    <svg width="60" height="40" viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="30" y1="0" x2="30" y2="28" stroke="#E0B848" stroke-width="2"/>
+      <polyline points="18,20 30,36 42,20" fill="none" stroke="#E0B848" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- ══ PROMPTANYTHING CARD ════════════════════════════════════════ -->
+  <div class="pa-card">
+    <div class="pa-header">
+      <div class="pa-logo-block">
+        <div class="pa-name">promptanything.io</div>
+        <div class="pa-tagline">The Intelligent Prompt &amp; Model Layer</div>
+      </div>
+      <div class="pa-intro">
+        <strong>promptanything.io</strong> engineers expert-grade prompts for your exact goal — then routes your task to the LLM that's genuinely best at that job. The result: you consistently get <strong>frontier-quality output</strong> without needing to know which model to use or how to prompt it.
+      </div>
+    </div>
+
+    <div class="pa-advantages">
+      <div class="adv-pill">
+        <div class="adv-icon">🎯</div>
+        <div>
+          <h4>Prompt Engineering — Done for You</h4>
+          <p>We craft the optimal prompt structure, context, tone, and constraints so every LLM is set up to succeed before it generates a single token.</p>
+        </div>
+      </div>
+      <div class="adv-pill">
+        <div class="adv-icon">🔀</div>
+        <div>
+          <h4>Automatic Model Routing</h4>
+          <p>Need deep analysis? Claude. Realtime data? Grok. EU-compliant speed? Mistral. We pick the right model so you never compromise on quality.</p>
+        </div>
+      </div>
+      <div class="adv-pill">
+        <div class="adv-icon">⚙️</div>
+        <div>
+          <h4>Agents &amp; Multi-Step Workflows</h4>
+          <p>Chain tasks across multiple models in a single workflow — each step handled by the model best suited to that micro-task.</p>
+        </div>
+      </div>
+      <div class="adv-pill">
+        <div class="adv-icon">🚀</div>
+        <div>
+          <h4>Skills, Web Apps &amp; Integrations</h4>
+          <p>Embed our prompt layer into your product, automation stack, or custom AI skill — no prompt expertise required on your end.</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /pa-card -->
+
+  <!-- ══ HOW IT WORKS ═══════════════════════════════════════════════ -->
+  <div class="divider"><span class="divider-label">How It Works</span></div>
+
+  <div class="how-steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>You Describe Your Goal</h4>
+      <p>Tell us what you need — agent, web app, content, analysis, workflow — in plain language.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>We Engineer the Prompt</h4>
+      <p>Our system crafts a precision prompt with the right context, format, and constraints.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>Best LLM Auto-Selected</h4>
+      <p>We route to the model with the highest performance profile for this specific task type.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h4>You Get Elite Output</h4>
+      <p>Receive results that rival what an AI expert would produce — every single time.</p>
+    </div>
+  </div>
+
+  <!-- ══ USE-CASE MATRIX ════════════════════════════════════════════ -->
+  <div class="divider"><span class="divider-label">Use Cases — Matched to the Right Model</span></div>
+
+  <div class="usecase-grid">
+    <div class="uc-card">
+      <span class="uc-icon">🤖</span>
+      <h3>AI Agents</h3>
+      <p>Multi-step autonomous tasks, tool use, decision-making loops</p>
+      <span class="llm-pick">Claude + GPT-4o</span>
+    </div>
+    <div class="uc-card">
+      <span class="uc-icon">🌐</span>
+      <h3>Web Apps</h3>
+      <p>Customer-facing AI features, chatbots, smart search</p>
+      <span class="llm-pick">GPT-4o / Mistral</span>
+    </div>
+    <div class="uc-card">
+      <span class="uc-icon">🛠️</span>
+      <h3>Custom Skills</h3>
+      <p>Reusable AI capabilities embedded in your product or workflow</p>
+      <span class="llm-pick">Claude / Llama 3</span>
+    </div>
+    <div class="uc-card">
+      <span class="uc-icon">🔗</span>
+      <h3>Automation Workflows</h3>
+      <p>Pipelines, batch processing, scheduled AI tasks at scale</p>
+      <span class="llm-pick">Mistral / Llama 3</span>
+    </div>
+    <div class="uc-card">
+      <span class="uc-icon">📊</span>
+      <h3>Research &amp; Analysis</h3>
+      <p>Deep-dive reports, document synthesis, competitor intelligence</p>
+      <span class="llm-pick">Claude / Gemini</span>
+    </div>
+    <div class="uc-card">
+      <span class="uc-icon">✍️</span>
+      <h3>Content Creation</h3>
+      <p>Marketing copy, long-form writing, brand-consistent content</p>
+      <span class="llm-pick">Claude / GPT-4o</span>
+    </div>
+    <div class="uc-card">
+      <span class="uc-icon">💻</span>
+      <h3>Code &amp; Dev Tools</h3>
+      <p>Code gen, PR reviews, test writing, documentation</p>
+      <span class="llm-pick">GPT-4o / Mistral</span>
+    </div>
+    <div class="uc-card">
+      <span class="uc-icon">📡</span>
+      <h3>Real-Time Intelligence</h3>
+      <p>News monitoring, social listening, market signals</p>
+      <span class="llm-pick">Grok / Gemini</span>
+    </div>
+  </div>
+
+  <!-- ══ COMPARISON TABLE ═══════════════════════════════════════════ -->
+  <div class="divider"><span class="divider-label">Head-to-Head: Single LLM vs. promptanything.io</span></div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Claude</th>
+          <th>GPT-4o</th>
+          <th>Gemini</th>
+          <th>Mistral</th>
+          <th>Llama 3</th>
+          <th>Grok</th>
+          <th>promptanything.io</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Expert prompt engineering</td>
+          <td><span class="cross">✕</span> DIY</td>
+          <td><span class="cross">✕</span> DIY</td>
+          <td><span class="cross">✕</span> DIY</td>
+          <td><span class="cross">✕</span> DIY</td>
+          <td><span class="cross">✕</span> DIY</td>
+          <td><span class="cross">✕</span> DIY</td>
+          <td class="pa-row"><span class="check">✔</span> Included</td>
+        </tr>
+        <tr>
+          <td>Auto model selection</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td class="pa-row"><span class="check">✔</span> Always</td>
+        </tr>
+        <tr>
+          <td>Multi-model workflow support</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="partial">~</span> Limited</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td class="pa-row"><span class="check">✔</span> Native</td>
+        </tr>
+        <tr>
+          <td>No prompt expertise required</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td class="pa-row"><span class="check">✔</span> Zero expertise needed</td>
+        </tr>
+        <tr>
+          <td>Agents &amp; autonomous tasks</td>
+          <td><span class="check">✔</span></td>
+          <td><span class="check">✔</span></td>
+          <td><span class="partial">~</span></td>
+          <td><span class="partial">~</span></td>
+          <td><span class="partial">~</span></td>
+          <td><span class="partial">~</span></td>
+          <td class="pa-row"><span class="check">✔</span> Any model</td>
+        </tr>
+        <tr>
+          <td>Real-time / live data</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="partial">~</span> Plugins</td>
+          <td><span class="check">✔</span> Search</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="check">✔</span> X data</td>
+          <td class="pa-row"><span class="check">✔</span> Routes to Grok/Gemini</td>
+        </tr>
+        <tr>
+          <td>Privacy / on-premise options</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="check">✔</span> EU</td>
+          <td><span class="check">✔</span> Self-host</td>
+          <td><span class="cross">✕</span></td>
+          <td class="pa-row"><span class="check">✔</span> Routes to Mistral/Llama</td>
+        </tr>
+        <tr>
+          <td>Cost optimization at scale</td>
+          <td><span class="partial">~</span></td>
+          <td><span class="partial">~</span></td>
+          <td><span class="partial">~</span></td>
+          <td><span class="check">✔</span></td>
+          <td><span class="check">✔</span></td>
+          <td><span class="partial">~</span></td>
+          <td class="pa-row"><span class="check">✔</span> Best model for the price</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ STATS ══════════════════════════════════════════════════════ -->
+  <div class="stats-strip">
+    <div class="stat-cell">
+      <div class="stat-num">6+</div>
+      <div class="stat-label">Leading LLMs<br>in our network</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Use cases,<br>one platform</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">0</div>
+      <div class="stat-label">Prompt expertise<br>required from you</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">1×</div>
+      <div class="stat-label">Place to build<br>any AI workflow</div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER CTA ══════════════════════════════════════════════════ -->
+  <div class="footer-cta">
+    <h2>Stop picking one LLM.<br><span>Start using the best one — automatically.</span></h2>
+    <p>promptanything.io pairs expert prompt engineering with intelligent model routing so every task gets the AI treatment it deserves.</p>
+    <a class="cta-btn" href="https://promptanything.io">Try promptanything.io Free →</a>
+    <div class="cta-url">promptanything.io</div>
+  </div>
+
+</div><!-- /infographic -->
+</body>
+</html>
