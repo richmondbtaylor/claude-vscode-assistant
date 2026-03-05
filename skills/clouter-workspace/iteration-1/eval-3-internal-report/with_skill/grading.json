@@ -1,0 +1,38 @@
+{
+  "eval_id": 3,
+  "run_type": "with_skill",
+  "expectations": [
+    {
+      "text": "has_responsibility_clause: Statement contains 'accept full responsibility for the accuracy, quality, and presentation of the final work'",
+      "passed": true,
+      "evidence": "Found: 'I/we accept full responsibility for the accuracy, quality, and presentation of the final work'"
+    },
+    {
+      "text": "word_count_in_range: Final statement paragraph is 75-150 words",
+      "passed": true,
+      "evidence": "Statement paragraph counts ~78 words — within range"
+    },
+    {
+      "text": "no_banned_words: Does not use leveraged, utilized, synergize, cutting-edge, robust, seamless, state-of-the-art, innovative",
+      "passed": true,
+      "evidence": "None of the banned words appear"
+    },
+    {
+      "text": "ends_with_log_updated: Output ends with 'Log updated.'",
+      "passed": true,
+      "evidence": "Output ends with 'Log updated.'"
+    },
+    {
+      "text": "internal_optional_notice: Response acknowledges diligence statement is optional for internal-only work",
+      "passed": true,
+      "evidence": "Explicit note: 'A diligence statement is optional for internal-only work — it's not required for internal audiences'"
+    },
+    {
+      "text": "medium_collaboration_reflected: Statement reflects medium AI involvement — drafting assistance with human revision",
+      "passed": true,
+      "evidence": "Contains 'Medium level of AI involvement', 'initial outline drafting', 'Our team wrote the full narrative'"
+    }
+  ],
+  "pass_rate": 1.0,
+  "notes": "All 6 assertions passed. Correctly flagged internal-only optional status, captured both tasks, appropriate Medium framing."
+}

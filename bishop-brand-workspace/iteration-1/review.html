@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "bishop-brand", "runs": [{"id": "infographic-brand-ref-with_skill", "prompt": "I need to make an infographic about Bishop AI's top 5 client results. What colors and fonts should I use, and can you give me the exact hex codes and font names so I can pass them into my design tool?", "eval_id": 0, "outputs": [{"name": "response.md", "type": "text", "content": "# Bishop AI Brand Reference: Infographic for Top 5 Client Results\n\nHere are the exact colors and fonts to use for your infographic, pulled directly from the official Bishop AI brand guidelines.\n\n---\n\n## Color Palette\n\n### Background Colors\n\n| Name | Hex | When to Use |\n|------|-----|-------------|\n| Deep Navy | `#000814` | Primary/default background -- premium, dramatic feel |\n| Dark Navy | `#1E2333` | Secondary background, card surfaces, section panels |\n\n**Recommendation for this infographic:** Use Deep Navy (`#000814`) as the main background. It gives a premium, authoritative look -- ideal for showcasing client results.\n\n---\n\n### Text Colors\n\n| Name | Hex | When to Use |\n|------|-----|-------------|\n| White | `#FAFBFA` | Primary text on dark backgrounds |\n| Off-White | `#E6E2DE` | Secondary text, captions, supporting copy on dark |\n\n**Rule:** Because your background is dark (Deep Navy), all text should be White (`#FAFBFA`) or Off-White (`#E6E2DE`). Never use dark text on a dark background.\n\n---\n\n### Accent Colors\n\n| Name | Hex | When to Use |\n|------|-----|-------------|\n| Gold | `#E0B848` | PRIMARY accent -- stat callouts, result numbers, section borders, headlines |\n| Blue | `#1894C9` | SECONDARY accent -- icons, chart bars, supporting callouts, dividers |\n\n**Rule:** Gold is the hero accent -- put it on your most important numbers and highlights (e.g., \"300% ROI\", \"2x faster\"). Use Blue for supporting data elements, icons, or secondary labels.\n\n---\n\n## Full Palette at a Glance\n\n| Name | Hex | RGB |\n|------|-----|-----|\n| Deep Navy | `#000814` | rgb(0, 8, 20) |\n| Dark Navy | `#1E2333` | rgb(30, 35, 51) |\n| Off-White | `#E6E2DE` | rgb(230, 226, 222) |\n| Near White | `#F9F6F0` | rgb(249, 246, 240) |\n| White | `#FAFBFA` | rgb(250, 251, 250) |\n| Gold | `#E0B848` | rgb(224, 184, 72) |\n| Blue | `#1894C9` | rgb(24, 148, 201) |\n\n---\n\n## Typography\n\n| Role | Font Name | Fallback | Used For |\n|------|-----------|----------|---------|\n| H1 / H2 Headings | **Poppins Bold** | Arial Bold | Infographic title, client names (largest text) |\n| Subheadings / Labels | **Montserrat** | Helvetica | Section labels, result category headers, stat labels |\n| Body / Captions | **Open Sans** | Georgia | Descriptions, supporting copy, fine print, footnotes |\n\n**Hierarchy rule:** Poppins Bold at the top (biggest, most prominent), Montserrat in the middle (section and callout labels), Open Sans at the bottom (body and detail text). Do not introduce any other font families.\n\n---\n\n## How to Apply This to Your Infographic\n\nFollow this order when setting up your design tool:\n\n1. **Set the background** to Deep Navy (`#000814`) -- establishes the premium, dark-first identity.\n2. **Set all text** to White (`#FAFBFA`) by default; use Off-White (`#E6E2DE`) for captions or secondary labels.\n3. **Apply Gold (`#E0B848`)** to your most important elements: the key result numbers, stat callouts, borders on featured cards, and the infographic title or headline.\n4. **Apply Blue (`#1894C9`)** to supporting visual elements: icons, chart bars, secondary callout frames, or dividers between client sections.\n5. **Set your font hierarchy:** Poppins Bold for the infographic title and any large result numbers; Montserrat for client name labels and result category headers; Open Sans for any descriptive text or supporting copy.\n6. **Do not add any other colors** -- the palette is intentionally minimal. Let contrast and typography create visual hierarchy rather than introducing new hues.\n\n---\n\n## Quick Copy-Paste Reference for Your Design Tool\n\n```\nBackground:           #000814  (Deep Navy)\nCard / Panel:         #1E2333  (Dark Navy)\nPrimary Text:         #FAFBFA  (White)\nSecondary Text:       #E6E2DE  (Off-White)\nAccent 1 (primary):   #E0B848  (Gold)\nAccent 2 (secondary): #1894C9  (Blue)\n\nTitle Font:      Poppins Bold\nSubheading Font: Montserrat\nBody Font:       Open Sans\n```\n\n---\n\n## If You Are Passing This Into an AI Prompt or Generator\n\nInclude this block verbatim:\n\n```\nBRAND STYLE - Bishop AI:\nBackground: Deep Navy (#000814) or Dark Navy (#1E2333)\nPrimary text: White (#FAFBFA) or Off-White (#E6E2DE)\nAccent colors: Gold (#E0B848) as primary, Blue (#1894C9) as secondary\nTypography: Poppins Bold for titles, Montserrat for subheadings, Open Sans for body\nShapes and icons: Gold and Blue accents only - no other colors\nOverall feel: Premium, dark, corporate-tech, clean\n```\n"}], "grading": {"expectations": [{"text": "includes_all_main_hex_codes", "passed": true, "evidence": "All 5 hex codes present: #000814, #1E2333, #E6E2DE, #F9F6F0, #FAFBFA \u00e2\u20ac\u201d listed in a full palette table"}, {"text": "includes_accent_hex_codes", "passed": true, "evidence": "Both #E0B848 (Gold) and #1894C9 (Blue) explicitly present with usage guidance"}, {"text": "names_all_three_fonts", "passed": true, "evidence": "Poppins Bold, Montserrat, and Open Sans all named in the typography table"}, {"text": "maps_fonts_to_roles", "passed": true, "evidence": "Poppins Bold \u00e2\u2020\u2019 H1/H2; Montserrat \u00e2\u2020\u2019 subheadings; Open Sans \u00e2\u2020\u2019 body \u00e2\u20ac\u201d explicit table"}, {"text": "mentions_fallback_fonts", "passed": true, "evidence": "Arial Bold, Helvetica, and Georgia fallbacks listed in the typography table"}, {"text": "actionable_for_design_tool", "passed": true, "evidence": "Includes a 'Quick Copy-Paste Reference' block and a verbatim AI prompt block \u00e2\u20ac\u201d both directly usable"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}, "timing": {"total_duration_seconds": 46.8}}}, {"id": "infographic-brand-ref-without_skill", "prompt": "I need to make an infographic about Bishop AI's top 5 client results. What colors and fonts should I use, and can you give me the exact hex codes and font names so I can pass them into my design tool?", "eval_id": 0, "outputs": [{"name": "response.md", "type": "text", "content": "# Bishop AI \u00e2\u20ac\u201d Top 5 Client Results Infographic\n## Color & Font Recommendations (General Knowledge / Best Guess)\n\n---\n\n## Context\n\nThis response is based on general design best practices and common conventions for AI/tech company branding. No Bishop AI brand guidelines were consulted. These are educated suggestions, not verified brand specifications.\n\n---\n\n## Recommended Color Palette\n\nFor an AI company infographic, a clean, professional palette typically leans on deep blues or dark neutrals as a foundation, with accent colors that signal intelligence, trust, and innovation.\n\n### Primary Colors\n\n| Role | Color Name | Hex Code | Usage |\n|---|---|---|---|\n| Primary Brand | Deep Navy | `#0D1B2A` | Backgrounds, headers, primary text |\n| Brand Blue | Electric Blue | `#1A73E8` | Primary accent, key stats, highlights |\n| Brand Highlight | Cyan / Teal | `#00C2CC` | Secondary accent, icons, data callouts |\n\n### Secondary / Supporting Colors\n\n| Role | Color Name | Hex Code | Usage |\n|---|---|---|---|\n| Light BG | Off White | `#F4F6F9` | Section backgrounds, card fills |\n| Mid Grey | Slate Grey | `#6B7A8D` | Body text, captions, secondary labels |\n| Dark Text | Charcoal | `#1C2B3A` | Body copy, subheadings |\n| Success/Growth | Emerald Green | `#00A86B` | Positive metrics (e.g., % improvements) |\n| Energy/Contrast | Amber Orange | `#F5A623` | Call-to-action elements, number highlights |\n| White | Pure White | `#FFFFFF` | Text on dark backgrounds, card backgrounds |\n\n---\n\n## Recommended Typography\n\n### Primary Font (Headings & Stats)\n- **Font Name:** Inter\n- **Weights:** Bold (700), Extra Bold (800)\n- **Usage:** Section titles, large stat numbers (e.g., \"300% ROI\"), infographic headline\n- **Source:** Google Fonts (free)\n\n### Secondary Font (Body & Labels)\n- **Font Name:** Inter\n- **Weights:** Regular (400), Medium (500)\n- **Usage:** Descriptions, captions, footnotes, client names\n\n### Alternative Option\n- **Heading Font:** Space Grotesk Bold (700) \u00e2\u20ac\u201d geometric, tech-forward feel\n- **Body Font:** Inter Regular (400)\n\n---\n\n## Quick-Reference Card for Your Design Tool\n\n```\nCOLORS\n------\nDeep Navy (Primary BG):     #0D1B2A\nElectric Blue (Accent 1):   #1A73E8\nCyan/Teal (Accent 2):       #00C2CC\nOff White (Light BG):       #F4F6F9\nSlate Grey (Secondary txt): #6B7A8D\nCharcoal (Body text):       #1C2B3A\nEmerald Green (Metrics):    #00A86B\nAmber Orange (CTA/Numbers): #F5A623\nWhite:                      #FFFFFF\n\nFONTS\n-----\nHeadings / Stats:  Inter, Bold 700 or ExtraBold 800\nBody / Labels:     Inter, Regular 400 or Medium 500\n```\n\n---\n\n## Layout Tips for the \"Top 5 Results\" Format\n\n1. Use Deep Navy (#0D1B2A) for the main header background with white headline text.\n2. Feature each of the 5 results in a card with an Off White (#F4F6F9) or white background.\n3. Display the key metric in a large Inter ExtraBold font, colored with Electric Blue (#1A73E8) or Emerald Green (#00A86B).\n4. Use Cyan (#00C2CC) for icons or numbered indicators (1-5) to create visual rhythm.\n5. Place a thin Amber (#F5A623) accent line on the most impressive result to draw the eye.\n\n---\n\n## Important Caveat\n\nThese colors and fonts are general recommendations based on common AI/tech design conventions. They are NOT verified Bishop AI brand assets. Before finalizing any client-facing materials, confirm the actual brand palette and typography with the official Bishop AI brand guidelines.\n"}], "grading": {"expectations": [{"text": "includes_all_main_hex_codes", "passed": false, "evidence": "Uses fabricated hex codes (#0D1B2A, etc.) \u00e2\u20ac\u201d none of the 5 official main colors are present"}, {"text": "includes_accent_hex_codes", "passed": false, "evidence": "No mention of #E0B848 or #1894C9 \u00e2\u20ac\u201d uses Electric Blue and Cyan instead"}, {"text": "names_all_three_fonts", "passed": false, "evidence": "Recommends Inter and Space Grotesk \u00e2\u20ac\u201d none of the three brand fonts appear"}, {"text": "maps_fonts_to_roles", "passed": false, "evidence": "No mapping to Poppins/Montserrat/Open Sans roles \u00e2\u20ac\u201d wrong fonts throughout"}, {"text": "mentions_fallback_fonts", "passed": false, "evidence": "No fallback fonts mentioned \u00e2\u20ac\u201d no awareness of the brand font stack"}, {"text": "actionable_for_design_tool", "passed": true, "evidence": "Includes a 'Quick-Reference Card' with organized blocks \u00e2\u20ac\u201d format is usable even though content is wrong"}], "summary": {"passed": 1, "failed": 5, "total": 6, "pass_rate": 0.167}, "timing": {"total_duration_seconds": 48.1}}}, {"id": "pptx-rgb-fonts-with_skill", "prompt": "I'm building a pitch deck for Bishop AI in PowerPoint using python-pptx. Give me the brand colors as RGBColor values and tell me which fonts to assign to headings, subheadings, and body text.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Bishop AI Brand Colors and Fonts for python-pptx\n\n## RGBColor Values\n\n```python\nfrom pptx.dml.color import RGBColor\nfrom pptx.util import Pt\n\n# --- Main Colors ---\nDEEP_NAVY  = RGBColor(0, 8, 20)       # #000814 \u00e2\u20ac\u201d Primary text, dark backgrounds\nDARK_NAVY  = RGBColor(30, 35, 51)     # #1E2333 \u00e2\u20ac\u201d Dark UI surfaces, secondary backgrounds\nOFF_WHITE  = RGBColor(230, 226, 222)  # #E6E2DE \u00e2\u20ac\u201d Subtle backgrounds, muted elements\nNEAR_WHITE = RGBColor(249, 246, 240)  # #F9F6F0 \u00e2\u20ac\u201d Light backgrounds\nWHITE      = RGBColor(250, 251, 250)  # #FAFBFA \u00e2\u20ac\u201d Light text on dark, clean backgrounds\n\n# --- Accent Colors ---\nGOLD       = RGBColor(224, 184, 72)   # #E0B848 \u00e2\u20ac\u201d Primary accent: headlines, highlights, CTAs\nBLUE       = RGBColor(24, 148, 201)   # #1894C9 \u00e2\u20ac\u201d Secondary accent: icons, charts, supporting elements\n```\n\n---\n\n## Font Assignments\n\n| Element | Primary Font | Fallback Font |\n|---|---|---|\n| Headings (H1 / H2, 24pt+) | `\"Poppins\"` (Bold) | `\"Arial\"` (Bold) |\n| Subheadings / Subtitles / Section Labels | `\"Montserrat\"` | `\"Helvetica\"` |\n| Body Text / Bullet Lists / Captions / Quotes | `\"Open Sans\"` | `\"Georgia\"` |\n\nIn python-pptx, assign fonts by setting `run.font.name`:\n\n```python\n# Heading\nrun.font.name = \"Poppins\"\nrun.font.bold = True\nrun.font.size = Pt(36)\nrun.font.color.rgb = GOLD         # Gold on dark background\n\n# Subheading\nrun.font.name = \"Montserrat\"\nrun.font.size = Pt(20)\nrun.font.color.rgb = WHITE\n\n# Body text\nrun.font.name = \"Open Sans\"\nrun.font.size = Pt(14)\nrun.font.color.rgb = OFF_WHITE\n```\n\n---\n\n## Key Color Selection Rules for Slides\n\n- Dark backgrounds (Deep Navy / Dark Navy) \u00e2\u2020\u2019 use White or Off-White for text\n- Light backgrounds (Near White / White) \u00e2\u2020\u2019 use Deep Navy for text\n- Primary accent (borders, key stats, CTAs, slide title highlights) \u00e2\u2020\u2019 Gold\n- Secondary accent (chart elements, icons, supporting callouts) \u00e2\u2020\u2019 Blue\n- Default slide background: Deep Navy (`RGBColor(0, 8, 20)`) for Bishop AI's premium dark-first identity\n"}], "grading": {"expectations": [{"text": "includes_rgbcolor_syntax", "passed": true, "evidence": "All 7 colors defined as RGBColor() calls with correct positional RGB arguments"}, {"text": "correct_rgb_for_deep_navy", "passed": true, "evidence": "DEEP_NAVY = RGBColor(0, 8, 20) \u00e2\u20ac\u201d matches #000814 exactly"}, {"text": "correct_rgb_for_gold", "passed": true, "evidence": "GOLD = RGBColor(224, 184, 72) \u00e2\u20ac\u201d matches #E0B848 exactly"}, {"text": "correct_rgb_for_blue", "passed": true, "evidence": "BLUE = RGBColor(24, 148, 201) \u00e2\u20ac\u201d matches #1894C9 exactly"}, {"text": "assigns_poppins_to_headings", "passed": true, "evidence": "run.font.name = 'Poppins' with run.font.bold = True in heading code block"}, {"text": "assigns_montserrat_to_subheadings", "passed": true, "evidence": "run.font.name = 'Montserrat' for subheading and listed in font table"}, {"text": "assigns_open_sans_to_body", "passed": true, "evidence": "run.font.name = 'Open Sans' for body text and listed in font table"}, {"text": "includes_all_seven_colors", "passed": true, "evidence": "DEEP_NAVY, DARK_NAVY, OFF_WHITE, NEAR_WHITE, WHITE, GOLD, BLUE \u00e2\u20ac\u201d all 7 defined"}], "summary": {"passed": 8, "failed": 0, "total": 8, "pass_rate": 1.0}, "timing": {"total_duration_seconds": 45.4}}}, {"id": "pptx-rgb-fonts-without_skill", "prompt": "I'm building a pitch deck for Bishop AI in PowerPoint using python-pptx. Give me the brand colors as RGBColor values and tell me which fonts to assign to headings, subheadings, and body text.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Bishop AI Brand Colors and Fonts for python-pptx\n## (General Knowledge Response - No Brand Guidelines Consulted)\n\n**Disclaimer:** This response is based on general knowledge only. I do not have verified, authoritative information about Bishop AI's specific brand guidelines.\n\n## Brand Colors (RGBColor values)\n\nBishop AI does not have widely documented public brand colors in my training data. Based on common conventions for AI/tech companies, here are plausible placeholder values:\n\n```python\nfrom pptx.dml.color import RGBColor\n\n# GUESSED / PLACEHOLDER COLORS \u00e2\u20ac\u201d not verified Bishop AI brand values\nPRIMARY_DARK     = RGBColor(0x0D, 0x0D, 0x0D)  # Near-black (#0D0D0D)\nPRIMARY_ACCENT   = RGBColor(0x00, 0x7A, 0xFF)  # Tech blue (#007AFF)\nSECONDARY_ACCENT = RGBColor(0x7B, 0x2F, 0xFF)  # Purple (#7B2FFF)\nNEUTRAL_LIGHT    = RGBColor(0xF5, 0xF5, 0xF5)  # Off-white (#F5F5F5)\nNEUTRAL_MID      = RGBColor(0x8A, 0x8A, 0x8A)  # Mid-gray (#8A8A8A)\nWHITE            = RGBColor(0xFF, 0xFF, 0xFF)  # Pure white\n```\n\n## Typography Assignments\n\n| Role        | Font (Guessed)   | Size | Weight   | Color              |\n|-------------|------------------|------|----------|--------------------|\n| Heading     | Montserrat       | 36pt | Bold     | #FFFFFF White      |\n| Subheading  | Montserrat       | 24pt | SemiBold | #F5F5F5 Off-white  |\n| Body        | Inter            | 14pt | Regular  | #8A8A8A Mid-gray   |\n| Background  | \u00e2\u20ac\u201d                | \u00e2\u20ac\u201d    | \u00e2\u20ac\u201d        | #0D0D0D Near-black |\n\n**Confidence: LOW.** These are generic tech-startup conventions. Please verify against the actual Bishop AI brand kit before using in production.\n"}], "grading": {"expectations": [{"text": "includes_rgbcolor_syntax", "passed": true, "evidence": "Uses RGBColor() calls with hex notation \u00e2\u20ac\u201d syntax valid even though values are wrong"}, {"text": "correct_rgb_for_deep_navy", "passed": false, "evidence": "Uses RGBColor(0x0D, 0x0D, 0x0D) = (13,13,13) instead of (0, 8, 20) \u00e2\u20ac\u201d fabricated value"}, {"text": "correct_rgb_for_gold", "passed": false, "evidence": "No Gold color \u00e2\u20ac\u201d uses SECONDARY_ACCENT = RGBColor(0x7B, 0x2F, 0xFF) (purple) instead"}, {"text": "correct_rgb_for_blue", "passed": false, "evidence": "PRIMARY_ACCENT = RGBColor(0x00, 0x7A, 0xFF) = (0,122,255) \u00e2\u20ac\u201d wrong, should be (24,148,201)"}, {"text": "assigns_poppins_to_headings", "passed": false, "evidence": "Assigns Montserrat Bold to headings \u00e2\u20ac\u201d no mention of Poppins anywhere"}, {"text": "assigns_montserrat_to_subheadings", "passed": false, "evidence": "Montserrat incorrectly used for headings, not subheadings \u00e2\u20ac\u201d role mapping wrong"}, {"text": "assigns_open_sans_to_body", "passed": false, "evidence": "Assigns Inter (not Open Sans) to body text \u00e2\u20ac\u201d no mention of Open Sans"}, {"text": "includes_all_seven_colors", "passed": false, "evidence": "Only 6 colors defined \u00e2\u20ac\u201d no Near White or Gold as separate entries"}], "summary": {"passed": 1, "failed": 7, "total": 8, "pass_rate": 0.125}, "timing": {"total_duration_seconds": 47.4}}}, {"id": "linkedin-on-brand-with_skill", "prompt": "Can you make this on-brand for Bishop AI? I have a LinkedIn graphic I want to post \u00e2\u20ac\u201d it needs to look professional and match our visual identity. Walk me through what styling choices to make.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Making Your LinkedIn Graphic On-Brand for Bishop AI\n\nGreat \u00e2\u20ac\u201d let's walk through every styling decision you need to make so your LinkedIn graphic looks polished, professional, and unmistakably Bishop AI.\n\n---\n\n## 1. Background \u00e2\u20ac\u201d Start Here First\n\nThe single biggest decision is your background color. Bishop AI is a dark-first brand, so the default recommendation is:\n\n**Deep Navy `#000814`** \u00e2\u20ac\u201d This is the most premium, high-authority option. Use it when you want the graphic to feel bold and corporate-tech. This is the right call for most LinkedIn posts where you want to stand out in a scroll.\n\nIf you need something lighter (e.g., you're pairing with a white or light-colored screenshot, or the content calls for a \"clean\" tone):\n\n**Near White `#F9F6F0`** \u00e2\u20ac\u201d This is the approved light alternative. It still feels refined rather than stark.\n\nAvoid pure white (`#FFFFFF`) or any background color outside the palette \u00e2\u20ac\u201d they'll break the visual identity immediately.\n\n---\n\n## 2. Text Colors \u00e2\u20ac\u201d Match to Your Background\n\nOnce you've chosen your background, your text color is determined:\n\n| Background | Text Color |\n|---|---|\n| Deep Navy `#000814` | White `#FAFBFA` or Off-White `#E6E2DE` |\n| Dark Navy `#1E2333` | White `#FAFBFA` or Off-White `#E6E2DE` |\n| Near White `#F9F6F0` | Deep Navy `#000814` |\n\nThe Off-White (`#E6E2DE`) option on dark backgrounds is useful for secondary text \u00e2\u20ac\u201d body copy, captions, supporting details \u00e2\u20ac\u201d so it reads slightly softer than the headline text.\n\n---\n\n## 3. Accent Colors \u00e2\u20ac\u201d Gold First, Blue Second\n\nBishop AI uses exactly two accent colors. Apply them in this order of priority:\n\n**Gold `#E0B848`** \u00e2\u20ac\u201d This is the hero accent. Put it on the most important element: your headline, a key stat, a border or underline, a CTA button, or any element you want the viewer's eye to land on first. Gold signals authority and trust and is what makes Bishop AI graphics recognizable.\n\n**Blue `#1894C9`** \u00e2\u20ac\u201d This is the supporting accent. Use it for secondary elements: icons, supporting callouts, a chart element, a decorative shape, or a secondary data point.\n\nRules to follow:\n- Never use both accents on the same element \u00e2\u20ac\u201d each should accent a different tier of content.\n- Do not introduce any other colors. No purples, greens, reds, or custom brand colors from outside this palette \u00e2\u20ac\u201d they will look off immediately.\n- Decorative shapes, divider lines, icon fills, and borders should use Gold or Blue only \u00e2\u20ac\u201d never the background navies or whites.\n\n---\n\n## 4. Typography \u00e2\u20ac\u201d Three Fonts, Used in Hierarchy\n\nBishop AI uses a strict three-font system. Assign them by content tier:\n\n| Content Type | Font | Weight |\n|---|---|---|\n| Main headline / title | Poppins Bold | Bold (not regular) |\n| Subheadings, section labels, callout headers | Montserrat | Regular or SemiBold |\n| Body text, bullet points, captions, quotes | Open Sans | Regular or Light |\n\nCritical rules:\n- Never mix more than these three fonts in a single graphic.\n- Never use Poppins for body text or Open Sans for your headline \u00e2\u20ac\u201d the hierarchy matters.\n- If any of these fonts are unavailable in your design tool, use the fallbacks: Arial Bold for headings, Helvetica for subheadings, Georgia for body.\n\n---\n\n## 5. Composition and Layout Guidance\n\n**Hierarchy before decoration** \u00e2\u20ac\u201d Let your typography create visual structure. A strong Poppins headline in White with a Gold underline on a Deep Navy background is already striking without any additional decoration.\n\n**Less is more** \u00e2\u20ac\u201d The Bishop AI brand is intentionally minimal. Resist the urge to add extra colors, competing gradients, or decorative elements that fight the message. One or two accent touches are enough.\n\n**Gold on the primary element** \u00e2\u20ac\u201d Whatever you most want the viewer to read or act on, that is where Gold goes.\n\n**Avoid gradients that fight the palette** \u00e2\u20ac\u201d Keep any gradients within the approved colors (e.g., Deep Navy to Dark Navy).\n\n---\n\n## 6. Quick Reference Checklist\n\nBefore you finalize your LinkedIn graphic, confirm:\n\n- [ ] Background is one of: `#000814`, `#1E2333`, `#E6E2DE`, `#F9F6F0`, or `#FAFBFA`\n- [ ] Text color matches the background (white/off-white on dark; deep navy on light)\n- [ ] Primary headline uses Poppins Bold\n- [ ] Subheadings or section labels use Montserrat\n- [ ] Body text or captions use Open Sans\n- [ ] Gold `#E0B848` is on the most important accent element\n- [ ] Blue `#1894C9` is used only for secondary accent elements, if needed\n- [ ] No colors from outside the palette appear anywhere\n- [ ] No more than three font families appear on the graphic\n\n---\n\n## 7. Example: Stat-Callout LinkedIn Graphic\n\nSay you're making a stat-callout graphic (e.g., \"87% of procurement teams are switching to AI-assisted sourcing\"):\n\n- **Background:** Deep Navy `#000814`\n- **Headline stat (\"87%\"):** Poppins Bold, Gold `#E0B848`, large\n- **Headline sentence:** Poppins Bold, White `#FAFBFA`, slightly smaller\n- **Supporting subtext:** Open Sans Light, Off-White `#E6E2DE`, small\n- **Decorative element (horizontal rule or border):** Gold `#E0B848`\n- **Optional icon:** Blue `#1894C9`\n\nThat combination follows all brand rules and will look premium, dark, and distinctly Bishop AI.\n\n---\n\nIf you share the actual graphic or tell me what content will be on it, I can give you specific element-by-element styling recommendations.\n"}], "grading": {"expectations": [{"text": "recommends_dark_background", "passed": true, "evidence": "Section 1 explicitly recommends Deep Navy #000814 as primary, Dark Navy #1E2333 as option \u00e2\u20ac\u201d with hex codes"}, {"text": "specifies_text_color_logic", "passed": true, "evidence": "Section 2 has a table: dark bg \u00e2\u2020\u2019 White #FAFBFA or Off-White #E6E2DE; light bg \u00e2\u2020\u2019 Deep Navy #000814"}, {"text": "gold_as_primary_accent", "passed": true, "evidence": "Section 3 explicitly says 'Gold #E0B848 \u00e2\u20ac\u201d This is the hero accent' with priority explanation"}, {"text": "mentions_typography_hierarchy", "passed": true, "evidence": "Section 4 has a full table: Poppins Bold \u00e2\u2020\u2019 headlines, Montserrat \u00e2\u2020\u2019 subheadings, Open Sans \u00e2\u2020\u2019 body"}, {"text": "gives_actionable_steps", "passed": true, "evidence": "6 numbered sections plus a pre-launch checklist and concrete stat-callout example"}, {"text": "mentions_premium_feel", "passed": true, "evidence": "Multiple mentions: 'premium, dark, corporate-tech', 'premium, dark, and distinctly Bishop AI', 'premium, high-authority'"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}, "timing": {"total_duration_seconds": 62.4}}}, {"id": "linkedin-on-brand-without_skill", "prompt": "Can you make this on-brand for Bishop AI? I have a LinkedIn graphic I want to post \u00e2\u20ac\u201d it needs to look professional and match our visual identity. Walk me through what styling choices to make.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Making Your LinkedIn Graphic On-Brand for Bishop AI\n\nBased on general knowledge of Bishop AI as a company, here is my best guidance on styling choices for a professional LinkedIn graphic. Please note: this advice is drawn from publicly available impressions of Bishop AI's visual identity and may not reflect your internal brand guidelines precisely.\n\n---\n\n## What I Know About Bishop AI\n\nBishop AI appears to be an AI-focused company, likely operating in the enterprise or B2B space. Companies in this category typically adopt a visual identity that signals technical sophistication, trustworthiness, and modernity.\n\n---\n\n## Styling Recommendations\n\n### 1. Color Palette\n\nFor a company named \"Bishop AI,\" the most likely brand palette would lean toward:\n\n- **Primary:** A deep navy or charcoal (`#1A2B4A` range) \u00e2\u20ac\u201d conveys authority and intelligence\n- **Accent:** A bright electric blue or cyan (`#3B82F6` or `#00C2FF` range) \u00e2\u20ac\u201d signals AI/tech innovation\n- **Neutral Background:** Off-white or very light gray (`#F8F9FA` or `#FFFFFF`) \u00e2\u20ac\u201d keeps it clean and readable\n- **Text:** Near-black (`#111827`) for primary copy, mid-gray (`#6B7280`) for secondary\n\n**LinkedIn-specific tip:** Avoid pure white backgrounds \u00e2\u20ac\u201d they can disappear against LinkedIn's own white UI.\n\n### 2. Typography\n\n- **Headlines:** A geometric sans-serif \u00e2\u20ac\u201d think Inter, DM Sans, or Montserrat. Bold weight (700) for impact.\n- **Body / Supporting text:** The same typeface at regular weight (400), or a complementary humanist sans-serif like Source Sans Pro.\n\n**Size hierarchy for a LinkedIn graphic (1200x627px standard):**\n- Main headline: 48\u00e2\u20ac\u201c64px\n- Subheadline or tagline: 24\u00e2\u20ac\u201c32px\n- Supporting detail / CTA: 16\u00e2\u20ac\u201c18px\n\n### 3. Layout & Composition\n\n- **Alignment:** Left-aligned text is easier to read and feels more editorial/professional.\n- **White space:** Generous \u00e2\u20ac\u201d do not crowd the graphic.\n- **Grid:** Use a consistent margin \u00e2\u20ac\u201d 60\u00e2\u20ac\u201c80px from all edges.\n- **Visual hierarchy:** One dominant element (the headline or a key statistic), one supporting element, and a logo lockup. Three layers maximum.\n\n### 4. Logo Placement\n\n- Place the Bishop AI logo in a corner \u00e2\u20ac\u201d bottom-right or bottom-left is standard for LinkedIn graphics.\n- Use the logo version (light or dark) that contrasts properly with your background color.\n\n### 5. Imagery & Iconography\n\n- If using icons: geometric, line-style icons in the brand accent color.\n- If using photography: dark, high-contrast images with a color overlay in the brand palette work well.\n\n---\n\n## What I Cannot Confirm Without Official Guidelines\n\n- Exact hex color values from the Bishop AI brand system\n- The specific typeface(s) licensed and used by Bishop AI\n- Official logo usage rules\n- Any proprietary graphic elements in the brand system\n\n---\n\n## Recommendation\n\nFor a graphic that is truly on-brand, reference Bishop AI's official brand guidelines document. The guidance above is a reasonable professional approximation, but it may diverge from actual brand standards in important ways.\n"}], "grading": {"expectations": [{"text": "recommends_dark_background", "passed": true, "evidence": "Recommends 'deep navy or charcoal (#1A2B4A range)' \u00e2\u20ac\u201d correct direction but wrong hex codes"}, {"text": "specifies_text_color_logic", "passed": true, "evidence": "Mentions dark bg \u00e2\u2020\u2019 light text logic, but without specific Bishop AI hex values"}, {"text": "gold_as_primary_accent", "passed": false, "evidence": "No Gold mentioned \u00e2\u20ac\u201d recommends Electric Blue and Cyan as accents instead"}, {"text": "mentions_typography_hierarchy", "passed": false, "evidence": "Mentions Montserrat and Inter but never Poppins \u00e2\u20ac\u201d no authoritative 3-tier hierarchy"}, {"text": "gives_actionable_steps", "passed": true, "evidence": "6 numbered styling sections with clear guidance \u00e2\u20ac\u201d format actionable even without correct brand values"}, {"text": "mentions_premium_feel", "passed": true, "evidence": "Mentions 'authority and intelligence', 'technical sophistication', 'trustworthiness'"}], "summary": {"passed": 4, "failed": 2, "total": 6, "pass_rate": 0.667}, "timing": {"total_duration_seconds": 59.7}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "bishop-brand", "skill_path": "C:\\Users\\richm\\.claude\\skills\\bishop-brand", "executor_model": "claude-sonnet-4-6", "analyzer_model": "claude-sonnet-4-6", "timestamp": "2026-03-05T02:35:33Z", "evals_run": [0, 1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 0, "eval_name": "infographic-brand-ref", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 46.8, "tokens": 15920, "tool_calls": 3, "errors": 0}, "expectations": [{"text": "includes_all_main_hex_codes", "passed": true, "evidence": "All 5 hex codes present: #000814, #1E2333, #E6E2DE, #F9F6F0, #FAFBFA \u00e2\u20ac\u201d listed in a full palette table"}, {"text": "includes_accent_hex_codes", "passed": true, "evidence": "Both #E0B848 (Gold) and #1894C9 (Blue) explicitly present with usage guidance"}, {"text": "names_all_three_fonts", "passed": true, "evidence": "Poppins Bold, Montserrat, and Open Sans all named in the typography table"}, {"text": "maps_fonts_to_roles", "passed": true, "evidence": "Poppins Bold to H1/H2; Montserrat to subheadings; Open Sans to body \u00e2\u20ac\u201d explicit table"}, {"text": "mentions_fallback_fonts", "passed": true, "evidence": "Arial Bold, Helvetica, and Georgia fallbacks listed in the typography table"}, {"text": "actionable_for_design_tool", "passed": true, "evidence": "Includes a Quick Copy-Paste Reference block and a verbatim AI prompt block \u00e2\u20ac\u201d both directly usable"}], "notes": []}, {"eval_id": 0, "eval_name": "infographic-brand-ref", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.167, "passed": 1, "failed": 5, "total": 6, "time_seconds": 48.1, "tokens": 13825, "tool_calls": 2, "errors": 0}, "expectations": [{"text": "includes_all_main_hex_codes", "passed": false, "evidence": "Uses fabricated hex codes (#0D1B2A, etc.) \u00e2\u20ac\u201d none of the 5 official main colors are present"}, {"text": "includes_accent_hex_codes", "passed": false, "evidence": "No mention of #E0B848 or #1894C9 \u00e2\u20ac\u201d uses Electric Blue and Cyan instead"}, {"text": "names_all_three_fonts", "passed": false, "evidence": "Recommends Inter and Space Grotesk \u00e2\u20ac\u201d none of the three brand fonts appear"}, {"text": "maps_fonts_to_roles", "passed": false, "evidence": "No mapping to Poppins/Montserrat/Open Sans roles \u00e2\u20ac\u201d wrong fonts throughout"}, {"text": "mentions_fallback_fonts", "passed": false, "evidence": "No fallback fonts mentioned \u00e2\u20ac\u201d no awareness of the brand font stack"}, {"text": "actionable_for_design_tool", "passed": true, "evidence": "Includes a Quick-Reference Card with organized blocks \u00e2\u20ac\u201d format is usable even though content is wrong"}], "notes": []}, {"eval_id": 1, "eval_name": "pptx-rgb-fonts", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 8, "failed": 0, "total": 8, "time_seconds": 45.4, "tokens": 16375, "tool_calls": 3, "errors": 0}, "expectations": [{"text": "includes_rgbcolor_syntax", "passed": true, "evidence": "All 7 colors defined as RGBColor() calls with correct positional RGB arguments"}, {"text": "correct_rgb_for_deep_navy", "passed": true, "evidence": "DEEP_NAVY = RGBColor(0, 8, 20) \u00e2\u20ac\u201d matches #000814 exactly"}, {"text": "correct_rgb_for_gold", "passed": true, "evidence": "GOLD = RGBColor(224, 184, 72) \u00e2\u20ac\u201d matches #E0B848 exactly"}, {"text": "correct_rgb_for_blue", "passed": true, "evidence": "BLUE = RGBColor(24, 148, 201) \u00e2\u20ac\u201d matches #1894C9 exactly"}, {"text": "assigns_poppins_to_headings", "passed": true, "evidence": "run.font.name set to Poppins with run.font.bold = True in heading code block"}, {"text": "assigns_montserrat_to_subheadings", "passed": true, "evidence": "run.font.name set to Montserrat for subheading and listed in font table"}, {"text": "assigns_open_sans_to_body", "passed": true, "evidence": "run.font.name set to Open Sans for body text and listed in font table"}, {"text": "includes_all_seven_colors", "passed": true, "evidence": "DEEP_NAVY, DARK_NAVY, OFF_WHITE, NEAR_WHITE, WHITE, GOLD, BLUE \u00e2\u20ac\u201d all 7 defined"}], "notes": []}, {"eval_id": 1, "eval_name": "pptx-rgb-fonts", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.125, "passed": 1, "failed": 7, "total": 8, "time_seconds": 47.4, "tokens": 14347, "tool_calls": 2, "errors": 0}, "expectations": [{"text": "includes_rgbcolor_syntax", "passed": true, "evidence": "Uses RGBColor() calls with hex notation \u00e2\u20ac\u201d syntax valid even though values are wrong"}, {"text": "correct_rgb_for_deep_navy", "passed": false, "evidence": "Uses RGBColor(0x0D, 0x0D, 0x0D) = (13,13,13) instead of (0, 8, 20) \u00e2\u20ac\u201d fabricated value"}, {"text": "correct_rgb_for_gold", "passed": false, "evidence": "No Gold color \u00e2\u20ac\u201d uses SECONDARY_ACCENT purple instead"}, {"text": "correct_rgb_for_blue", "passed": false, "evidence": "PRIMARY_ACCENT = (0,122,255) \u00e2\u20ac\u201d wrong, should be (24,148,201)"}, {"text": "assigns_poppins_to_headings", "passed": false, "evidence": "Assigns Montserrat Bold to headings \u00e2\u20ac\u201d no mention of Poppins anywhere"}, {"text": "assigns_montserrat_to_subheadings", "passed": false, "evidence": "Montserrat incorrectly used for headings, not subheadings \u00e2\u20ac\u201d role mapping wrong"}, {"text": "assigns_open_sans_to_body", "passed": false, "evidence": "Assigns Inter (not Open Sans) to body text \u00e2\u20ac\u201d no mention of Open Sans"}, {"text": "includes_all_seven_colors", "passed": false, "evidence": "Only 6 colors defined \u00e2\u20ac\u201d no Near White or Gold as separate entries"}], "notes": []}, {"eval_id": 2, "eval_name": "linkedin-on-brand", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 62.4, "tokens": 16063, "tool_calls": 3, "errors": 0}, "expectations": [{"text": "recommends_dark_background", "passed": true, "evidence": "Section 1 explicitly recommends Deep Navy #000814 as primary, Dark Navy #1E2333 as option"}, {"text": "specifies_text_color_logic", "passed": true, "evidence": "Section 2 table: dark bg to White #FAFBFA or Off-White #E6E2DE; light bg to Deep Navy #000814"}, {"text": "gold_as_primary_accent", "passed": true, "evidence": "Section 3: Gold #E0B848 \u00e2\u20ac\u201d This is the hero accent, with priority explanation"}, {"text": "mentions_typography_hierarchy", "passed": true, "evidence": "Section 4 full table: Poppins Bold to headlines, Montserrat to subheadings, Open Sans to body"}, {"text": "gives_actionable_steps", "passed": true, "evidence": "6 numbered sections plus a pre-launch checklist and concrete stat-callout example"}, {"text": "mentions_premium_feel", "passed": true, "evidence": "Multiple mentions: premium, dark, corporate-tech; premium, high-authority"}], "notes": []}, {"eval_id": 2, "eval_name": "linkedin-on-brand", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.667, "passed": 4, "failed": 2, "total": 6, "time_seconds": 59.7, "tokens": 15103, "tool_calls": 4, "errors": 0}, "expectations": [{"text": "recommends_dark_background", "passed": true, "evidence": "Recommends deep navy or charcoal (#1A2B4A range) \u00e2\u20ac\u201d correct direction but wrong hex codes"}, {"text": "specifies_text_color_logic", "passed": true, "evidence": "Mentions dark bg to light text logic, but without specific Bishop AI hex values"}, {"text": "gold_as_primary_accent", "passed": false, "evidence": "No Gold mentioned \u00e2\u20ac\u201d recommends Electric Blue and Cyan as accents instead"}, {"text": "mentions_typography_hierarchy", "passed": false, "evidence": "Mentions Montserrat and Inter but never Poppins \u00e2\u20ac\u201d no authoritative 3-tier hierarchy"}, {"text": "gives_actionable_steps", "passed": true, "evidence": "6 numbered styling sections \u00e2\u20ac\u201d format actionable even without correct brand values"}, {"text": "mentions_premium_feel", "passed": true, "evidence": "Mentions authority and intelligence, technical sophistication, trustworthiness"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 51.5, "stddev": 8.98, "min": 45.4, "max": 62.4}, "tokens": {"mean": 16119, "stddev": 229, "min": 15920, "max": 16375}}, "without_skill": {"pass_rate": {"mean": 0.32, "stddev": 0.28, "min": 0.125, "max": 0.667}, "time_seconds": {"mean": 51.7, "stddev": 6.07, "min": 47.4, "max": 59.7}, "tokens": {"mean": 14425, "stddev": 649, "min": 13825, "max": 15103}}, "delta": {"pass_rate": "+0.68", "time_seconds": "-0.2", "tokens": "+1694"}}, "notes": ["actionable_for_design_tool passes in both configurations \u00e2\u20ac\u201d non-discriminating; good structure is a baseline Claude capability regardless of brand knowledge", "without_skill pass rate has high variance (0.32 +/- 0.28): LinkedIn eval partially passes because generic design advice directionally aligns, but specific brand values are entirely fabricated", "with_skill is 100% pass rate across all 3 evals \u00e2\u20ac\u201d the skill is the sole source of truth for exact hex codes, RGB values, and font names; without it the model fabricates plausible-but-wrong values", "time cost is negligible: skill adds essentially 0s on average (the skill file read is offset by the model being more efficient with clear guidance)", "tokens slightly higher with skill (+1694) due to reading SKILL.md \u00e2\u20ac\u201d a worthwhile tradeoff for brand accuracy"]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

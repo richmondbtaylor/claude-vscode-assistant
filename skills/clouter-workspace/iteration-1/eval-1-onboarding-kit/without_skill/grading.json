@@ -1,0 +1,38 @@
+{
+  "eval_id": 1,
+  "run_type": "without_skill",
+  "expectations": [
+    {
+      "text": "has_responsibility_clause: Statement contains 'accept full responsibility for the accuracy, quality, and presentation of the final work'",
+      "passed": false,
+      "evidence": "Output has 'our consultants bear full professional responsibility' but NOT the required exact clause wording"
+    },
+    {
+      "text": "word_count_in_range: Final statement paragraph is 75-150 words",
+      "passed": false,
+      "evidence": "Baseline output is a multi-section formal document (400+ words), not a single paragraph statement"
+    },
+    {
+      "text": "no_banned_words: Does not use leveraged, utilized, synergize, cutting-edge, robust, seamless, state-of-the-art, innovative",
+      "passed": true,
+      "evidence": "Banned words not found in this output"
+    },
+    {
+      "text": "ends_with_log_updated: Output ends with 'Log updated.'",
+      "passed": false,
+      "evidence": "No log concept exists in baseline; output ends with disclaimer text"
+    },
+    {
+      "text": "first_person_voice: Statement uses first-person voice (I or we)",
+      "passed": true,
+      "evidence": "Uses 'we' in some places: 'our consultants', 'we are disclosing'"
+    },
+    {
+      "text": "heavy_collaboration_reflected: Statement reflects heavy/substantial AI involvement",
+      "passed": false,
+      "evidence": "Describes specific tasks but doesn't label collaboration level; focused on disclaimers not collaboration framing"
+    }
+  ],
+  "pass_rate": 0.333,
+  "notes": "Baseline produced a long, multi-section formal disclosure document — not the requested single-paragraph format. Missing responsibility clause, log, and collaboration level framing."
+}

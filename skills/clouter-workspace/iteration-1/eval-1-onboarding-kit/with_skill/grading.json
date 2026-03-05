@@ -1,0 +1,38 @@
+{
+  "eval_id": 1,
+  "run_type": "with_skill",
+  "expectations": [
+    {
+      "text": "has_responsibility_clause: Statement contains 'accept full responsibility for the accuracy, quality, and presentation of the final work'",
+      "passed": true,
+      "evidence": "Found verbatim: 'we accept full responsibility for the accuracy, quality, and presentation of the final work'"
+    },
+    {
+      "text": "word_count_in_range: Final statement paragraph is 75-150 words",
+      "passed": true,
+      "evidence": "Statement paragraph (from 'In preparing...' to '...final work.') counts ~95 words"
+    },
+    {
+      "text": "no_banned_words: Does not use leveraged, utilized, synergize, cutting-edge, robust, seamless, state-of-the-art, innovative",
+      "passed": true,
+      "evidence": "None of the banned words appear in the statement"
+    },
+    {
+      "text": "ends_with_log_updated: Output ends with 'Log updated.'",
+      "passed": true,
+      "evidence": "Output ends with 'Log updated.'"
+    },
+    {
+      "text": "first_person_voice: Statement uses first-person voice (I or we)",
+      "passed": true,
+      "evidence": "Uses 'we' throughout: 'we engaged AI tools', 'We affirm'"
+    },
+    {
+      "text": "heavy_collaboration_reflected: Statement reflects heavy/substantial AI involvement",
+      "passed": true,
+      "evidence": "Contains 'Heavy level of AI collaboration' and 'substantial role in co-creating'"
+    }
+  ],
+  "pass_rate": 1.0,
+  "notes": "All 6 assertions passed. Statement follows CLOUTER structure completely. Shows C/L/O/E steps before final output."
+}

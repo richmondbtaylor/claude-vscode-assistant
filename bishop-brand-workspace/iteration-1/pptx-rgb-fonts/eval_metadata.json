@@ -1,0 +1,15 @@
+{
+  "eval_id": 1,
+  "eval_name": "pptx-rgb-fonts",
+  "prompt": "I'm building a pitch deck for Bishop AI in PowerPoint using python-pptx. Give me the brand colors as RGBColor values and tell me which fonts to assign to headings, subheadings, and body text.",
+  "assertions": [
+    {"name": "includes_rgbcolor_syntax", "description": "Response includes RGBColor() calls with correct RGB tuples"},
+    {"name": "correct_rgb_for_deep_navy", "description": "Deep Navy is RGBColor(0, 8, 20)"},
+    {"name": "correct_rgb_for_gold", "description": "Gold is RGBColor(224, 184, 72)"},
+    {"name": "correct_rgb_for_blue", "description": "Blue is RGBColor(24, 148, 201)"},
+    {"name": "assigns_poppins_to_headings", "description": "Poppins Bold is assigned to H1/H2 headings"},
+    {"name": "assigns_montserrat_to_subheadings", "description": "Montserrat is assigned to subheadings"},
+    {"name": "assigns_open_sans_to_body", "description": "Open Sans is assigned to body text"},
+    {"name": "includes_all_seven_colors", "description": "All 7 brand colors (5 main + 2 accent) are represented"}
+  ]
+}

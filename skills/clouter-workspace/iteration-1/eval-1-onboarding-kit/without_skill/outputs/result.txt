@@ -1,0 +1,33 @@
+AI DISCLOSURE STATEMENT
+Meridian Financial Client Onboarding Kit
+Prepared by: [Your Firm Name]
+Date: March 4, 2026
+
+USE OF ARTIFICIAL INTELLIGENCE IN DELIVERABLE DEVELOPMENT
+
+In the interest of full transparency and professional diligence, we are disclosing the role that artificial intelligence (AI) tools played in the development of the deliverables included in this engagement.
+
+SCOPE OF AI INVOLVEMENT
+
+AI-assisted tools were used in the preparation of the following deliverables provided to Meridian Financial as part of this consulting engagement:
+
+1. Strategy Deck
+2. 90-Day Roadmap
+
+Specifically, AI tools contributed to:
+
+- Executive Summary Drafting: Initial drafts of the executive summary were generated with AI assistance. These drafts were subsequently reviewed, edited, and validated by our consulting team to ensure accuracy, strategic alignment, and relevance to Meridian Financial's specific context and objectives.
+
+- Roadmap Structure and Sectioning: AI tools were used to help organize and structure the sections of the 90-day roadmap, including sequencing of initiatives and categorization of workstreams. All structural decisions were reviewed and refined by senior consultants on the engagement team.
+
+- Market Research Synthesis: AI tools assisted in synthesizing and summarizing market research inputs. Source materials were provided by our team, and all synthesized outputs were reviewed for accuracy, completeness, and interpretive integrity before inclusion in the final deliverables.
+
+HUMAN OVERSIGHT AND ACCOUNTABILITY
+
+All AI-assisted content underwent substantive human review prior to delivery. Our consultants bear full professional responsibility for the accuracy, completeness, and strategic soundness of all materials presented. AI was used as a productivity and drafting aid — not as a substitute for professional judgment, domain expertise, or client-specific analysis.
+
+No proprietary, confidential, or sensitive Meridian Financial data was submitted to any external AI system in connection with this engagement. All AI tool usage was conducted in compliance with applicable data handling and confidentiality obligations.
+
+TOOLS USED
+
+AI assistance in this engagement was provided by large language model (LLM) based tools. Specific tool names and versions are available upon request.

@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "prompt_json_is_valid: prompt.json exists and is parseable JSON", "passed": true, "evidence": "prompt.json exists with valid task/schema_version/model_target/prompt/api_parameters structure"},
+    {"text": "exact_data_points_present: Prompt contains all 5 exact percentages: 15%, 28%, 41%, 67%, 89%", "passed": true, "evidence": "Prompt includes '2020: 15%, 2021: 28%, 2022: 41%, 2023: 67%, 2024: 89%' verbatim"},
+    {"text": "dark_mode_palette_with_hex: Prompt includes a dark background color palette with at least one hex color code", "passed": true, "evidence": "Includes charcoal black #0D1117, electric teal #00F5D4, vivid cyan #19A7CE, accent purple #A855F7"},
+    {"text": "aspect_ratio_linkedin: api_parameters.aspect_ratio is 4:5 or 9:16", "passed": true, "evidence": "api_parameters.aspect_ratio = '4:5'"},
+    {"text": "negative_blocklist_present: Prompt contains negative terms like 'blurry text' or 'garbled typography'", "passed": true, "evidence": "Prompt ends with 'Negative: blurry text, garbled typography, illegible fonts...'"},
+    {"text": "generate_kie_command_present: command.txt exists and references generate_kie.py", "passed": true, "evidence": "command.txt contains: python .\\scripts\\generate_kie.py .\\prompts\\infographics\\ai-adoption-2020-2024.json"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}
+}

@@ -1,0 +1,24 @@
+# Sensitive credentials - never sync
+.credentials.json
+settings.local.json
+
+# Conversation histories - contain embedded secrets
+projects/
+todos/
+
+# Ephemeral runtime data
+history.jsonl
+mcp-needs-auth-cache.json
+stats-cache.json
+cache/
+telemetry/
+statsig/
+debug/
+shell-snapshots/
+backups/
+ide/
+file-history/
+
+# Temp files
+*.tmp
+*.log

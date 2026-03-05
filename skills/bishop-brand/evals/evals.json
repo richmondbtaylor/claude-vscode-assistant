@@ -1,0 +1,23 @@
+{
+  "skill_name": "bishop-brand",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I need to make an infographic about Bishop AI's top 5 client results. What colors and fonts should I use, and can you give me the exact hex codes and font names so I can pass them into my design tool?",
+      "expected_output": "A structured brand reference with exact hex codes for all Bishop AI colors, font names for each hierarchy level (title/subheading/body), and guidance on which to use where",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "I'm building a pitch deck for Bishop AI in PowerPoint using python-pptx. Give me the brand colors as RGBColor values and tell me which fonts to assign to headings, subheadings, and body text.",
+      "expected_output": "Python code snippets with RGBColor values for all brand colors, font assignments for each text hierarchy level, and clear guidance on when to use each",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Can you make this on-brand for Bishop AI? I have a LinkedIn graphic I want to post — it needs to look professional and match our visual identity. Walk me through what styling choices to make.",
+      "expected_output": "Actionable styling guidance covering background color choice, text color selection, accent usage (Gold first, Blue second), typography choices, and overall visual feel",
+      "files": []
+    }
+  ]
+}

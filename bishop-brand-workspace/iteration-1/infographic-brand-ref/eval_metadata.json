@@ -1,0 +1,13 @@
+{
+  "eval_id": 0,
+  "eval_name": "infographic-brand-ref",
+  "prompt": "I need to make an infographic about Bishop AI's top 5 client results. What colors and fonts should I use, and can you give me the exact hex codes and font names so I can pass them into my design tool?",
+  "assertions": [
+    {"name": "includes_all_main_hex_codes", "description": "Response includes hex codes for all 5 main colors (#000814, #1E2333, #E6E2DE, #F9F6F0, #FAFBFA)"},
+    {"name": "includes_accent_hex_codes", "description": "Response includes hex codes for both accent colors (#E0B848 Gold and #1894C9 Blue)"},
+    {"name": "names_all_three_fonts", "description": "Response names Poppins, Montserrat, and Open Sans"},
+    {"name": "maps_fonts_to_roles", "description": "Response maps each font to its correct role (Poppins=headings, Montserrat=subheadings, Open Sans=body)"},
+    {"name": "mentions_fallback_fonts", "description": "Response mentions fallback fonts (Arial, Helvetica, or Georgia)"},
+    {"name": "actionable_for_design_tool", "description": "Output is structured/formatted in a way that could be directly referenced in a design tool"}
+  ]
+}

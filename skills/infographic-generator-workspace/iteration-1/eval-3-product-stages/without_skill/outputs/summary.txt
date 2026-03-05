@@ -1,0 +1,7 @@
+Approach: Descriptive natural-language prompt, no structured schema.
+Correctly used 9:16 aspect ratio for Instagram Stories.
+Good color coding (one color per stage) but used color names not hex codes.
+Included icon suggestions and sub-descriptions for each stage.
+No negative blocklist included.
+Command is a curl call to a guessed endpoint — not the actual generate_kie.py pipeline.
+No file saving convention for prompts/ or images/ directories.

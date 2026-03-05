@@ -1,0 +1,5 @@
+curl -X POST https://api.kieai.com/v1/generate \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d @prompt.json \
+  --output generated_infographic.png

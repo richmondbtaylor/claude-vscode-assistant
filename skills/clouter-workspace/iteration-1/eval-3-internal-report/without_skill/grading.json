@@ -1,0 +1,38 @@
+{
+  "eval_id": 3,
+  "run_type": "without_skill",
+  "expectations": [
+    {
+      "text": "has_responsibility_clause: Statement contains 'accept full responsibility for the accuracy, quality, and presentation of the final work'",
+      "passed": false,
+      "evidence": "No responsibility clause present. Output is a brief bulleted list, not a statement."
+    },
+    {
+      "text": "word_count_in_range: Final statement paragraph is 75-150 words",
+      "passed": false,
+      "evidence": "Output is ~60 words total and structured as bullets, not a single paragraph"
+    },
+    {
+      "text": "no_banned_words: Does not use leveraged, utilized, synergize, cutting-edge, robust, seamless, state-of-the-art, innovative",
+      "passed": true,
+      "evidence": "No banned words found"
+    },
+    {
+      "text": "ends_with_log_updated: Output ends with 'Log updated.'",
+      "passed": false,
+      "evidence": "No log concept; ends with audience line"
+    },
+    {
+      "text": "internal_optional_notice: Response acknowledges diligence statement is optional for internal-only work",
+      "passed": false,
+      "evidence": "No mention of optional status; just generates a disclosure without context"
+    },
+    {
+      "text": "medium_collaboration_reflected: Statement reflects medium AI involvement",
+      "passed": true,
+      "evidence": "Lists 'Medium' level and describes tasks correctly"
+    }
+  ],
+  "pass_rate": 0.333,
+  "notes": "Baseline produced a minimal bulleted list rather than a proper statement. Missing clause, log, optional notice, and required format."
+}

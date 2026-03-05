@@ -1,0 +1,137 @@
+{
+  "skill_name": "clouter",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to put together a client onboarding kit for a new consulting engagement with Meridian Financial. Part of the kit includes a section disclosing how we used AI to build the deliverables. Can you help me generate one of those AI disclosure statements? The project is mostly a strategy deck and a 90-day roadmap. We used AI pretty heavily — it helped us draft the executive summary, structure the roadmap sections, and synthesize the market research.",
+      "expected_output": "A complete CLOUTER workflow: questions about project context, collaboration level selection (should land on Heavy given description), task list confirmation, then a 75-150 word first-person diligence statement with responsibility clause, followed by 'Log updated.'",
+      "files": [],
+      "assertions": [
+        {
+          "name": "has_responsibility_clause",
+          "description": "Statement contains the required responsibility clause verbatim",
+          "type": "contains",
+          "value": "accept full responsibility for the accuracy, quality, and presentation of the final work"
+        },
+        {
+          "name": "word_count_in_range",
+          "description": "The diligence statement paragraph is between 75 and 150 words",
+          "type": "custom",
+          "check": "count words in the final paragraph (before 'Log updated.') — must be between 75 and 150"
+        },
+        {
+          "name": "no_banned_words",
+          "description": "Statement does not use banned words: leveraged, utilized, synergize, cutting-edge, robust, seamless, state-of-the-art, innovative",
+          "type": "not_contains_any",
+          "values": ["leveraged", "utilized", "synergize", "cutting-edge", "robust", "seamless", "state-of-the-art", "innovative"]
+        },
+        {
+          "name": "ends_with_log_updated",
+          "description": "Output ends with 'Log updated.'",
+          "type": "contains",
+          "value": "Log updated."
+        },
+        {
+          "name": "first_person_voice",
+          "description": "Statement uses first-person voice (I or we)",
+          "type": "contains_any",
+          "values": ["I/we", " I ", " we ", "I affirm", "we affirm"]
+        },
+        {
+          "name": "heavy_collaboration_reflected",
+          "description": "Statement reflects heavy/substantial AI involvement consistent with the Heavy level",
+          "type": "contains_any",
+          "values": ["substantial", "heavy", "significant", "extensive", "co-creat"]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Hey, I need a diligence statement for a white paper I wrote for a healthcare client. I used ChatGPT to help brainstorm some section headers and check my grammar but I did all the actual writing and research myself. The paper is going to be published on their website publicly. Project ID: HealthCo-WP-Mar2026",
+      "expected_output": "A complete CLOUTER workflow leading to a Light-level collaboration statement. Should confirm task list (brainstorming headers, grammar check), then produce a 75-150 word statement reflecting light AI use, with responsibility clause and 'Log updated.'",
+      "files": [],
+      "assertions": [
+        {
+          "name": "has_responsibility_clause",
+          "description": "Statement contains the required responsibility clause verbatim",
+          "type": "contains",
+          "value": "accept full responsibility for the accuracy, quality, and presentation of the final work"
+        },
+        {
+          "name": "word_count_in_range",
+          "description": "The diligence statement paragraph is between 75 and 150 words",
+          "type": "custom",
+          "check": "count words in the final paragraph (before 'Log updated.') — must be between 75 and 150"
+        },
+        {
+          "name": "no_banned_words",
+          "description": "Statement does not use banned words",
+          "type": "not_contains_any",
+          "values": ["leveraged", "utilized", "synergize", "cutting-edge", "robust", "seamless", "state-of-the-art", "innovative"]
+        },
+        {
+          "name": "ends_with_log_updated",
+          "description": "Output ends with 'Log updated.'",
+          "type": "contains",
+          "value": "Log updated."
+        },
+        {
+          "name": "light_collaboration_reflected",
+          "description": "Statement reflects light/minimal AI involvement consistent with the Light level",
+          "type": "contains_any",
+          "values": ["brainstorm", "grammar", "light", "minimal", "ideation", "proofreading", "limited"]
+        },
+        {
+          "name": "project_id_used",
+          "description": "Statement or output references the provided project ID",
+          "type": "contains",
+          "value": "HealthCo-WP-Mar2026"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "generate a clouter diligence statement for an internal team report. medium AI usage — we had the AI draft the initial outline and pull together stats from our own data, but our team wrote the narrative and all conclusions. audience is just internal ops team, not going outside the company.",
+      "expected_output": "CLOUTER workflow that notes diligence statement is optional for internal-only work but offers to proceed anyway. Should confirm project ID, then produce a 75-150 word Medium-level statement with responsibility clause and 'Log updated.'",
+      "files": [],
+      "assertions": [
+        {
+          "name": "has_responsibility_clause",
+          "description": "Statement contains the required responsibility clause verbatim",
+          "type": "contains",
+          "value": "accept full responsibility for the accuracy, quality, and presentation of the final work"
+        },
+        {
+          "name": "word_count_in_range",
+          "description": "The diligence statement paragraph is between 75 and 150 words",
+          "type": "custom",
+          "check": "count words in the final paragraph (before 'Log updated.') — must be between 75 and 150"
+        },
+        {
+          "name": "no_banned_words",
+          "description": "Statement does not use banned words",
+          "type": "not_contains_any",
+          "values": ["leveraged", "utilized", "synergize", "cutting-edge", "robust", "seamless", "state-of-the-art", "innovative"]
+        },
+        {
+          "name": "ends_with_log_updated",
+          "description": "Output ends with 'Log updated.'",
+          "type": "contains",
+          "value": "Log updated."
+        },
+        {
+          "name": "internal_optional_notice",
+          "description": "Response acknowledges that diligence statement is optional for internal-only work",
+          "type": "contains_any",
+          "values": ["optional", "internal", "recommended but optional", "not required"]
+        },
+        {
+          "name": "medium_collaboration_reflected",
+          "description": "Statement reflects medium AI involvement — drafting assistance with human revision",
+          "type": "contains_any",
+          "values": ["outline", "draft", "structured", "assisted", "reviewed", "revised", "human", "team"]
+        }
+      ]
+    }
+  ]
+}

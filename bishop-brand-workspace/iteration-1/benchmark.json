@@ -1,0 +1,191 @@
+{
+  "metadata": {
+    "skill_name": "bishop-brand",
+    "skill_path": "C:\\Users\\richm\\.claude\\skills\\bishop-brand",
+    "executor_model": "claude-sonnet-4-6",
+    "analyzer_model": "claude-sonnet-4-6",
+    "timestamp": "2026-03-05T02:35:33Z",
+    "evals_run": [0, 1, 2],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "infographic-brand-ref",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 46.8,
+        "tokens": 15920,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "includes_all_main_hex_codes", "passed": true, "evidence": "All 5 hex codes present: #000814, #1E2333, #E6E2DE, #F9F6F0, #FAFBFA — listed in a full palette table"},
+        {"text": "includes_accent_hex_codes", "passed": true, "evidence": "Both #E0B848 (Gold) and #1894C9 (Blue) explicitly present with usage guidance"},
+        {"text": "names_all_three_fonts", "passed": true, "evidence": "Poppins Bold, Montserrat, and Open Sans all named in the typography table"},
+        {"text": "maps_fonts_to_roles", "passed": true, "evidence": "Poppins Bold to H1/H2; Montserrat to subheadings; Open Sans to body — explicit table"},
+        {"text": "mentions_fallback_fonts", "passed": true, "evidence": "Arial Bold, Helvetica, and Georgia fallbacks listed in the typography table"},
+        {"text": "actionable_for_design_tool", "passed": true, "evidence": "Includes a Quick Copy-Paste Reference block and a verbatim AI prompt block — both directly usable"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "infographic-brand-ref",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.167,
+        "passed": 1,
+        "failed": 5,
+        "total": 6,
+        "time_seconds": 48.1,
+        "tokens": 13825,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "includes_all_main_hex_codes", "passed": false, "evidence": "Uses fabricated hex codes (#0D1B2A, etc.) — none of the 5 official main colors are present"},
+        {"text": "includes_accent_hex_codes", "passed": false, "evidence": "No mention of #E0B848 or #1894C9 — uses Electric Blue and Cyan instead"},
+        {"text": "names_all_three_fonts", "passed": false, "evidence": "Recommends Inter and Space Grotesk — none of the three brand fonts appear"},
+        {"text": "maps_fonts_to_roles", "passed": false, "evidence": "No mapping to Poppins/Montserrat/Open Sans roles — wrong fonts throughout"},
+        {"text": "mentions_fallback_fonts", "passed": false, "evidence": "No fallback fonts mentioned — no awareness of the brand font stack"},
+        {"text": "actionable_for_design_tool", "passed": true, "evidence": "Includes a Quick-Reference Card with organized blocks — format is usable even though content is wrong"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "pptx-rgb-fonts",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 45.4,
+        "tokens": 16375,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "includes_rgbcolor_syntax", "passed": true, "evidence": "All 7 colors defined as RGBColor() calls with correct positional RGB arguments"},
+        {"text": "correct_rgb_for_deep_navy", "passed": true, "evidence": "DEEP_NAVY = RGBColor(0, 8, 20) — matches #000814 exactly"},
+        {"text": "correct_rgb_for_gold", "passed": true, "evidence": "GOLD = RGBColor(224, 184, 72) — matches #E0B848 exactly"},
+        {"text": "correct_rgb_for_blue", "passed": true, "evidence": "BLUE = RGBColor(24, 148, 201) — matches #1894C9 exactly"},
+        {"text": "assigns_poppins_to_headings", "passed": true, "evidence": "run.font.name set to Poppins with run.font.bold = True in heading code block"},
+        {"text": "assigns_montserrat_to_subheadings", "passed": true, "evidence": "run.font.name set to Montserrat for subheading and listed in font table"},
+        {"text": "assigns_open_sans_to_body", "passed": true, "evidence": "run.font.name set to Open Sans for body text and listed in font table"},
+        {"text": "includes_all_seven_colors", "passed": true, "evidence": "DEEP_NAVY, DARK_NAVY, OFF_WHITE, NEAR_WHITE, WHITE, GOLD, BLUE — all 7 defined"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "pptx-rgb-fonts",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.125,
+        "passed": 1,
+        "failed": 7,
+        "total": 8,
+        "time_seconds": 47.4,
+        "tokens": 14347,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "includes_rgbcolor_syntax", "passed": true, "evidence": "Uses RGBColor() calls with hex notation — syntax valid even though values are wrong"},
+        {"text": "correct_rgb_for_deep_navy", "passed": false, "evidence": "Uses RGBColor(0x0D, 0x0D, 0x0D) = (13,13,13) instead of (0, 8, 20) — fabricated value"},
+        {"text": "correct_rgb_for_gold", "passed": false, "evidence": "No Gold color — uses SECONDARY_ACCENT purple instead"},
+        {"text": "correct_rgb_for_blue", "passed": false, "evidence": "PRIMARY_ACCENT = (0,122,255) — wrong, should be (24,148,201)"},
+        {"text": "assigns_poppins_to_headings", "passed": false, "evidence": "Assigns Montserrat Bold to headings — no mention of Poppins anywhere"},
+        {"text": "assigns_montserrat_to_subheadings", "passed": false, "evidence": "Montserrat incorrectly used for headings, not subheadings — role mapping wrong"},
+        {"text": "assigns_open_sans_to_body", "passed": false, "evidence": "Assigns Inter (not Open Sans) to body text — no mention of Open Sans"},
+        {"text": "includes_all_seven_colors", "passed": false, "evidence": "Only 6 colors defined — no Near White or Gold as separate entries"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "linkedin-on-brand",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 62.4,
+        "tokens": 16063,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "recommends_dark_background", "passed": true, "evidence": "Section 1 explicitly recommends Deep Navy #000814 as primary, Dark Navy #1E2333 as option"},
+        {"text": "specifies_text_color_logic", "passed": true, "evidence": "Section 2 table: dark bg to White #FAFBFA or Off-White #E6E2DE; light bg to Deep Navy #000814"},
+        {"text": "gold_as_primary_accent", "passed": true, "evidence": "Section 3: Gold #E0B848 — This is the hero accent, with priority explanation"},
+        {"text": "mentions_typography_hierarchy", "passed": true, "evidence": "Section 4 full table: Poppins Bold to headlines, Montserrat to subheadings, Open Sans to body"},
+        {"text": "gives_actionable_steps", "passed": true, "evidence": "6 numbered sections plus a pre-launch checklist and concrete stat-callout example"},
+        {"text": "mentions_premium_feel", "passed": true, "evidence": "Multiple mentions: premium, dark, corporate-tech; premium, high-authority"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "linkedin-on-brand",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.667,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": 59.7,
+        "tokens": 15103,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "recommends_dark_background", "passed": true, "evidence": "Recommends deep navy or charcoal (#1A2B4A range) — correct direction but wrong hex codes"},
+        {"text": "specifies_text_color_logic", "passed": true, "evidence": "Mentions dark bg to light text logic, but without specific Bishop AI hex values"},
+        {"text": "gold_as_primary_accent", "passed": false, "evidence": "No Gold mentioned — recommends Electric Blue and Cyan as accents instead"},
+        {"text": "mentions_typography_hierarchy", "passed": false, "evidence": "Mentions Montserrat and Inter but never Poppins — no authoritative 3-tier hierarchy"},
+        {"text": "gives_actionable_steps", "passed": true, "evidence": "6 numbered styling sections — format actionable even without correct brand values"},
+        {"text": "mentions_premium_feel", "passed": true, "evidence": "Mentions authority and intelligence, technical sophistication, trustworthiness"}
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 51.5, "stddev": 8.98, "min": 45.4, "max": 62.4},
+      "tokens": {"mean": 16119, "stddev": 229, "min": 15920, "max": 16375}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.32, "stddev": 0.28, "min": 0.125, "max": 0.667},
+      "time_seconds": {"mean": 51.7, "stddev": 6.07, "min": 47.4, "max": 59.7},
+      "tokens": {"mean": 14425, "stddev": 649, "min": 13825, "max": 15103}
+    },
+    "delta": {
+      "pass_rate": "+0.68",
+      "time_seconds": "-0.2",
+      "tokens": "+1694"
+    }
+  },
+  "notes": [
+    "actionable_for_design_tool passes in both configurations — non-discriminating; good structure is a baseline Claude capability regardless of brand knowledge",
+    "without_skill pass rate has high variance (0.32 +/- 0.28): LinkedIn eval partially passes because generic design advice directionally aligns, but specific brand values are entirely fabricated",
+    "with_skill is 100% pass rate across all 3 evals — the skill is the sole source of truth for exact hex codes, RGB values, and font names; without it the model fabricates plausible-but-wrong values",
+    "time cost is negligible: skill adds essentially 0s on average (the skill file read is offset by the model being more efficient with clear guidance)",
+    "tokens slightly higher with skill (+1694) due to reading SKILL.md — a worthwhile tradeoff for brand accuracy"
+  ]
+}

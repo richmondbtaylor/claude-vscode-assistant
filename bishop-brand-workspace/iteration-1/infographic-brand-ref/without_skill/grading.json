@@ -1,0 +1,12 @@
+{
+  "expectations": [
+    {"text": "includes_all_main_hex_codes", "passed": false, "evidence": "Uses fabricated hex codes (#0D1B2A, etc.) — none of the 5 official main colors are present"},
+    {"text": "includes_accent_hex_codes", "passed": false, "evidence": "No mention of #E0B848 or #1894C9 — uses Electric Blue and Cyan instead"},
+    {"text": "names_all_three_fonts", "passed": false, "evidence": "Recommends Inter and Space Grotesk — none of the three brand fonts appear"},
+    {"text": "maps_fonts_to_roles", "passed": false, "evidence": "No mapping to Poppins/Montserrat/Open Sans roles — wrong fonts throughout"},
+    {"text": "mentions_fallback_fonts", "passed": false, "evidence": "No fallback fonts mentioned — no awareness of the brand font stack"},
+    {"text": "actionable_for_design_tool", "passed": true, "evidence": "Includes a 'Quick-Reference Card' with organized blocks — format is usable even though content is wrong"}
+  ],
+  "summary": {"passed": 1, "failed": 5, "total": 6, "pass_rate": 0.167},
+  "timing": {"total_duration_seconds": 48.1}
+}

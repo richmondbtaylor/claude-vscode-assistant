@@ -1,0 +1,1 @@
+python .\scripts\generate_kie.py .\prompts\infographics\product-development-stages.json .\images\infographics\product-development-stages.jpg "9:16"

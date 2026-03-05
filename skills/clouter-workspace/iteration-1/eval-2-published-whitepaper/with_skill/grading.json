@@ -1,0 +1,38 @@
+{
+  "eval_id": 2,
+  "run_type": "with_skill",
+  "expectations": [
+    {
+      "text": "has_responsibility_clause: Statement contains 'accept full responsibility for the accuracy, quality, and presentation of the final work'",
+      "passed": true,
+      "evidence": "Found verbatim: 'I accept full responsibility for the accuracy, quality, and presentation of the final work'"
+    },
+    {
+      "text": "word_count_in_range: Final statement paragraph is 75-150 words",
+      "passed": true,
+      "evidence": "Statement paragraph counts ~87 words — within 75-150 range"
+    },
+    {
+      "text": "no_banned_words: Does not use leveraged, utilized, synergize, cutting-edge, robust, seamless, state-of-the-art, innovative",
+      "passed": true,
+      "evidence": "None of the banned words appear in the statement"
+    },
+    {
+      "text": "ends_with_log_updated: Output ends with 'Log updated.'",
+      "passed": true,
+      "evidence": "Output ends with 'Log updated.'"
+    },
+    {
+      "text": "light_collaboration_reflected: Statement reflects light/minimal AI involvement",
+      "passed": true,
+      "evidence": "Contains 'Light level of AI involvement', 'brainstorming section headers', 'grammar and proofreading assistance'"
+    },
+    {
+      "text": "project_id_used: Statement or output references project ID HealthCo-WP-Mar2026",
+      "passed": true,
+      "evidence": "Project ID appears in workflow section header: 'Project ID: HealthCo-WP-Mar2026'"
+    }
+  ],
+  "pass_rate": 1.0,
+  "notes": "All 6 assertions passed. Correctly identified as Light level, captured all AI tasks, statement is appropriately concise."
+}

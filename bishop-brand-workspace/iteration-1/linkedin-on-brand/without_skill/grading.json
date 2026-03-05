@@ -1,0 +1,12 @@
+{
+  "expectations": [
+    {"text": "recommends_dark_background", "passed": true, "evidence": "Recommends 'deep navy or charcoal (#1A2B4A range)' — correct direction but wrong hex codes"},
+    {"text": "specifies_text_color_logic", "passed": true, "evidence": "Mentions dark bg → light text logic, but without specific Bishop AI hex values"},
+    {"text": "gold_as_primary_accent", "passed": false, "evidence": "No Gold mentioned — recommends Electric Blue and Cyan as accents instead"},
+    {"text": "mentions_typography_hierarchy", "passed": false, "evidence": "Mentions Montserrat and Inter but never Poppins — no authoritative 3-tier hierarchy"},
+    {"text": "gives_actionable_steps", "passed": true, "evidence": "6 numbered styling sections with clear guidance — format actionable even without correct brand values"},
+    {"text": "mentions_premium_feel", "passed": true, "evidence": "Mentions 'authority and intelligence', 'technical sophistication', 'trustworthiness'"}
+  ],
+  "summary": {"passed": 4, "failed": 2, "total": 6, "pass_rate": 0.667},
+  "timing": {"total_duration_seconds": 59.7}
+}

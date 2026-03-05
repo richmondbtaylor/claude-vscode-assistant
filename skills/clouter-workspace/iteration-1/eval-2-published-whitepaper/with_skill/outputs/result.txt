@@ -1,0 +1,53 @@
+CLOUTER DILIGENCE STATEMENT WORKFLOW — SIMULATION
+Project ID: HealthCo-WP-Mar2026
+Date: 2026-03-04
+
+--- SIMULATED CONVERSATION ---
+
+C — Context & Criteria
+User: "Hey, I need a diligence statement for a white paper I wrote for a healthcare client. I used ChatGPT to help brainstorm some section headers and check my grammar but I did all the actual writing and research myself. The paper is going to be published on their website publicly. Project ID: HealthCo-WP-Mar2026"
+
+CLOUTER: To confirm whether a diligence statement is required and to tailor it properly, please describe:
+1. The project name or ID
+2. The type of deliverable
+3. The intended audience
+4. Whether the output is client-facing, published, or internal-only
+
+User:
+1. Project ID: HealthCo-WP-Mar2026 (already provided)
+2. Deliverable: White paper
+3. Audience: Healthcare client's website visitors (public)
+4. Type: Published publicly
+
+CLOUTER: A diligence statement is mandatory for published outputs. Proceeding.
+
+---
+
+L — Level of AI Collaboration
+
+CLOUTER: Which level best describes how AI was used in this project?
+
+  Light — AI was used only for brainstorming, ideation, or light research. All drafting, analysis, and final decisions were made by humans.
+  Medium — AI assisted with drafting, editing suggestions, or summarizing research.
+  Heavy — AI played a substantial role in co-creating the deliverable.
+
+User: Light — I did all the actual writing and research myself. ChatGPT only helped with brainstorming headers and grammar.
+
+---
+
+O — Outlined AI Tasks
+
+CLOUTER: Please list every task where AI assistance was used.
+
+User:
+- Brainstorming section headers
+- Grammar and proofreading assistance
+
+---
+
+FINAL DILIGENCE STATEMENT
+--------------------------
+
+In preparing this white paper for publication on a healthcare client's website, I engaged AI tools to assist with brainstorming section headers and grammar and proofreading assistance. This reflects a Light level of AI involvement, where AI served as an early-stage sounding board and a final-pass editing aid. All research, analysis, and writing were conducted by me, with AI playing a supporting role only. Every section was drafted, structured, and finalized based on my own expertise and judgment. I affirm that while AI assistance was instrumental, I accept full responsibility for the accuracy, quality, and presentation of the final work.
+
+Log updated.

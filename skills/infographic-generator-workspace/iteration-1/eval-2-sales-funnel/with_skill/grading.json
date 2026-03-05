@@ -1,0 +1,38 @@
+{
+  "eval_id": 2,
+  "eval_name": "q4-sales-funnel-powerpoint",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "prompt_json_is_valid: prompt.json exists and is parseable JSON",
+      "passed": true,
+      "evidence": "prompt.json exists with valid task/schema_version/model_target/prompt/api_parameters structure"
+    },
+    {
+      "text": "all_funnel_numbers_exact: Prompt contains all 4 exact values: 1000, 250, 50, and 15",
+      "passed": true,
+      "evidence": "Prompt contains 'Leads: 1,000', 'Qualified: 250', 'Proposals Sent: 50', 'Deals Closed: 15' verbatim"
+    },
+    {
+      "text": "corporate_blue_white_palette: Prompt references blue and white colors with hex codes",
+      "passed": true,
+      "evidence": "Includes corporate navy #003087, medium blue #0057B8, light blue #5B9BD5, white #FFFFFF"
+    },
+    {
+      "text": "presentation_aspect_ratio: api_parameters.aspect_ratio is 16:9",
+      "passed": true,
+      "evidence": "api_parameters.aspect_ratio = '16:9'"
+    },
+    {
+      "text": "negative_blocklist_present: Prompt contains negative terms like 'blurry text' or 'garbled typography'",
+      "passed": true,
+      "evidence": "Prompt ends with 'Negative: blurry text, garbled typography, illegible fonts...'"
+    },
+    {
+      "text": "generate_kie_command_present: command.txt exists and references generate_kie.py",
+      "passed": true,
+      "evidence": "command.txt contains: python .\\scripts\\generate_kie.py .\\prompts\\infographics\\q4-sales-funnel.json"
+    }
+  ],
+  "pass_rate": 1.0
+}

@@ -1,0 +1,1 @@
+python .\scripts\generate_kie.py .\prompts\infographics\q4-sales-funnel.json .\images\infographics\q4-sales-funnel.jpg "16:9"

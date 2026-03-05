@@ -1,0 +1,6 @@
+Approach: Single natural-language string prompt, no structured schema enforcement.
+Aspect ratio implied by mentioning "LinkedIn" but not explicitly set in a structured parameter.
+Color palette specified (dark background + neon gradient bars) but no hex codes specified initially.
+No negative prompt included.
+Command is a curl call to a guessed endpoint — not the actual generate_kie.py pipeline.
+No file saving convention followed for prompts/infographics/ or images/infographics/.

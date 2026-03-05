@@ -1,0 +1,17 @@
+Tier: Tier 1 (Dense Narrative) — single infographic, no variants requested.
+Style: Minimal Corporate — mapped from user's "corporate blue and white" request.
+Aspect Ratio: 16:9 — PowerPoint/presentation format per skill's Aspect Ratio Quick Reference.
+Resolution: 2K (skill default).
+
+Color Palette:
+#003087 — Corporate Navy (Stage 1 bar, labels)
+#0057B8 — Medium Blue (Stage 2 bar, conversion rates)
+#5B9BD5 — Light Blue (Stage 3 bar)
+#FFFFFF — White (background, text on dark bars)
+#AAAAAA — Light Gray (footer text)
+
+Data: All 4 funnel numbers used verbatim — 1,000 / 250 / 50 / 15
+Conversion rates derived: 25% → 20% → 30%
+Negative blocklist embedded inline.
+Font sizes explicitly specified to address text legibility.
+Filename: q4-sales-funnel.json / q4-sales-funnel.jpg

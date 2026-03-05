@@ -1,0 +1,38 @@
+{
+  "eval_id": 3,
+  "eval_name": "product-stages-instagram-stories",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "prompt_json_is_valid: prompt.json exists and is parseable JSON",
+      "passed": true,
+      "evidence": "prompt.json exists with valid task/schema_version/model_target/prompt/api_parameters structure"
+    },
+    {
+      "text": "all_five_stages_named: Prompt contains all 5 stage names: Discovery, Design, Development, Testing, Launch",
+      "passed": true,
+      "evidence": "Prompt includes 'DISCOVERY', 'DESIGN', 'DEVELOPMENT', 'TESTING', 'LAUNCH' all named explicitly"
+    },
+    {
+      "text": "bold_colorful_style: Prompt describes bold or colorful visual style",
+      "passed": true,
+      "evidence": "Style described as 'bold editorial with vibrant color blocking and high-contrast typography'"
+    },
+    {
+      "text": "instagram_stories_aspect_ratio: api_parameters.aspect_ratio is 9:16",
+      "passed": true,
+      "evidence": "api_parameters.aspect_ratio = '9:16'"
+    },
+    {
+      "text": "negative_blocklist_present: Prompt contains negative terms like 'blurry text' or 'garbled typography'",
+      "passed": true,
+      "evidence": "Prompt ends with 'Negative: blurry text, garbled typography, illegible fonts...'"
+    },
+    {
+      "text": "generate_kie_command_present: command.txt exists and references generate_kie.py",
+      "passed": true,
+      "evidence": "command.txt contains: python .\\scripts\\generate_kie.py .\\prompts\\infographics\\product-development-stages.json"
+    }
+  ],
+  "pass_rate": 1.0
+}

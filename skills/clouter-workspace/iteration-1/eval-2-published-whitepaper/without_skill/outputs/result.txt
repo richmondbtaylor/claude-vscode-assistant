@@ -1,0 +1,33 @@
+AI USE DISCLOSURE STATEMENT
+
+Project ID: HealthCo-WP-Mar2026
+Document Type: White Paper (Public Web Publication)
+Date: March 2026
+
+ARTIFICIAL INTELLIGENCE ASSISTANCE DISCLOSURE
+
+This white paper was researched, written, and developed by a human author. In the interest of full transparency, the following disclosure is provided regarding the limited use of AI-assisted tools during the preparation of this document.
+
+SCOPE OF AI USE
+
+An AI language tool (ChatGPT, developed by OpenAI) was used in a supporting capacity during the preparation of this white paper. Its use was limited to:
+
+- Brainstorming and evaluating potential section header structures and document organization
+- Grammar and editorial review of author-drafted content
+
+WHAT AI DID NOT DO
+
+The AI tool was not used for any of the following:
+
+- Researching or sourcing factual claims, data, or evidence presented in this paper
+- Generating substantive written content, analysis, conclusions, or recommendations
+- Reviewing, validating, or interpreting clinical, regulatory, or technical subject matter
+- Replacing the professional judgment or expertise of the author(s)
+
+All research, analysis, insights, conclusions, and original written content in this paper are the work of the human author(s). The author(s) bear full responsibility for the accuracy, completeness, and integrity of the information presented.
+
+ACCURACY AND ACCOUNTABILITY
+
+This white paper has been reviewed by the author(s) for factual accuracy and professional integrity prior to publication. Readers should direct any questions or concerns regarding the content of this paper to the publishing organization.
+
+This disclosure is provided in accordance with emerging best practices for transparent AI use in professional and published communications.

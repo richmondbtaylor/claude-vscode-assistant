@@ -1,0 +1,12 @@
+{
+  "expectations": [
+    {"text": "includes_all_main_hex_codes", "passed": true, "evidence": "All 5 hex codes present: #000814, #1E2333, #E6E2DE, #F9F6F0, #FAFBFA — listed in a full palette table"},
+    {"text": "includes_accent_hex_codes", "passed": true, "evidence": "Both #E0B848 (Gold) and #1894C9 (Blue) explicitly present with usage guidance"},
+    {"text": "names_all_three_fonts", "passed": true, "evidence": "Poppins Bold, Montserrat, and Open Sans all named in the typography table"},
+    {"text": "maps_fonts_to_roles", "passed": true, "evidence": "Poppins Bold → H1/H2; Montserrat → subheadings; Open Sans → body — explicit table"},
+    {"text": "mentions_fallback_fonts", "passed": true, "evidence": "Arial Bold, Helvetica, and Georgia fallbacks listed in the typography table"},
+    {"text": "actionable_for_design_tool", "passed": true, "evidence": "Includes a 'Quick Copy-Paste Reference' block and a verbatim AI prompt block — both directly usable"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0},
+  "timing": {"total_duration_seconds": 46.8}
+}

@@ -1,0 +1,63 @@
+CLOUTER DILIGENCE STATEMENT — SIMULATED WORKFLOW
+Project: MeridianFinancial-Q1-2026
+Date: 2026-03-04
+==========================================================
+
+--- STEP C: Context & Criteria ---
+
+CLOUTER asks:
+"To confirm whether a diligence statement is required and to tailor it properly, please describe:
+  1. The project name or ID
+  2. The type of deliverable
+  3. The intended audience
+  4. Whether the output is client-facing, published, or internal-only"
+
+Response:
+  1. Project ID: MeridianFinancial-Q1-2026
+  2. Deliverable: Strategy deck and 90-day roadmap (presentation + planning document)
+  3. Audience: External client — Meridian Financial
+  4. Output type: Client-facing
+
+Assessment: A diligence statement is MANDATORY for client-facing outputs.
+
+----------------------------------------------------------
+
+--- STEP L: Level of AI Collaboration ---
+
+CLOUTER explains the three levels (Light / Medium / Heavy) and asks:
+"Which level best describes how AI was used in this project?"
+
+Response: Heavy — AI played a substantial role across multiple core deliverable sections,
+including drafting, structuring, and research synthesis.
+
+----------------------------------------------------------
+
+--- STEP O: Outlined AI Tasks ---
+
+CLOUTER asks for every specific AI-assisted task (exact phrasing to be preserved).
+
+Response:
+  1. Executive summary drafting
+  2. Roadmap section structuring
+  3. Market research synthesis
+
+----------------------------------------------------------
+
+--- STEP E: Evaluation & Quality Checks (internal check) ---
+
+1. Task coverage        — All three tasks reflected.                 PASS
+2. Collaboration level  — Heavy accurately represented.              PASS
+3. Responsibility clause— Required verbatim clause present at end.   PASS
+4. Tone compliance      — All T criteria met (~95 words, first-person plural, no banned words). PASS
+5. Transparency balance — Honest without undermining credibility.    PASS
+6. Log execution        — Log appended.                              PASS
+
+All checks passed.
+
+==========================================================
+FINAL DILIGENCE STATEMENT
+==========================================================
+
+In preparing the strategy deck and 90-day roadmap for Meridian Financial, we engaged AI tools to assist with executive summary drafting, roadmap section structuring, and market research synthesis. This reflects a Heavy level of AI collaboration, where AI played a substantial role in co-creating core sections of the deliverable — shaping the narrative, organizing the roadmap framework, and distilling research findings into actionable insights. All AI-generated content was carefully reviewed, refined, and approved by our consulting team before inclusion in the final deliverables. We affirm that while AI assistance was instrumental, we accept full responsibility for the accuracy, quality, and presentation of the final work.
+
+Log updated.

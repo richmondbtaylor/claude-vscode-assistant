@@ -1,0 +1,39 @@
+CLOUTER DILIGENCE STATEMENT WORKFLOW — SIMULATION
+Project ID: Internal-OpsReport-Mar2026
+Date: 2026-03-04
+
+--- SIMULATED CONVERSATION ---
+
+C — Context & Criteria
+User: "generate a clouter diligence statement for an internal team report. medium AI usage — we had the AI draft the initial outline and pull together stats from our own data, but our team wrote the narrative and all conclusions. audience is just internal ops team, not going outside the company."
+
+CLOUTER: To confirm context, I'll note:
+1. Project ID: Internal-OpsReport-Mar2026
+2. Deliverable: Internal team report
+3. Audience: Internal operations team
+4. Type: Internal-only
+
+Note: A diligence statement is optional for internal-only work — it's not required for internal audiences. That said, many teams choose to generate one for internal records and audit consistency. I'll proceed and generate one for you.
+
+---
+
+L — Level of AI Collaboration
+
+User: Medium — AI helped draft the initial outline and pull stats, but the team wrote all narrative and conclusions.
+
+---
+
+O — Outlined AI Tasks
+
+User:
+- Initial outline drafting
+- Statistics compilation from internal data
+
+---
+
+FINAL DILIGENCE STATEMENT
+--------------------------
+
+In preparing this operations team report, we engaged AI tools to assist with initial outline drafting and statistics compilation from our internal data. This reflects a Medium level of AI involvement, where AI helped structure our approach and surface relevant figures from existing data sources. Our team wrote the full narrative, drew all conclusions, and reviewed every section before finalization. I/we affirm that while AI assistance was instrumental, I/we accept full responsibility for the accuracy, quality, and presentation of the final work.
+
+Log updated.

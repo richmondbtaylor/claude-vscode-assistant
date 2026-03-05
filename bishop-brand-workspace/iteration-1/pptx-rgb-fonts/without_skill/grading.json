@@ -1,0 +1,14 @@
+{
+  "expectations": [
+    {"text": "includes_rgbcolor_syntax", "passed": true, "evidence": "Uses RGBColor() calls with hex notation — syntax valid even though values are wrong"},
+    {"text": "correct_rgb_for_deep_navy", "passed": false, "evidence": "Uses RGBColor(0x0D, 0x0D, 0x0D) = (13,13,13) instead of (0, 8, 20) — fabricated value"},
+    {"text": "correct_rgb_for_gold", "passed": false, "evidence": "No Gold color — uses SECONDARY_ACCENT = RGBColor(0x7B, 0x2F, 0xFF) (purple) instead"},
+    {"text": "correct_rgb_for_blue", "passed": false, "evidence": "PRIMARY_ACCENT = RGBColor(0x00, 0x7A, 0xFF) = (0,122,255) — wrong, should be (24,148,201)"},
+    {"text": "assigns_poppins_to_headings", "passed": false, "evidence": "Assigns Montserrat Bold to headings — no mention of Poppins anywhere"},
+    {"text": "assigns_montserrat_to_subheadings", "passed": false, "evidence": "Montserrat incorrectly used for headings, not subheadings — role mapping wrong"},
+    {"text": "assigns_open_sans_to_body", "passed": false, "evidence": "Assigns Inter (not Open Sans) to body text — no mention of Open Sans"},
+    {"text": "includes_all_seven_colors", "passed": false, "evidence": "Only 6 colors defined — no Near White or Gold as separate entries"}
+  ],
+  "summary": {"passed": 1, "failed": 7, "total": 8, "pass_rate": 0.125},
+  "timing": {"total_duration_seconds": 47.4}
+}

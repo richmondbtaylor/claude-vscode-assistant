@@ -1,0 +1,8 @@
+AI USAGE DISCLOSURE
+
+This report was prepared with partial AI assistance. AI tools were used to draft an initial structural outline and to aggregate statistics from internal company data. All narrative content, analysis, and conclusions were written by team members. This document is intended for internal use by the operations team only and is not approved for external distribution.
+
+AI Involvement Level: Medium
+- AI-assisted: Initial outline / structural draft, data aggregation from internal sources
+- Human-authored: All narrative writing, analysis, and conclusions
+- Audience: Internal (Operations Team)

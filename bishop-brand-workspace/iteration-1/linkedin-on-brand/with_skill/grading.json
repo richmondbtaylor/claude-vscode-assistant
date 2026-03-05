@@ -1,0 +1,12 @@
+{
+  "expectations": [
+    {"text": "recommends_dark_background", "passed": true, "evidence": "Section 1 explicitly recommends Deep Navy #000814 as primary, Dark Navy #1E2333 as option — with hex codes"},
+    {"text": "specifies_text_color_logic", "passed": true, "evidence": "Section 2 has a table: dark bg → White #FAFBFA or Off-White #E6E2DE; light bg → Deep Navy #000814"},
+    {"text": "gold_as_primary_accent", "passed": true, "evidence": "Section 3 explicitly says 'Gold #E0B848 — This is the hero accent' with priority explanation"},
+    {"text": "mentions_typography_hierarchy", "passed": true, "evidence": "Section 4 has a full table: Poppins Bold → headlines, Montserrat → subheadings, Open Sans → body"},
+    {"text": "gives_actionable_steps", "passed": true, "evidence": "6 numbered sections plus a pre-launch checklist and concrete stat-callout example"},
+    {"text": "mentions_premium_feel", "passed": true, "evidence": "Multiple mentions: 'premium, dark, corporate-tech', 'premium, dark, and distinctly Bishop AI', 'premium, high-authority'"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0},
+  "timing": {"total_duration_seconds": 62.4}
+}

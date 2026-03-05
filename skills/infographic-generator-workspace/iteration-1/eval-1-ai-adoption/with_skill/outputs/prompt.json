@@ -1,0 +1,11 @@
+{
+  "task": "infographic_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Professional infographic titled \"The Rise of AI Adoption in Business (2020–2024)\". Style: dark mode. Layout: top section contains bold headline \"The Rise of AI Adoption in Business\" in large white type on a deep charcoal background, with a subtitle \"2020–2024 Growth Trend\" in electric teal below it; center section contains a vertical bar chart showing five bars representing AI adoption percentages by year — 2020: 15%, 2021: 28%, 2022: 41%, 2023: 67%, 2024: 89% — bars rendered in a gradient from deep teal to vivid cyan growing left to right, each bar labeled at the top with its exact percentage value in white bold text, year labels below each bar in light gray; below the chart a highlight callout box in accent purple reads \"+74 percentage points in 4 years\" to emphasize growth magnitude; footer contains a minimal source line in small gray text. Color palette: charcoal black #0D1117, electric teal #00F5D4, vivid cyan #19A7CE, white #FFFFFF, accent purple #A855F7, light gray #8B949E. Typography: bold sans-serif headlines at 64pt minimum, data labels at 28pt bold white, bar year labels at 20pt light gray, body/subtext at 18pt, all text must be perfectly legible at full resolution with strong contrast against the dark background. Data content: Bar chart — 2020: 15%, 2021: 28%, 2022: 41%, 2023: 67%, 2024: 89% — all values rendered verbatim and clearly visible. Visual elements: vertical bar chart with glowing teal bars, thin horizontal grid lines in dark gray for readability, accent purple highlight callout with rounded corners, subtle teal divider line between headline and chart sections. Quality directive: ultra-sharp, print-quality detail, pixel-perfect element alignment, zero text rendering errors. Do not add decorative elements not specified. Render all text as clean, unblurred, perfectly legible typography. Negative: blurry text, garbled typography, illegible fonts, inconsistent color palette, random decorative clutter, misaligned elements, overlapping labels, incorrect data values, stock photo aesthetic, photorealistic faces, lens flare, bokeh, photography lighting, beauty filters, skin textures.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

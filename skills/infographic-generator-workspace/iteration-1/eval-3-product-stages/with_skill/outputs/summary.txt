@@ -1,0 +1,18 @@
+Tier: Tier 1 (Dense Narrative) — single infographic, no variants requested.
+Style: Bold/Editorial — mapped from user's "bold and colorful" request.
+Aspect Ratio: 9:16 — Instagram Stories format per skill's Aspect Ratio Quick Reference.
+Resolution: 2K (skill default).
+
+Color Palette (per stage):
+Stage 1 Discovery: electric violet #7B2FBE
+Stage 2 Design: vivid coral #FF4D6D
+Stage 3 Development: bright amber #FFBE0B
+Stage 4 Testing: electric teal #06D6A0
+Stage 5 Launch: electric blue #118AB2
+Title section background: deep charcoal #1A1A2E
+All card text: white #FFFFFF
+
+All 5 stages named with descriptors written for data content field.
+Typography: 80pt numbers, 52pt stage names, 20pt descriptors — explicit sizes for legibility.
+Negative blocklist embedded inline.
+Pure typography and color blocking — no icons/illustrations to prevent hallucinated mismatches.

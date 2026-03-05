@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "linkedin-on-brand",
+  "prompt": "Can you make this on-brand for Bishop AI? I have a LinkedIn graphic I want to post — it needs to look professional and match our visual identity. Walk me through what styling choices to make.",
+  "assertions": [
+    {"name": "recommends_dark_background", "description": "Response recommends Deep Navy or Dark Navy as background option"},
+    {"name": "specifies_text_color_logic", "description": "Response explains smart color selection (light text on dark bg, dark text on light bg)"},
+    {"name": "gold_as_primary_accent", "description": "Response positions Gold (#E0B848) as the primary accent for key elements"},
+    {"name": "mentions_typography_hierarchy", "description": "Response mentions Poppins for title and font hierarchy"},
+    {"name": "gives_actionable_steps", "description": "Response provides step-by-step or numbered actionable guidance, not just passive description"},
+    {"name": "mentions_premium_feel", "description": "Response conveys the dark/premium brand aesthetic of Bishop AI"}
+  ]
+}

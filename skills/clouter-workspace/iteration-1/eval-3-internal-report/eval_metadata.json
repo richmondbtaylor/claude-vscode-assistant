@@ -1,0 +1,6 @@
+{
+  "eval_id": 3,
+  "eval_name": "internal-report-medium-usage",
+  "prompt": "generate a clouter diligence statement for an internal team report. medium AI usage — we had the AI draft the initial outline and pull together stats from our own data, but our team wrote the narrative and all conclusions. audience is just internal ops team, not going outside the company.",
+  "assertions": []
+}

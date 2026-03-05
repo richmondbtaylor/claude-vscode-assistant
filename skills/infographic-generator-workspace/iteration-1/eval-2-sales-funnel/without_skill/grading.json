@@ -1,0 +1,38 @@
+{
+  "eval_id": 2,
+  "eval_name": "q4-sales-funnel-powerpoint",
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "prompt_json_is_valid: prompt.json exists and is parseable JSON",
+      "passed": true,
+      "evidence": "prompt.json exists with a single 'prompt' string field — valid JSON"
+    },
+    {
+      "text": "all_funnel_numbers_exact: Prompt contains all 4 exact values: 1000, 250, 50, and 15",
+      "passed": true,
+      "evidence": "Prompt contains '1,000 Leads', '250 Qualified', '50 Proposals', '15 Deals' verbatim"
+    },
+    {
+      "text": "corporate_blue_white_palette: Prompt references blue and white colors with hex codes",
+      "passed": true,
+      "evidence": "Includes '#003366', '#0055A5', '#0077CC', '#0099FF' — blue palette with hex codes"
+    },
+    {
+      "text": "presentation_aspect_ratio: api_parameters.aspect_ratio is 16:9",
+      "passed": false,
+      "evidence": "No api_parameters field. Mentions '16:9 widescreen' in prompt prose but not as structured parameter"
+    },
+    {
+      "text": "negative_blocklist_present: Prompt contains negative terms like 'blurry text' or 'garbled typography'",
+      "passed": false,
+      "evidence": "No negative terms in prompt. No negative blocklist of any kind"
+    },
+    {
+      "text": "generate_kie_command_present: command.txt exists and references generate_kie.py",
+      "passed": false,
+      "evidence": "command.txt uses curl to a guessed API endpoint — not generate_kie.py"
+    }
+  ],
+  "pass_rate": 0.5
+}

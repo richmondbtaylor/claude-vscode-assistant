@@ -1,0 +1,101 @@
+{
+  "skill_name": "infographic-generator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create an infographic about the rise of AI adoption in business from 2020-2024. Here are the stats: 2020: 15%, 2021: 28%, 2022: 41%, 2023: 67%, 2024: 89%. I want a dark mode style for LinkedIn.",
+      "expected_output": "A complete PRISM JSON prompt file with exact data points, dark mode color palette with hex codes, 4:5 aspect ratio for LinkedIn, and a negative blocklist embedded in the prompt.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "prompt_json_is_valid",
+          "description": "prompt.json exists and is parseable JSON"
+        },
+        {
+          "name": "exact_data_points_present",
+          "description": "Prompt contains all 5 exact percentages: 15%, 28%, 41%, 67%, 89%"
+        },
+        {
+          "name": "dark_mode_palette_with_hex",
+          "description": "Prompt includes a dark background color palette with at least one hex color code"
+        },
+        {
+          "name": "aspect_ratio_linkedin",
+          "description": "api_parameters.aspect_ratio is 4:5 or 9:16 (both valid for LinkedIn)"
+        },
+        {
+          "name": "negative_blocklist_present",
+          "description": "Prompt contains negative terms like 'blurry text' or 'garbled typography'"
+        },
+        {
+          "name": "generate_kie_command_present",
+          "description": "command.txt exists and references generate_kie.py"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need an infographic for my sales team showing our Q4 funnel: we started with 1,000 leads, 250 were qualified, we sent 50 proposals, and closed 15 deals. Corporate blue and white style. It's going in a PowerPoint deck.",
+      "expected_output": "A PRISM JSON prompt with exact funnel numbers (1000→250→50→15), corporate blue/white hex palette, 16:9 aspect ratio for presentation, and generate_kie.py CLI command.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "prompt_json_is_valid",
+          "description": "prompt.json exists and is parseable JSON"
+        },
+        {
+          "name": "all_funnel_numbers_exact",
+          "description": "Prompt contains all 4 exact values: 1000, 250, 50, and 15"
+        },
+        {
+          "name": "corporate_blue_white_palette",
+          "description": "Prompt references blue and white colors with hex codes"
+        },
+        {
+          "name": "presentation_aspect_ratio",
+          "description": "api_parameters.aspect_ratio is 16:9 (PowerPoint/presentation format)"
+        },
+        {
+          "name": "negative_blocklist_present",
+          "description": "Prompt contains negative terms like 'blurry text' or 'garbled typography'"
+        },
+        {
+          "name": "generate_kie_command_present",
+          "description": "command.txt exists and references generate_kie.py"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Make a visual explainer showing the 5 stages of product development: 1. Discovery, 2. Design, 3. Development, 4. Testing, 5. Launch. Bold and colorful style, for Instagram Stories.",
+      "expected_output": "A PRISM JSON prompt describing all 5 named stages, bold/colorful style, 9:16 aspect ratio for Instagram Stories, and the generate_kie.py command.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "prompt_json_is_valid",
+          "description": "prompt.json exists and is parseable JSON"
+        },
+        {
+          "name": "all_five_stages_named",
+          "description": "Prompt contains all 5 stage names: Discovery, Design, Development, Testing, Launch"
+        },
+        {
+          "name": "bold_colorful_style",
+          "description": "Prompt describes bold or colorful visual style"
+        },
+        {
+          "name": "instagram_stories_aspect_ratio",
+          "description": "api_parameters.aspect_ratio is 9:16 (Instagram Stories format)"
+        },
+        {
+          "name": "negative_blocklist_present",
+          "description": "Prompt contains negative terms like 'blurry text' or 'garbled typography'"
+        },
+        {
+          "name": "generate_kie_command_present",
+          "description": "command.txt exists and references generate_kie.py"
+        }
+      ]
+    }
+  ]
+}

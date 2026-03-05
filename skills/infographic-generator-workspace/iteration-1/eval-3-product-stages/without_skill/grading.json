@@ -1,0 +1,38 @@
+{
+  "eval_id": 3,
+  "eval_name": "product-stages-instagram-stories",
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "prompt_json_is_valid: prompt.json exists and is parseable JSON",
+      "passed": true,
+      "evidence": "prompt.json exists with a single 'prompt' string field — valid JSON"
+    },
+    {
+      "text": "all_five_stages_named: Prompt contains all 5 stage names: Discovery, Design, Development, Testing, Launch",
+      "passed": true,
+      "evidence": "Prompt contains 'DISCOVERY', 'DESIGN', 'DEVELOPMENT', 'TESTING', 'LAUNCH' all named"
+    },
+    {
+      "text": "bold_colorful_style: Prompt describes bold or colorful visual style",
+      "passed": true,
+      "evidence": "Describes 'bold and colorful vertical infographic' with 'vibrant gradient background'"
+    },
+    {
+      "text": "instagram_stories_aspect_ratio: api_parameters.aspect_ratio is 9:16",
+      "passed": false,
+      "evidence": "No api_parameters field. Mentions '9:16 aspect ratio' in prose but not as structured parameter"
+    },
+    {
+      "text": "negative_blocklist_present: Prompt contains negative terms like 'blurry text' or 'garbled typography'",
+      "passed": false,
+      "evidence": "No negative terms in prompt. No negative blocklist of any kind"
+    },
+    {
+      "text": "generate_kie_command_present: command.txt exists and references generate_kie.py",
+      "passed": false,
+      "evidence": "command.txt uses curl to a guessed endpoint — not generate_kie.py"
+    }
+  ],
+  "pass_rate": 0.5
+}

@@ -1,0 +1,38 @@
+{
+  "eval_id": 2,
+  "run_type": "without_skill",
+  "expectations": [
+    {
+      "text": "has_responsibility_clause: Statement contains 'accept full responsibility for the accuracy, quality, and presentation of the final work'",
+      "passed": false,
+      "evidence": "Uses 'bear full responsibility for the accuracy, completeness, and integrity' — close but not the required exact wording"
+    },
+    {
+      "text": "word_count_in_range: Final statement paragraph is 75-150 words",
+      "passed": false,
+      "evidence": "Baseline is a multi-section disclosure document (300+ words), not a single paragraph"
+    },
+    {
+      "text": "no_banned_words: Does not use leveraged, utilized, synergize, cutting-edge, robust, seamless, state-of-the-art, innovative",
+      "passed": true,
+      "evidence": "No banned words found"
+    },
+    {
+      "text": "ends_with_log_updated: Output ends with 'Log updated.'",
+      "passed": false,
+      "evidence": "No logging concept; ends with disclaimer text"
+    },
+    {
+      "text": "light_collaboration_reflected: Statement reflects light/minimal AI involvement",
+      "passed": true,
+      "evidence": "Correctly describes brainstorming and grammar as limited/supporting role"
+    },
+    {
+      "text": "project_id_used: Statement or output references project ID HealthCo-WP-Mar2026",
+      "passed": true,
+      "evidence": "Project ID appears in header: 'Project ID: HealthCo-WP-Mar2026'"
+    }
+  ],
+  "pass_rate": 0.5,
+  "notes": "Baseline scored better on eval 2 because the project ID was already given and the light usage was clear. Still missing the responsibility clause exact wording, single-paragraph format, and log."
+}

@@ -1,0 +1,7 @@
+Approach: Descriptive natural-language prompt, no structured schema.
+Specified 16:9 aspect ratio (correct inference for PowerPoint).
+Used blue gradient color palette (#003366 to #0099FF) without schema enforcement.
+Included conversion rates (25%, 20%, 30%) — a useful addition not in the user's data.
+No negative blocklist included.
+Command is a curl call to a guessed endpoint — not the actual generate_kie.py pipeline.
+No file saving convention for prompts/ or images/ directories.

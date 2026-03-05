@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "ai-adoption-linkedin-dark",
+  "prompt": "Create an infographic about the rise of AI adoption in business from 2020-2024. Here are the stats: 2020: 15%, 2021: 28%, 2022: 41%, 2023: 67%, 2024: 89%. I want a dark mode style for LinkedIn.",
+  "assertions": [
+    {"name": "prompt_json_is_valid", "description": "prompt.json exists and is parseable JSON"},
+    {"name": "exact_data_points_present", "description": "Prompt contains all 5 exact percentages: 15%, 28%, 41%, 67%, 89%"},
+    {"name": "dark_mode_palette_with_hex", "description": "Prompt includes a dark background color palette with at least one hex color code"},
+    {"name": "aspect_ratio_linkedin", "description": "api_parameters.aspect_ratio is 4:5 or 9:16"},
+    {"name": "negative_blocklist_present", "description": "Prompt contains negative terms like 'blurry text' or 'garbled typography'"},
+    {"name": "generate_kie_command_present", "description": "command.txt exists and references generate_kie.py"}
+  ]
+}

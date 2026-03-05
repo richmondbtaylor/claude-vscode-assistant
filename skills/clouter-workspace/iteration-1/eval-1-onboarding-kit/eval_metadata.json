@@ -1,0 +1,6 @@
+{
+  "eval_id": 1,
+  "eval_name": "client-onboarding-kit-heavy-usage",
+  "prompt": "I need to put together a client onboarding kit for a new consulting engagement with Meridian Financial. Part of the kit includes a section disclosing how we used AI to build the deliverables. Can you help me generate one of those AI disclosure statements? The project is mostly a strategy deck and a 90-day roadmap. We used AI pretty heavily — it helped us draft the executive summary, structure the roadmap sections, and synthesize the market research.",
+  "assertions": []
+}

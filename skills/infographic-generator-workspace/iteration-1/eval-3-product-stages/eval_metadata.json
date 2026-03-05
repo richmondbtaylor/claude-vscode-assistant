@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "product-stages-instagram-stories",
+  "prompt": "Make a visual explainer showing the 5 stages of product development: 1. Discovery, 2. Design, 3. Development, 4. Testing, 5. Launch. Bold and colorful style, for Instagram Stories.",
+  "assertions": [
+    {"name": "prompt_json_is_valid", "description": "prompt.json exists and is parseable JSON"},
+    {"name": "all_five_stages_named", "description": "Prompt contains all 5 stage names: Discovery, Design, Development, Testing, Launch"},
+    {"name": "bold_colorful_style", "description": "Prompt describes bold or colorful visual style"},
+    {"name": "instagram_stories_aspect_ratio", "description": "api_parameters.aspect_ratio is 9:16"},
+    {"name": "negative_blocklist_present", "description": "Prompt contains negative terms like 'blurry text' or 'garbled typography'"},
+    {"name": "generate_kie_command_present", "description": "command.txt exists and references generate_kie.py"}
+  ]
+}

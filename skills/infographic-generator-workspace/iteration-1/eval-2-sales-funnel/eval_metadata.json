@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "q4-sales-funnel-powerpoint",
+  "prompt": "I need an infographic for my sales team showing our Q4 funnel: we started with 1,000 leads, 250 were qualified, we sent 50 proposals, and closed 15 deals. Corporate blue and white style. It's going in a PowerPoint deck.",
+  "assertions": [
+    {"name": "prompt_json_is_valid", "description": "prompt.json exists and is parseable JSON"},
+    {"name": "all_funnel_numbers_exact", "description": "Prompt contains all 4 exact values: 1000, 250, 50, and 15"},
+    {"name": "corporate_blue_white_palette", "description": "Prompt references blue and white colors with hex codes"},
+    {"name": "presentation_aspect_ratio", "description": "api_parameters.aspect_ratio is 16:9"},
+    {"name": "negative_blocklist_present", "description": "Prompt contains negative terms like 'blurry text' or 'garbled typography'"},
+    {"name": "generate_kie_command_present", "description": "command.txt exists and references generate_kie.py"}
+  ]
+}

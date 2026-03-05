@@ -1,0 +1,14 @@
+{
+  "expectations": [
+    {"text": "includes_rgbcolor_syntax", "passed": true, "evidence": "All 7 colors defined as RGBColor() calls with correct positional RGB arguments"},
+    {"text": "correct_rgb_for_deep_navy", "passed": true, "evidence": "DEEP_NAVY = RGBColor(0, 8, 20) — matches #000814 exactly"},
+    {"text": "correct_rgb_for_gold", "passed": true, "evidence": "GOLD = RGBColor(224, 184, 72) — matches #E0B848 exactly"},
+    {"text": "correct_rgb_for_blue", "passed": true, "evidence": "BLUE = RGBColor(24, 148, 201) — matches #1894C9 exactly"},
+    {"text": "assigns_poppins_to_headings", "passed": true, "evidence": "run.font.name = 'Poppins' with run.font.bold = True in heading code block"},
+    {"text": "assigns_montserrat_to_subheadings", "passed": true, "evidence": "run.font.name = 'Montserrat' for subheading and listed in font table"},
+    {"text": "assigns_open_sans_to_body", "passed": true, "evidence": "run.font.name = 'Open Sans' for body text and listed in font table"},
+    {"text": "includes_all_seven_colors", "passed": true, "evidence": "DEEP_NAVY, DARK_NAVY, OFF_WHITE, NEAR_WHITE, WHITE, GOLD, BLUE — all 7 defined"}
+  ],
+  "summary": {"passed": 8, "failed": 0, "total": 8, "pass_rate": 1.0},
+  "timing": {"total_duration_seconds": 45.4}
+}

@@ -1,0 +1,18 @@
+Tier: Tier 1 (Dense Narrative) — single infographic, no variants requested.
+Style: Dark Mode — user explicitly requested it.
+Aspect Ratio: 4:5 — LinkedIn post format per skill's Aspect Ratio Quick Reference.
+Resolution: 2K (skill default).
+
+Color Palette:
+#0D1117 — Charcoal Black (background)
+#00F5D4 — Electric Teal (primary bars, subtitle, divider)
+#19A7CE — Vivid Cyan (bar gradient endpoint)
+#FFFFFF — White (headline, data labels)
+#A855F7 — Accent Purple (highlight callout)
+#8B949E — Light Gray (axis labels, footer)
+
+Layout (top to bottom): Headline block → Teal divider → 5-bar vertical chart → Accent callout → Footer
+
+Data points repeated verbatim twice in prompt to reduce hallucination risk.
+Negative blocklist embedded inline (not separate field) per skill recommendation for KIE API.
+Font sizes explicitly specified (64pt headline, 28pt data, 20pt axis) to address text legibility failure mode.
