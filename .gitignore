@@ -31,3 +31,6 @@ file-history/
 # OAuth tokens and credentials
 *.pickle
 gdrive_token*
+
+# bishop-research-agent runtime state (managed by GitHub Actions cache)
+bishop-research-agent/seen_posts.db

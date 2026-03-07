@@ -1,0 +1,51 @@
+name: Bishop Research Agent
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 7 AM EST (UTC-5). Note: cron does not adjust for EDT (UTC-4) in summer —
+    # during daylight saving time this will fire at 8 AM EST instead of 7 AM.
+    - cron: '0 12 * * *'
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore SQLite dedup database
+        uses: actions/cache@v4
+        with:
+          path: bishop-research-agent/seen_posts.db
+          # run_number suffix guarantees a cache miss (triggering a save after the run)
+          # while restore-keys finds the most recent prior entry.
+          key: seen-posts-db-${{ github.run_number }}
+          restore-keys: |
+            seen-posts-db-
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: bishop-research-agent
+        run: pip install -r requirements.txt
+
+      - name: Run research agent
+        working-directory: bishop-research-agent
+        run: python main.py --once
+
+      - name: Remove leads older than 7 days
+        working-directory: bishop-research-agent
+        run: python cleanup_old_leads.py
+        # Non-critical — don't fail the workflow if Sheets API is temporarily unavailable
+        continue-on-error: true
