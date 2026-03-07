@@ -3,364 +3,353 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FanBasis — The Creator Economy Infographic</title>
+  <title>Bishop AI × FanBasis — AI Automation Proposal</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --brand-purple: #7B2FFF;
-      --brand-violet: #9B59FF;
-      --brand-pink:   #FF3CAC;
-      --brand-blue:   #2D9CDB;
-      --brand-teal:   #00C6A7;
-      --brand-gold:   #F9C547;
-      --dark:         #0D0B1E;
-      --dark2:        #13102B;
-      --card-bg:      #1A1635;
-      --text-primary: #FFFFFF;
-      --text-muted:   rgba(255,255,255,0.60);
-      --radius:       16px;
+      --bishop-black:  #0A0A0F;
+      --card-bg:       #16161F;
+      --card-border:   rgba(255,255,255,0.08);
+      --accent-blue:   #4F8EF7;
+      --accent-violet: #7B5FFF;
+      --accent-teal:   #00D4AA;
+      --accent-pink:   #FF4D8D;
+      --accent-gold:   #F5C842;
+      --text-primary:  #FFFFFF;
+      --text-muted:    rgba(255,255,255,0.55);
+      --radius:        16px;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--dark);
+      background: var(--bishop-black);
       color: var(--text-primary);
       min-height: 100vh;
-      padding: 0;
     }
 
-    /* ── PAGE WRAPPER ────────────────────────────────── */
     .page {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 56px 32px 80px;
+      padding: 56px 32px 96px;
     }
 
-    /* ── HERO HEADER ─────────────────────────────────── */
+    /* ── HERO ───────────────────────────────────────── */
     .hero {
       text-align: center;
-      padding: 72px 24px 56px;
-      background: linear-gradient(135deg, #1A0533 0%, #0D0B1E 50%, #0A1A3D 100%);
+      padding: 80px 32px 64px;
+      background: linear-gradient(160deg, #0D0D1A 0%, #0A0A0F 60%, #0A1020 100%);
       border-radius: 24px;
+      border: 1px solid rgba(79,142,247,0.2);
       position: relative;
       overflow: hidden;
-      margin-bottom: 48px;
+      margin-bottom: 56px;
     }
     .hero::before {
       content: '';
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 60% 50% at 20% 40%, rgba(123,47,255,0.35) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 60% at 80% 30%, rgba(255,60,172,0.25) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 50% 80%, rgba(0,198,167,0.15) 0%, transparent 60%);
+        radial-gradient(ellipse 55% 50% at 15% 50%, rgba(79,142,247,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 55% at 85% 30%, rgba(123,95,255,0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 50% 90%, rgba(0,212,170,0.1) 0%, transparent 60%);
       pointer-events: none;
+    }
+    .hero-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+    .logo-pill {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 100px;
+      padding: 10px 24px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .logo-pill.bishop { color: var(--accent-blue); }
+    .logo-pill.fanbasis { color: #fff; }
+    .logo-x {
+      font-size: 20px;
+      color: rgba(255,255,255,0.3);
+      font-weight: 300;
     }
     .hero-eyebrow {
       display: inline-block;
-      background: linear-gradient(90deg, var(--brand-purple), var(--brand-pink));
+      background: linear-gradient(90deg, rgba(79,142,247,0.25), rgba(123,95,255,0.25));
+      border: 1px solid rgba(79,142,247,0.35);
       border-radius: 100px;
       padding: 6px 20px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 2px;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
+      color: var(--accent-blue);
       margin-bottom: 24px;
       position: relative;
     }
     .hero h1 {
-      font-size: clamp(36px, 5vw, 64px);
+      font-size: clamp(34px, 5vw, 60px);
       font-weight: 900;
       line-height: 1.1;
       position: relative;
       margin-bottom: 20px;
     }
-    .hero h1 .gradient-text {
-      background: linear-gradient(90deg, #FF3CAC, #7B2FFF, #00C6A7);
+    .hero h1 .grad {
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-violet), var(--accent-teal));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     .hero-sub {
-      font-size: 20px;
+      font-size: 19px;
       color: var(--text-muted);
-      max-width: 620px;
-      margin: 0 auto 36px;
-      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.65;
       position: relative;
     }
-    .hero-badges {
+    .hero-stats {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       justify-content: center;
       flex-wrap: wrap;
       position: relative;
     }
-    .hero-badge {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 100px;
-      padding: 8px 20px;
-      font-size: 13px;
-      font-weight: 600;
+    .hero-stat {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 16px 24px;
+      text-align: center;
+      min-width: 130px;
     }
-    .hero-badge span { color: var(--brand-gold); margin-right: 6px; }
+    .hero-stat-num {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--accent-teal);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .hero-stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
 
-    /* ── SECTION LABEL ───────────────────────────────── */
-    .section-label {
+    /* ── SECTION LABELS ─────────────────────────────── */
+    .section-eyebrow {
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--brand-violet);
-      margin-bottom: 12px;
+      color: var(--accent-blue);
+      margin-bottom: 10px;
     }
     .section-title {
-      font-size: clamp(22px, 3vw, 32px);
+      font-size: clamp(22px, 3vw, 34px);
       font-weight: 800;
-      margin-bottom: 32px;
+      margin-bottom: 12px;
       line-height: 1.2;
     }
+    .section-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      max-width: 680px;
+      margin-bottom: 36px;
+    }
 
-    /* ── STAT GRID ───────────────────────────────────── */
-    .stat-grid {
+    /* ── DIVIDER ─────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(79,142,247,0.3), transparent);
+      margin: 52px 0;
+    }
+
+    /* ── PAIN POINTS ─────────────────────────────────── */
+    .pain-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
+      gap: 16px;
       margin-bottom: 48px;
     }
-    .stat-card {
+    .pain-card {
       background: var(--card-bg);
-      border: 1px solid rgba(123,47,255,0.25);
+      border: 1px solid rgba(255,77,141,0.2);
       border-radius: var(--radius);
-      padding: 28px 24px;
+      padding: 24px 20px;
       position: relative;
-      overflow: hidden;
-      transition: transform 0.2s, border-color 0.2s;
     }
-    .stat-card::after {
+    .pain-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
-      background: linear-gradient(90deg, var(--brand-purple), var(--brand-pink));
+      background: linear-gradient(90deg, var(--accent-pink), rgba(255,77,141,0.3));
+      border-radius: var(--radius) var(--radius) 0 0;
     }
-    .stat-card.teal::after   { background: linear-gradient(90deg, var(--brand-teal), var(--brand-blue)); }
-    .stat-card.gold::after   { background: linear-gradient(90deg, var(--brand-gold), #FF9500); }
-    .stat-card.blue::after   { background: linear-gradient(90deg, var(--brand-blue), var(--brand-teal)); }
-    .stat-number {
-      font-size: 48px;
+    .pain-icon { font-size: 28px; margin-bottom: 14px; }
+    .pain-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .pain-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── PILLARS ─────────────────────────────────────── */
+    .pillar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 40px 36px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .pillar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 4px;
+      border-radius: 20px 0 0 20px;
+    }
+    .pillar.sales::before     { background: linear-gradient(180deg, var(--accent-blue), var(--accent-violet)); }
+    .pillar.marketing::before { background: linear-gradient(180deg, var(--accent-violet), var(--accent-pink)); }
+    .pillar.cs::before        { background: linear-gradient(180deg, var(--accent-teal), var(--accent-blue)); }
+
+    .pillar-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .pillar-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    .icon-blue   { background: rgba(79,142,247,0.15); }
+    .icon-violet { background: rgba(123,95,255,0.15); }
+    .icon-teal   { background: rgba(0,212,170,0.15); }
+
+    .pillar-meta h3 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .pillar-meta p  { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 580px; }
+
+    .automation-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .auto-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .auto-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .dot-blue   { background: var(--accent-blue); }
+    .dot-violet { background: var(--accent-violet); }
+    .dot-teal   { background: var(--accent-teal); }
+
+    .auto-item strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .auto-item span   { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── IMPACT STATS ────────────────────────────────── */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+    .impact-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(79,142,247,0.2);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .impact-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .impact-card.blue::after   { background: linear-gradient(90deg, var(--accent-blue), var(--accent-violet)); }
+    .impact-card.teal::after   { background: linear-gradient(90deg, var(--accent-teal), var(--accent-blue)); }
+    .impact-card.violet::after { background: linear-gradient(90deg, var(--accent-violet), var(--accent-pink)); }
+    .impact-card.gold::after   { background: linear-gradient(90deg, var(--accent-gold), #FF9500); }
+
+    .impact-num {
+      font-size: 52px;
       font-weight: 900;
       line-height: 1;
       margin-bottom: 8px;
-      background: linear-gradient(135deg, #fff 60%, rgba(255,255,255,0.5));
+      background: linear-gradient(135deg, #fff 60%, rgba(255,255,255,0.4));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .stat-label {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-    .stat-label strong { color: #fff; display: block; font-size: 15px; margin-bottom: 4px; }
+    .impact-label strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .impact-label span   { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 
-    /* ── FEATURE GRID ────────────────────────────────── */
-    .feature-grid {
+    /* ── PROCESS ─────────────────────────────────────── */
+    .process-steps {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       margin-bottom: 48px;
-    }
-    .feature-card {
       background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--radius);
-      padding: 32px 28px;
-    }
-    .feature-icon {
-      width: 52px; height: 52px;
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
-      margin-bottom: 20px;
-    }
-    .icon-purple { background: rgba(123,47,255,0.2); }
-    .icon-pink   { background: rgba(255,60,172,0.2); }
-    .icon-teal   { background: rgba(0,198,167,0.2); }
-    .icon-gold   { background: rgba(249,197,71,0.2); }
-    .icon-blue   { background: rgba(45,156,219,0.2); }
-    .icon-violet { background: rgba(155,89,255,0.2); }
-    .feature-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-    .feature-desc {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.65;
-    }
-
-    /* ── COMPARISON TABLE ────────────────────────────── */
-    .comparison-wrap {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--radius);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
       overflow: hidden;
-      margin-bottom: 48px;
     }
-    .comparison-table {
-      width: 100%;
-      border-collapse: collapse;
+    .process-step {
+      padding: 32px 24px;
+      border-right: 1px solid rgba(255,255,255,0.06);
     }
-    .comparison-table th {
-      padding: 18px 24px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-align: left;
-      background: rgba(255,255,255,0.04);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .comparison-table th.highlight {
-      background: linear-gradient(135deg, rgba(123,47,255,0.3), rgba(255,60,172,0.15));
-      color: #fff;
-    }
-    .comparison-table td {
-      padding: 16px 24px;
-      font-size: 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      color: var(--text-muted);
-    }
-    .comparison-table td:first-child { color: #fff; font-weight: 500; }
-    .comparison-table td.highlight {
-      background: rgba(123,47,255,0.06);
-      font-weight: 600;
-      color: #fff;
-    }
-    .comparison-table tr:last-child td { border-bottom: none; }
-    .check { color: var(--brand-teal); font-size: 18px; }
-    .cross { color: rgba(255,255,255,0.25); font-size: 18px; }
-    .partial { color: var(--brand-gold); font-size: 14px; font-weight: 600; }
+    .process-step:last-child { border-right: none; }
+    .step-num  { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--accent-blue); text-transform: uppercase; margin-bottom: 12px; }
+    .step-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+    .step-desc  { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-    /* ── FUNNEL VISUAL ───────────────────────────────── */
-    .funnel-section {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--radius);
-      padding: 40px 32px;
-      margin-bottom: 48px;
-    }
-    .funnel-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      max-width: 560px;
-      margin: 0 auto;
-    }
-    .funnel-step {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 20px 28px;
-      border-radius: 12px;
-      position: relative;
-    }
-    .funnel-step:nth-child(1) { background: rgba(123,47,255,0.25); width: 100%; }
-    .funnel-step:nth-child(2) { background: rgba(155,89,255,0.22); width: 88%; margin: 0 auto; }
-    .funnel-step:nth-child(3) { background: rgba(255,60,172,0.20); width: 74%; margin: 0 auto; }
-    .funnel-step:nth-child(4) { background: rgba(0,198,167,0.25); width: 58%; margin: 0 auto; }
-    .funnel-arrow {
-      text-align: center;
-      font-size: 20px;
-      color: rgba(255,255,255,0.25);
-      line-height: 1;
-      margin: 4px 0;
-    }
-    .funnel-num {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 15px;
-      flex-shrink: 0;
-    }
-    .funnel-text strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
-    .funnel-text span { font-size: 12px; color: var(--text-muted); }
-
-    /* ── REVENUE BARS ────────────────────────────────── */
-    .revenue-section {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--radius);
-      padding: 40px 32px;
-      margin-bottom: 48px;
-    }
-    .rev-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    .rev-label {
-      font-size: 13px;
-      font-weight: 600;
-      min-width: 120px;
-      color: var(--text-muted);
-    }
-    .rev-bar-wrap {
-      flex: 1;
-      height: 32px;
+    /* ── TECH STACK ──────────────────────────────────── */
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 48px; }
+    .tech-pill {
       background: rgba(255,255,255,0.05);
-      border-radius: 8px;
-      overflow: hidden;
-      position: relative;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
     }
-    .rev-bar {
-      height: 100%;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      padding-left: 12px;
-      font-size: 12px;
-      font-weight: 700;
-      transition: width 0.4s;
+    .tech-pill.highlight {
+      background: rgba(79,142,247,0.12);
+      border-color: rgba(79,142,247,0.3);
+      color: var(--accent-blue);
     }
-    .bar-fb   { background: linear-gradient(90deg, var(--brand-purple), var(--brand-pink)); }
-    .bar-yt   { background: rgba(255,0,0,0.4); width: 18%; }
-    .bar-ig   { background: rgba(225,48,108,0.4); width: 12%; }
-    .bar-tw   { background: rgba(29,161,242,0.4); width: 8%; }
-    .rev-pct  { font-size: 14px; font-weight: 800; min-width: 48px; text-align: right; }
 
-    /* ── QUOTE BLOCK ─────────────────────────────────── */
-    .quote-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-      margin-bottom: 48px;
-    }
-    .quote-card {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--radius);
-      padding: 28px 24px;
-    }
-    .quote-stars { color: var(--brand-gold); font-size: 16px; margin-bottom: 14px; }
-    .quote-text  { font-size: 14px; line-height: 1.7; color: var(--text-muted); margin-bottom: 18px; font-style: italic; }
-    .quote-text::before { content: '\201C'; }
-    .quote-text::after  { content: '\201D'; }
-    .quote-author strong { display: block; font-size: 14px; font-weight: 700; }
-    .quote-author span   { font-size: 12px; color: var(--text-muted); }
-
-    /* ── CTA BANNER ──────────────────────────────────── */
+    /* ── CTA ─────────────────────────────────────────── */
     .cta {
-      background: linear-gradient(135deg, #2D0A5E 0%, #1A0533 40%, #0A2040 100%);
-      border: 1px solid rgba(123,47,255,0.4);
+      background: linear-gradient(150deg, #0D1220 0%, #0A0A14 50%, #0D1A14 100%);
+      border: 1px solid rgba(79,142,247,0.3);
       border-radius: 24px;
-      padding: 64px 48px;
+      padding: 72px 48px;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -370,93 +359,44 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 70% 60% at 30% 50%, rgba(123,47,255,0.3) 0%, transparent 70%),
-        radial-gradient(ellipse 60% 70% at 80% 40%, rgba(255,60,172,0.2) 0%, transparent 70%);
+        radial-gradient(ellipse 60% 60% at 20% 50%, rgba(79,142,247,0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 55% 65% at 80% 40%, rgba(0,212,170,0.12) 0%, transparent 70%);
       pointer-events: none;
     }
-    .cta h2 {
-      font-size: clamp(28px, 4vw, 48px);
-      font-weight: 900;
-      line-height: 1.15;
-      margin-bottom: 16px;
-      position: relative;
-    }
-    .cta p {
-      font-size: 18px;
-      color: var(--text-muted);
-      max-width: 500px;
-      margin: 0 auto 36px;
-      position: relative;
-      line-height: 1.6;
-    }
-    .cta-buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-      position: relative;
-    }
+    .cta h2 { font-size: clamp(28px, 4vw, 46px); font-weight: 900; line-height: 1.15; margin-bottom: 16px; position: relative; }
+    .cta p   { font-size: 17px; color: var(--text-muted); max-width: 500px; margin: 0 auto 40px; line-height: 1.65; position: relative; }
+    .cta-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
     .btn-primary {
-      background: linear-gradient(90deg, var(--brand-purple), var(--brand-pink));
-      color: #fff;
-      border: none;
-      border-radius: 100px;
-      padding: 16px 36px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.3px;
-      box-shadow: 0 8px 32px rgba(123,47,255,0.45);
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-violet));
+      color: #fff; border: none; border-radius: 100px;
+      padding: 16px 36px; font-size: 16px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 8px 32px rgba(79,142,247,0.4); letter-spacing: 0.3px;
     }
     .btn-secondary {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-      border-radius: 100px;
-      padding: 16px 36px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff; border-radius: 100px;
+      padding: 16px 36px; font-size: 16px; font-weight: 600; cursor: pointer;
     }
 
     /* ── FOOTER ──────────────────────────────────────── */
-    .footer {
-      margin-top: 48px;
-      text-align: center;
-      font-size: 12px;
-      color: rgba(255,255,255,0.25);
-      line-height: 1.8;
-    }
-    .footer a { color: var(--brand-violet); text-decoration: none; }
-
-    /* ── DIVIDER ─────────────────────────────────────── */
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(123,47,255,0.4), transparent);
-      margin: 48px 0;
-    }
+    .footer { margin-top: 48px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.2); line-height: 2; }
 
     /* ── PILL TAG ────────────────────────────────────── */
-    .pill {
-      display: inline-block;
-      background: rgba(123,47,255,0.2);
-      border: 1px solid rgba(123,47,255,0.4);
-      border-radius: 100px;
-      padding: 4px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--brand-violet);
-      margin-bottom: 16px;
-    }
-    .pill.teal  { background: rgba(0,198,167,0.15); border-color: rgba(0,198,167,0.35); color: var(--brand-teal); }
-    .pill.pink  { background: rgba(255,60,172,0.15); border-color: rgba(255,60,172,0.35); color: var(--brand-pink); }
-    .pill.gold  { background: rgba(249,197,71,0.15); border-color: rgba(249,197,71,0.35); color: var(--brand-gold); }
+    .pill { display: inline-block; border-radius: 100px; padding: 5px 14px; font-size: 12px; font-weight: 700; margin-bottom: 14px; }
+    .pill-blue   { background: rgba(79,142,247,0.15);  border: 1px solid rgba(79,142,247,0.3);  color: var(--accent-blue); }
+    .pill-teal   { background: rgba(0,212,170,0.12);   border: 1px solid rgba(0,212,170,0.3);   color: var(--accent-teal); }
+    .pill-violet { background: rgba(123,95,255,0.15);  border: 1px solid rgba(123,95,255,0.3);  color: var(--accent-violet); }
+    .pill-gold   { background: rgba(245,200,66,0.12);  border: 1px solid rgba(245,200,66,0.3);  color: var(--accent-gold); }
 
     @media (max-width: 640px) {
-      .page { padding: 32px 16px 60px; }
+      .page { padding: 28px 16px 64px; }
       .hero { padding: 48px 20px 40px; }
-      .cta  { padding: 40px 24px; }
-      .comparison-table th, .comparison-table td { padding: 12px 14px; font-size: 13px; }
+      .cta  { padding: 44px 24px; }
+      .pillar { padding: 28px 20px; }
+      .process-steps { grid-template-columns: 1fr; }
+      .process-step { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .process-step:last-child { border-bottom: none; }
     }
   </style>
 </head>
@@ -465,337 +405,305 @@
 
   <!-- ── HERO ─────────────────────────────────────────── -->
   <section class="hero">
-    <div class="hero-eyebrow">2025 Creator Economy Report</div>
+    <div class="hero-logos">
+      <div class="logo-pill bishop">Bishop AI</div>
+      <div class="logo-x">×</div>
+      <div class="logo-pill fanbasis">FanBasis</div>
+    </div>
+    <div class="hero-eyebrow">AI Automation Proposal · 2025</div>
     <h1>
-      Why Top Creators<br>
-      Choose <span class="gradient-text">FanBasis</span>
+      Scale FanBasis Faster<br>
+      with <span class="grad">Intelligent Automation</span>
     </h1>
     <p class="hero-sub">
-      The all-in-one platform that turns your audience into a thriving business —
-      memberships, video calls, sweepstakes, and more, built for scale.
+      Bishop AI helps creator platforms like FanBasis automate their revenue engine —
+      from first touch to long-term retention — without adding headcount.
     </p>
-    <div class="hero-badges">
-      <div class="hero-badge"><span>$20M</span> Series A Funded</div>
-      <div class="hero-badge"><span>✦</span> Gerard Piqué Backed</div>
-      <div class="hero-badge"><span>★</span> Top Creator Platform 2025</div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">3×</div>
+        <div class="hero-stat-label">Pipeline growth</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">60%</div>
+        <div class="hero-stat-label">Less manual work</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">40%</div>
+        <div class="hero-stat-label">Higher retention</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">90</div>
+        <div class="hero-stat-label">Day results</div>
+      </div>
     </div>
   </section>
 
-  <!-- ── MARKET STATS ───────────────────────────────── -->
-  <div class="section-label">The Opportunity</div>
-  <h2 class="section-title">The Creator Economy Is Booming</h2>
+  <!-- ── THE CHALLENGE ──────────────────────────────── -->
+  <div class="section-eyebrow">The Challenge</div>
+  <h2 class="section-title">Growth Is Fast. Manual Ops Can't Keep Up.</h2>
+  <p class="section-sub">
+    FanBasis is scaling rapidly — but sales outreach, creator onboarding, marketing campaigns,
+    and support workflows still rely heavily on manual effort. That creates bottlenecks that cap growth.
+  </p>
 
-  <div class="stat-grid">
-    <div class="stat-card">
-      <div class="stat-number">$480B</div>
-      <div class="stat-label">
-        <strong>Creator Economy Size by 2027</strong>
-        Projected market value driven by direct fan monetization
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="pain-icon">📉</div>
+      <div class="pain-title">Slow Creator Outreach</div>
+      <div class="pain-desc">Sales reps spend hours qualifying and personalizing outreach to potential creators instead of closing.</div>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">🔁</div>
+      <div class="pain-title">Repetitive Onboarding</div>
+      <div class="pain-desc">New creator setup involves manual back-and-forth that delays time-to-first-revenue and causes drop-off.</div>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">📣</div>
+      <div class="pain-title">Inconsistent Marketing</div>
+      <div class="pain-desc">Campaign execution is slow and relies on individual effort rather than systematic, data-driven workflows.</div>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">⚠️</div>
+      <div class="pain-title">Churn Blind Spots</div>
+      <div class="pain-desc">At-risk creators and fans aren't identified until they've already left — with no proactive intervention in place.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── THREE PILLARS ──────────────────────────────── -->
+  <div class="section-eyebrow">The Solution</div>
+  <h2 class="section-title">Three Automation Pillars</h2>
+  <p class="section-sub">
+    Bishop AI deploys purpose-built AI across your three core revenue functions —
+    Sales, Marketing, and Customer Success.
+  </p>
+
+  <!-- SALES -->
+  <div class="pillar sales">
+    <div class="pillar-header">
+      <div class="pillar-icon icon-blue">🎯</div>
+      <div class="pillar-meta">
+        <h3>Sales Automation</h3>
+        <p>Put creator acquisition on autopilot. AI identifies, qualifies, and nurtures high-value creator prospects so your team focuses only on closing.</p>
       </div>
     </div>
-    <div class="stat-card teal">
-      <div class="stat-number">200M+</div>
-      <div class="stat-label">
-        <strong>Content Creators Worldwide</strong>
-        Yet fewer than 4% earn a full-time living from content alone
+    <div class="automation-list">
+      <div class="auto-item">
+        <div class="auto-dot dot-blue"></div>
+        <div><strong>AI Lead Scoring</strong><span>Automatically rank inbound and outbound creator leads by follower quality, engagement, and revenue potential.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-blue"></div>
+        <div><strong>Personalized Outreach Sequences</strong><span>AI-written email and DM sequences tailored to each creator's niche, audience size, and platform.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-blue"></div>
+        <div><strong>Pipeline Intelligence</strong><span>Real-time deal health scoring, next-best-action recommendations, and automated follow-up reminders.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-blue"></div>
+        <div><strong>CRM Auto-Enrichment</strong><span>Pull social stats, brand deals, and audience demographics directly into your CRM — no manual research.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-blue"></div>
+        <div><strong>Meeting Prep Briefs</strong><span>Auto-generated one-pagers for every sales call with creator background, talking points, and objection prep.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-blue"></div>
+        <div><strong>Proposal Generation</strong><span>Customized proposals and onboarding agreements drafted and sent automatically post-demo.</span></div>
       </div>
     </div>
-    <div class="stat-card gold">
-      <div class="stat-number">68%</div>
-      <div class="stat-label">
-        <strong>Of Fans Want Deeper Access</strong>
-        Fans actively seek exclusive, personalized experiences from creators they love
+  </div>
+
+  <!-- MARKETING -->
+  <div class="pillar marketing">
+    <div class="pillar-header">
+      <div class="pillar-icon icon-violet">📢</div>
+      <div class="pillar-meta">
+        <h3>Marketing Automation</h3>
+        <p>Turn marketing from a cost center into a growth engine. AI drives awareness, nurtures leads, and converts audiences at scale — consistently.</p>
       </div>
     </div>
-    <div class="stat-card blue">
-      <div class="stat-number">12×</div>
-      <div class="stat-label">
-        <strong>Higher Lifetime Value</strong>
-        Subscribers &amp; members generate vs. one-time social followers
+    <div class="automation-list">
+      <div class="auto-item">
+        <div class="auto-dot dot-violet"></div>
+        <div><strong>Content Generation Engine</strong><span>AI produces social posts, newsletters, case studies, and ad copy tailored to FanBasis's brand and target personas.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-violet"></div>
+        <div><strong>Campaign Orchestration</strong><span>Multi-channel campaigns across email, LinkedIn, Instagram, and X — planned, scheduled, and optimized automatically.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-violet"></div>
+        <div><strong>Creator Success Stories</strong><span>Automatically surface and format top creator wins into testimonials, case studies, and social proof assets.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-violet"></div>
+        <div><strong>Audience Segmentation</strong><span>Dynamic segments built from behavioral data — send the right message to the right creator at the right time.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-violet"></div>
+        <div><strong>Landing Page Optimization</strong><span>AI continuously tests headlines, CTAs, and page copy to improve conversion rates across all acquisition surfaces.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-violet"></div>
+        <div><strong>Performance Reporting</strong><span>Weekly AI-generated marketing summaries with insights and recommended actions — no analyst needed.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOMER SUCCESS -->
+  <div class="pillar cs">
+    <div class="pillar-header">
+      <div class="pillar-icon icon-teal">🤝</div>
+      <div class="pillar-meta">
+        <h3>Customer Success Automation</h3>
+        <p>Reduce churn and increase creator lifetime value with proactive, personalized AI-driven engagement — at any scale.</p>
+      </div>
+    </div>
+    <div class="automation-list">
+      <div class="auto-item">
+        <div class="auto-dot dot-teal"></div>
+        <div><strong>Automated Onboarding Flows</strong><span>Step-by-step guided setup for new creators — AI checks progress and sends nudges when they stall.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-teal"></div>
+        <div><strong>Churn Prediction &amp; Prevention</strong><span>ML models flag at-risk creators before they churn, triggering automated win-back playbooks.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-teal"></div>
+        <div><strong>AI Support Agent</strong><span>24/7 conversational AI handles common creator questions, troubleshooting, and how-to guides instantly.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-teal"></div>
+        <div><strong>Revenue Growth Nudges</strong><span>AI identifies each creator's untapped revenue opportunities and sends personalized tips to unlock them.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-teal"></div>
+        <div><strong>Health Score Dashboards</strong><span>Real-time creator health scores based on activity, earnings, and engagement — surfaced to your CS team automatically.</span></div>
+      </div>
+      <div class="auto-item">
+        <div class="auto-dot dot-teal"></div>
+        <div><strong>Upsell Triggers</strong><span>Automatically identify creators ready to upgrade plans or unlock new features and prompt them at the right moment.</span></div>
       </div>
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- ── PLATFORM FEATURES ──────────────────────────── -->
-  <div class="section-label">Platform Features</div>
-  <h2 class="section-title">Everything You Need to Run Your Creator Business</h2>
+  <!-- ── IMPACT ──────────────────────────────────────── -->
+  <div class="pill pill-gold">Expected Impact</div>
+  <h2 class="section-title">What FanBasis Can Expect in 90 Days</h2>
+  <p class="section-sub">Based on results across similar creator economy and marketplace platforms.</p>
 
-  <div class="feature-grid">
-    <div class="feature-card">
-      <div class="feature-icon icon-purple">🎥</div>
-      <div class="feature-title">Personalized Video Messages</div>
-      <div class="feature-desc">
-        Deliver custom shoutouts, birthday messages, and pep talks to fans.
-        Set your own price — keep the lion's share of every sale.
+  <div class="impact-grid">
+    <div class="impact-card blue">
+      <div class="impact-num">3×</div>
+      <div class="impact-label">
+        <strong>Sales Pipeline</strong>
+        <span>More qualified creator leads entering the funnel monthly</span>
       </div>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon icon-pink">📲</div>
-      <div class="feature-title">1-on-1 Video Calls</div>
-      <div class="feature-desc">
-        Turn 30 minutes into revenue. Schedule, collect payment, and host
-        live video sessions — all inside the FanBasis app.
+    <div class="impact-card teal">
+      <div class="impact-num">60%</div>
+      <div class="impact-label">
+        <strong>Time Saved</strong>
+        <span>Reduction in manual sales, marketing &amp; CS tasks per rep</span>
       </div>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon icon-teal">💳</div>
-      <div class="feature-title">Membership Programs</div>
-      <div class="feature-desc">
-        Build recurring revenue with tiered monthly memberships — exclusive
-        posts, early access, behind-the-scenes content, and more.
+    <div class="impact-card violet">
+      <div class="impact-num">40%</div>
+      <div class="impact-label">
+        <strong>Creator Retention</strong>
+        <span>Improvement in 6-month creator retention rate</span>
       </div>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon icon-gold">🎰</div>
-      <div class="feature-title">Sweepstakes &amp; Giveaways</div>
-      <div class="feature-desc">
-        Run viral fan sweepstakes to supercharge audience growth, brand deals,
-        and engagement — fully compliant and managed end-to-end.
-      </div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon icon-blue">📊</div>
-      <div class="feature-title">Fan Analytics &amp; CRM</div>
-      <div class="feature-desc">
-        Track demographics, behaviors, and interests. Know your superfans
-        before your next drop, tour, or partnership pitch.
-      </div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon icon-violet">🔗</div>
-      <div class="feature-title">Social Media Integration</div>
-      <div class="feature-desc">
-        Sync seamlessly with Instagram, TikTok, YouTube, and X to
-        cross-promote content and convert followers into paying fans.
+    <div class="impact-card gold">
+      <div class="impact-num">2.5×</div>
+      <div class="impact-label">
+        <strong>Marketing Output</strong>
+        <span>More campaigns shipped with the same team size</span>
       </div>
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- ── CREATOR JOURNEY FUNNEL ─────────────────────── -->
-  <div class="funnel-section">
-    <div style="text-align:center; margin-bottom:32px;">
-      <div class="section-label" style="text-align:center;">How It Works</div>
-      <h2 class="section-title" style="margin-bottom:0;">From Follower to Superfan in 4 Steps</h2>
+  <!-- ── HOW WE WORK ─────────────────────────────────── -->
+  <div class="pill pill-blue">Our Process</div>
+  <h2 class="section-title">How Bishop AI Works With You</h2>
+
+  <div class="process-steps">
+    <div class="process-step">
+      <div class="step-num">Step 01</div>
+      <div class="step-title">Discovery &amp; Audit</div>
+      <div class="step-desc">We map your current sales, marketing, and CS workflows to identify the highest-ROI automation opportunities.</div>
     </div>
-    <div class="funnel-steps">
-      <div class="funnel-step">
-        <div class="funnel-num">1</div>
-        <div class="funnel-text">
-          <strong>Connect Your Audience</strong>
-          <span>Sync your existing social following — Instagram, TikTok, YouTube, X</span>
-        </div>
-      </div>
-      <div class="funnel-arrow">▼</div>
-      <div class="funnel-step">
-        <div class="funnel-num">2</div>
-        <div class="funnel-text">
-          <strong>Offer Exclusive Experiences</strong>
-          <span>Video messages, 1-on-1 calls, memberships, virtual lessons</span>
-        </div>
-      </div>
-      <div class="funnel-arrow">▼</div>
-      <div class="funnel-step">
-        <div class="funnel-num">3</div>
-        <div class="funnel-text">
-          <strong>Engage &amp; Retain</strong>
-          <span>Polls, Q&amp;As, live chats, DMs — keep superfans coming back</span>
-        </div>
-      </div>
-      <div class="funnel-arrow">▼</div>
-      <div class="funnel-step">
-        <div class="funnel-num">4</div>
-        <div class="funnel-text">
-          <strong>Scale Your Revenue</strong>
-          <span>Analytics, sweepstakes, &amp; brand tools grow your income month over month</span>
-        </div>
-      </div>
+    <div class="process-step">
+      <div class="step-num">Step 02</div>
+      <div class="step-title">Build &amp; Integrate</div>
+      <div class="step-desc">We deploy AI agents and automation workflows directly into your existing tools — CRM, email, Slack, and more.</div>
+    </div>
+    <div class="process-step">
+      <div class="step-num">Step 03</div>
+      <div class="step-title">Launch &amp; Measure</div>
+      <div class="step-desc">Go live within 2–4 weeks. We track performance against agreed KPIs and report results weekly.</div>
+    </div>
+    <div class="process-step">
+      <div class="step-num">Step 04</div>
+      <div class="step-title">Optimize &amp; Scale</div>
+      <div class="step-desc">Continuous improvement as your business grows — adding new automations and refining existing ones each month.</div>
     </div>
   </div>
 
-  <!-- ── REVENUE COMPARISON ─────────────────────────── -->
-  <div class="revenue-section">
-    <div class="pill gold">Revenue Split</div>
-    <h2 class="section-title">Keep More of What You Earn</h2>
-    <p style="color:var(--text-muted); margin-bottom:32px; font-size:15px; line-height:1.6;">
-      FanBasis offers one of the most creator-friendly revenue shares in the industry.
-      Compare the typical take-home rate across platforms:
-    </p>
+  <!-- ── TECH STACK ──────────────────────────────────── -->
+  <div class="pill pill-teal">Integrations</div>
+  <h2 class="section-title">Works With Your Stack</h2>
+  <p class="section-sub">Bishop AI integrates with the tools FanBasis already uses — no rip and replace.</p>
 
-    <div class="rev-row">
-      <div class="rev-label">FanBasis</div>
-      <div class="rev-bar-wrap">
-        <div class="rev-bar bar-fb" style="width:90%;">90% to creator</div>
-      </div>
-      <div class="rev-pct" style="color:var(--brand-teal);">90%</div>
-    </div>
-    <div class="rev-row">
-      <div class="rev-label">Patreon</div>
-      <div class="rev-bar-wrap">
-        <div class="rev-bar" style="width:88%; background:rgba(255,102,60,0.35);">88% to creator</div>
-      </div>
-      <div class="rev-pct" style="color:rgba(255,255,255,0.5);">88%</div>
-    </div>
-    <div class="rev-row">
-      <div class="rev-label">YouTube</div>
-      <div class="rev-bar-wrap">
-        <div class="rev-bar bar-yt">55% to creator</div>
-      </div>
-      <div class="rev-pct" style="color:rgba(255,255,255,0.5);">55%</div>
-    </div>
-    <div class="rev-row">
-      <div class="rev-label">Instagram</div>
-      <div class="rev-bar-wrap">
-        <div class="rev-bar bar-ig"></div>
-      </div>
-      <div class="rev-pct" style="color:rgba(255,255,255,0.5);">~0%*</div>
-    </div>
-    <p style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:8px;">
-      * Instagram organic reach does not provide direct revenue splits; monetization requires third-party tools.
-    </p>
+  <div class="tech-grid">
+    <div class="tech-pill highlight">HubSpot</div>
+    <div class="tech-pill highlight">Salesforce</div>
+    <div class="tech-pill highlight">Slack</div>
+    <div class="tech-pill highlight">Intercom</div>
+    <div class="tech-pill">Mailchimp</div>
+    <div class="tech-pill">SendGrid</div>
+    <div class="tech-pill">Zapier</div>
+    <div class="tech-pill">Make</div>
+    <div class="tech-pill">Notion</div>
+    <div class="tech-pill">Google Workspace</div>
+    <div class="tech-pill">Stripe</div>
+    <div class="tech-pill">Meta Ads</div>
+    <div class="tech-pill">LinkedIn</div>
+    <div class="tech-pill">Instagram</div>
+    <div class="tech-pill">TikTok</div>
+    <div class="tech-pill">Segment</div>
+    <div class="tech-pill">Mixpanel</div>
+    <div class="tech-pill">Twilio</div>
   </div>
 
-  <!-- ── COMPARISON TABLE ───────────────────────────── -->
-  <div class="pill pink">Platform Comparison</div>
-  <h2 class="section-title">FanBasis vs. The Competition</h2>
-
-  <div class="comparison-wrap">
-    <table class="comparison-table">
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th class="highlight">FanBasis</th>
-          <th>Cameo</th>
-          <th>Patreon</th>
-          <th>OnlyFans</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Personalized Video Messages</td>
-          <td class="highlight"><span class="check">✔</span></td>
-          <td><span class="check">✔</span></td>
-          <td><span class="cross">—</span></td>
-          <td><span class="cross">—</span></td>
-        </tr>
-        <tr>
-          <td>Live 1-on-1 Video Calls</td>
-          <td class="highlight"><span class="check">✔</span></td>
-          <td><span class="partial">Limited</span></td>
-          <td><span class="cross">—</span></td>
-          <td><span class="cross">—</span></td>
-        </tr>
-        <tr>
-          <td>Membership / Subscription Tiers</td>
-          <td class="highlight"><span class="check">✔</span></td>
-          <td><span class="cross">—</span></td>
-          <td><span class="check">✔</span></td>
-          <td><span class="check">✔</span></td>
-        </tr>
-        <tr>
-          <td>Sweepstakes &amp; Giveaways</td>
-          <td class="highlight"><span class="check">✔</span></td>
-          <td><span class="cross">—</span></td>
-          <td><span class="cross">—</span></td>
-          <td><span class="cross">—</span></td>
-        </tr>
-        <tr>
-          <td>Fan CRM &amp; Analytics</td>
-          <td class="highlight"><span class="check">✔</span></td>
-          <td><span class="cross">—</span></td>
-          <td><span class="partial">Basic</span></td>
-          <td><span class="partial">Basic</span></td>
-        </tr>
-        <tr>
-          <td>Social Media Sync</td>
-          <td class="highlight"><span class="check">✔</span></td>
-          <td><span class="cross">—</span></td>
-          <td><span class="partial">Limited</span></td>
-          <td><span class="cross">—</span></td>
-        </tr>
-        <tr>
-          <td>Brand-Safe &amp; Mainstream</td>
-          <td class="highlight"><span class="check">✔</span></td>
-          <td><span class="check">✔</span></td>
-          <td><span class="check">✔</span></td>
-          <td><span class="cross">—</span></td>
-        </tr>
-        <tr>
-          <td>Creator Revenue Share</td>
-          <td class="highlight" style="color:var(--brand-teal); font-weight:800;">Up to 90%</td>
-          <td>75%</td>
-          <td>88–95%*</td>
-          <td>80%</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ── TESTIMONIALS ───────────────────────────────── -->
-  <div class="section-label">Social Proof</div>
-  <h2 class="section-title">Creators Are Already Winning</h2>
-
-  <div class="quote-grid">
-    <div class="quote-card">
-      <div class="quote-stars">★★★★★</div>
-      <div class="quote-text">
-        FanBasis completely changed how I connect with my fans.
-        I made more in my first week of video shoutouts than I did in three months of brand deals.
-      </div>
-      <div class="quote-author">
-        <strong>@JordanPulse</strong>
-        <span>Fitness Influencer · 2.4M Followers</span>
-      </div>
-    </div>
-    <div class="quote-card">
-      <div class="quote-stars">★★★★★</div>
-      <div class="quote-text">
-        The sweepstakes feature alone grew my email list by 40,000 subscribers in 10 days.
-        No other platform even comes close to this.
-      </div>
-      <div class="quote-author">
-        <strong>@LifestyleWithLara</strong>
-        <span>Travel Creator · 890K Followers</span>
-      </div>
-    </div>
-    <div class="quote-card">
-      <div class="quote-stars">★★★★★</div>
-      <div class="quote-text">
-        My superfans love the 1-on-1 calls. It's the most authentic connection
-        I've ever had with my audience, and it's now my #1 revenue stream.
-      </div>
-      <div class="quote-author">
-        <strong>@CoachDanielV</strong>
-        <span>Business Coach · 1.1M Followers</span>
-      </div>
-    </div>
-  </div>
+  <div class="divider"></div>
 
   <!-- ── CTA ────────────────────────────────────────── -->
   <div class="cta">
-    <h2>Ready to Turn Your Audience<br>Into a Business?</h2>
+    <h2>Let's Build Your<br>Automated Growth Engine</h2>
     <p>
-      Join thousands of creators already earning more with FanBasis —
-      the platform built for the next generation of internet entrepreneurs.
+      Book a 30-minute strategy call with the Bishop AI team. We'll show you exactly
+      where automation can move the needle for FanBasis — fast.
     </p>
     <div class="cta-buttons">
-      <button class="btn-primary">Start for Free — fanbasis.com</button>
-      <button class="btn-secondary">Book a Demo</button>
+      <button class="btn-primary">Book a Strategy Call</button>
+      <button class="btn-secondary">View Case Studies</button>
     </div>
   </div>
 
   <!-- ── FOOTER ─────────────────────────────────────── -->
   <div class="footer">
-    <p>
-      <a href="https://www.fanbasis.com" target="_blank">fanbasis.com</a> &nbsp;·&nbsp;
-      Series A · Left Lane Capital · $20M Raised · 2025
-    </p>
-    <p style="margin-top:6px;">
-      Market statistics are illustrative estimates based on publicly available creator economy research.
-      Revenue splits may vary by plan. Creator testimonials are fictional examples for design purposes.
+    <p>Bishop AI &nbsp;·&nbsp; AI Automation for Growth Teams &nbsp;·&nbsp; 2025</p>
+    <p style="margin-top:4px; color:rgba(255,255,255,0.12);">
+      Prepared exclusively for FanBasis. Impact figures are projections based on comparable engagements.
     </p>
   </div>
 
