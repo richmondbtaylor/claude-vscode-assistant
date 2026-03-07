@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "general-leads",
+  "prompt": "Do some research for me for leads",
+  "assertions": [
+    {"text": "Output contains at least 5 company profiles"},
+    {"text": "Each profile includes a 'pitch angle' or equivalent outreach hook specific to that company"},
+    {"text": "Each profile includes a decision-maker title to target"},
+    {"text": "Each profile includes a 'why now' signal (funding, hiring, expansion, etc.)"},
+    {"text": "No banned buzzwords used (leverage, synergy, seamless, robust, transformative, cutting-edge)"},
+    {"text": "Output is structured/scannable, not a wall of prose"}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "eval_id": 3,
+  "eval_name": "fintech-leads",
+  "prompt": "I need a prospect list for Bishop AI — fintech companies, mid-market, that are scaling their ops teams",
+  "assertions": [
+    {"text": "All leads are fintech companies"},
+    {"text": "Each profile reflects mid-market sizing (not startups with <20 employees or F500 enterprises)"},
+    {"text": "Workflow pain points are specific to fintech ops (compliance, onboarding, reconciliation, reporting)"},
+    {"text": "Output includes 5+ company profiles"},
+    {"text": "No banned buzzwords used"}
+  ]
+}

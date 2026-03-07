@@ -1,0 +1,23 @@
+{
+  "skill_name": "bishop-research-agent",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Do some research for me for leads",
+      "expected_output": "A structured lead intelligence report with 5-10 company profiles, each including what the company does, their workflow pain point, a Bishop AI pitch angle, decision-maker to target, and a 'why now' signal. Report should use Bishop AI brand voice with no banned buzzwords.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Find me some creator economy companies we could pitch our AI automation services to",
+      "expected_output": "Lead report focused on creator economy vertical — platforms, agencies, or brands in the creator/influencer space that have manual workflows Bishop AI could automate. Each profile includes pitch angle specific to creator economy pain points.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I need a prospect list for Bishop AI — fintech companies, mid-market, that are scaling their ops teams",
+      "expected_output": "Lead report for fintech vertical, filtered toward mid-market companies with scaling ops teams. Profiles show specific fintech workflow pain points (compliance, onboarding, reporting) and Bishop AI's pitch angle for each.",
+      "files": []
+    }
+  ]
+}

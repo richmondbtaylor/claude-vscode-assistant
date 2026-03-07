@@ -1,0 +1,12 @@
+{
+  "eval_id": 2,
+  "eval_name": "creator-economy-leads",
+  "prompt": "Find me some creator economy companies we could pitch our AI automation services to",
+  "assertions": [
+    {"text": "All leads are in creator economy / influencer / content creator vertical"},
+    {"text": "Each profile includes a workflow pain point specific to creator economy operations"},
+    {"text": "Pitch angles reference creator economy context, not generic AI automation"},
+    {"text": "Output includes 5+ company profiles"},
+    {"text": "No banned buzzwords used"}
+  ]
+}
