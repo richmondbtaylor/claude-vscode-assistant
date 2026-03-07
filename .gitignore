@@ -22,3 +22,12 @@ file-history/
 # Temp files
 *.tmp
 *.log
+
+# Secret/environment files
+.env
+*.env
+.env.*
+
+# OAuth tokens and credentials
+*.pickle
+gdrive_token*

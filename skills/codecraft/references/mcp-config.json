@@ -1,0 +1,235 @@
+{
+  "_comment": "MCP server configuration template for Claude/rules/.mcp.json. Replace all placeholder values (indicated by <angle brackets>) with project-specific values. Remove _comment fields before committing.",
+
+  "projectName": "<your-project-name>",
+  "version": "1.0.0",
+
+  "localDevelopment": {
+    "_comment": "Local dev server — matches your package.json 'start' or 'dev' script",
+    "host": "localhost",
+    "port": 3000,
+    "protocol": "http",
+    "baseUrl": "http://localhost:3000",
+    "hotReload": {
+      "enabled": true,
+      "port": 3001,
+      "overlay": true
+    },
+    "proxy": {
+      "_comment": "Proxy API calls to avoid CORS during local development",
+      "/api": {
+        "target": "http://localhost:8080",
+        "changeOrigin": true,
+        "secure": false
+      }
+    }
+  },
+
+  "testing": {
+    "_comment": "Test environment configuration",
+    "framework": "jest",
+    "runner": {
+      "command": "npx jest",
+      "watchCommand": "npx jest --watchAll",
+      "coverageCommand": "npx jest --coverage",
+      "ciCommand": "npx jest --ci --coverage --watchAll=false"
+    },
+    "environment": "jsdom",
+    "setupFile": "jest.setup.ts",
+    "mockServiceWorker": {
+      "enabled": true,
+      "baseUrl": "http://localhost:3000"
+    },
+    "testDatabase": {
+      "_comment": "If your tests hit a real database (integration tests), configure here",
+      "host": "localhost",
+      "port": 5433,
+      "name": "<project-name>_test",
+      "user": "<db-user>",
+      "password": "<env:TEST_DB_PASSWORD>"
+    }
+  },
+
+  "codeAnalysis": {
+    "eslint": {
+      "configFile": ".eslintrc.json",
+      "extensions": [".ts", ".tsx", ".js", ".jsx"],
+      "fixOnSave": true,
+      "serverPort": 7777
+    },
+    "typescript": {
+      "configFile": "tsconfig.json",
+      "serverPort": 7778,
+      "diagnosticsEnabled": true,
+      "strictMode": true
+    },
+    "prettier": {
+      "configFile": ".prettierrc",
+      "formatOnSave": true
+    },
+    "stylelint": {
+      "configFile": ".stylelintrc.json",
+      "extensions": [".css", ".module.css"]
+    }
+  },
+
+  "environments": {
+    "local": {
+      "apiBaseUrl": "http://localhost:8080/api/v1",
+      "authDomain": "localhost",
+      "debug": true,
+      "logLevel": "debug"
+    },
+    "development": {
+      "apiBaseUrl": "https://api-dev.<your-domain>.com/v1",
+      "authDomain": "auth-dev.<your-domain>.com",
+      "debug": true,
+      "logLevel": "info"
+    },
+    "staging": {
+      "apiBaseUrl": "https://api-staging.<your-domain>.com/v1",
+      "authDomain": "auth-staging.<your-domain>.com",
+      "debug": false,
+      "logLevel": "warn"
+    },
+    "production": {
+      "apiBaseUrl": "https://api.<your-domain>.com/v1",
+      "authDomain": "auth.<your-domain>.com",
+      "debug": false,
+      "logLevel": "error"
+    }
+  },
+
+  "authentication": {
+    "_comment": "Auth configuration — use environment variables for all secrets",
+    "strategy": "jwt",
+    "tokenStorage": "memory",
+    "refreshTokenStorage": "httpOnly-cookie",
+    "endpoints": {
+      "login": "/auth/login",
+      "logout": "/auth/logout",
+      "refresh": "/auth/refresh",
+      "me": "/auth/me"
+    },
+    "oauth": {
+      "_comment": "Only if using OAuth — otherwise remove this section",
+      "providers": ["google", "github"],
+      "callbackUrl": "http://localhost:3000/auth/callback",
+      "clientIds": {
+        "google": "<env:GOOGLE_OAUTH_CLIENT_ID>",
+        "github": "<env:GITHUB_OAUTH_CLIENT_ID>"
+      }
+    }
+  },
+
+  "services": {
+    "_comment": "External services used by the application",
+    "errorTracking": {
+      "provider": "sentry",
+      "dsn": "<env:SENTRY_DSN>",
+      "environment": "<env:NODE_ENV>",
+      "tracesSampleRate": 0.1
+    },
+    "analytics": {
+      "provider": "mixpanel",
+      "token": "<env:ANALYTICS_TOKEN>",
+      "enabled": "<env:ANALYTICS_ENABLED>"
+    },
+    "featureFlags": {
+      "provider": "launchdarkly",
+      "clientSideId": "<env:LAUNCHDARKLY_CLIENT_ID>",
+      "enabled": true
+    }
+  },
+
+  "connectionSettings": {
+    "timeout": {
+      "request": 10000,
+      "connection": 5000,
+      "idle": 30000
+    },
+    "retry": {
+      "maxAttempts": 3,
+      "initialDelay": 1000,
+      "maxDelay": 10000,
+      "backoffMultiplier": 2,
+      "retryOn": [502, 503, 504]
+    },
+    "circuitBreaker": {
+      "enabled": true,
+      "threshold": 5,
+      "timeout": 60000
+    }
+  },
+
+  "security": {
+    "contentSecurityPolicy": {
+      "defaultSrc": ["'self'"],
+      "scriptSrc": ["'self'"],
+      "styleSrc": ["'self'", "'unsafe-inline'"],
+      "imgSrc": ["'self'", "data:", "https:"],
+      "connectSrc": ["'self'", "https://api.<your-domain>.com"],
+      "frameAncestors": ["'none'"]
+    },
+    "cors": {
+      "allowedOrigins": [
+        "http://localhost:3000",
+        "https://<your-domain>.com"
+      ],
+      "allowedMethods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      "allowCredentials": true
+    },
+    "rateLimit": {
+      "windowMs": 60000,
+      "maxRequests": 100
+    }
+  },
+
+  "build": {
+    "outputDir": "build",
+    "sourceMaps": {
+      "development": "eval-source-map",
+      "production": false
+    },
+    "bundleAnalyzer": {
+      "enabled": false,
+      "command": "npx source-map-explorer 'build/static/js/*.js'"
+    },
+    "splitChunks": {
+      "vendor": true,
+      "commons": true
+    }
+  },
+
+  "ci": {
+    "provider": "github-actions",
+    "workflowFile": ".github/workflows/ci.yml",
+    "checks": [
+      "lint",
+      "type-check",
+      "test",
+      "build"
+    ],
+    "coverageReporting": {
+      "enabled": true,
+      "provider": "codecov",
+      "token": "<env:CODECOV_TOKEN>"
+    }
+  },
+
+  "environmentVariables": {
+    "_comment": "Document all required env vars here. Actual values go in .env.local (gitignored). Provide example values in .env.example (committed).",
+    "required": [
+      "REACT_APP_API_URL",
+      "REACT_APP_AUTH_DOMAIN"
+    ],
+    "optional": [
+      "REACT_APP_ANALYTICS_TOKEN",
+      "REACT_APP_SENTRY_DSN",
+      "REACT_APP_LAUNCHDARKLY_CLIENT_ID",
+      "REACT_APP_FEATURE_FLAGS_ENABLED"
+    ],
+    "exampleFile": ".env.example",
+    "localFile": ".env.local"
+  }
+}

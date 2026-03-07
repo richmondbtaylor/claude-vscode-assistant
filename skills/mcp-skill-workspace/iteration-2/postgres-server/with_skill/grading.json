@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "Defines 3+ distinct tools", "passed": true, "evidence": "3 tools: pg_list_tables, pg_describe_table, pg_execute_query"},
+    {"text": "Addresses read-only safety", "passed": true, "evidence": "assertReadOnly check: if (!upper.startsWith('SELECT')) throw new Error(...)"},
+    {"text": "Env var for connection", "passed": true, "evidence": "process.env.DATABASE_URL used in Pool constructor"},
+    {"text": "Actionable error messages", "passed": true, "evidence": "pg_describe_table: 'Use pg_list_tables to see available tables'. pg_execute_query: shows first 40 chars of bad query."},
+    {"text": "Mentions @modelcontextprotocol/sdk", "passed": true, "evidence": "npm install @modelcontextprotocol/sdk, import McpServer from '@modelcontextprotocol/sdk/server/mcp.js'"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}
+}

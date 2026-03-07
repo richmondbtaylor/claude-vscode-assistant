@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Response lists at least 3 specific tool names with a 'notion_' prefix",
+      "passed": true,
+      "evidence": "Lists 8 tools: notion_search, notion_list_databases, notion_get_database, notion_query_database, notion_get_page, notion_get_page_content, notion_create_page, notion_update_page"
+    },
+    {
+      "text": "Response recommends TypeScript as the implementation language",
+      "passed": true,
+      "evidence": "Phase 2 includes npm setup with TypeScript and ts-node, uses TypeScript syntax throughout"
+    },
+    {
+      "text": "Response mentions Zod for input schema validation",
+      "passed": true,
+      "evidence": "npm install includes 'zod', and Zod is used in every tool's inputSchema with .describe() chains"
+    },
+    {
+      "text": "Response mentions using an environment variable for the Notion API key",
+      "passed": true,
+      "evidence": "process.env.NOTION_API_KEY used in notion-client.ts with startup validation, and shown in Claude Desktop config"
+    },
+    {
+      "text": "Response includes tool annotations (readOnlyHint, destructiveHint, or similar)",
+      "passed": true,
+      "evidence": "Every tool has annotations block: read tools have readOnlyHint: true, create/update tools have destructiveHint: false, idempotentHint: false"
+    },
+    {
+      "text": "Response mentions the MCP Inspector or some testing approach",
+      "passed": true,
+      "evidence": "Phase 3 shows: npx @modelcontextprotocol/inspector node dist/index.js and a 4-item inspector checklist"
+    }
+  ],
+  "summary": { "passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0 }
+}

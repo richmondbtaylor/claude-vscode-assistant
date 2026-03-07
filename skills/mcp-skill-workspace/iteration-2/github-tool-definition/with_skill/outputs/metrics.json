@@ -1,0 +1,9 @@
+{
+  "tool_calls": {"Read": 1, "Write": 0, "WebFetch": 2},
+  "total_tool_calls": 12,
+  "total_steps": 3,
+  "files_created": [],
+  "errors_encountered": 1,
+  "output_chars": 8500,
+  "notes": "Haiku with skill — full server.registerTool + Zod implementation, all 6 assertions pass, hit Write permission denial"
+}

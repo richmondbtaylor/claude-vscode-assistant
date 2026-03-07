@@ -1,0 +1,23 @@
+{
+  "skill_name": "visual-code",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a screenshot of a SaaS landing page hero section. It shows a dark navy background, a large headline that says 'Ship faster. Break nothing.', a subheadline about CI/CD automation, two CTA buttons (one primary blue 'Start Free Trial', one ghost 'See Demo'), and a product screenshot on the right side. Build me the full landing page HTML from this description.",
+      "expected_output": "A complete single-file HTML page with: dark navy hero section matching the described design, two CTA buttons with proper hover states, placeholder product screenshot using Unsplash, full responsive layout with mobile hamburger menu, features section, social proof/testimonials, pricing section, footer — all with Tailwind CSS, accessible markup, and a design rationale comment block at the top.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Turn this into a website: it's a simple portfolio page for a freelance photographer. The design has a white background, black serif font for the name 'Elena Vasquez', a full-width hero image of a camera lens, a grid of 6 portfolio photos, an 'About' section with a headshot and bio paragraph, and a contact form. Make it look clean and editorial.",
+      "expected_output": "A complete portfolio HTML page with: full-width hero image (Unsplash), responsive photo grid (3-col desktop, 2-col tablet, 1-col mobile), About section, contact form with validation, serif typography (Google Fonts), clean white editorial aesthetic, WCAG AA compliant, smooth hover effects on portfolio images, and complete meta tags.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I grabbed a screenshot of a competitor's pricing page and want to build something similar. It has 3 pricing tiers: Starter ($29/mo), Pro ($79/mo), and Enterprise (custom pricing). The Pro plan has a 'Most Popular' badge. Each card lists 5-6 feature bullets. There's a toggle at the top to switch between monthly and annual billing (annual saves 20%). The background is light gray, cards are white with subtle shadows. Code this up.",
+      "expected_output": "A complete pricing page with: 3 pricing cards in a responsive grid, monthly/annual toggle that dynamically updates prices via JavaScript, 'Most Popular' badge on Pro tier, feature bullet lists, Enterprise CTA that opens a contact modal or links to a form, hover effects on cards, accessible toggle (keyboard + screen reader), and full Tailwind styling.",
+      "files": []
+    }
+  ]
+}

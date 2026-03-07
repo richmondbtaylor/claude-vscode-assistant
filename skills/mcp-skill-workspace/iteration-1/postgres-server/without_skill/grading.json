@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "Response defines or names at least 3 distinct tools",
+      "passed": true,
+      "evidence": "3 tools: list_tables, describe_table, run_query in server.setRequestHandler('tools/list')"
+    },
+    {
+      "text": "Response addresses read-only safety — blocking non-SELECT statements",
+      "passed": true,
+      "evidence": "run_query handler checks: if (!args.query.trim().toUpperCase().startsWith('SELECT')) throw new Error('Only SELECT queries are allowed')"
+    },
+    {
+      "text": "Response uses an environment variable for the database connection string",
+      "passed": true,
+      "evidence": "new Pool({ connectionString: process.env.DATABASE_URL })"
+    },
+    {
+      "text": "Response includes error handling with actionable messages for bad queries or connection failures",
+      "passed": false,
+      "evidence": "The SELECT check throws a basic error. No handling for connection failures, table-not-found errors, or permission issues. Uses old low-level Server API without structured error handling."
+    },
+    {
+      "text": "Response mentions the @modelcontextprotocol/sdk package or MCP SDK",
+      "passed": true,
+      "evidence": "npm install @modelcontextprotocol/sdk pg, import from '@modelcontextprotocol/sdk/server/index.js'"
+    }
+  ],
+  "summary": { "passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8 }
+}

@@ -1,0 +1,18 @@
+{
+  "eval_id": 1,
+  "eval_name": "saas-hero-page",
+  "run_type": "without_skill",
+  "expectations": [
+    { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 1, </html> on line 122" },
+    { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": false, "evidence": "No design rationale comment block — only bare section labels like <!-- Nav -->" },
+    { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> present" },
+    { "text": "The exact headline 'Ship faster. Break nothing.' appears in the output", "passed": true, "evidence": "Present split with <br> tag" },
+    { "text": "Both 'Start Free Trial' and 'See Demo' CTAs are present", "passed": true, "evidence": "'Start Free Trial' and 'See Demo' both present as anchor elements" },
+    { "text": "Mobile hamburger menu is implemented (look for hamburger/menu icon and toggle logic in JS)", "passed": true, "evidence": "SVG hamburger button + JS classList toggle present" },
+    { "text": "Page includes more than just the hero — has at least one additional section (features, testimonials, pricing, or footer)", "passed": true, "evidence": "Features section and footer present" },
+    { "text": "Page has at least title, meta description, and og:title tags", "passed": false, "evidence": "Has <title> but no <meta name=\"description\"> or <meta property=\"og:title\">" },
+    { "text": "Uses semantic HTML5 elements: <header>, <nav>, <main>, <footer>", "passed": false, "evidence": "Has <nav> and <footer> but missing <header> and <main>" },
+    { "text": "File contains at least 10 lines of vanilla JavaScript for interactivity", "passed": true, "evidence": "Script block has 12 lines covering menu toggle and smooth scroll" }
+  ],
+  "overall_pass_rate": 0.7
+}

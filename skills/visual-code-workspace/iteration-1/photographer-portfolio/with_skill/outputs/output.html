@@ -1,0 +1,491 @@
+<!--
+DESIGN RATIONALE
+
+Source Material: Text description of a photographer portfolio page
+Detected Niche: Photography Portfolio / Creative Services
+
+Design System:
+  Colors:
+    #0a0a0a  — Near-black (primary text, nav, headings)
+    #ffffff  — White (background, card fills)
+    #f5f5f5  — Off-white (About section background, subtle contrast)
+    #6b7280  — Gray-500 (body copy, captions, meta text)
+    #e5e7eb  — Gray-200 (borders, dividers, input underlines)
+  Fonts:
+    Playfair Display 400/700 — serif display font for name, section headings
+    Inter 300/400/500 — sans-serif for body, nav, labels
+    Google Fonts: https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap
+  Spacing: 4px/8px grid — section padding: 80px (py-20), card gaps: 16px (gap-4)
+  Breakpoints:
+    640px: mobile landscape — 2-col photo grid
+    768px: tablet — 2-col grid, hamburger replaced with nav links
+    1024px: desktop — 3-col photo grid, 2-col about layout
+    1280px: large desktop — contained max-width layout
+
+Preserved Elements:
+  - Elena Vasquez as the photographer's name (used verbatim)
+  - Full-width hero image (camera lens, Unsplash)
+  - Grid of 6 portfolio photos
+  - About section with headshot and bio
+  - Contact form
+
+Improvements Made:
+  - Added skip-to-content link for keyboard navigation (a11y fix)
+  - Added ARIA landmarks: role="navigation", role="main" (a11y fix)
+  - Added ARIA labels to icon-only hamburger button (a11y fix)
+  - Added Open Graph and Twitter Card meta tags (SEO improvement)
+  - Added JSON-LD Organization schema (SEO improvement)
+  - Inlined critical above-fold CSS to prevent layout shift (performance)
+  - All below-fold images have loading="lazy" + width/height attributes (performance)
+  - Focus ring styles added for keyboard users (a11y fix)
+  - Contact form has ARIA live region for success/error announcements (a11y fix)
+
+Assumptions:
+  - Photographer is female based on "Elena" (bio written accordingly)
+  - Barcelona origin inferred from the Spanish surname
+  - Editorial/fine-art style inferred from "clean and editorial" description
+  - No logo provided — name in serif type serves as identity mark
+
+Performance Notes:
+  - Estimated page weight: ~250KB (images via Unsplash CDN, not counted)
+  - HTTP requests: 2 (Google Fonts, Tailwind CDN) + 8 image requests
+  - LCP target: hero image (Unsplash w=1600) — preloaded
+  - Critical CSS inlined: nav, hero, fonts
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elena Vasquez — Photography</title>
+  <meta name="description" content="Elena Vasquez is a New York-based fine art and portrait photographer. Browse her portfolio and inquire about editorial assignments, brand campaigns, and print commissions.">
+  <meta name="keywords" content="Elena Vasquez, photographer, portrait, landscape, fine art photography, editorial, New York">
+  <link rel="canonical" href="https://elenavasquez.com">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Elena Vasquez — Photography">
+  <meta property="og:description" content="Fine art and portrait photography. Editorial assignments, brand campaigns, and print commissions worldwide.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80">
+  <meta property="og:url" content="https://elenavasquez.com">
+  <meta property="og:type" content="website">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Elena Vasquez — Photography">
+  <meta name="twitter:description" content="Fine art and portrait photography. Editorial assignments and commissions worldwide.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80">
+
+  <!-- JSON-LD: Person + CreativeWork -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Elena Vasquez",
+    "jobTitle": "Photographer",
+    "url": "https://elenavasquez.com",
+    "sameAs": [],
+    "knowsAbout": ["Portrait Photography", "Landscape Photography", "Fine Art Photography", "Editorial Photography"]
+  }
+  </script>
+
+  <!-- Preload LCP image -->
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1600&q=80">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Critical inline CSS: above-fold layout, font assignment, focus styles -->
+  <style>
+    /* Font assignments — prevents FOUC before Tailwind loads */
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
+
+    /* Visible focus ring for keyboard users — WCAG 2.1 AA */
+    :focus-visible {
+      outline: 2px solid #0a0a0a;
+      outline-offset: 3px;
+    }
+
+    /* Hero image covers viewport — critical for LCP */
+    .hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Smooth transitions */
+    a, button { transition: all 0.2s ease; }
+
+    /* Photo grid hover zoom */
+    .photo-item { overflow: hidden; }
+    .photo-item img { transition: transform 0.4s ease; }
+    .photo-item:hover img { transform: scale(1.04); }
+  </style>
+</head>
+
+<body class="bg-white text-gray-900">
+
+  <!-- Skip to content — keyboard navigation (WCAG 2.1 AA) -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-black focus:text-white focus:px-4 focus:py-2 focus:text-sm">
+    Skip to main content
+  </a>
+
+  <!-- Header / Navigation -->
+  <header role="banner">
+    <nav role="navigation" aria-label="Main navigation" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+
+        <!-- Logo / Name -->
+        <a href="#" class="serif text-xl font-bold tracking-tight text-black hover:text-gray-600" aria-label="Elena Vasquez — home">
+          Elena Vasquez
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <div class="hidden md:flex items-center gap-10" role="list">
+          <a href="#portfolio" role="listitem" class="text-sm text-gray-500 hover:text-black tracking-wide">Portfolio</a>
+          <a href="#about" role="listitem" class="text-sm text-gray-500 hover:text-black tracking-wide">About</a>
+          <a href="#contact" role="listitem" class="text-sm text-gray-500 hover:text-black tracking-wide">Contact</a>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <button
+          id="menu-btn"
+          class="md:hidden p-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+          aria-label="Open navigation menu"
+        >
+          <!-- Hamburger icon (shown when closed) -->
+          <svg id="icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <!-- X icon (shown when open) -->
+          <svg id="icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Drawer -->
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden border-t border-gray-100 bg-white px-6 py-6 space-y-5"
+        role="menu"
+        aria-label="Mobile navigation"
+      >
+        <a href="#portfolio" role="menuitem" class="block text-gray-700 hover:text-black text-sm tracking-wide">Portfolio</a>
+        <a href="#about" role="menuitem" class="block text-gray-700 hover:text-black text-sm tracking-wide">About</a>
+        <a href="#contact" role="menuitem" class="block text-gray-700 hover:text-black text-sm tracking-wide">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main-content" role="main">
+
+    <!-- Hero Section — full viewport, LCP element -->
+    <section aria-label="Hero" class="pt-16 h-screen relative overflow-hidden">
+      <img
+        src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1600&q=80"
+        alt="Close-up of a camera lens, representing Elena Vasquez's photography practice"
+        class="hero-img"
+        width="1600"
+        height="900"
+        fetchpriority="high"
+      >
+      <!-- Overlay with name and tagline -->
+      <div class="absolute inset-0 bg-black/45 flex flex-col items-center justify-center text-white text-center px-6">
+        <h1 class="serif text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight mb-4 drop-shadow-lg">
+          Elena Vasquez
+        </h1>
+        <p class="text-base sm:text-lg font-light tracking-[0.3em] uppercase text-gray-200 drop-shadow">
+          Photographer
+        </p>
+        <!-- Scroll cue -->
+        <a
+          href="#portfolio"
+          class="absolute bottom-10 text-white/60 hover:text-white flex flex-col items-center gap-2 text-xs tracking-widest uppercase"
+          aria-label="Scroll down to portfolio"
+        >
+          <span>View Work</span>
+          <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- Portfolio Grid
+         Layout adapts:
+         - 375px+: 1 column, full-width images
+         - 640px+: 2 columns
+         - 1024px+: 3 columns, 288px tall each
+    -->
+    <section id="portfolio" aria-labelledby="portfolio-heading" class="max-w-6xl mx-auto px-6 py-20">
+      <h2 id="portfolio-heading" class="serif text-3xl md:text-4xl font-bold mb-3">Selected Work</h2>
+      <p class="text-gray-500 text-sm mb-10 tracking-wide">Landscape · Portrait · Fine Art</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" role="list" aria-label="Portfolio photographs">
+        <article class="photo-item" role="listitem">
+          <img loading="lazy" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80" alt="Mountain landscape bathed in golden hour light — Dolomites series" class="w-full h-72 object-cover" width="600" height="288">
+        </article>
+        <article class="photo-item" role="listitem">
+          <img loading="lazy" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80" alt="Portrait of a woman in soft natural window light — Studio series" class="w-full h-72 object-cover" width="600" height="288">
+        </article>
+        <article class="photo-item" role="listitem">
+          <img loading="lazy" src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=600&q=80" alt="Abstract architectural detail in concrete and shadow — Urban series" class="w-full h-72 object-cover" width="600" height="288">
+        </article>
+        <article class="photo-item" role="listitem">
+          <img loading="lazy" src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80" alt="Still life arrangement with wildflowers on linen — Still Life series" class="w-full h-72 object-cover" width="600" height="288">
+        </article>
+        <article class="photo-item" role="listitem">
+          <img loading="lazy" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80" alt="Forest path disappearing into morning mist — Nature series" class="w-full h-72 object-cover" width="600" height="288">
+        </article>
+        <article class="photo-item" role="listitem">
+          <img loading="lazy" src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80" alt="Coastal cliffs at dusk, long exposure — Seascape series" class="w-full h-72 object-cover" width="600" height="288">
+        </article>
+      </div>
+    </section>
+
+    <!-- About Section
+         Layout adapts:
+         - 375px–767px: single column, image above text
+         - 768px+: 2-column grid, image left / text right
+    -->
+    <section id="about" aria-labelledby="about-heading" class="bg-gray-50 py-20 px-6">
+      <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+        <img
+          loading="lazy"
+          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&q=80"
+          alt="Elena Vasquez — photographer headshot"
+          class="w-full h-96 object-cover object-top"
+          width="600"
+          height="384"
+        >
+
+        <div>
+          <h2 id="about-heading" class="serif text-3xl md:text-4xl font-bold mb-6">About Elena</h2>
+          <p class="text-gray-600 leading-relaxed mb-4">
+            Elena Vasquez is a Barcelona-born photographer based in New York City, working in landscape, portrait, and fine art. With over a decade behind the lens, her work has been exhibited in galleries across Europe and North America, and published in international editorial titles.
+          </p>
+          <p class="text-gray-600 leading-relaxed mb-8">
+            She brings a documentary instinct to every project — chasing light, texture, and quiet moments of honesty. Available for editorial commissions, brand campaigns, and private portrait sessions worldwide.
+          </p>
+          <a
+            href="#contact"
+            class="inline-block text-sm tracking-widest uppercase border-b border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors"
+          >
+            Work Together
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" aria-labelledby="contact-heading" class="max-w-2xl mx-auto px-6 py-20">
+      <h2 id="contact-heading" class="serif text-3xl md:text-4xl font-bold mb-2">Get in Touch</h2>
+      <p class="text-gray-500 mb-10">Available for editorial work, commissions, and print sales.</p>
+
+      <!-- ARIA live region announces form success/error to screen readers -->
+      <div aria-live="polite" aria-atomic="true" class="sr-only" id="form-announcer"></div>
+
+      <form id="contact-form" novalidate class="space-y-8">
+        <!-- Name -->
+        <div>
+          <label for="name" class="block text-xs font-medium text-gray-500 tracking-widest uppercase mb-2">
+            Name <span class="text-red-500" aria-label="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            autocomplete="name"
+            aria-required="true"
+            aria-describedby="name-error"
+            class="w-full border-b border-gray-300 py-2 bg-transparent outline-none focus:border-black transition-colors text-gray-900 placeholder-gray-400"
+            placeholder="Your full name"
+          >
+          <p id="name-error" class="text-red-500 text-xs mt-1 hidden" role="alert">Please enter your name.</p>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-xs font-medium text-gray-500 tracking-widest uppercase mb-2">
+            Email <span class="text-red-500" aria-label="required">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            autocomplete="email"
+            aria-required="true"
+            aria-describedby="email-error"
+            class="w-full border-b border-gray-300 py-2 bg-transparent outline-none focus:border-black transition-colors text-gray-900 placeholder-gray-400"
+            placeholder="your@email.com"
+          >
+          <p id="email-error" class="text-red-500 text-xs mt-1 hidden" role="alert">Please enter a valid email address.</p>
+        </div>
+
+        <!-- Message -->
+        <div>
+          <label for="message" class="block text-xs font-medium text-gray-500 tracking-widest uppercase mb-2">
+            Message <span class="text-red-500" aria-label="required">*</span>
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            required
+            aria-required="true"
+            aria-describedby="message-error"
+            class="w-full border-b border-gray-300 py-2 bg-transparent outline-none focus:border-black transition-colors text-gray-900 placeholder-gray-400 resize-none"
+            placeholder="Tell me about your project..."
+          ></textarea>
+          <p id="message-error" class="text-red-500 text-xs mt-1 hidden" role="alert">Please include a message.</p>
+        </div>
+
+        <button
+          type="submit"
+          class="px-10 py-3 bg-black text-white text-xs tracking-widest uppercase hover:bg-gray-800 active:bg-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black min-h-[44px]"
+        >
+          Send Message
+        </button>
+
+        <!-- Success state -->
+        <p id="success-msg" class="hidden text-green-700 text-sm font-medium" role="status">
+          Thank you — I'll be in touch within 48 hours.
+        </p>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer role="contentinfo" class="border-t border-gray-100 py-8 px-6">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-gray-400">&copy; 2026 Elena Vasquez. All rights reserved.</p>
+      <nav aria-label="Footer navigation" class="flex gap-6">
+        <a href="#portfolio" class="text-sm text-gray-400 hover:text-black transition-colors">Portfolio</a>
+        <a href="#about" class="text-sm text-gray-400 hover:text-black transition-colors">About</a>
+        <a href="#contact" class="text-sm text-gray-400 hover:text-black transition-colors">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Deferred JavaScript -->
+  <script defer>
+    // ─── Mobile Menu ───────────────────────────────────────────────
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const iconOpen = document.getElementById('icon-open');
+    const iconClose = document.getElementById('icon-close');
+
+    menuBtn.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      iconOpen.classList.toggle('hidden', !isOpen);
+      iconClose.classList.toggle('hidden', isOpen);
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // Close mobile menu on link click
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // ─── Smooth Scroll ─────────────────────────────────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+          // Move focus to target section for keyboard users
+          target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: true });
+        }
+      });
+    });
+
+    // ─── Contact Form Validation ───────────────────────────────────
+    const form = document.getElementById('contact-form');
+    const announcer = document.getElementById('form-announcer');
+
+    function showError(fieldId, errorId, show) {
+      const field = document.getElementById(fieldId);
+      const error = document.getElementById(errorId);
+      error.classList.toggle('hidden', !show);
+      field.setAttribute('aria-invalid', show ? 'true' : 'false');
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      let valid = true;
+
+      const name = document.getElementById('name').value.trim();
+      if (!name) { showError('name', 'name-error', true); valid = false; }
+      else showError('name', 'name-error', false);
+
+      const email = document.getElementById('email').value.trim();
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!emailValid) { showError('email', 'email-error', true); valid = false; }
+      else showError('email', 'email-error', false);
+
+      const message = document.getElementById('message').value.trim();
+      if (!message) { showError('message', 'message-error', true); valid = false; }
+      else showError('message', 'message-error', false);
+
+      if (valid) {
+        form.reset();
+        document.getElementById('success-msg').classList.remove('hidden');
+        announcer.textContent = 'Message sent successfully. Elena will be in touch within 48 hours.';
+        // Focus success message for keyboard users
+        document.getElementById('success-msg').setAttribute('tabindex', '-1');
+        document.getElementById('success-msg').focus();
+      } else {
+        announcer.textContent = 'Please fix the errors above and try again.';
+        // Focus first error field
+        form.querySelector('[aria-invalid="true"]').focus();
+      }
+    });
+
+    // ─── Debounced scroll handler (nav active states) ──────────────
+    let scrollTimer;
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+    function onScroll() {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        let current = '';
+        sections.forEach(section => {
+          if (window.scrollY >= section.offsetTop - 80) current = section.id;
+        });
+        navLinks.forEach(link => {
+          const isActive = link.getAttribute('href') === `#${current}`;
+          link.classList.toggle('text-black', isActive);
+          link.classList.toggle('text-gray-500', !isActive);
+        });
+      }, 50); // debounce 50ms
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+{
+  "metadata": {
+    "skill_name": "visual-code",
+    "skill_path": "C:\\Users\\richm\\.claude\\skills\\visual-code",
+    "executor_model": "claude-sonnet-4-6",
+    "timestamp": "2026-03-07T00:00:00Z",
+    "evals_run": ["saas-hero-page", "photographer-portfolio", "pricing-page"],
+    "runs_per_configuration": 1
+  },
+
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "saas-hero-page",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 64, </html> on line 499" },
+        { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": true, "evidence": "Lines 1-63: full comment block with all required sections" },
+        { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> present" },
+        { "text": "The exact headline 'Ship faster. Break nothing.' appears in the output", "passed": true, "evidence": "Present verbatim with <br> formatting" },
+        { "text": "Both 'Start Free Trial' and 'See Demo' CTAs are present", "passed": true, "evidence": "Both CTAs present in hero and pricing sections" },
+        { "text": "Mobile hamburger menu is implemented (look for hamburger/menu icon and toggle logic in JS)", "passed": true, "evidence": "button#menu-btn with SVG + JS aria-expanded toggle" },
+        { "text": "Page includes more than just the hero — has at least one additional section (features, testimonials, pricing, or footer)", "passed": true, "evidence": "Features, Testimonials, Pricing CTA, and Footer all present" },
+        { "text": "Page has at least title, meta description, and og:title tags", "passed": true, "evidence": "<title>, <meta name='description'>, <meta property='og:title'> all present" },
+        { "text": "Uses semantic HTML5 elements: <header>, <nav>, <main>, <footer>", "passed": true, "evidence": "<header>, <nav>, <main>, <footer> all present with role attributes" },
+        { "text": "File contains at least 10 lines of vanilla JavaScript for interactivity", "passed": true, "evidence": "~47 lines of JS for mobile menu, smooth scroll, and sticky nav" }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "saas-hero-page",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.7,
+        "passed": 7,
+        "failed": 3,
+        "total": 10,
+        "time_seconds": 0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 1, </html> on line 122" },
+        { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": false, "evidence": "No design rationale comment block — only bare section labels like <!-- Nav -->" },
+        { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> present" },
+        { "text": "The exact headline 'Ship faster. Break nothing.' appears in the output", "passed": true, "evidence": "Present split with <br> tag" },
+        { "text": "Both 'Start Free Trial' and 'See Demo' CTAs are present", "passed": true, "evidence": "Both CTAs present" },
+        { "text": "Mobile hamburger menu is implemented (look for hamburger/menu icon and toggle logic in JS)", "passed": true, "evidence": "SVG hamburger button + JS classList toggle present" },
+        { "text": "Page includes more than just the hero — has at least one additional section (features, testimonials, pricing, or footer)", "passed": true, "evidence": "Features section and footer present" },
+        { "text": "Page has at least title, meta description, and og:title tags", "passed": false, "evidence": "Has <title> but no <meta name=\"description\"> or <meta property=\"og:title\">" },
+        { "text": "Uses semantic HTML5 elements: <header>, <nav>, <main>, <footer>", "passed": false, "evidence": "Has <nav> and <footer> but missing <header> and <main>" },
+        { "text": "File contains at least 10 lines of vanilla JavaScript for interactivity", "passed": true, "evidence": "Script block has 12 lines" }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "photographer-portfolio",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 161.1,
+        "tokens": 22844,
+        "tool_calls": 5,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 55, </html> on line 491" },
+        { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": true, "evidence": "Lines 1-54: full comment block with all required sections" },
+        { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> present" },
+        { "text": "The exact name 'Elena Vasquez' appears in the output", "passed": true, "evidence": "Appears in h1, nav, title, meta tags, and footer" },
+        { "text": "Page includes a grid of portfolio photos (at least 6 img elements with Unsplash or placeholder URLs)", "passed": true, "evidence": "Exactly 6 img elements with Unsplash URLs in portfolio grid" },
+        { "text": "Page includes a contact form with at least name, email, and message fields", "passed": true, "evidence": "All three fields present with ARIA attributes" },
+        { "text": "Contact form has JavaScript validation (required fields, email format check)", "passed": true, "evidence": "JS submit handler validates all fields including email regex" },
+        { "text": "Page includes an About section with bio content", "passed": true, "evidence": "<section id='about'> with two bio paragraphs" },
+        { "text": "A serif font is used (Google Fonts import or font-serif Tailwind class)", "passed": true, "evidence": "Playfair Display imported from Google Fonts and applied via inline CSS" },
+        { "text": "Portfolio images use loading='lazy' attribute", "passed": true, "evidence": "All 6 portfolio images have loading=\"lazy\" attribute" }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "photographer-portfolio",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.9,
+        "passed": 9,
+        "failed": 1,
+        "total": 10,
+        "time_seconds": 126.0,
+        "tokens": 16380,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 1, </html> on line 167" },
+        { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": false, "evidence": "No design rationale comment block — only short inline section labels" },
+        { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> present" },
+        { "text": "The exact name 'Elena Vasquez' appears in the output", "passed": true, "evidence": "Appears in title, nav, h1, headshot alt, About heading, and footer" },
+        { "text": "Page includes a grid of portfolio photos (at least 6 img elements with Unsplash or placeholder URLs)", "passed": true, "evidence": "Exactly 6 img elements with Unsplash URLs" },
+        { "text": "Page includes a contact form with at least name, email, and message fields", "passed": true, "evidence": "All three fields present" },
+        { "text": "Contact form has JavaScript validation (required fields, email format check)", "passed": true, "evidence": "Email regex and trim checks in submit handler" },
+        { "text": "Page includes an About section with bio content", "passed": true, "evidence": "Two paragraphs of bio content" },
+        { "text": "A serif font is used (Google Fonts import or font-serif Tailwind class)", "passed": true, "evidence": "Playfair Display imported from Google Fonts" },
+        { "text": "Portfolio images use loading='lazy' attribute", "passed": true, "evidence": "All 6 grid images have loading=\"lazy\"" }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "pricing-page",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 55, </html> on line 578" },
+        { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": true, "evidence": "Lines 1-54: full comment block with all required sections" },
+        { "text": "All three tiers are present: Starter ($29), Pro ($79), and Enterprise", "passed": true, "evidence": "All three article cards present with correct prices" },
+        { "text": "Pro plan has a 'Most Popular' badge or equivalent highlight", "passed": true, "evidence": "<span>Most Popular</span> with aria-label on Pro card" },
+        { "text": "A monthly/annual billing toggle is present in the HTML", "passed": true, "evidence": "<button id=\"billing-toggle\" role=\"switch\"> present" },
+        { "text": "JavaScript code exists that updates prices when the billing toggle is switched (look for event listener on toggle + price update logic)", "passed": true, "evidence": "toggle.addEventListener + updatePrices() sets starter-price and pro-price" },
+        { "text": "Annual pricing reflects the 20% discount (annual Starter ~$23, Pro ~$63)", "passed": true, "evidence": "prices.starter.annual: 23, prices.pro.annual: 63 in price data object" },
+        { "text": "Each pricing card contains a list of at least 4 feature bullet points", "passed": true, "evidence": "Starter: 5, Pro: 6, Enterprise: 5 bullets" },
+        { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> present" },
+        { "text": "Page has at least title and meta description tags", "passed": true, "evidence": "<title>Pricing — Prism</title> and <meta name=\"description\"> both present" }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "pricing-page",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 8,
+        "failed": 2,
+        "total": 10,
+        "time_seconds": 52.7,
+        "tokens": 11142,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 1, </html> on line 124" },
+        { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": false, "evidence": "No design rationale comment block — only structural HTML comments" },
+        { "text": "All three tiers are present: Starter ($29), Pro ($79), and Enterprise", "passed": true, "evidence": "All three present with correct prices" },
+        { "text": "Pro plan has a 'Most Popular' badge or equivalent highlight", "passed": true, "evidence": "<span>Most Popular</span> above Pro card" },
+        { "text": "A monthly/annual billing toggle is present in the HTML", "passed": true, "evidence": "Toggle button with id=\"billing-toggle\" present" },
+        { "text": "JavaScript code exists that updates prices when the billing toggle is switched (look for event listener on toggle + price update logic)", "passed": true, "evidence": "toggle.addEventListener + price update via textContent" },
+        { "text": "Annual pricing reflects the 20% discount (annual Starter ~$23, Pro ~$63)", "passed": true, "evidence": "$23 and $63 correctly computed and applied" },
+        { "text": "Each pricing card contains a list of at least 4 feature bullet points", "passed": true, "evidence": "Starter: 5, Pro: 6, Enterprise: 5 bullets" },
+        { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> present" },
+        { "text": "Page has at least title and meta description tags", "passed": false, "evidence": "<title> present but no <meta name=\"description\"> tag" }
+      ],
+      "notes": []
+    }
+  ],
+
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": { "mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0 },
+      "time_seconds": { "mean": 53.7, "stddev": 80.5, "min": 0.0, "max": 161.1 },
+      "tokens": { "mean": 7615, "stddev": 11422, "min": 0, "max": 22844 }
+    },
+    "without_skill": {
+      "pass_rate": { "mean": 0.8, "stddev": 0.082, "min": 0.7, "max": 0.9 },
+      "time_seconds": { "mean": 59.6, "stddev": 51.7, "min": 0.0, "max": 126.0 },
+      "tokens": { "mean": 9174, "stddev": 8157, "min": 0, "max": 16380 }
+    },
+    "delta": {
+      "pass_rate": "+0.20",
+      "time_seconds": "-5.9",
+      "tokens": "-1559"
+    }
+  },
+
+  "notes": [
+    "The design-rationale-comment assertion is the most discriminating: with_skill passes 100%, without_skill passes 0% — this is the clearest signal of skill value.",
+    "meta-tags assertion (OG + description) also discriminates strongly: with_skill 100%, without_skill fails on 2/3 evals.",
+    "semantic-html assertion discriminates on SaaS hero (without_skill missing <header>/<main>) but baseline portfolio/pricing happened to pass — moderate discriminator.",
+    "The portfolio eval shows the weakest differentiation (10 vs 9/10) because a solo Claude naturally produces good portfolio pages — the skill's extra value here is mostly documentation and a11y depth.",
+    "Timing data is noisy due to agents being blocked on permissions and outputs generated by orchestrator — not reliable for time comparisons this iteration.",
+    "Recommendation: add assertions for ARIA landmarks, OG tags specifically, and skip-to-content link to better capture the skill's accessibility improvements."
+  ]
+}

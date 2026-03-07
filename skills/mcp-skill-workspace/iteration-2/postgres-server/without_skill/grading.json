@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "Defines 3+ distinct tools", "passed": true, "evidence": "list_tables, describe_table, execute_query mentioned"},
+    {"text": "Addresses read-only safety", "passed": true, "evidence": "Query validation (reject dangerous keywords) listed as security feature"},
+    {"text": "Env var for connection", "passed": true, "evidence": "Environment-based credentials listed as security feature"},
+    {"text": "Actionable error messages", "passed": false, "evidence": "No error messages shown — Python file stubs only, no actual implementation or error handling"},
+    {"text": "Mentions @modelcontextprotocol/sdk", "passed": false, "evidence": "Python-first approach, mentions 'MCP SDK from Anthropic' generically but no npm package or import shown"}
+  ],
+  "summary": {"passed": 3, "failed": 2, "total": 5, "pass_rate": 0.6}
+}

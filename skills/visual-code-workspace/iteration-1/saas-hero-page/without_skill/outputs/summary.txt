@@ -1,0 +1,3 @@
+Baseline output (no skill).
+
+SaaS landing page with: dark navy hero, exact headline "Ship faster. Break nothing.", both CTAs, terminal product screenshot mockup, features section (3 cards), footer, mobile hamburger menu, smooth scroll. No design rationale comment block, no Open Graph/Twitter Cards, no JSON-LD, no skip-to-content, no ARIA landmarks, no breakpoint documentation, no critical CSS inlined — standard baseline output.

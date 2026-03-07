@@ -1,0 +1,127 @@
+{
+  "metadata": {
+    "skill_name": "mcp-skill",
+    "skill_path": "C:\\Users\\richm\\.claude\\skills\\mcp-skill",
+    "executor_model": "claude-haiku-4-5-20251001",
+    "timestamp": "2026-03-05T00:00:00Z",
+    "evals_run": ["notion-planning", "postgres-server", "github-tool-definition"],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "notion-planning",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 59.1, "tokens": 22845, "tool_calls": 6, "errors": 0},
+      "expectations": [
+        {"text": "Lists 3+ notion_ prefixed tool names", "passed": true, "evidence": "10 tools with notion_ prefix"},
+        {"text": "Recommends TypeScript", "passed": true, "evidence": "TypeScript + MCP SDK + Zod in stack"},
+        {"text": "Mentions Zod", "passed": true, "evidence": "Zod schemas in Phase 2"},
+        {"text": "Env var for API key", "passed": true, "evidence": "NOTION_API_KEY env var"},
+        {"text": "Tool annotations", "passed": true, "evidence": "readOnlyHint on read tools"},
+        {"text": "Mentions MCP Inspector", "passed": true, "evidence": "Phase 3 testing with inspector command"}
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "notion-planning",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 0.167, "passed": 1, "failed": 5, "total": 6, "time_seconds": 27.8, "tokens": 15264, "tool_calls": 0, "errors": 0},
+      "expectations": [
+        {"text": "Lists 3+ notion_ prefixed tool names", "passed": false, "evidence": "Tool names have no notion_ prefix"},
+        {"text": "Recommends TypeScript", "passed": true, "evidence": "Node.js 18+ with TypeScript mentioned"},
+        {"text": "Mentions Zod", "passed": false, "evidence": "No Zod mentioned"},
+        {"text": "Env var for API key", "passed": false, "evidence": "'Never expose API keys' but no env var pattern"},
+        {"text": "Tool annotations", "passed": false, "evidence": "No annotations mentioned"},
+        {"text": "Mentions MCP Inspector", "passed": false, "evidence": "Says 'test with workspace', no inspector"}
+      ],
+      "notes": ["Haiku baseline without skill significantly worse — misses most MCP-specific patterns"]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "postgres-server",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 80.1, "tokens": 28655, "tool_calls": 7, "errors": 0},
+      "expectations": [
+        {"text": "Defines 3+ distinct tools", "passed": true, "evidence": "pg_list_tables, pg_describe_table, pg_execute_query"},
+        {"text": "Addresses read-only safety", "passed": true, "evidence": "startsWith SELECT check + error message"},
+        {"text": "Env var for connection", "passed": true, "evidence": "process.env.DATABASE_URL"},
+        {"text": "Actionable error messages", "passed": true, "evidence": "'Use pg_list_tables to see available tables'"},
+        {"text": "Mentions @modelcontextprotocol/sdk", "passed": true, "evidence": "npm install + McpServer import"}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "postgres-server",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 0.6, "passed": 3, "failed": 2, "total": 5, "time_seconds": 31.5, "tokens": 16825, "tool_calls": 0, "errors": 0},
+      "expectations": [
+        {"text": "Defines 3+ distinct tools", "passed": true, "evidence": "list_tables, describe_table, execute_query mentioned"},
+        {"text": "Addresses read-only safety", "passed": true, "evidence": "keyword rejection mentioned as security feature"},
+        {"text": "Env var for connection", "passed": true, "evidence": "Environment-based credentials listed"},
+        {"text": "Actionable error messages", "passed": false, "evidence": "Python stubs only — no actual error handling shown"},
+        {"text": "Mentions @modelcontextprotocol/sdk", "passed": false, "evidence": "Python-first, no npm package or TypeScript import"}
+      ],
+      "notes": ["Python-first approach — no TypeScript SDK shown, no Zod, just file stubs"]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "github-tool-definition",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 104.3, "tokens": 31773, "tool_calls": 12, "errors": 0},
+      "expectations": [
+        {"text": "server.registerTool code block", "passed": true, "evidence": "Full server.registerTool implementation"},
+        {"text": "Description names return fields", "passed": true, "evidence": "Lists PR number, title, author, status, dates explicitly"},
+        {"text": "Zod with .describe() on 2+ fields", "passed": true, "evidence": "All 10 fields have Zod .describe()"},
+        {"text": "readOnlyHint: true", "passed": true, "evidence": "annotations: { readOnlyHint: true }"},
+        {"text": "Pagination with max constraint", "passed": true, "evidence": "per_page max(100), max_results parameter"},
+        {"text": "content + structuredContent", "passed": true, "evidence": "return { content: [...], structuredContent: {...} }"}
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "github-tool-definition",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 0.5, "passed": 3, "failed": 3, "total": 6, "time_seconds": 57.9, "tokens": 18242, "tool_calls": 0, "errors": 0},
+      "expectations": [
+        {"text": "server.registerTool code block", "passed": false, "evidence": "Raw JSON Schema, not server.registerTool + Zod"},
+        {"text": "Description names return fields", "passed": true, "evidence": "Mentions 'paginated results' but vague"},
+        {"text": "Zod with .describe() on 2+ fields", "passed": false, "evidence": "JSON Schema description strings, not Zod"},
+        {"text": "readOnlyHint: true", "passed": true, "evidence": "readOnlyHint: true in annotations block"},
+        {"text": "Pagination with max constraint", "passed": true, "evidence": "per_page minimum:1 maximum:100"},
+        {"text": "content + structuredContent", "passed": false, "evidence": "No handler shown — definition only"}
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 81.2, "stddev": 22.6, "min": 59.1, "max": 104.3},
+      "tokens": {"mean": 27758, "stddev": 4567, "min": 22845, "max": 31773}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.422, "stddev": 0.187, "min": 0.167, "max": 0.6},
+      "time_seconds": {"mean": 39.1, "stddev": 15.6, "min": 27.8, "max": 57.9},
+      "tokens": {"mean": 16777, "stddev": 1609, "min": 15264, "max": 18242}
+    },
+    "delta": {
+      "pass_rate": "+0.578",
+      "time_seconds": "+42.1",
+      "tokens": "+10981"
+    }
+  },
+  "notes": [
+    "Haiku with skill: 100% pass rate across all 3 evals — skill fully transfers to cheaper model",
+    "Haiku without skill: much worse than Sonnet without skill (42% vs 66%) — Haiku needs the skill more",
+    "Biggest gap: Eval 1 Notion planning — skill gets 100%, baseline gets 17% (Haiku forgets notion_ prefixes, Zod, env vars, annotations all at once)",
+    "Skill delta is larger with Haiku (+57.8pp) than with Sonnet (+34.4pp) — more valuable on smaller models",
+    "Token cost: with-skill Haiku uses ~28k vs Sonnet's ~39k — 28% cheaper, same quality",
+    "Time: with-skill Haiku averages 81s vs Sonnet's 316s — 74% faster"
+  ]
+}

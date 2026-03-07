@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "Lists 3+ notion_ prefixed tool names", "passed": true, "evidence": "10 tools listed: notion_list_databases, notion_get_database_schema, notion_query_database, notion_get_page, notion_get_page_content, notion_search, notion_create_page, notion_update_page_properties, notion_append_block_children, notion_create_database_page"},
+    {"text": "Recommends TypeScript", "passed": true, "evidence": "Stack section: TypeScript + MCP SDK + Zod validation"},
+    {"text": "Mentions Zod", "passed": true, "evidence": "Phase 2: Each tool uses server.registerTool with Zod input schemas"},
+    {"text": "Env var for API key", "passed": true, "evidence": "Auth section: Bearer token via NOTION_API_KEY env var"},
+    {"text": "Tool annotations included", "passed": true, "evidence": "readOnlyHint: true on read tools, annotations for write tools mentioned"},
+    {"text": "Mentions MCP Inspector", "passed": true, "evidence": "Phase 3 testing: npx @modelcontextprotocol/inspector node dist/index.js"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}
+}

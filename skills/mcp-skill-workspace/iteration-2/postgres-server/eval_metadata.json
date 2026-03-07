@@ -1,0 +1,12 @@
+{
+  "eval_id": 2,
+  "eval_name": "postgres-server",
+  "prompt": "Help me create an MCP server that lets Claude query my PostgreSQL database. I want Claude to be able to list tables, describe schemas, and run read-only SELECT queries.",
+  "assertions": [
+    "Response defines or names at least 3 distinct tools (e.g. list_tables, describe_table, execute_query or similar)",
+    "Response addresses read-only safety — blocking or validating against non-SELECT statements (INSERT/UPDATE/DELETE/DROP)",
+    "Response uses an environment variable for the database connection string (DATABASE_URL or similar)",
+    "Response includes error handling with actionable messages for bad queries or connection failures",
+    "Response mentions the @modelcontextprotocol/sdk package or MCP SDK"
+  ]
+}

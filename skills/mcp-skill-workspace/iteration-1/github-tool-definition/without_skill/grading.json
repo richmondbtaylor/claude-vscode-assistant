@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Response provides a TypeScript code block using server.registerTool or equivalent MCP registration",
+      "passed": false,
+      "evidence": "Uses a plain JSON object literal format (not server.registerTool). No TypeScript SDK registration shown — just a raw tool config object."
+    },
+    {
+      "text": "Tool description explains what the tool *returns* not just what it does",
+      "passed": true,
+      "evidence": "Description says 'Returns an array of pull request objects' and lists use cases for finding PRs"
+    },
+    {
+      "text": "Input schema uses Zod with .describe() annotations on at least 2 fields",
+      "passed": false,
+      "evidence": "Uses raw JSON Schema format (type: 'string', description: '...') not Zod. No Zod imports or .describe() chains."
+    },
+    {
+      "text": "Response includes readOnlyHint: true in the annotations",
+      "passed": true,
+      "evidence": "annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }"
+    },
+    {
+      "text": "Response includes pagination support (per_page or page parameter) with a max constraint",
+      "passed": true,
+      "evidence": "per_page: { type: 'integer', minimum: 1, maximum: 100, default: 30 } and page parameter included"
+    },
+    {
+      "text": "Response returns both content (text) and structuredContent in the tool handler",
+      "passed": false,
+      "evidence": "No tool handler/implementation shown. Response only provides the tool definition schema, not the async handler that returns content + structuredContent."
+    }
+  ],
+  "summary": { "passed": 3, "failed": 3, "total": 6, "pass_rate": 0.5 }
+}

@@ -1,0 +1,47 @@
+{
+  "eval_id": 1,
+  "eval_name": "saas-hero-page",
+  "prompt": "I have a screenshot of a SaaS landing page hero section. It shows a dark navy background, a large headline that says 'Ship faster. Break nothing.', a subheadline about CI/CD automation, two CTA buttons (one primary blue 'Start Free Trial', one ghost 'See Demo'), and a product screenshot on the right side. Build me the full landing page HTML from this description.",
+  "assertions": [
+    {
+      "id": "single-html-file",
+      "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)"
+    },
+    {
+      "id": "design-rationale-comment",
+      "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements"
+    },
+    {
+      "id": "tailwind-cdn",
+      "text": "Tailwind CSS is loaded via CDN script tag"
+    },
+    {
+      "id": "hero-headline-preserved",
+      "text": "The exact headline 'Ship faster. Break nothing.' appears in the output"
+    },
+    {
+      "id": "two-cta-buttons",
+      "text": "Both 'Start Free Trial' and 'See Demo' CTAs are present"
+    },
+    {
+      "id": "mobile-hamburger",
+      "text": "Mobile hamburger menu is implemented (look for hamburger/menu icon and toggle logic in JS)"
+    },
+    {
+      "id": "full-page-not-just-hero",
+      "text": "Page includes more than just the hero — has at least one additional section (features, testimonials, pricing, or footer)"
+    },
+    {
+      "id": "meta-tags-present",
+      "text": "Page has at least title, meta description, and og:title tags"
+    },
+    {
+      "id": "semantic-html",
+      "text": "Uses semantic HTML5 elements: <header>, <nav>, <main>, <footer>"
+    },
+    {
+      "id": "javascript-interactivity",
+      "text": "File contains at least 10 lines of vanilla JavaScript for interactivity"
+    }
+  ]
+}

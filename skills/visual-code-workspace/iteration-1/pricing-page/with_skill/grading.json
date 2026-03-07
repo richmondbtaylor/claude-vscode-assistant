@@ -1,0 +1,18 @@
+{
+  "eval_id": 3,
+  "eval_name": "pricing-page",
+  "run_type": "with_skill",
+  "expectations": [
+    { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 55, </html> on line 578" },
+    { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": true, "evidence": "Lines 1-54 contain source material, detected niche, preserved elements, and improvements sections" },
+    { "text": "All three tiers are present: Starter ($29), Pro ($79), and Enterprise", "passed": true, "evidence": "All three article cards present with correct prices" },
+    { "text": "Pro plan has a 'Most Popular' badge or equivalent highlight", "passed": true, "evidence": "<span>Most Popular</span> inside Pro card with aria-label attribute" },
+    { "text": "A monthly/annual billing toggle is present in the HTML", "passed": true, "evidence": "<button id=\"billing-toggle\" role=\"switch\"> present" },
+    { "text": "JavaScript code exists that updates prices when the billing toggle is switched (look for event listener on toggle + price update logic)", "passed": true, "evidence": "toggle.addEventListener('click', ...) calls updatePrices() which sets starter-price and pro-price textContent" },
+    { "text": "Annual pricing reflects the 20% discount (annual Starter ~$23, Pro ~$63)", "passed": true, "evidence": "prices.starter.annual: 23, prices.pro.annual: 63 hardcoded in price data object" },
+    { "text": "Each pricing card contains a list of at least 4 feature bullet points", "passed": true, "evidence": "Starter: 5 bullets, Pro: 6 bullets, Enterprise: 5 bullets" },
+    { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> present" },
+    { "text": "Page has at least title and meta description tags", "passed": true, "evidence": "<title>Pricing — Prism</title> and <meta name=\"description\"> both present" }
+  ],
+  "overall_pass_rate": 1.0
+}

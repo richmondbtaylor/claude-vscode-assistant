@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Response lists at least 3 specific tool names with a 'notion_' prefix",
+      "passed": true,
+      "evidence": "Lists notion_list_databases, notion_query_database, notion_create_page as Tool 1/2/3 headings"
+    },
+    {
+      "text": "Response recommends TypeScript as the implementation language",
+      "passed": true,
+      "evidence": "Step 2 shows 'npm install @modelcontextprotocol/sdk @notionhq/client zod' and mentions Node.js 18+"
+    },
+    {
+      "text": "Response mentions Zod for input schema validation",
+      "passed": true,
+      "evidence": "Zod appears in the npm install command: 'npm install @modelcontextprotocol/sdk @notionhq/client zod'"
+    },
+    {
+      "text": "Response mentions using an environment variable for the Notion API key",
+      "passed": true,
+      "evidence": "Claude Desktop config shows: env: { NOTION_API_KEY: 'secret_your_token_here' }"
+    },
+    {
+      "text": "Response includes tool annotations (readOnlyHint, destructiveHint, or similar)",
+      "passed": false,
+      "evidence": "Tools are listed as headings only (Tool 1: notion_list_databases - Lists all accessible databases). No annotation objects shown in tool definitions."
+    },
+    {
+      "text": "Response mentions the MCP Inspector or some testing approach",
+      "passed": false,
+      "evidence": "Response goes straight from setup to Claude Desktop configuration with no testing step or mention of MCP Inspector"
+    }
+  ],
+  "summary": { "passed": 4, "failed": 2, "total": 6, "pass_rate": 0.667 }
+}

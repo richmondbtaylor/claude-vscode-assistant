@@ -1,0 +1,18 @@
+{
+  "eval_id": 3,
+  "eval_name": "pricing-page",
+  "run_type": "without_skill",
+  "expectations": [
+    { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 1, </html> on line 124" },
+    { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": false, "evidence": "No design rationale comment block — only structural HTML comments like <!-- Billing Toggle -->" },
+    { "text": "All three tiers are present: Starter ($29), Pro ($79), and Enterprise", "passed": true, "evidence": "Starter ($29), Pro ($79), Enterprise (Custom) all present" },
+    { "text": "Pro plan has a 'Most Popular' badge or equivalent highlight", "passed": true, "evidence": "<span>Most Popular</span> above the Pro card" },
+    { "text": "A monthly/annual billing toggle is present in the HTML", "passed": true, "evidence": "Toggle button with id=\"billing-toggle\" and Monthly/Annual labels present" },
+    { "text": "JavaScript code exists that updates prices when the billing toggle is switched (look for event listener on toggle + price update logic)", "passed": true, "evidence": "toggle.addEventListener('click', ...) updates starterPrice and proPrice textContent to $23/$63" },
+    { "text": "Annual pricing reflects the 20% discount (annual Starter ~$23, Pro ~$63)", "passed": true, "evidence": "$23 for Starter and $63 for Pro — both correctly 20% off" },
+    { "text": "Each pricing card contains a list of at least 4 feature bullet points", "passed": true, "evidence": "Starter: 5, Pro: 6, Enterprise: 5 bullets" },
+    { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> present" },
+    { "text": "Page has at least title and meta description tags", "passed": false, "evidence": "<title> present but no <meta name=\"description\"> tag" }
+  ],
+  "overall_pass_rate": 0.8
+}

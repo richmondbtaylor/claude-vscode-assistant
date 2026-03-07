@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "Response defines or names at least 3 distinct tools",
+      "passed": true,
+      "evidence": "6 tools defined: pg_list_schemas, pg_list_tables, pg_describe_table, pg_run_query, pg_get_table_indexes, pg_get_foreign_keys"
+    },
+    {
+      "text": "Response addresses read-only safety — blocking non-SELECT statements",
+      "passed": true,
+      "evidence": "assertReadOnly() checks for SELECT/WITH prefix, blocks INSERT/UPDATE/DELETE/DROP/TRUNCATE/ALTER/CREATE/GRANT/REVOKE/COPY keywords, plus SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY"
+    },
+    {
+      "text": "Response uses an environment variable for the database connection string",
+      "passed": true,
+      "evidence": "db.ts uses PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD env vars with validation on startup"
+    },
+    {
+      "text": "Response includes error handling with actionable messages for bad queries or connection failures",
+      "passed": true,
+      "evidence": "pg_describe_table returns 'Use pg_list_tables first' if table not found. pg_run_query assertReadOnly throws 'Forbidden keyword X in query'. Connection env vars validated at startup."
+    },
+    {
+      "text": "Response mentions the @modelcontextprotocol/sdk package or MCP SDK",
+      "passed": true,
+      "evidence": "npm install @modelcontextprotocol/sdk, import McpServer from '@modelcontextprotocol/sdk/server/mcp.js'"
+    }
+  ],
+  "summary": { "passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0 }
+}

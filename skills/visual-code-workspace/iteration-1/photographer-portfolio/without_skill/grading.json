@@ -1,0 +1,18 @@
+{
+  "eval_id": 2,
+  "eval_name": "photographer-portfolio",
+  "run_type": "without_skill",
+  "expectations": [
+    { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 1, </html> on line 167" },
+    { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": false, "evidence": "No design rationale comment block — only short inline section labels like <!-- Navigation -->" },
+    { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> on line 9" },
+    { "text": "The exact name 'Elena Vasquez' appears in the output", "passed": true, "evidence": "Appears in title, nav, h1, headshot alt, About heading, and footer" },
+    { "text": "Page includes a grid of portfolio photos (at least 6 img elements with Unsplash or placeholder URLs)", "passed": true, "evidence": "Exactly 6 img elements with Unsplash URLs present" },
+    { "text": "Page includes a contact form with at least name, email, and message fields", "passed": true, "evidence": "All three fields present" },
+    { "text": "Contact form has JavaScript validation (required fields, email format check)", "passed": true, "evidence": "Regex email check and trim checks for name/message present in submit handler" },
+    { "text": "Page includes an About section with bio content", "passed": true, "evidence": "Two paragraphs of bio content in About section" },
+    { "text": "A serif font is used (Google Fonts import or font-serif Tailwind class)", "passed": true, "evidence": "Playfair Display imported from Google Fonts and applied to headings" },
+    { "text": "Portfolio images use loading='lazy' attribute", "passed": true, "evidence": "All 6 grid images have loading=\"lazy\" attribute" }
+  ],
+  "overall_pass_rate": 0.9
+}

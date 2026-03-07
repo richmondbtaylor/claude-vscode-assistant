@@ -1,0 +1,9 @@
+{
+  "tool_calls": {"Read": 1, "Write": 0, "WebFetch": 1},
+  "total_tool_calls": 6,
+  "total_steps": 4,
+  "files_created": [],
+  "errors_encountered": 1,
+  "output_chars": 1800,
+  "notes": "Haiku with skill — read SKILL.md, fetched MCP docs, produced 10-tool plan with phases, hit Write permission denial"
+}
