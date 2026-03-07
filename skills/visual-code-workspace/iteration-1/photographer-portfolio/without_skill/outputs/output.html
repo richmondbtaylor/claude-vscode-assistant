@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elena Vasquez — Photography</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="bg-white text-gray-900">
+
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="serif text-xl font-bold tracking-tight">Elena Vasquez</a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#portfolio" class="text-sm text-gray-600 hover:text-black transition-colors">Portfolio</a>
+        <a href="#about" class="text-sm text-gray-600 hover:text-black transition-colors">About</a>
+        <a href="#contact" class="text-sm text-gray-600 hover:text-black transition-colors">Contact</a>
+      </div>
+      <button id="menu-btn" class="md:hidden p-2" aria-label="Open menu">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 px-6 py-4 space-y-4">
+      <a href="#portfolio" class="block text-gray-700 hover:text-black">Portfolio</a>
+      <a href="#about" class="block text-gray-700 hover:text-black">About</a>
+      <a href="#contact" class="block text-gray-700 hover:text-black">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="pt-16 h-screen relative overflow-hidden">
+    <img
+      src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1600&q=80"
+      alt="Close-up of a camera lens — Elena Vasquez photography"
+      class="w-full h-full object-cover"
+    >
+    <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white text-center px-6">
+      <h1 class="serif text-6xl md:text-8xl font-bold tracking-tight mb-4">Elena Vasquez</h1>
+      <p class="text-lg md:text-xl font-light tracking-widest uppercase text-gray-200">Photographer</p>
+    </div>
+  </section>
+
+  <!-- Portfolio Grid -->
+  <section id="portfolio" class="max-w-6xl mx-auto px-6 py-20">
+    <h2 class="serif text-3xl font-bold mb-12">Selected Work</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <img loading="lazy" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80" alt="Mountain landscape at golden hour" class="w-full h-72 object-cover" width="600" height="288">
+      <img loading="lazy" src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=600&q=80" alt="Portrait of a woman in soft natural light" class="w-full h-72 object-cover" width="600" height="288">
+      <img loading="lazy" src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=600&q=80" alt="Abstract architectural detail" class="w-full h-72 object-cover" width="600" height="288">
+      <img loading="lazy" src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80" alt="Still life with flowers on a table" class="w-full h-72 object-cover" width="600" height="288">
+      <img loading="lazy" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80" alt="Forest path in morning mist" class="w-full h-72 object-cover" width="600" height="288">
+      <img loading="lazy" src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80" alt="Coastal cliffs at sunset" class="w-full h-72 object-cover" width="600" height="288">
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="bg-gray-50 py-20 px-6">
+    <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+      <img
+        loading="lazy"
+        src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80"
+        alt="Elena Vasquez — headshot"
+        class="w-full h-96 object-cover"
+        width="600"
+        height="384"
+      >
+      <div>
+        <h2 class="serif text-3xl font-bold mb-6">About Elena</h2>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Elena Vasquez is a Barcelona-born photographer based in New York City, specializing in landscape, portrait, and fine art photography. With over a decade behind the lens, her work has been exhibited internationally and published in leading editorial titles.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          She approaches every shoot with a documentary instinct — capturing light, texture, and emotion in their most authentic form. Available for editorial assignments, brand campaigns, and private commissions worldwide.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="max-w-2xl mx-auto px-6 py-20">
+    <h2 class="serif text-3xl font-bold mb-2">Get in Touch</h2>
+    <p class="text-gray-500 mb-10">Available for commissions, editorial work, and print sales.</p>
+
+    <form id="contact-form" novalidate class="space-y-6">
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
+        <input type="text" id="name" name="name" required class="w-full border-b border-gray-300 py-2 focus:border-black outline-none transition-colors bg-transparent">
+        <p class="text-red-500 text-xs mt-1 hidden" id="name-error">Name is required.</p>
+      </div>
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+        <input type="email" id="email" name="email" required class="w-full border-b border-gray-300 py-2 focus:border-black outline-none transition-colors bg-transparent">
+        <p class="text-red-500 text-xs mt-1 hidden" id="email-error">Please enter a valid email address.</p>
+      </div>
+      <div>
+        <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message <span class="text-red-500">*</span></label>
+        <textarea id="message" name="message" rows="4" required class="w-full border-b border-gray-300 py-2 focus:border-black outline-none transition-colors bg-transparent resize-none"></textarea>
+        <p class="text-red-500 text-xs mt-1 hidden" id="message-error">Message is required.</p>
+      </div>
+      <button type="submit" class="px-8 py-3 bg-black text-white text-sm tracking-widest uppercase hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+        Send Message
+      </button>
+      <p id="success-msg" class="hidden text-green-600 text-sm">Thank you — I'll be in touch soon.</p>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-100 py-8 px-6 text-center text-sm text-gray-400">
+    &copy; 2026 Elena Vasquez. All rights reserved.
+  </footer>
+
+  <script defer>
+    // Mobile menu
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+        mobileMenu.classList.add('hidden');
+      });
+    });
+
+    // Form validation
+    const form = document.getElementById('contact-form');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      let valid = true;
+
+      const name = document.getElementById('name');
+      const nameErr = document.getElementById('name-error');
+      if (!name.value.trim()) { nameErr.classList.remove('hidden'); valid = false; }
+      else nameErr.classList.add('hidden');
+
+      const email = document.getElementById('email');
+      const emailErr = document.getElementById('email-error');
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
+      if (!emailOk) { emailErr.classList.remove('hidden'); valid = false; }
+      else emailErr.classList.add('hidden');
+
+      const message = document.getElementById('message');
+      const msgErr = document.getElementById('message-error');
+      if (!message.value.trim()) { msgErr.classList.remove('hidden'); valid = false; }
+      else msgErr.classList.add('hidden');
+
+      if (valid) {
+        form.reset();
+        document.getElementById('success-msg').classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

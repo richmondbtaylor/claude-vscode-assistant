@@ -1,0 +1,9 @@
+{
+  "tool_calls": {"Read": 0, "Write": 0, "WebFetch": 0},
+  "total_tool_calls": 0,
+  "total_steps": 1,
+  "files_created": [],
+  "errors_encountered": 1,
+  "output_chars": 6847,
+  "notes": "Haiku baseline — raw JSON Schema, no Zod, no server.registerTool, no handler/structuredContent, but detailed descriptions and annotations present"
+}

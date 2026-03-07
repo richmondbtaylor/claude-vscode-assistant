@@ -1,0 +1,47 @@
+{
+  "eval_id": 2,
+  "eval_name": "photographer-portfolio",
+  "prompt": "Turn this into a website: it's a simple portfolio page for a freelance photographer. The design has a white background, black serif font for the name 'Elena Vasquez', a full-width hero image of a camera lens, a grid of 6 portfolio photos, an 'About' section with a headshot and bio paragraph, and a contact form. Make it look clean and editorial.",
+  "assertions": [
+    {
+      "id": "single-html-file",
+      "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)"
+    },
+    {
+      "id": "design-rationale-comment",
+      "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements"
+    },
+    {
+      "id": "tailwind-cdn",
+      "text": "Tailwind CSS is loaded via CDN script tag"
+    },
+    {
+      "id": "name-preserved",
+      "text": "The exact name 'Elena Vasquez' appears in the output"
+    },
+    {
+      "id": "photo-grid",
+      "text": "Page includes a grid of portfolio photos (at least 6 img elements with Unsplash or placeholder URLs)"
+    },
+    {
+      "id": "contact-form",
+      "text": "Page includes a contact form with at least name, email, and message fields"
+    },
+    {
+      "id": "form-validation",
+      "text": "Contact form has JavaScript validation (required fields, email format check)"
+    },
+    {
+      "id": "about-section",
+      "text": "Page includes an About section with bio content"
+    },
+    {
+      "id": "serif-font",
+      "text": "A serif font is used (Google Fonts import or font-serif Tailwind class)"
+    },
+    {
+      "id": "lazy-loading",
+      "text": "Portfolio images use loading='lazy' attribute"
+    }
+  ]
+}

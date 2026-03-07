@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "Lists 3+ notion_ prefixed tool names", "passed": false, "evidence": "Tools listed as 'List Databases', 'Query Database', 'Get Page', 'Create Page' — no notion_ prefix"},
+    {"text": "Recommends TypeScript", "passed": true, "evidence": "Node.js 18+ with TypeScript in prerequisites"},
+    {"text": "Mentions Zod", "passed": false, "evidence": "No mention of Zod anywhere in response"},
+    {"text": "Env var for API key", "passed": false, "evidence": "Says 'never expose API keys' but no env var pattern shown"},
+    {"text": "Tool annotations included", "passed": false, "evidence": "No annotations mentioned"},
+    {"text": "Mentions MCP Inspector", "passed": false, "evidence": "Step 5 says 'Test with actual Notion workspace' but no MCP Inspector"}
+  ],
+  "summary": {"passed": 1, "failed": 5, "total": 6, "pass_rate": 0.167}
+}

@@ -1,0 +1,46 @@
+{
+  "skill_name": "mcp-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to build an MCP server for the Notion API. Claude should be able to list databases, query pages, and create new pages. Where do I start and what tools should I build?",
+      "expected_output": "A structured plan covering: (1) fetching MCP and Notion API docs, (2) a concrete list of tools to build (e.g. notion_list_databases, notion_query_database, notion_get_page, notion_create_page) with input schemas and auth approach using NOTION_API_KEY env var, (3) TypeScript project setup with @modelcontextprotocol/sdk and zod, (4) notes on tool annotations like readOnlyHint",
+      "files": [],
+      "assertions": [
+        "Response lists at least 3 specific tool names with a 'notion_' prefix (e.g. notion_list_databases, notion_query_database, notion_create_page)",
+        "Response recommends TypeScript as the implementation language",
+        "Response mentions Zod for input schema validation",
+        "Response mentions using an environment variable for the Notion API key",
+        "Response includes tool annotations (readOnlyHint, destructiveHint, or similar)",
+        "Response mentions the MCP Inspector or some testing approach"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Help me create an MCP server that lets Claude query my PostgreSQL database. I want Claude to be able to list tables, describe schemas, and run read-only SELECT queries.",
+      "expected_output": "A complete implementation plan and/or working code for a PostgreSQL MCP server with tools: list_tables, describe_table, execute_query (SELECT only). Should cover: connection string via env var, safety measures to block non-SELECT queries, TypeScript setup, Zod schemas for query input, error handling for bad SQL, and evaluation questions to test the server.",
+      "files": [],
+      "assertions": [
+        "Response defines or names at least 3 distinct tools (e.g. list_tables, describe_table, execute_query or similar)",
+        "Response addresses read-only safety — blocking or validating against non-SELECT statements (INSERT/UPDATE/DELETE/DROP)",
+        "Response uses an environment variable for the database connection string (DATABASE_URL or similar)",
+        "Response includes error handling with actionable messages for bad queries or connection failures",
+        "Response mentions the @modelcontextprotocol/sdk package or MCP SDK"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I'm building an MCP server for the GitHub API. I've got the basic structure working but I'm not sure how to write good tool descriptions and what annotations to use. Can you help me write a great tool definition for a 'list pull requests' endpoint?",
+      "expected_output": "A complete, high-quality tool definition for list_pull_requests with: a clear description that tells agents what the tool returns (not just what it does), a Zod input schema with .describe() on every field, default values, constraints (e.g. per_page max 100), readOnlyHint annotation, and structured output returning both text content and structuredContent. Should explain the reasoning behind each choice.",
+      "files": [],
+      "assertions": [
+        "Response provides a TypeScript code block using server.registerTool or equivalent MCP registration",
+        "Tool description explains what the tool *returns* (e.g. PR titles, numbers, state, author) not just what it does",
+        "Input schema uses Zod with .describe() annotations on at least 2 fields",
+        "Response includes readOnlyHint: true in the annotations",
+        "Response includes pagination support (per_page or page parameter) with a max constraint",
+        "Response returns both content (text) and structuredContent in the tool handler"
+      ]
+    }
+  ]
+}

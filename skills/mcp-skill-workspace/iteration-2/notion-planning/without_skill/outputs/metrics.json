@@ -1,0 +1,9 @@
+{
+  "tool_calls": {"Read": 0, "Write": 0, "WebFetch": 0},
+  "total_tool_calls": 0,
+  "total_steps": 1,
+  "files_created": [],
+  "errors_encountered": 1,
+  "output_chars": 1450,
+  "notes": "Haiku baseline — no skill, no code samples, no notion_ prefixed tool names, no Zod/annotations"
+}

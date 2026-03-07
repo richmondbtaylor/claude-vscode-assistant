@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "server.registerTool code block", "passed": true, "evidence": "server.registerTool('github_list_pull_requests', {...}, async (...) => {...}) present"},
+    {"text": "Description names return fields", "passed": true, "evidence": "Description: 'Returns PR number, title, author, status (open/closed/draft), creation date, and last update date'"},
+    {"text": "Zod with .describe() on 2+ fields", "passed": true, "evidence": "All 10 fields use z.string/number/enum with .describe() chains"},
+    {"text": "readOnlyHint: true", "passed": true, "evidence": "annotations: { readOnlyHint: true }"},
+    {"text": "Pagination with max constraint", "passed": true, "evidence": "per_page: z.number().min(1).max(100).default(30)"},
+    {"text": "content + structuredContent returned", "passed": true, "evidence": "return { content: [{type:'text',...}], structuredContent: { repository, total_returned, pull_requests } }"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}
+}

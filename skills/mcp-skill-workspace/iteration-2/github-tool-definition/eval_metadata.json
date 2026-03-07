@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "github-tool-definition",
+  "prompt": "I'm building an MCP server for the GitHub API. I've got the basic structure working but I'm not sure how to write good tool descriptions and what annotations to use. Can you help me write a great tool definition for a 'list pull requests' endpoint?",
+  "assertions": [
+    "Response provides a TypeScript code block using server.registerTool or equivalent MCP registration",
+    "Tool description explains what the tool *returns* (e.g. PR titles, numbers, state, author) not just what it does",
+    "Input schema uses Zod with .describe() annotations on at least 2 fields",
+    "Response includes readOnlyHint: true in the annotations",
+    "Response includes pagination support (per_page or page parameter) with a max constraint",
+    "Response returns both content (text) and structuredContent in the tool handler"
+  ]
+}

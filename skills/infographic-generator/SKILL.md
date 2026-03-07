@@ -22,7 +22,7 @@ Confirm these before building the prompt. If not provided, make reasonable assum
 | Requirement | Default |
 |-------------|---------|
 | Topic & data | (required — ask if missing) |
-| Style | Corporate/minimal |
+| Style | Bishop AI brand — minimal & impactful: dark #000814 bg, generous whitespace, single gold #E0B848 or blue #1894C9 accent per section, white text, max 3 elements per section, no decorative clutter |
 | Aspect ratio | `9:16` (social/mobile) |
 | Platform | Instagram/LinkedIn |
 | Resolution | `2K` |
@@ -52,15 +52,14 @@ Save a JSON file with this structure:
 Write the `prompt` value as a single dense string following this structure:
 
 ```
-Professional infographic titled "[TITLE]". Style: [flat design / bold editorial / minimal corporate / illustrated / dark mode].
-Layout: [describe top to bottom — headline section, data sections, footer].
-Color palette: [3-4 specific values, e.g., "deep navy #0B2447, electric blue #19A7CE, white #FFFFFF, accent orange #FF6B35"].
-Typography: [e.g., "bold sans-serif headlines at 60pt minimum, clean body text at 18pt, all text must be perfectly legible at full resolution"].
-Data content: [EXACT DATA — repeat user's numbers verbatim, e.g., "Bar chart: 2020: 15%, 2021: 28%, 2022: 41%, 2023: 67%, 2024: 89%"].
-Visual elements: [icons, chart types, dividers, illustrations].
-Quality directive: ultra-sharp, print-quality detail, pixel-perfect element alignment, zero text rendering errors.
-Do not add decorative elements not specified. Render all text as clean, unblurred, perfectly legible typography.
-Negative: blurry text, garbled typography, illegible fonts, inconsistent color palette, random decorative clutter, misaligned elements, overlapping labels, incorrect data values, stock photo aesthetic, photorealistic faces, lens flare, bokeh, photography lighting, beauty filters, skin textures.
+Professional infographic titled "[TITLE]". Style: minimal, clean, impactful — dark background #000814, generous whitespace, bold single-idea sections.
+Layout: [describe top to bottom — each section has ONE clear message, maximum 3 elements per section, no visual noise].
+Color palette: black #000814 background, white #FFFFFF text, ONE accent color per section (gold #E0B848 OR blue #1894C9 — never both at once), dark card #1E2333 for panels.
+Typography: ultra-bold Poppins headline at 64pt minimum — one dominant headline per section, supporting text at 20pt max, never more than 2 lines of body copy per element.
+Data content: [EXACT DATA — repeat user's numbers verbatim. Present each stat as a BIG number + short label, nothing else].
+Visual elements: thin single-line dividers only, no icons unless essential, no gradients, no shadows, no decorative borders. Let whitespace do the work.
+Quality directive: ultra-sharp, print-quality, pixel-perfect alignment, zero text rendering errors. Less is more — if an element doesn't add meaning, remove it.
+Negative: blurry text, garbled typography, illegible fonts, busy layouts, too many colors, decorative clutter, drop shadows, gradients, icons for decoration, multiple accent colors per section, more than 4 bullet points per section, stock photo aesthetic, photorealistic faces, lens flare, bokeh, photography lighting, beauty filters, skin textures.
 ```
 
 ### Why these details matter
@@ -97,10 +96,25 @@ The script handles API submission, polling (every 4s, up to 4 minutes), and imag
 
 ---
 
+## Step 4b: Upload to Google Drive (always run after Step 4)
+
+After the image downloads successfully, immediately run:
+
+```powershell
+python .\scripts\upload_gdrive.py .\images\infographics\<output-name>.jpg
+```
+
+- Always uploads to folder ID `1LhCsKe9poKHFdXYfOFmBnX4kPeIpH8AZ` (hardcoded — no folder arg needed)
+- Token is saved at `scripts/gdrive_token.pickle` — fully automatic after first auth
+- Print the Drive share link in the output
+
+---
+
 ## Step 5: Report Back
 
 Tell the user:
-- Output file path
+- Output file path (local)
+- Google Drive link (for mobile access)
 - Prompt file path (so they can iterate)
 - Any assumptions made about style/layout
 - Suggested next steps if they want variations
@@ -150,7 +164,7 @@ images/infographics/ai-adoption-v2-bold.jpg
 ## Brand Kits
 
 ### Bishop AI
-**IMPORTANT: Only apply this brand kit when the user explicitly asks to use the Bishop AI brand, logo, or branding. Do not apply it by default.**
+**ALWAYS apply this brand kit by default for every infographic unless the user explicitly requests a different style. This is the default brand for all infographic generation.**
 
 - **Background (primary):** `#000814`
 - **Background (secondary/cards):** `#1E2333`

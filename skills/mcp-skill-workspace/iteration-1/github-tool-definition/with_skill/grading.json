@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Response provides a TypeScript code block using server.registerTool or equivalent MCP registration",
+      "passed": true,
+      "evidence": "Full server.registerTool('github_list_pull_requests', {...}, async (...) => {...}) code block"
+    },
+    {
+      "text": "Tool description explains what the tool *returns* not just what it does",
+      "passed": true,
+      "evidence": "Description explicitly names return fields: 'Returns PR number, title, state, author login, labels, assignees, milestone, head/base branch names, draft status, and timestamps'"
+    },
+    {
+      "text": "Input schema uses Zod with .describe() annotations on at least 2 fields",
+      "passed": true,
+      "evidence": "All 9 parameters use z.string/number/enum with .describe() — examples: owner, repo, state, head, base, sort, direction, per_page, page"
+    },
+    {
+      "text": "Response includes readOnlyHint: true in the annotations",
+      "passed": true,
+      "evidence": "annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }"
+    },
+    {
+      "text": "Response includes pagination support (per_page or page parameter) with a max constraint",
+      "passed": true,
+      "evidence": "per_page: z.number().int().min(1).max(100).default(30) and page: z.number().int().min(1).default(1)"
+    },
+    {
+      "text": "Response returns both content (text) and structuredContent in the tool handler",
+      "passed": true,
+      "evidence": "return { content: [{ type: 'text', text: JSON.stringify(summary, null, 2) }], structuredContent: summary }"
+    }
+  ],
+  "summary": { "passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0 }
+}

@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "notion-planning",
+  "prompt": "I want to build an MCP server for the Notion API. Claude should be able to list databases, query pages, and create new pages. Where do I start and what tools should I build?",
+  "assertions": [
+    "Response lists at least 3 specific tool names with a 'notion_' prefix (e.g. notion_list_databases, notion_query_database, notion_create_page)",
+    "Response recommends TypeScript as the implementation language",
+    "Response mentions Zod for input schema validation",
+    "Response mentions using an environment variable for the Notion API key",
+    "Response includes tool annotations (readOnlyHint, destructiveHint, or similar)",
+    "Response mentions the MCP Inspector or some testing approach"
+  ]
+}

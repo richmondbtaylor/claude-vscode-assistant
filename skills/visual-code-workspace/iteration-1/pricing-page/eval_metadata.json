@@ -1,0 +1,47 @@
+{
+  "eval_id": 3,
+  "eval_name": "pricing-page",
+  "prompt": "I grabbed a screenshot of a competitor's pricing page and want to build something similar. It has 3 pricing tiers: Starter ($29/mo), Pro ($79/mo), and Enterprise (custom pricing). The Pro plan has a 'Most Popular' badge. Each card lists 5-6 feature bullets. There's a toggle at the top to switch between monthly and annual billing (annual saves 20%). The background is light gray, cards are white with subtle shadows. Code this up.",
+  "assertions": [
+    {
+      "id": "single-html-file",
+      "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)"
+    },
+    {
+      "id": "design-rationale-comment",
+      "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements"
+    },
+    {
+      "id": "three-pricing-tiers",
+      "text": "All three tiers are present: Starter ($29), Pro ($79), and Enterprise"
+    },
+    {
+      "id": "most-popular-badge",
+      "text": "Pro plan has a 'Most Popular' badge or equivalent highlight"
+    },
+    {
+      "id": "billing-toggle",
+      "text": "A monthly/annual billing toggle is present in the HTML"
+    },
+    {
+      "id": "toggle-js-functional",
+      "text": "JavaScript code exists that updates prices when the billing toggle is switched (look for event listener on toggle + price update logic)"
+    },
+    {
+      "id": "annual-discount",
+      "text": "Annual pricing reflects the 20% discount (annual Starter ~$23, Pro ~$63)"
+    },
+    {
+      "id": "feature-bullets",
+      "text": "Each pricing card contains a list of at least 4 feature bullet points"
+    },
+    {
+      "id": "tailwind-cdn",
+      "text": "Tailwind CSS is loaded via CDN script tag"
+    },
+    {
+      "id": "meta-tags-present",
+      "text": "Page has at least title and meta description tags"
+    }
+  ]
+}

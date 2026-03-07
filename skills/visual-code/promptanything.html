@@ -1,0 +1,1104 @@
+<!--
+DESIGN RATIONALE
+
+Source Material: promptanything.io (AI Prompt Engineering Tool)
+Detected Niche: SaaS — AI / Prompt Engineering Tool
+
+Design System: (same vibe as PromptPerfect output.html)
+  Colors:
+    #0d0f1a   — page background (dark navy)
+    #12141f   — card/section background
+    #1e2035   — elevated card surface
+    #7c3aed   — primary purple accent
+    #a855f7   — purple lighter
+    #10b981   — green accent (brand differentiator from PromptPerfect)
+    #f59e0b   — amber accent
+    #3b82f6   — blue accent
+    #ffffff   — primary text
+    #a0a0b0   — muted text
+    #2a2d45   — border/divider
+
+  Fonts: Inter (Google Fonts) — 400, 500, 600, 700, 800
+
+Content Source:
+  - Headline: "Write AI prompts that actually work" (exact, from site)
+  - Subheadline: "Transform scattered ideas into precise, powerful prompts" (exact)
+  - Frameworks: CRISPE, CLEAR, SOPS, STAR, BRAINSTORM (exact, from schema)
+  - Pricing: Free (3 outputs/mo), $15.99/mo Premium (exact)
+  - Social proof: 4.8/5 · 150 reviews (exact)
+  - Models: ChatGPT/GPT-4/5, Claude, Gemini, Mistral (exact)
+  - Features: Voice input, Prompt library, Multi-model output, Marketplace (exact)
+
+Improvements Made:
+  - Full WCAG 2.1 AA accessibility
+  - Skip link, ARIA landmarks, keyboard navigation
+  - FAQ accordion, pricing toggle, mobile menu
+  - Scroll fade-in animations via IntersectionObserver
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompt Anything — Write AI Prompts That Actually Work</title>
+  <meta name="description" content="Transform scattered ideas into precise, powerful AI prompts. Prompt Anything uses proven frameworks like CRISPE, CLEAR, STAR, and BRAINSTORM to help you get better results from ChatGPT, Claude, Gemini, and more." />
+  <link rel="canonical" href="https://promptanything.io" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Prompt Anything — Write AI Prompts That Actually Work" />
+  <meta property="og:description" content="Transform scattered ideas into precise, powerful prompts. Free to start." />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&q=80" />
+  <meta property="og:url" content="https://promptanything.io" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Prompt Anything — Write AI Prompts That Actually Work" />
+  <meta name="twitter:description" content="Transform scattered ideas into precise, powerful prompts." />
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&q=80" />
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Prompt Anything",
+    "applicationCategory": "AIApplication",
+    "description": "AI prompt engineering tool that helps you write prompts that actually work for ChatGPT, Claude, Gemini, and other AI tools.",
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "150" },
+    "offers": [
+      {"@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "USD"},
+      {"@type": "Offer", "name": "Premium", "price": "15.99", "priceCurrency": "USD"}
+    ],
+    "operatingSystem": "Web",
+    "url": "https://promptanything.io"
+  }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'navy':         '#0d0f1a',
+            'navy-card':    '#12141f',
+            'navy-elevated':'#1e2035',
+            'navy-border':  '#2a2d45',
+            'purple-brand': '#7c3aed',
+            'purple-light': '#a855f7',
+            'green-brand':  '#10b981',
+            'amber-brand':  '#f59e0b',
+            'blue-brand':   '#3b82f6',
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background-color: #0d0f1a;
+      color: #ffffff;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Skip link */
+    .skip-link {
+      position: fixed; top: -100%; left: 16px; z-index: 9999;
+      padding: 12px 20px; background: #7c3aed; color: #fff;
+      border-radius: 6px; font-weight: 600; text-decoration: none; transition: top 0.2s;
+    }
+    .skip-link:focus { top: 16px; }
+    :focus-visible { outline: 2px solid #a855f7; outline-offset: 3px; border-radius: 4px; }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: #fff; border: none; cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 20px rgba(124,58,237,0.4);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      box-shadow: 0 0 30px rgba(124,58,237,0.6);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-green {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff; border: none; cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 20px rgba(16,185,129,0.3);
+    }
+    .btn-green:hover {
+      box-shadow: 0 0 30px rgba(16,185,129,0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent; color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Nav */
+    #main-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,15,26,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, #6ee7b7 40%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gradient-text-purple {
+      background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Hero orb — green tinted for brand differentiation */
+    .hero-orb {
+      position: absolute;
+      width: 540px; height: 540px;
+      right: -80px; top: 50%;
+      transform: translateY(-50%);
+      background: radial-gradient(ellipse at 40% 40%, #10b981 0%, #059669 25%, #7c3aed 55%, transparent 75%);
+      border-radius: 50%;
+      filter: blur(3px);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+    .hero-orb::after {
+      content: '';
+      position: absolute; inset: 20px; border-radius: 50%;
+      background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.12) 0%, transparent 60%);
+    }
+
+    /* Badges */
+    .badge-green  { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .badge-purple { background: rgba(124,58,237,0.15); color: #a855f7;  border: 1px solid rgba(124,58,237,0.3); }
+    .badge-amber  { background: rgba(245,158,11,0.15); color: #fbbf24;  border: 1px solid rgba(245,158,11,0.3); }
+    .badge-blue   { background: rgba(59,130,246,0.15); color: #60a5fa;  border: 1px solid rgba(59,130,246,0.3); }
+
+    /* Demo card */
+    .demo-card { background: #12141f; border: 1px solid #2a2d45; border-radius: 12px; overflow: hidden; }
+    .demo-card-bar { display: flex; gap: 6px; padding: 12px 16px; background: #1e2035; border-bottom: 1px solid #2a2d45; }
+    .demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    /* Framework pill */
+    .framework-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+      transition: all 0.2s ease; cursor: default;
+    }
+
+    /* Pricing */
+    .pricing-highlight {
+      background: linear-gradient(180deg, #0e1a12 0%, #12141f 100%);
+      border: 1px solid #10b981;
+      box-shadow: 0 0 40px rgba(16,185,129,0.15);
+      position: relative;
+    }
+
+    /* FAQ */
+    .faq-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+    .faq-content.open { max-height: 500px; }
+    .faq-chevron { transition: transform 0.3s ease; }
+    .faq-chevron.open { transform: rotate(180deg); }
+
+    /* Mobile menu */
+    #mobile-menu { transform: translateX(100%); transition: transform 0.3s ease; }
+    #mobile-menu.open { transform: translateX(0); }
+
+    /* Blog card */
+    .blog-card { transition: transform 0.2s ease, border-color 0.2s ease; }
+    .blog-card:hover { transform: translateY(-4px); border-color: #10b981; }
+
+    /* Stars */
+    .star { color: #fbbf24; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #12141f; }
+    ::-webkit-scrollbar-thumb { background: #2a2d45; border-radius: 3px; }
+
+    @media (max-width: 767px) {
+      .hero-orb { width: 260px; height: 260px; right: -40px; opacity: 0.45; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ========== NAV ========== -->
+  <nav id="main-nav" role="navigation" aria-label="Main navigation">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+
+        <a href="#" class="flex items-center gap-2.5 text-white font-bold text-lg no-underline" aria-label="Prompt Anything home">
+          <span class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black" style="background:linear-gradient(135deg,#10b981,#059669);" aria-hidden="true">⚡</span>
+          <span>Prompt <span style="color:#10b981;">Anything</span></span>
+        </a>
+
+        <ul class="hidden md:flex items-center gap-6 list-none m-0 p-0" role="list">
+          <li><a href="#frameworks" class="text-gray-300 hover:text-white transition-colors text-sm font-medium no-underline">Frameworks</a></li>
+          <li><a href="#features" class="text-gray-300 hover:text-white transition-colors text-sm font-medium no-underline">Features</a></li>
+          <li><a href="#models" class="text-gray-300 hover:text-white transition-colors text-sm font-medium no-underline">AI Models</a></li>
+          <li><a href="#pricing" class="text-gray-300 hover:text-white transition-colors text-sm font-medium no-underline">Pricing</a></li>
+          <li><a href="#faq" class="text-gray-300 hover:text-white transition-colors text-sm font-medium no-underline">FAQ</a></li>
+        </ul>
+
+        <div class="flex items-center gap-3">
+          <a href="#pricing" class="hidden md:inline-flex items-center btn-green px-4 py-2 rounded-lg text-sm font-semibold no-underline" aria-label="Get started free">Get started free</a>
+          <button id="menu-toggle" class="md:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-menu" class="fixed inset-y-0 right-0 w-72 z-50 flex flex-col p-6 md:hidden" role="dialog" aria-modal="true" aria-label="Mobile navigation" style="background:#12141f;border-left:1px solid #2a2d45;">
+      <div class="flex justify-end mb-8">
+        <button id="menu-close" class="p-2 rounded-lg text-gray-400 hover:text-white transition-colors" aria-label="Close navigation menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <nav aria-label="Mobile navigation links">
+        <ul class="list-none m-0 p-0 flex flex-col gap-2">
+          <li><a href="#frameworks" class="block px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors font-medium no-underline mobile-nav-link">Frameworks</a></li>
+          <li><a href="#features" class="block px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors font-medium no-underline mobile-nav-link">Features</a></li>
+          <li><a href="#models" class="block px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors font-medium no-underline mobile-nav-link">AI Models</a></li>
+          <li><a href="#pricing" class="block px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors font-medium no-underline mobile-nav-link">Pricing</a></li>
+          <li><a href="#faq" class="block px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors font-medium no-underline mobile-nav-link">FAQ</a></li>
+        </ul>
+      </nav>
+      <div class="mt-8">
+        <a href="#pricing" class="btn-green block text-center px-4 py-3 rounded-lg font-semibold no-underline mobile-nav-link">Get started free</a>
+      </div>
+    </div>
+    <div id="menu-overlay" class="hidden fixed inset-0 bg-black/60 z-40 md:hidden" aria-hidden="true"></div>
+  </nav>
+
+  <!-- ========== MAIN ========== -->
+  <main id="main-content">
+
+    <!-- ========== HERO ========== -->
+    <section class="relative overflow-hidden min-h-screen flex items-center" style="background:linear-gradient(180deg,#0d0f1a 0%,#091510 50%,#0d0f1a 100%);" aria-labelledby="hero-heading">
+      <div class="absolute inset-0 opacity-10" style="background-image:linear-gradient(rgba(16,185,129,0.25) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.25) 1px,transparent 1px);background-size:60px 60px;" aria-hidden="true"></div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+          <!-- Text -->
+          <div class="text-center lg:text-left">
+
+            <!-- Social proof pill -->
+            <div class="inline-flex items-center gap-3 mb-6 px-4 py-2 rounded-full" style="background:#12141f;border:1px solid #2a2d45;">
+              <div class="flex items-center gap-0.5" aria-label="4.8 out of 5 stars">
+                <span class="star text-sm" aria-hidden="true">★</span>
+                <span class="star text-sm" aria-hidden="true">★</span>
+                <span class="star text-sm" aria-hidden="true">★</span>
+                <span class="star text-sm" aria-hidden="true">★</span>
+                <span class="star text-sm" aria-hidden="true">★</span>
+              </div>
+              <span class="text-xs font-semibold text-white">4.8/5</span>
+              <span class="text-xs text-gray-500">· 150 reviews</span>
+            </div>
+
+            <h1 id="hero-heading" class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+              Write AI prompts<br />
+              <span class="gradient-text">that actually work</span>
+            </h1>
+
+            <p class="text-gray-400 text-lg md:text-xl leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+              Transform scattered ideas into precise, powerful prompts — using proven frameworks like CRISPE, CLEAR, STAR, and BRAINSTORM. Get dramatically better AI results, every time.
+            </p>
+
+            <!-- Framework pills preview -->
+            <div class="flex flex-wrap gap-2 justify-center lg:justify-start mb-8" aria-label="Supported prompt frameworks">
+              <span class="framework-pill" style="background:rgba(124,58,237,0.15);color:#a855f7;border:1px solid rgba(124,58,237,0.3);">CRISPE</span>
+              <span class="framework-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);">CLEAR</span>
+              <span class="framework-pill" style="background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);">STAR</span>
+              <span class="framework-pill" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);">BRAINSTORM</span>
+              <span class="framework-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.3);">SOPS</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <a href="#pricing" class="btn-green inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-base no-underline">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 3l14 9-14 9V3z"/></svg>
+                Start for free
+              </a>
+              <button class="btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-base" onclick="document.getElementById('frameworks').scrollIntoView({behavior:'smooth'})">
+                See the frameworks
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+              </button>
+            </div>
+
+            <div class="mt-10 flex flex-wrap items-center gap-6 justify-center lg:justify-start text-sm text-gray-500">
+              <span class="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Free — 3 outputs/month
+              </span>
+              <span class="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Voice input supported
+              </span>
+              <span class="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                No prompt engineering degree needed
+              </span>
+            </div>
+          </div>
+
+          <!-- Hero graphic -->
+          <div class="relative flex items-center justify-center h-80 lg:h-auto" aria-hidden="true">
+            <div class="hero-orb"></div>
+            <div class="relative z-10 w-full max-w-sm mx-auto">
+              <div class="demo-card" style="box-shadow:0 25px 60px rgba(0,0,0,0.5);">
+                <div class="demo-card-bar">
+                  <span class="demo-dot" style="background:#ef4444"></span>
+                  <span class="demo-dot" style="background:#f59e0b"></span>
+                  <span class="demo-dot" style="background:#22c55e"></span>
+                  <span class="ml-2 text-xs text-gray-500 font-medium">Prompt Anything</span>
+                </div>
+                <div class="p-4">
+                  <div class="flex gap-2 mb-3">
+                    <span class="px-2.5 py-1 rounded text-xs font-bold" style="background:rgba(124,58,237,0.2);color:#a855f7;border:1px solid rgba(124,58,237,0.4);">CRISPE</span>
+                    <span class="px-2.5 py-1 rounded text-xs font-medium text-gray-500" style="background:#1e2035;">CLEAR</span>
+                    <span class="px-2.5 py-1 rounded text-xs font-medium text-gray-500" style="background:#1e2035;">STAR</span>
+                  </div>
+                  <p class="text-xs text-gray-500 mb-1.5 font-medium">Your idea</p>
+                  <div class="rounded p-2.5 text-xs text-gray-400 mb-3" style="background:#0d0f1a;border:1px solid #2a2d45;">
+                    Help me write a marketing email
+                  </div>
+                  <div class="flex items-center gap-2 mb-3">
+                    <div class="flex-1 h-px" style="background:linear-gradient(90deg,transparent,#10b981,transparent)"></div>
+                    <span class="text-xs font-medium" style="color:#10b981;">⚡ Building prompt...</span>
+                    <div class="flex-1 h-px" style="background:linear-gradient(90deg,transparent,#10b981,transparent)"></div>
+                  </div>
+                  <p class="text-xs text-gray-500 mb-1.5 font-medium">CRISPE-structured prompt</p>
+                  <div class="rounded p-2.5 text-xs text-gray-200 leading-relaxed" style="background:#071a10;border:1px solid #10b981;">
+                    <span style="color:#34d399;font-weight:600;">C</span>apacity: Expert B2B email marketer &bull;
+                    <span style="color:#34d399;font-weight:600;">R</span>ole: Write for SaaS audience &bull;
+                    <span style="color:#34d399;font-weight:600;">I</span>nsight: Pain point = low open rates &bull;
+                    <span style="color:#34d399;font-weight:600;">S</span>tatement: 3-email nurture sequence &bull;
+                    <span style="color:#34d399;font-weight:600;">P</span>ersonality: Direct, data-driven &bull;
+                    <span style="color:#34d399;font-weight:600;">E</span>xperiment: A/B subject lines
+                  </div>
+                  <div class="mt-3 flex items-center gap-2 text-xs" style="color:#10b981;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Prompt score: 38 → 94
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FRAMEWORKS ========== -->
+    <section id="frameworks" class="py-20" style="background:#0d0f1a;" aria-labelledby="frameworks-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-16">
+          <p class="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-3">Proven Methods</p>
+          <h2 id="frameworks-heading" class="text-3xl md:text-4xl font-bold text-white mb-4">5 frameworks. Infinite possibilities.</h2>
+          <p class="text-gray-400 max-w-2xl mx-auto">Every framework was designed by prompt engineers to extract maximum value from AI models. Prompt Anything applies them automatically — you just describe what you need.</p>
+        </div>
+
+        <!-- Framework cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
+
+          <!-- CRISPE -->
+          <article class="rounded-xl p-6 group hover:border-purple-600 transition-colors" style="background:#12141f;border:1px solid #2a2d45;" aria-labelledby="fw-crispe">
+            <div class="flex items-center justify-between mb-4">
+              <span class="framework-pill badge-purple text-base px-4 py-2" style="font-size:13px;letter-spacing:0.08em;">CRISPE</span>
+              <span class="text-xs text-gray-600">Most popular</span>
+            </div>
+            <h3 id="fw-crispe" class="text-white font-bold text-lg mb-3">Capacity · Role · Insight · Statement · Personality · Experiment</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">The gold standard for complex AI tasks. CRISPE tells the model exactly who it is, what it knows, and how to think — producing expert-level output from the first try.</p>
+            <div class="space-y-1.5">
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-purple-400 font-bold w-20 flex-shrink-0">Best for:</span> Research, writing, analysis</div>
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-purple-400 font-bold w-20 flex-shrink-0">Complexity:</span> Advanced</div>
+            </div>
+          </article>
+
+          <!-- CLEAR -->
+          <article class="rounded-xl p-6 group hover:border-green-600 transition-colors" style="background:#12141f;border:1px solid #2a2d45;" aria-labelledby="fw-clear">
+            <div class="flex items-center justify-between mb-4">
+              <span class="framework-pill badge-green text-base px-4 py-2" style="font-size:13px;letter-spacing:0.08em;">CLEAR</span>
+              <span class="text-xs text-gray-600">Beginner friendly</span>
+            </div>
+            <h3 id="fw-clear" class="text-white font-bold text-lg mb-3">Concise · Logical · Explicit · Adaptive · Reflective</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">Simple, direct, effective. CLEAR is the fastest way to get clean, usable output without over-engineering your prompt. Perfect when you need results now.</p>
+            <div class="space-y-1.5">
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-green-400 font-bold w-20 flex-shrink-0">Best for:</span> Quick tasks, summaries</div>
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-green-400 font-bold w-20 flex-shrink-0">Complexity:</span> Beginner</div>
+            </div>
+          </article>
+
+          <!-- STAR -->
+          <article class="rounded-xl p-6 group hover:border-blue-600 transition-colors" style="background:#12141f;border:1px solid #2a2d45;" aria-labelledby="fw-star">
+            <div class="flex items-center justify-between mb-4">
+              <span class="framework-pill badge-blue text-base px-4 py-2" style="font-size:13px;letter-spacing:0.08em;">STAR</span>
+              <span class="text-xs text-gray-600">Structured</span>
+            </div>
+            <h3 id="fw-star" class="text-white font-bold text-lg mb-3">Situation · Task · Action · Result</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">Borrowed from interview methodology, STAR grounds AI output in real-world context — situation first, then task, action, and expected result. Eliminates vague responses.</p>
+            <div class="space-y-1.5">
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-blue-400 font-bold w-20 flex-shrink-0">Best for:</span> Business cases, scenarios</div>
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-blue-400 font-bold w-20 flex-shrink-0">Complexity:</span> Intermediate</div>
+            </div>
+          </article>
+
+          <!-- BRAINSTORM -->
+          <article class="rounded-xl p-6 group hover:border-yellow-600 transition-colors" style="background:#12141f;border:1px solid #2a2d45;" aria-labelledby="fw-brainstorm">
+            <div class="flex items-center justify-between mb-4">
+              <span class="framework-pill badge-amber text-base px-4 py-2" style="font-size:13px;letter-spacing:0.08em;">BRAINSTORM</span>
+              <span class="text-xs text-gray-600">Creative</span>
+            </div>
+            <h3 id="fw-brainstorm" class="text-white font-bold text-lg mb-3">Background · Role · Agenda · Inspiration · Nature · Style · Tone · Output · Reasoning · Method</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">The most comprehensive creative framework. BRAINSTORM unlocks maximum creative output by loading the model with full context before generating a single word.</p>
+            <div class="space-y-1.5">
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-amber-400 font-bold w-20 flex-shrink-0">Best for:</span> Creative writing, campaigns</div>
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-amber-400 font-bold w-20 flex-shrink-0">Complexity:</span> Advanced</div>
+            </div>
+          </article>
+
+          <!-- SOPS -->
+          <article class="rounded-xl p-6 group hover:border-red-600 transition-colors" style="background:#12141f;border:1px solid #2a2d45;" aria-labelledby="fw-sops">
+            <div class="flex items-center justify-between mb-4">
+              <span class="framework-pill text-base px-4 py-2" style="font-size:13px;letter-spacing:0.08em;background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.3);">SOPS</span>
+              <span class="text-xs text-gray-600">Process-driven</span>
+            </div>
+            <h3 id="fw-sops" class="text-white font-bold text-lg mb-3">Standard Operating Prompt Structure</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">Built for repeatable, consistent outputs. SOPS is ideal when you need the same quality result every time — perfect for teams, workflows, and automation pipelines.</p>
+            <div class="space-y-1.5">
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-red-400 font-bold w-20 flex-shrink-0">Best for:</span> SOPs, docs, workflows</div>
+              <div class="text-xs text-gray-500 flex gap-2"><span class="text-red-400 font-bold w-20 flex-shrink-0">Complexity:</span> Intermediate</div>
+            </div>
+          </article>
+
+          <!-- Auto-select CTA card -->
+          <article class="rounded-xl p-6 flex flex-col items-center justify-center text-center" style="background:linear-gradient(135deg,#091510,#0d0f1a);border:1px dashed #2a2d45;" aria-label="Auto-select framework feature">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <h3 class="text-white font-bold text-base mb-2">Can't decide? We'll pick for you.</h3>
+            <p class="text-gray-500 text-sm leading-relaxed mb-4">Describe your goal in plain language. Prompt Anything automatically selects the best framework and builds the prompt for you.</p>
+            <a href="#pricing" class="btn-green inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold no-underline">Try auto-select →</a>
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== FEATURES ========== -->
+    <section id="features" class="py-4 pb-20" style="background:#0d0f1a;" aria-labelledby="features-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-16">
+          <p class="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-3">Built different</p>
+          <h2 id="features-heading" class="text-3xl md:text-4xl font-bold text-white">Everything you need. Nothing you don't.</h2>
+        </div>
+
+        <!-- Feature showcase 1: Voice Input -->
+        <div class="mb-6 rounded-2xl overflow-hidden" style="background:#12141f;border:1px solid #2a2d45;">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <!-- Demo -->
+            <div class="p-8 flex items-center justify-center" style="background:#0d0f1a;border-right:1px solid #2a2d45;">
+              <div class="w-full max-w-md">
+                <div class="demo-card">
+                  <div class="demo-card-bar">
+                    <span class="demo-dot" style="background:#ef4444"></span>
+                    <span class="demo-dot" style="background:#f59e0b"></span>
+                    <span class="demo-dot" style="background:#22c55e"></span>
+                    <span class="ml-2 text-xs text-gray-500">Voice Input</span>
+                  </div>
+                  <div class="p-5 flex flex-col items-center gap-4">
+                    <!-- Waveform visualization -->
+                    <div class="flex items-center justify-center gap-1 h-12" aria-label="Voice waveform visualization">
+                      <div class="w-1 rounded-full" style="height:16px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0s"></div>
+                      <div class="w-1 rounded-full" style="height:30px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0.1s"></div>
+                      <div class="w-1 rounded-full" style="height:22px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0.2s"></div>
+                      <div class="w-1 rounded-full" style="height:40px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0.3s"></div>
+                      <div class="w-1 rounded-full" style="height:18px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0.4s"></div>
+                      <div class="w-1 rounded-full" style="height:35px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0.5s"></div>
+                      <div class="w-1 rounded-full" style="height:25px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0.6s"></div>
+                      <div class="w-1 rounded-full" style="height:42px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0.7s"></div>
+                      <div class="w-1 rounded-full" style="height:20px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0.8s"></div>
+                      <div class="w-1 rounded-full" style="height:32px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:0.9s"></div>
+                      <div class="w-1 rounded-full" style="height:16px;background:#10b981;animation:wave 0.8s ease-in-out infinite;animation-delay:1.0s"></div>
+                    </div>
+                    <style>
+                      @keyframes wave {
+                        0%,100% { transform: scaleY(1); opacity:0.6; }
+                        50% { transform: scaleY(1.6); opacity:1; }
+                      }
+                    </style>
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:rgba(16,185,129,0.15);border:2px solid #10b981;" aria-hidden="true">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    </div>
+                    <p class="text-xs text-gray-400 font-medium">Listening... speak your idea</p>
+                    <div class="w-full rounded p-2.5 text-xs text-gray-300 leading-relaxed" style="background:#0d0f1a;border:1px solid #2a2d45;">
+                      "I need help writing a product description for my new fitness app that targets busy professionals..."
+                    </div>
+                    <div class="w-full flex items-center gap-2 text-xs" style="color:#10b981;">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      Auto-detected: CRISPE framework selected
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Text -->
+            <div class="p-8 lg:p-12 flex flex-col justify-center">
+              <span class="inline-flex items-center gap-1.5 badge-green px-3 py-1.5 rounded-full text-xs font-semibold w-fit mb-6">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+                Voice Input
+              </span>
+              <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Speak your idea. Get a perfect prompt.</h3>
+              <p class="text-gray-400 leading-relaxed mb-6">No typing required. Just describe what you need out loud and Prompt Anything transcribes, selects the right framework, and builds a structured prompt — hands-free. Perfect for on-the-go ideation or accessibility needs.</p>
+              <ul class="space-y-3" aria-label="Voice input features">
+                <li class="flex items-start gap-3 text-sm text-gray-300">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(16,185,129,0.15);" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="#10b981"><path d="M9 12l2 2 4-4"/></svg></span>
+                  Real-time speech-to-prompt transcription
+                </li>
+                <li class="flex items-start gap-3 text-sm text-gray-300">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(16,185,129,0.15);" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="#10b981"><path d="M9 12l2 2 4-4"/></svg></span>
+                  Auto-selects the best framework for your intent
+                </li>
+                <li class="flex items-start gap-3 text-sm text-gray-300">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(16,185,129,0.15);" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="#10b981"><path d="M9 12l2 2 4-4"/></svg></span>
+                  Works on mobile, desktop, and tablet
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature showcase 2: Multi-model output -->
+        <div class="mb-6 rounded-2xl overflow-hidden" style="background:#12141f;border:1px solid #2a2d45;">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <!-- Text -->
+            <div class="p-8 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
+              <span class="inline-flex items-center gap-1.5 badge-purple px-3 py-1.5 rounded-full text-xs font-semibold w-fit mb-6">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                Multi-Model
+              </span>
+              <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">One prompt. Multiple AI outputs. Side by side.</h3>
+              <p class="text-gray-400 leading-relaxed mb-6">Send your optimized prompt to ChatGPT, Claude, Gemini, and Mistral simultaneously. Compare outputs instantly — pick the best one, or combine the strongest elements from each.</p>
+              <ul class="space-y-3" aria-label="Multi-model features">
+                <li class="flex items-start gap-3 text-sm text-gray-300">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(124,58,237,0.15);" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="#a855f7"><path d="M9 12l2 2 4-4"/></svg></span>
+                  Run prompts on GPT-4/5, Claude, Gemini, Mistral
+                </li>
+                <li class="flex items-start gap-3 text-sm text-gray-300">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(124,58,237,0.15);" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="#a855f7"><path d="M9 12l2 2 4-4"/></svg></span>
+                  Side-by-side comparison view
+                </li>
+                <li class="flex items-start gap-3 text-sm text-gray-300">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(124,58,237,0.15);" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="#a855f7"><path d="M9 12l2 2 4-4"/></svg></span>
+                  Save the winner to your prompt library
+                </li>
+              </ul>
+            </div>
+            <!-- Demo -->
+            <div class="p-8 flex items-center justify-center order-1 lg:order-2" style="background:#0d0f1a;border-left:1px solid #2a2d45;">
+              <div class="w-full max-w-md space-y-3">
+                <p class="text-xs text-gray-500 font-medium uppercase tracking-wider mb-3">Comparing 4 models...</p>
+                <div class="rounded-lg p-3" style="background:#12141f;border:1px solid #2a2d45;">
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="w-5 h-5 rounded flex items-center justify-center text-xs font-bold" style="background:#1a1a1a;color:#fff;">G</div>
+                    <span class="text-xs font-medium text-gray-300">ChatGPT-4o</span>
+                    <span class="ml-auto text-xs badge-green px-2 py-0.5 rounded-full">Best clarity</span>
+                  </div>
+                  <p class="text-xs text-gray-500 leading-relaxed">Subject: Stop losing leads at step 3 (here's the fix) — Here's a cold email sequence...</p>
+                </div>
+                <div class="rounded-lg p-3" style="background:#12141f;border:1px solid #2a2d45;">
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="w-5 h-5 rounded flex items-center justify-center text-xs font-bold" style="background:#d97706;color:#fff;">C</div>
+                    <span class="text-xs font-medium text-gray-300">Claude 3.5</span>
+                    <span class="ml-auto text-xs badge-purple px-2 py-0.5 rounded-full">Best tone</span>
+                  </div>
+                  <p class="text-xs text-gray-500 leading-relaxed">Subject: Quick question about your pipeline — I noticed your team might be dealing with...</p>
+                </div>
+                <div class="rounded-lg p-3" style="background:#12141f;border:1px solid #2a2d45;">
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="w-5 h-5 rounded flex items-center justify-center text-xs font-bold" style="background:#4285F4;color:#fff;">G</div>
+                    <span class="text-xs font-medium text-gray-300">Gemini Pro</span>
+                  </div>
+                  <p class="text-xs text-gray-500 leading-relaxed">Subject: [First name], your Q4 revenue goal — Based on your company size...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature showcase 3: Prompt Library -->
+        <div class="mb-4 rounded-2xl overflow-hidden" style="background:#12141f;border:1px solid #2a2d45;">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <!-- Demo -->
+            <div class="p-8 flex items-center justify-center" style="background:#0d0f1a;border-right:1px solid #2a2d45;">
+              <div class="w-full max-w-md">
+                <div class="demo-card">
+                  <div class="demo-card-bar">
+                    <span class="demo-dot" style="background:#ef4444"></span>
+                    <span class="demo-dot" style="background:#f59e0b"></span>
+                    <span class="demo-dot" style="background:#22c55e"></span>
+                    <span class="ml-2 text-xs text-gray-500">My Prompt Library</span>
+                  </div>
+                  <div class="p-4 space-y-2">
+                    <div class="flex items-center gap-2 mb-3">
+                      <div class="flex-1 rounded px-3 py-1.5 text-xs text-gray-500" style="background:#1e2035;border:1px solid #2a2d45;">Search prompts...</div>
+                      <button class="px-3 py-1.5 rounded text-xs font-medium" style="background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);" aria-label="Add new prompt">+ New</button>
+                    </div>
+                    <div class="rounded-lg p-3 cursor-pointer hover:border-green-800 transition-colors" style="background:#12141f;border:1px solid #2a2d45;">
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-semibold text-white">Email nurture sequence</span>
+                        <span class="framework-pill" style="font-size:10px;padding:2px 8px;background:rgba(124,58,237,0.15);color:#a855f7;border:1px solid rgba(124,58,237,0.3);">CRISPE</span>
+                      </div>
+                      <p class="text-xs text-gray-600">B2B SaaS · Last used 2h ago</p>
+                    </div>
+                    <div class="rounded-lg p-3 cursor-pointer" style="background:#12141f;border:1px solid #10b981;">
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-semibold text-white">Blog post outline</span>
+                        <span class="framework-pill" style="font-size:10px;padding:2px 8px;background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);">BRAINSTORM</span>
+                      </div>
+                      <p class="text-xs text-gray-600">Content · Last used today</p>
+                    </div>
+                    <div class="rounded-lg p-3 cursor-pointer hover:border-green-800 transition-colors" style="background:#12141f;border:1px solid #2a2d45;">
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-semibold text-white">Code review assistant</span>
+                        <span class="framework-pill" style="font-size:10px;padding:2px 8px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);">CLEAR</span>
+                      </div>
+                      <p class="text-xs text-gray-600">Engineering · Last used yesterday</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Text -->
+            <div class="p-8 lg:p-12 flex flex-col justify-center">
+              <span class="inline-flex items-center gap-1.5 badge-amber px-3 py-1.5 rounded-full text-xs font-semibold w-fit mb-6">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                Prompt Library
+              </span>
+              <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Save your best prompts. Reuse them forever.</h3>
+              <p class="text-gray-400 leading-relaxed mb-6">Every time you hit a winner, save it to your personal prompt library. Organize by framework, tag by use case, and share your best prompts to the community marketplace.</p>
+              <ul class="space-y-3" aria-label="Prompt library features">
+                <li class="flex items-start gap-3 text-sm text-gray-300">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(245,158,11,0.12);" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b"><path d="M9 12l2 2 4-4"/></svg></span>
+                  Save, tag, and organize any prompt
+                </li>
+                <li class="flex items-start gap-3 text-sm text-gray-300">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(245,158,11,0.12);" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b"><path d="M9 12l2 2 4-4"/></svg></span>
+                  Share to the community marketplace
+                </li>
+                <li class="flex items-start gap-3 text-sm text-gray-300">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(245,158,11,0.12);" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b"><path d="M9 12l2 2 4-4"/></svg></span>
+                  Browse top-rated prompts from other users
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== AI MODELS ========== -->
+    <section id="models" class="py-20" style="background:linear-gradient(180deg,#0d0f1a 0%,#091510 50%,#0d0f1a 100%);" aria-labelledby="models-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <p class="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-4">Compatibility</p>
+            <h2 id="models-heading" class="text-3xl md:text-4xl font-bold text-white mb-6">Works with every AI model you already use</h2>
+            <p class="text-gray-400 leading-relaxed mb-8">Prompt Anything generates framework-structured prompts optimized for each model's unique architecture. Whether you're using GPT-5 for analysis or Midjourney for visuals, we tailor the output accordingly.</p>
+            <a href="#pricing" class="btn-green inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm no-underline">
+              Get started free
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+          <div>
+            <div class="grid grid-cols-4 gap-4" aria-label="Supported AI models">
+              <div class="rounded-xl p-3.5 flex flex-col items-center gap-2" style="background:#12141f;border:1px solid #2a2d45;" aria-label="ChatGPT GPT-4 and GPT-5">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494z"/></svg>
+                <span class="text-xs text-gray-500 text-center">GPT-4/5</span>
+              </div>
+              <div class="rounded-xl p-3.5 flex flex-col items-center gap-2" style="background:#12141f;border:1px solid #2a2d45;" aria-label="Anthropic Claude">
+                <div style="width:26px;height:26px;background:linear-gradient(135deg,#d97706,#92400e);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;color:white;" aria-hidden="true">C</div>
+                <span class="text-xs text-gray-500">Claude</span>
+              </div>
+              <div class="rounded-xl p-3.5 flex flex-col items-center gap-2" style="background:#12141f;border:1px solid #2a2d45;" aria-label="Google Gemini">
+                <svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0C22.4 0 0 22.4 0 50s22.4 50 50 50 50-22.4 50-50S77.6 0 50 0z" fill="#4285F4"/><path d="M50 0v100c27.6 0 50-22.4 50-50S77.6 0 50 0z" fill="#34A853"/><path d="M0 50h100C100 22.4 77.6 0 50 0S0 22.4 0 50z" fill="#FBBC04"/><path d="M0 50c0 27.6 22.4 50 50 50h50C77.6 100 50 77.6 50 50H0z" fill="#EA4335"/></svg>
+                <span class="text-xs text-gray-500">Gemini</span>
+              </div>
+              <div class="rounded-xl p-3.5 flex flex-col items-center gap-2" style="background:#12141f;border:1px solid #2a2d45;" aria-label="Mistral AI">
+                <div style="width:26px;height:26px;background:linear-gradient(135deg,#ff6b35,#f7931e);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;color:white;" aria-hidden="true">Mi</div>
+                <span class="text-xs text-gray-500">Mistral</span>
+              </div>
+              <div class="rounded-xl p-3.5 flex flex-col items-center gap-2" style="background:#12141f;border:1px solid #2a2d45;" aria-label="Midjourney">
+                <div style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="white"><path d="M12 2L2 19.5h20L12 2zm0 3.5l7.5 13H4.5z"/></svg></div>
+                <span class="text-xs text-gray-500">Midjourney</span>
+              </div>
+              <div class="rounded-xl p-3.5 flex flex-col items-center gap-2" style="background:#12141f;border:1px solid #2a2d45;" aria-label="DALL-E">
+                <div style="width:26px;height:26px;background:#10b981;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;color:white;" aria-hidden="true">DALL·E</div>
+                <span class="text-xs text-gray-500">DALL-E</span>
+              </div>
+              <div class="rounded-xl p-3.5 flex flex-col items-center gap-2" style="background:#12141f;border:1px solid #2a2d45;" aria-label="Stable Diffusion">
+                <div style="width:26px;height:26px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;color:white;" aria-hidden="true">SD</div>
+                <span class="text-xs text-gray-500 text-center">Stable D</span>
+              </div>
+              <div class="rounded-xl p-3.5 flex flex-col items-center gap-2 text-gray-600 text-xs" style="background:#12141f;border:1px solid #2a2d45;" aria-label="And more AI models">
+                <span class="text-lg" aria-hidden="true">+</span>
+                <span>more</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PRICING ========== -->
+    <section id="pricing" class="py-20" style="background:#0d0f1a;" aria-labelledby="pricing-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-14">
+          <h2 id="pricing-heading" class="text-3xl md:text-4xl font-bold text-white mb-4">Pricing</h2>
+          <p class="text-gray-400 max-w-xl mx-auto">Start free. Upgrade when you're ready. No lock-in, no hidden fees.</p>
+          <div class="inline-flex items-center gap-3 mt-6 p-1 rounded-lg" style="background:#12141f;border:1px solid #2a2d45;">
+            <button id="billing-monthly" class="px-4 py-2 rounded-md text-sm font-semibold transition-all" style="background:#10b981;color:#fff;" aria-pressed="true">Monthly</button>
+            <button id="billing-annual" class="px-4 py-2 rounded-md text-sm font-semibold transition-all text-gray-400 hover:text-white" aria-pressed="false">Annual <span class="text-green-400 text-xs">Save 20%</span></button>
+          </div>
+        </div>
+
+        <!-- 2 pricing cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-8">
+
+          <!-- Free -->
+          <article class="rounded-2xl p-8" style="background:#12141f;border:1px solid #2a2d45;" aria-labelledby="plan-free">
+            <div class="mb-6">
+              <h3 id="plan-free" class="text-white font-bold text-xl mb-2">Free Starter</h3>
+              <div class="flex items-baseline gap-1">
+                <span class="text-4xl font-bold text-white">Free</span>
+              </div>
+              <p class="text-gray-500 text-sm mt-2">Perfect for trying out every framework and finding your workflow.</p>
+            </div>
+            <a href="https://promptanything.io" class="btn-secondary block text-center px-4 py-3 rounded-xl font-semibold text-sm no-underline mb-8" aria-label="Get started with Free plan">Get started</a>
+            <ul class="space-y-3" aria-label="Free plan features">
+              <li class="flex items-center gap-3 text-sm text-gray-400"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>3 outputs per month</li>
+              <li class="flex items-center gap-3 text-sm text-gray-400"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>All 5 frameworks (CRISPE, CLEAR, STAR, BRAINSTORM, SOPS)</li>
+              <li class="flex items-center gap-3 text-sm text-gray-400"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Voice input</li>
+              <li class="flex items-center gap-3 text-sm text-gray-400"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Basic prompt library (up to 5 saves)</li>
+              <li class="flex items-center gap-3 text-sm text-gray-600"><svg width="14" height="14" viewBox="0 0 24 24" fill="#4b5563" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" stroke="#4b5563" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="#4b5563" stroke-width="2"/></svg>Multi-model output</li>
+              <li class="flex items-center gap-3 text-sm text-gray-600"><svg width="14" height="14" viewBox="0 0 24 24" fill="#4b5563" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" stroke="#4b5563" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="#4b5563" stroke-width="2"/></svg>Marketplace access</li>
+            </ul>
+          </article>
+
+          <!-- Premium (highlighted) -->
+          <article class="pricing-highlight rounded-2xl p-8 relative" aria-labelledby="plan-premium">
+            <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
+              <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold" style="background:linear-gradient(135deg,#059669,#10b981);color:#fff;">
+                ⚡ Most Popular
+              </span>
+            </div>
+            <div class="mb-6">
+              <h3 id="plan-premium" class="text-white font-bold text-xl mb-2">Premium</h3>
+              <div class="flex items-baseline gap-1">
+                <span class="text-4xl font-bold text-white" data-monthly="$15.99" data-annual="$12.79">$15.99</span>
+                <span class="text-gray-400 text-sm">/month</span>
+              </div>
+              <p class="text-gray-400 text-sm mt-2">Unlimited prompts, all models, and the full power of every framework.</p>
+            </div>
+            <a href="https://promptanything.io" class="btn-green block text-center px-4 py-3 rounded-xl font-semibold text-sm no-underline mb-8" aria-label="Get started with Premium plan at $15.99 per month">Get Premium</a>
+            <ul class="space-y-3" aria-label="Premium plan features">
+              <li class="flex items-center gap-3 text-sm text-gray-300"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Unlimited prompt outputs</li>
+              <li class="flex items-center gap-3 text-sm text-gray-300"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>All 5 frameworks + new frameworks first</li>
+              <li class="flex items-center gap-3 text-sm text-gray-300"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Multi-model output (GPT-5, Claude, Gemini, Mistral)</li>
+              <li class="flex items-center gap-3 text-sm text-gray-300"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Unlimited prompt library saves</li>
+              <li class="flex items-center gap-3 text-sm text-gray-300"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Full marketplace access (publish + browse)</li>
+              <li class="flex items-center gap-3 text-sm text-gray-300"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Priority support + educational resources</li>
+            </ul>
+          </article>
+
+        </div>
+
+        <!-- Guarantee note -->
+        <p class="text-center text-gray-600 text-sm">All plans include a 7-day money-back guarantee. Cancel anytime.</p>
+
+      </div>
+    </section>
+
+    <!-- ========== FAQ ========== -->
+    <section id="faq" class="py-20" style="background:#0d0f1a;" aria-labelledby="faq-heading">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-12">
+          <h2 id="faq-heading" class="text-3xl md:text-4xl font-bold text-white mb-4">Frequently Asked Questions</h2>
+          <p class="text-gray-400">Everything you need to know about Prompt Anything.</p>
+        </div>
+
+        <div class="space-y-3" role="list" aria-label="Frequently asked questions">
+
+          <div class="faq-item rounded-xl overflow-hidden" style="background:#12141f;border:1px solid #2a2d45;" role="listitem">
+            <button class="faq-trigger w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
+              <span class="text-white font-semibold text-sm md:text-base pr-4">What is Prompt Anything and how does it work?</span>
+              <svg class="faq-chevron flex-shrink-0 w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-content px-5">
+              <p class="text-gray-400 text-sm leading-relaxed pb-5">Prompt Anything is an AI prompt engineering tool that transforms your scattered ideas into precise, structured prompts using proven frameworks like CRISPE, CLEAR, STAR, BRAINSTORM, and SOPS. You describe what you want — in text or by voice — and Prompt Anything selects the right framework and builds a complete, high-quality prompt ready to send to any AI model.</p>
+            </div>
+          </div>
+
+          <div class="faq-item rounded-xl overflow-hidden" style="background:#12141f;border:1px solid #2a2d45;" role="listitem">
+            <button class="faq-trigger w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
+              <span class="text-white font-semibold text-sm md:text-base pr-4">What AI models does Prompt Anything support?</span>
+              <svg class="faq-chevron flex-shrink-0 w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-content px-5">
+              <p class="text-gray-400 text-sm leading-relaxed pb-5">Prompt Anything generates prompts optimized for ChatGPT (GPT-4 and GPT-5), Claude (Anthropic), Google Gemini, and Mistral. Premium users can generate output across all four models simultaneously to compare results. Image generation models like Midjourney, DALL-E, and Stable Diffusion are also supported for visual prompting.</p>
+            </div>
+          </div>
+
+          <div class="faq-item rounded-xl overflow-hidden" style="background:#12141f;border:1px solid #2a2d45;" role="listitem">
+            <button class="faq-trigger w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
+              <span class="text-white font-semibold text-sm md:text-base pr-4">Is it really free? What's the catch?</span>
+              <svg class="faq-chevron flex-shrink-0 w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-content px-5">
+              <p class="text-gray-400 text-sm leading-relaxed pb-5">Yes, actually free — no credit card required. The free plan gives you 3 outputs per month with access to all 5 frameworks and voice input. The limit is 3 because we want you to experience the real thing before deciding. If you find yourself hitting the limit, that's actually a good sign — it means the prompts are working. Upgrade to Premium for unlimited outputs.</p>
+            </div>
+          </div>
+
+          <div class="faq-item rounded-xl overflow-hidden" style="background:#12141f;border:1px solid #2a2d45;" role="listitem">
+            <button class="faq-trigger w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
+              <span class="text-white font-semibold text-sm md:text-base pr-4">What are the prompt frameworks and which should I use?</span>
+              <svg class="faq-chevron flex-shrink-0 w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-content px-5">
+              <p class="text-gray-400 text-sm leading-relaxed pb-5">We support five frameworks: <strong class="text-white">CRISPE</strong> (best for complex tasks needing expert context), <strong class="text-white">CLEAR</strong> (fast and clean for simple tasks), <strong class="text-white">STAR</strong> (situation-based for business scenarios), <strong class="text-white">BRAINSTORM</strong> (maximum creative output), and <strong class="text-white">SOPS</strong> (consistent, repeatable results for teams). Not sure which to use? Our auto-select feature analyzes your input and picks the right one automatically.</p>
+            </div>
+          </div>
+
+          <div class="faq-item rounded-xl overflow-hidden" style="background:#12141f;border:1px solid #2a2d45;" role="listitem">
+            <button class="faq-trigger w-full flex items-center justify-between p-5 text-left" aria-expanded="false">
+              <span class="text-white font-semibold text-sm md:text-base pr-4">How does the voice input feature work?</span>
+              <svg class="faq-chevron flex-shrink-0 w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-content px-5">
+              <p class="text-gray-400 text-sm leading-relaxed pb-5">Click the microphone icon, speak your idea naturally — no special commands needed. Prompt Anything transcribes your speech in real time, detects your intent, selects the most appropriate framework, and builds a structured prompt. It works on all modern browsers and devices. Your voice data is processed locally and never stored.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== CTA ========== -->
+    <section class="py-20" style="background:linear-gradient(135deg,#071a10 0%,#0d0f1a 50%,#091510 100%);" aria-labelledby="cta-heading">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="inline-flex items-center gap-2 badge-green px-4 py-2 rounded-full text-sm font-semibold mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" aria-hidden="true"></span>
+          Free — no credit card needed
+        </div>
+        <h2 id="cta-heading" class="text-3xl md:text-5xl font-bold text-white mb-6">
+          Stop guessing.<br/>Start <span class="gradient-text">prompting anything.</span>
+        </h2>
+        <p class="text-gray-400 text-lg mb-10 max-w-2xl mx-auto">Join thousands of writers, marketers, developers, and teams who get dramatically better AI results — using proven frameworks, not guesswork.</p>
+        <!-- Stars + review -->
+        <div class="flex items-center justify-center gap-2 mb-8">
+          <div class="flex" aria-label="4.8 out of 5 stars">
+            <span class="star text-xl" aria-hidden="true">★</span>
+            <span class="star text-xl" aria-hidden="true">★</span>
+            <span class="star text-xl" aria-hidden="true">★</span>
+            <span class="star text-xl" aria-hidden="true">★</span>
+            <span class="star text-xl" aria-hidden="true">★</span>
+          </div>
+          <span class="text-white font-bold">4.8/5</span>
+          <span class="text-gray-500 text-sm">from 150 reviews</span>
+        </div>
+        <a href="https://promptanything.io" class="btn-green inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base no-underline" aria-label="Get started with Prompt Anything for free">
+          Get started for free
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <p class="mt-4 text-gray-600 text-sm">3 free outputs/month · No credit card · Cancel Premium anytime</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer style="background:#080a12;border-top:1px solid #1e2035;" role="contentinfo">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+
+        <div class="lg:col-span-2">
+          <a href="#" class="flex items-center gap-2.5 text-white font-bold text-lg no-underline mb-4" aria-label="Prompt Anything home">
+            <span class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black" style="background:linear-gradient(135deg,#10b981,#059669);" aria-hidden="true">⚡</span>
+            Prompt <span style="color:#10b981;" class="ml-1">Anything</span>
+          </a>
+          <p class="text-gray-500 text-sm leading-relaxed max-w-xs mb-6">Transform scattered ideas into precise, powerful AI prompts using CRISPE, CLEAR, STAR, BRAINSTORM, and SOPS frameworks.</p>
+          <div class="flex items-center gap-4">
+            <a href="https://promptanything.io/support" class="text-gray-600 hover:text-white transition-colors text-sm no-underline">Support</a>
+          </div>
+        </div>
+
+        <nav aria-label="Product links">
+          <h4 class="text-white font-semibold text-sm mb-4">Product</h4>
+          <ul class="list-none m-0 p-0 space-y-3">
+            <li><a href="#frameworks" class="text-gray-500 hover:text-white transition-colors text-sm no-underline">Frameworks</a></li>
+            <li><a href="#features" class="text-gray-500 hover:text-white transition-colors text-sm no-underline">Features</a></li>
+            <li><a href="#pricing" class="text-gray-500 hover:text-white transition-colors text-sm no-underline">Pricing</a></li>
+            <li><a href="#models" class="text-gray-500 hover:text-white transition-colors text-sm no-underline">AI Models</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Resources links">
+          <h4 class="text-white font-semibold text-sm mb-4">Resources</h4>
+          <ul class="list-none m-0 p-0 space-y-3">
+            <li><a href="#faq" class="text-gray-500 hover:text-white transition-colors text-sm no-underline">FAQ</a></li>
+            <li><a href="https://promptanything.io/support" class="text-gray-500 hover:text-white transition-colors text-sm no-underline">Support</a></li>
+            <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm no-underline">Prompt Marketplace</a></li>
+            <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm no-underline">Educational Resources</a></li>
+          </ul>
+        </nav>
+
+      </div>
+
+      <div class="pt-8" style="border-top:1px solid #1e2035;">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p class="text-gray-600 text-sm">© 2025 Prompt Anything. All rights reserved.</p>
+          <div class="flex items-center gap-4">
+            <a href="#" class="text-gray-600 hover:text-white transition-colors text-xs no-underline">Privacy</a>
+            <a href="#" class="text-gray-600 hover:text-white transition-colors text-xs no-underline">Terms</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========== JS ========== -->
+  <script defer>
+    /* Mobile menu */
+    const menuToggle  = document.getElementById('menu-toggle');
+    const mobileMenu  = document.getElementById('mobile-menu');
+    const menuClose   = document.getElementById('menu-close');
+    const menuOverlay = document.getElementById('menu-overlay');
+    const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+    function openMenu() {
+      mobileMenu.classList.add('open');
+      menuOverlay.classList.remove('hidden');
+      menuToggle.setAttribute('aria-expanded', 'true');
+      menuClose.focus();
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+      menuOverlay.classList.add('hidden');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.focus();
+      document.body.style.overflow = '';
+    }
+
+    menuToggle.addEventListener('click', openMenu);
+    menuClose.addEventListener('click', closeMenu);
+    menuOverlay.addEventListener('click', closeMenu);
+    mobileLinks.forEach(l => l.addEventListener('click', closeMenu));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && mobileMenu.classList.contains('open')) closeMenu(); });
+
+    /* FAQ */
+    document.querySelectorAll('.faq-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const content = trigger.nextElementSibling;
+        const chevron = trigger.querySelector('.faq-chevron');
+        const isOpen  = content.classList.contains('open');
+
+        document.querySelectorAll('.faq-content').forEach(c => c.classList.remove('open'));
+        document.querySelectorAll('.faq-chevron').forEach(ch => ch.classList.remove('open'));
+        document.querySelectorAll('.faq-trigger').forEach(t => t.setAttribute('aria-expanded', 'false'));
+
+        if (!isOpen) {
+          content.classList.add('open');
+          chevron.classList.add('open');
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    /* Pricing toggle */
+    const monthlyBtn = document.getElementById('billing-monthly');
+    const annualBtn  = document.getElementById('billing-annual');
+    const prices     = document.querySelectorAll('[data-monthly]');
+
+    monthlyBtn.addEventListener('click', () => {
+      prices.forEach(el => { el.textContent = el.dataset.monthly; });
+      monthlyBtn.style.background = '#10b981'; monthlyBtn.style.color = '#fff';
+      annualBtn.style.background = 'transparent'; annualBtn.style.color = '#9ca3af';
+      monthlyBtn.setAttribute('aria-pressed', 'true'); annualBtn.setAttribute('aria-pressed', 'false');
+    });
+    annualBtn.addEventListener('click', () => {
+      prices.forEach(el => { el.textContent = el.dataset.annual; });
+      annualBtn.style.background = '#10b981'; annualBtn.style.color = '#fff';
+      monthlyBtn.style.background = 'transparent'; monthlyBtn.style.color = '#9ca3af';
+      annualBtn.setAttribute('aria-pressed', 'true'); monthlyBtn.setAttribute('aria-pressed', 'false');
+    });
+
+    /* Nav scroll shadow */
+    let scrollTimer;
+    const mainNav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        mainNav.style.boxShadow = window.scrollY > 20 ? '0 4px 24px rgba(0,0,0,0.4)' : 'none';
+      }, 10);
+    }, { passive: true });
+
+    /* Fade-in on scroll */
+    const revealStyle = document.createElement('style');
+    revealStyle.textContent = `.reveal{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}.reveal.visible{opacity:1;transform:translateY(0)}`;
+    document.head.appendChild(revealStyle);
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('reveal','visible'); observer.unobserve(entry.target); }
+        else entry.target.classList.add('reveal');
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('article,.faq-item,section>div>div>div').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

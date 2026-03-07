@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "server.registerTool code block", "passed": false, "evidence": "Uses raw JSON Schema object syntax (inputSchema: { type: 'object', properties: {...} }) — not server.registerTool with Zod"},
+    {"text": "Description names return fields", "passed": true, "evidence": "Description: 'Returns paginated results of pull requests matching the specified criteria' — somewhat vague but present"},
+    {"text": "Zod with .describe() on 2+ fields", "passed": false, "evidence": "Uses JSON Schema 'description' strings, not Zod .describe() chains — different pattern"},
+    {"text": "readOnlyHint: true", "passed": true, "evidence": "annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }"},
+    {"text": "Pagination with max constraint", "passed": true, "evidence": "per_page: minimum: 1, maximum: 100, default: 30"},
+    {"text": "content + structuredContent returned", "passed": false, "evidence": "No tool handler shown — definition only, no return statement or structuredContent"}
+  ],
+  "summary": {"passed": 3, "failed": 3, "total": 6, "pass_rate": 0.5}
+}

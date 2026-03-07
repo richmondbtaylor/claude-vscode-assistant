@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "mcp-skill", "runs": [{"id": "notion-planning-with_skill", "prompt": "I want to build an MCP server for the Notion API. Claude should be able to list databases, query pages, and create new pages. Where do I start and what tools should I build?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Building an MCP Server for the Notion API\n\n## Phase 1: Research & Planning\n\n### Load Documentation\n\nFetch these before implementing:\n- MCP intro: `https://modelcontextprotocol.io/introduction.md`\n- TypeScript SDK: `https://raw.githubusercontent.com/modelcontextprotocol/typescript-sdk/main/README.md`\n- Notion API: `https://developers.notion.com/reference/intro`\n\n### Notion API Essentials\n\n- **Base URL**: `https://api.notion.com/v1/`\n- **Auth**: `Authorization: Bearer <NOTION_API_KEY>` header\n- **Version**: `Notion-Version: 2022-06-28` header required\n- **Rate limits**: 3 requests/second average; 429 = back off\n- **Pagination**: `start_cursor` + `has_more` + `next_cursor`\n- **Sharing**: Pages/DBs must be explicitly shared with your integration\n\n### Tool Inventory\n\n| Priority | Tool | Annotation |\n|----------|------|------------|\n| 1 | `notion_search` | `readOnlyHint: true` |\n| 1 | `notion_list_databases` | `readOnlyHint: true` |\n| 1 | `notion_get_database` | `readOnlyHint: true` |\n| 1 | `notion_query_database` | `readOnlyHint: true` |\n| 1 | `notion_get_page` | `readOnlyHint: true` |\n| 1 | `notion_get_page_content` | `readOnlyHint: true` |\n| 2 | `notion_create_page` | `destructiveHint: false, idempotentHint: false` |\n| 2 | `notion_update_page` | `idempotentHint: true` |\n\n## Phase 2: Implementation\n\n### Setup\n\n```bash\nmkdir notion-mcp && cd notion-mcp\nnpm init -y\nnpm install @modelcontextprotocol/sdk @notionhq/client zod\nnpm install -D typescript @types/node ts-node\n```\n\n### `src/notion-client.ts` \u00e2\u20ac\u201d Auth & Shared Utilities\n\n```typescript\nimport { Client } from \"@notionhq/client\";\n\nif (!process.env.NOTION_API_KEY) {\n  throw new Error(\"NOTION_API_KEY environment variable is required.\");\n}\n\nexport const notion = new Client({ auth: process.env.NOTION_API_KEY });\n\nexport function notionError(err: unknown, context: string): never {\n  const msg = err instanceof Error ? err.message : String(err);\n  if (msg.includes(\"Could not find\")) {\n    throw new Error(`${context}: Not found. Make sure the page/database is shared with your integration.`);\n  }\n  if (msg.includes(\"Unauthorized\")) {\n    throw new Error(`${context}: Unauthorized. Check NOTION_API_KEY is valid.`);\n  }\n  throw new Error(`${context}: ${msg}`);\n}\n\nexport async function paginate<T>(\n  fn: (cursor?: string) => Promise<{ results: T[]; has_more: boolean; next_cursor: string | null }>,\n  maxResults = 100\n): Promise<T[]> {\n  const results: T[] = [];\n  let cursor: string | undefined;\n  while (results.length < maxResults) {\n    const page = await fn(cursor);\n    results.push(...page.results);\n    if (!page.has_more || !page.next_cursor) break;\n    cursor = page.next_cursor;\n  }\n  return results.slice(0, maxResults);\n}\n```\n\n### `src/index.ts` \u00e2\u20ac\u201d Tools\n\n```typescript\nimport { McpServer } from \"@modelcontextprotocol/sdk/server/mcp.js\";\nimport { StdioServerTransport } from \"@modelcontextprotocol/sdk/server/stdio.js\";\nimport { z } from \"zod\";\nimport { notion, notionError, paginate } from \"./notion-client.js\";\n\nconst server = new McpServer({ name: \"notion-mcp\", version: \"1.0.0\" });\n\nserver.registerTool(\"notion_list_databases\", {\n  description: \"List all Notion databases your integration has access to. Returns database IDs, titles, and property schemas.\",\n  inputSchema: {\n    max_results: z.number().min(1).max(100).default(50).describe(\"Maximum databases to return (1-100)\"),\n  },\n  annotations: { readOnlyHint: true },\n}, async ({ max_results }) => {\n  try {\n    const dbs = await paginate(\n      (cursor) => notion.search({ filter: { object: \"database\" }, start_cursor: cursor, page_size: 100 }) as any,\n      max_results\n    );\n    const result = { count: dbs.length, databases: dbs.map((db: any) => ({\n      id: db.id,\n      title: db.title?.[0]?.plain_text ?? \"(untitled)\",\n      properties: Object.keys(db.properties ?? {}),\n      url: db.url,\n    }))};\n    return { content: [{ type: \"text\", text: JSON.stringify(result, null, 2) }], structuredContent: result };\n  } catch (err) { notionError(err, \"notion_list_databases\"); }\n});\n\nserver.registerTool(\"notion_query_database\", {\n  description: \"Query pages in a Notion database with optional filters. Returns page IDs, titles, and all property values.\",\n  inputSchema: {\n    database_id: z.string().describe(\"Notion database ID (32-char hex or UUID format from the URL)\"),\n    filter: z.string().optional().describe(\"JSON filter object per Notion API spec, e.g. {\\\"property\\\":\\\"Status\\\",\\\"select\\\":{\\\"equals\\\":\\\"Done\\\"}}\"),\n    max_results: z.number().min(1).max(200).default(50).describe(\"Max pages to return (1-200)\"),\n  },\n  annotations: { readOnlyHint: true },\n}, async ({ database_id, filter, max_results }) => {\n  try {\n    const filterObj = filter ? JSON.parse(filter) : undefined;\n    const pages = await paginate(\n      (cursor) => notion.databases.query({ database_id, filter: filterObj, start_cursor: cursor, page_size: 100 }) as any,\n      max_results\n    );\n    const result = { count: pages.length, pages: pages.map((p: any) => ({ id: p.id, properties: p.properties, url: p.url })) };\n    return { content: [{ type: \"text\", text: JSON.stringify(result, null, 2) }], structuredContent: result };\n  } catch (err) { notionError(err, \"notion_query_database\"); }\n});\n\nserver.registerTool(\"notion_get_page\", {\n  description: \"Get a Notion page's metadata and properties (title, status, dates, etc.). Does not include page body content \u00e2\u20ac\u201d use notion_get_page_content for that.\",\n  inputSchema: {\n    page_id: z.string().describe(\"Notion page ID from the URL\"),\n  },\n  annotations: { readOnlyHint: true },\n}, async ({ page_id }) => {\n  try {\n    const page = await notion.pages.retrieve({ page_id });\n    return { content: [{ type: \"text\", text: JSON.stringify(page, null, 2) }], structuredContent: page };\n  } catch (err) { notionError(err, \"notion_get_page\"); }\n});\n\nserver.registerTool(\"notion_get_page_content\", {\n  description: \"Get the body content of a Notion page as an array of blocks (paragraphs, headings, lists, etc.).\",\n  inputSchema: {\n    page_id: z.string().describe(\"Notion page ID from the URL\"),\n    max_blocks: z.number().min(1).max(500).default(100).describe(\"Max blocks to return (1-500)\"),\n  },\n  annotations: { readOnlyHint: true },\n}, async ({ page_id, max_blocks }) => {\n  try {\n    const blocks = await paginate(\n      (cursor) => notion.blocks.children.list({ block_id: page_id, start_cursor: cursor, page_size: 100 }) as any,\n      max_blocks\n    );\n    const result = { page_id, block_count: blocks.length, blocks };\n    return { content: [{ type: \"text\", text: JSON.stringify(result, null, 2) }], structuredContent: result };\n  } catch (err) { notionError(err, \"notion_get_page_content\"); }\n});\n\nserver.registerTool(\"notion_create_page\", {\n  description: \"Create a new Notion page inside a database or as a child of an existing page. Returns the new page ID and URL.\",\n  inputSchema: {\n    parent_id: z.string().describe(\"Database ID (to create a database entry) or page ID (to create a subpage)\"),\n    parent_type: z.enum([\"database\", \"page\"]).describe(\"Whether parent_id is a database or page\"),\n    title: z.string().describe(\"Page title text\"),\n    properties: z.string().optional().describe(\"JSON object of additional database properties, e.g. {\\\"Status\\\":{\\\"select\\\":{\\\"name\\\":\\\"In Progress\\\"}}}\"),\n  },\n  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },\n}, async ({ parent_id, parent_type, title, properties }) => {\n  try {\n    const extraProps = properties ? JSON.parse(properties) : {};\n    const page = await notion.pages.create({\n      parent: parent_type === \"database\" ? { database_id: parent_id } : { page_id: parent_id },\n      properties: {\n        title: { title: [{ text: { content: title } }] },\n        ...extraProps,\n      },\n    });\n    const result = { id: (page as any).id, url: (page as any).url, title };\n    return { content: [{ type: \"text\", text: JSON.stringify(result, null, 2) }], structuredContent: result };\n  } catch (err) { notionError(err, \"notion_create_page\"); }\n});\n\nconst transport = new StdioServerTransport();\nawait server.connect(transport);\n```\n\n## Phase 3: Build & Test\n\n```bash\nnpm run build\n\nNOTION_API_KEY=secret_your_token npx @modelcontextprotocol/inspector node dist/index.js\n```\n\nInspector checklist:\n- [ ] `notion_list_databases` returns your shared databases\n- [ ] `notion_query_database` with a real database ID returns pages\n- [ ] `notion_create_page` creates a page visible in Notion\n- [ ] Invalid database ID returns helpful error mentioning \"shared with your integration\"\n\n## Phase 4: Sample Evaluations\n\n```xml\n<evaluation>\n  <qa_pair>\n    <question>Using the notion_list_databases tool, what is the ID of the database with \"Tasks\" in its title?</question>\n    <answer>abc123def456...</answer>\n  </qa_pair>\n  <qa_pair>\n    <question>Query the Tasks database for pages with Status = \"Done\". How many results are returned?</question>\n    <answer>7</answer>\n  </qa_pair>\n</evaluation>\n```\n\n## Claude Desktop Config\n\n```json\n{\n  \"mcpServers\": {\n    \"notion\": {\n      \"command\": \"node\",\n      \"args\": [\"/path/to/notion-mcp/dist/index.js\"],\n      \"env\": { \"NOTION_API_KEY\": \"secret_your_token_here\" }\n    }\n  }\n}\n```\n"}], "grading": {"expectations": [{"text": "Response lists at least 3 specific tool names with a 'notion_' prefix", "passed": true, "evidence": "Lists 8 tools: notion_search, notion_list_databases, notion_get_database, notion_query_database, notion_get_page, notion_get_page_content, notion_create_page, notion_update_page"}, {"text": "Response recommends TypeScript as the implementation language", "passed": true, "evidence": "Phase 2 includes npm setup with TypeScript and ts-node, uses TypeScript syntax throughout"}, {"text": "Response mentions Zod for input schema validation", "passed": true, "evidence": "npm install includes 'zod', and Zod is used in every tool's inputSchema with .describe() chains"}, {"text": "Response mentions using an environment variable for the Notion API key", "passed": true, "evidence": "process.env.NOTION_API_KEY used in notion-client.ts with startup validation, and shown in Claude Desktop config"}, {"text": "Response includes tool annotations (readOnlyHint, destructiveHint, or similar)", "passed": true, "evidence": "Every tool has annotations block: read tools have readOnlyHint: true, create/update tools have destructiveHint: false, idempotentHint: false"}, {"text": "Response mentions the MCP Inspector or some testing approach", "passed": true, "evidence": "Phase 3 shows: npx @modelcontextprotocol/inspector node dist/index.js and a 4-item inspector checklist"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "notion-planning-without_skill", "prompt": "I want to build an MCP server for the Notion API. Claude should be able to list databases, query pages, and create new pages. Where do I start and what tools should I build?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Building an MCP Server for the Notion API\n\n## Overview\n\nThe Model Context Protocol (MCP) is an open standard that allows AI assistants like Claude to connect to external tools and data sources via a standardized server interface. Building an MCP server for Notion will let Claude list databases, query pages, and create new pages directly during conversations.\n\n---\n\n## Prerequisites\n\nBefore you start, you need:\n\n1. A Notion account with an integration token (internal integration)\n2. Node.js 18+ (or Python 3.10+ if you prefer Python)\n3. The Notion API credentials - create an integration at https://www.notion.so/my-integrations\n4. MCP SDK - the official TypeScript or Python SDK from Anthropic\n\n---\n\n## Step 1: Set Up Your Notion Integration\n\n1. Go to https://www.notion.so/my-integrations\n2. Click \"New integration\"\n3. Give it a name (e.g., \"Claude MCP Integration\")\n4. Select the workspace\n5. Copy the **Internal Integration Token** (starts with `secret_...`)\n6. Share the specific Notion databases/pages you want to access with the integration (open the page in Notion, click \"...\" > \"Add connections\" > select your integration)\n\n---\n\n## Step 2: Initialize the MCP Server Project\n\n```bash\nmkdir notion-mcp-server\ncd notion-mcp-server\nnpm init -y\nnpm install @modelcontextprotocol/sdk @notionhq/client zod\nnpm install -D typescript @types/node ts-node\nnpx tsc --init\n```\n\n---\n\n## Step 3: Three Core Tools to Build\n\n### Tool 1: `notion_list_databases` - Lists all accessible databases\n### Tool 2: `notion_query_database` - Queries pages from a database with optional filters\n### Tool 3: `notion_create_page` - Creates a new page in a database or as a subpage\n\n---\n\n## Step 4: Configure in Claude\n\nAdd to `~/.claude/settings.json` under `\"mcpServers\"`:\n\n```json\n{\n  \"mcpServers\": {\n    \"notion\": {\n      \"command\": \"node\",\n      \"args\": [\"/path/to/notion-mcp-server/dist/index.js\"],\n      \"env\": { \"NOTION_API_KEY\": \"secret_your_token_here\" }\n    }\n  }\n}\n```\n\n*(Note: agent hit permission denial \u00e2\u20ac\u201d response is partial, full code samples not captured)*\n"}], "grading": {"expectations": [{"text": "Response lists at least 3 specific tool names with a 'notion_' prefix", "passed": true, "evidence": "Lists notion_list_databases, notion_query_database, notion_create_page as Tool 1/2/3 headings"}, {"text": "Response recommends TypeScript as the implementation language", "passed": true, "evidence": "Step 2 shows 'npm install @modelcontextprotocol/sdk @notionhq/client zod' and mentions Node.js 18+"}, {"text": "Response mentions Zod for input schema validation", "passed": true, "evidence": "Zod appears in the npm install command: 'npm install @modelcontextprotocol/sdk @notionhq/client zod'"}, {"text": "Response mentions using an environment variable for the Notion API key", "passed": true, "evidence": "Claude Desktop config shows: env: { NOTION_API_KEY: 'secret_your_token_here' }"}, {"text": "Response includes tool annotations (readOnlyHint, destructiveHint, or similar)", "passed": false, "evidence": "Tools are listed as headings only (Tool 1: notion_list_databases - Lists all accessible databases). No annotation objects shown in tool definitions."}, {"text": "Response mentions the MCP Inspector or some testing approach", "passed": false, "evidence": "Response goes straight from setup to Claude Desktop configuration with no testing step or mention of MCP Inspector"}], "summary": {"passed": 4, "failed": 2, "total": 6, "pass_rate": 0.667}}}, {"id": "postgres-server-with_skill", "prompt": "Help me create an MCP server that lets Claude query my PostgreSQL database. I want Claude to be able to list tables, describe schemas, and run read-only SELECT queries.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# PostgreSQL MCP Server\n\nA production-quality MCP server that lets Claude query your PostgreSQL database. Supports listing tables, describing schemas, and running read-only SELECT queries.\n\n## Phase 1: Research & Planning\n\n### Tool Set\n\n| Tool | Type | Description |\n|------|------|-------------|\n| `pg_list_schemas` | Read-only | List all non-system schemas in the database |\n| `pg_list_tables` | Read-only | List all tables and views in a schema |\n| `pg_describe_table` | Read-only | Show columns, types, nullability, defaults, and constraints |\n| `pg_run_query` | Read-only | Execute a SELECT query and return rows as JSON |\n| `pg_get_table_indexes` | Read-only | List indexes on a table |\n| `pg_get_foreign_keys` | Read-only | Show foreign-key relationships for a table |\n\n### Auth Plan\n\nCredentials from env vars: `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`, `PGSSL`.\n\n## Phase 2: Implementation\n\n### Setup\n\n```bash\nmkdir postgres-mcp && cd postgres-mcp\nnpm init -y\nnpm install @modelcontextprotocol/sdk zod pg\nnpm install -D typescript @types/node @types/pg ts-node\n```\n\n### `src/db.ts` \u00e2\u20ac\u201d Database Client with Safety Guards\n\n```typescript\nimport { Pool, PoolClient } from \"pg\";\n\nconst required = [\"PGDATABASE\", \"PGUSER\", \"PGPASSWORD\"];\nfor (const key of required) {\n  if (!process.env[key]) {\n    throw new Error(`Missing required environment variable: ${key}.`);\n  }\n}\n\nexport const pool = new Pool({\n  host: process.env.PGHOST ?? \"localhost\",\n  port: parseInt(process.env.PGPORT ?? \"5432\", 10),\n  database: process.env.PGDATABASE,\n  user: process.env.PGUSER,\n  password: process.env.PGPASSWORD,\n  ssl: process.env.PGSSL === \"true\" ? { rejectUnauthorized: false } : false,\n  max: 5,\n});\n\nexport function assertReadOnly(sql: string): void {\n  const normalised = sql.trim().toUpperCase();\n  if (!/^(SELECT|WITH)\\b/.test(normalised)) {\n    throw new Error(`Only SELECT queries are allowed. Got: \"${sql.trim().slice(0, 40)}\"`);\n  }\n  for (const kw of [\"INSERT\",\"UPDATE\",\"DELETE\",\"DROP\",\"TRUNCATE\",\"ALTER\",\"CREATE\",\"GRANT\",\"REVOKE\",\"COPY\"]) {\n    if (new RegExp(`\\\\b${kw}\\\\b`).test(normalised)) {\n      throw new Error(`Forbidden keyword '${kw}' in query. Only read-only SELECT queries are permitted.`);\n    }\n  }\n}\n\nexport async function query<T = Record<string, unknown>>(sql: string, params: unknown[] = []): Promise<T[]> {\n  const client: PoolClient = await pool.connect();\n  try {\n    await client.query(\"SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY\");\n    const result = await client.query(sql, params);\n    return result.rows as T[];\n  } finally {\n    client.release();\n  }\n}\n```\n\n### `src/index.ts` \u00e2\u20ac\u201d Entry Point\n\n```typescript\nimport { McpServer } from \"@modelcontextprotocol/sdk/server/mcp.js\";\nimport { StdioServerTransport } from \"@modelcontextprotocol/sdk/server/stdio.js\";\nimport { z } from \"zod\";\nimport { query, assertReadOnly } from \"./db.js\";\n\nconst server = new McpServer({ name: \"postgres-mcp\", version: \"1.0.0\" });\n\nserver.registerTool(\"pg_list_schemas\", {\n  description: \"List all non-system schemas. Returns schema names and owners.\",\n  inputSchema: {},\n  annotations: { readOnlyHint: true },\n}, async () => {\n  const rows = await query(\n    `SELECT schema_name, schema_owner FROM information_schema.schemata\n     WHERE schema_name NOT IN ('pg_catalog','information_schema','pg_toast')\n       AND schema_name NOT LIKE 'pg_temp%' ORDER BY schema_name`\n  );\n  return { content: [{ type: \"text\", text: JSON.stringify(rows, null, 2) }], structuredContent: { schemas: rows } };\n});\n\nserver.registerTool(\"pg_list_tables\", {\n  description: \"List tables and views in a schema with approximate row counts. Defaults to 'public'.\",\n  inputSchema: {\n    schema: z.string().default(\"public\").describe(\"Schema name (default: public)\"),\n    include_views: z.boolean().default(true).describe(\"Include views in results\"),\n  },\n  annotations: { readOnlyHint: true },\n}, async ({ schema, include_views }) => {\n  const types = include_views ? [\"BASE TABLE\",\"VIEW\"] : [\"BASE TABLE\"];\n  const rows = await query(\n    `SELECT t.table_name, t.table_type, s.n_live_tup::text AS row_estimate\n     FROM information_schema.tables t\n     LEFT JOIN pg_stat_user_tables s ON s.schemaname=t.table_schema AND s.relname=t.table_name\n     WHERE t.table_schema=$1 AND t.table_type=ANY($2) ORDER BY t.table_type, t.table_name`,\n    [schema, types]\n  );\n  return { content: [{ type: \"text\", text: JSON.stringify(rows, null, 2) }], structuredContent: { schema, tables: rows } };\n});\n\nserver.registerTool(\"pg_describe_table\", {\n  description: \"Describe a table: column names, types, nullability, defaults, and constraints. Use before writing queries.\",\n  inputSchema: {\n    table: z.string().describe(\"Table name\"),\n    schema: z.string().default(\"public\").describe(\"Schema (default: public)\"),\n  },\n  annotations: { readOnlyHint: true },\n}, async ({ table, schema }) => {\n  const columns = await query(\n    `SELECT column_name, data_type, is_nullable, column_default\n     FROM information_schema.columns WHERE table_schema=$1 AND table_name=$2 ORDER BY ordinal_position`,\n    [schema, table]\n  );\n  if (!columns.length) return {\n    content: [{ type: \"text\", text: `Table '${schema}.${table}' not found. Use pg_list_tables first.` }],\n    isError: true,\n  };\n  return { content: [{ type: \"text\", text: JSON.stringify({ schema, table, columns }, null, 2) }], structuredContent: { schema, table, columns } };\n});\n\nserver.registerTool(\"pg_run_query\", {\n  description: \"Run a read-only SELECT query. Results capped at 500 rows. INSERT/UPDATE/DELETE/DROP are rejected.\",\n  inputSchema: {\n    sql: z.string().describe(\"SELECT query. Use $1, $2 ... for parameters.\"),\n    params: z.array(z.union([z.string(), z.number(), z.boolean(), z.null()])).default([]).describe(\"Parameter values\"),\n    limit: z.number().min(1).max(500).default(100).describe(\"Max rows to return (1-500)\"),\n  },\n  annotations: { readOnlyHint: true },\n}, async ({ sql, params, limit }) => {\n  assertReadOnly(sql);\n  const rows = await query(`SELECT * FROM (${sql}) _q LIMIT $${params.length+1}`, [...params, limit]);\n  const msg = rows.length === limit ? `Returned ${rows.length} rows (may be truncated).` : `Returned ${rows.length} row(s).`;\n  return { content: [{ type: \"text\", text: `${msg}\\n\\n${JSON.stringify(rows, null, 2)}` }], structuredContent: { row_count: rows.length, rows } };\n});\n\nconst transport = new StdioServerTransport();\nawait server.connect(transport);\n```\n\n## Phase 3: Build & Test\n\n```bash\nnpm run build\n\nPGHOST=localhost PGDATABASE=mydb PGUSER=mcp_readonly PGPASSWORD=secret \\\n  npx @modelcontextprotocol/inspector node dist/index.js\n```\n\nCreate a read-only DB role:\n```sql\nCREATE ROLE mcp_readonly LOGIN PASSWORD 'strong-password';\nGRANT CONNECT ON DATABASE mydb TO mcp_readonly;\nGRANT USAGE ON SCHEMA public TO mcp_readonly;\nGRANT SELECT ON ALL TABLES IN SCHEMA public TO mcp_readonly;\n```\n\n## Security \u00e2\u20ac\u201d Three Layers\n\n1. **DB role**: `mcp_readonly` has only SELECT privileges\n2. **`assertReadOnly()`**: Rejects queries not starting with SELECT/WITH; blocks mutation keywords\n3. **Session-level**: `SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY` enforced per connection\n"}], "grading": {"expectations": [{"text": "Response defines or names at least 3 distinct tools", "passed": true, "evidence": "6 tools defined: pg_list_schemas, pg_list_tables, pg_describe_table, pg_run_query, pg_get_table_indexes, pg_get_foreign_keys"}, {"text": "Response addresses read-only safety \u00e2\u20ac\u201d blocking non-SELECT statements", "passed": true, "evidence": "assertReadOnly() checks for SELECT/WITH prefix, blocks INSERT/UPDATE/DELETE/DROP/TRUNCATE/ALTER/CREATE/GRANT/REVOKE/COPY keywords, plus SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY"}, {"text": "Response uses an environment variable for the database connection string", "passed": true, "evidence": "db.ts uses PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD env vars with validation on startup"}, {"text": "Response includes error handling with actionable messages for bad queries or connection failures", "passed": true, "evidence": "pg_describe_table returns 'Use pg_list_tables first' if table not found. pg_run_query assertReadOnly throws 'Forbidden keyword X in query'. Connection env vars validated at startup."}, {"text": "Response mentions the @modelcontextprotocol/sdk package or MCP SDK", "passed": true, "evidence": "npm install @modelcontextprotocol/sdk, import McpServer from '@modelcontextprotocol/sdk/server/mcp.js'"}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "postgres-server-without_skill", "prompt": "Help me create an MCP server that lets Claude query my PostgreSQL database. I want Claude to be able to list tables, describe schemas, and run read-only SELECT queries.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Building an MCP Server for PostgreSQL\n\n## Overview\n\nAn MCP server for PostgreSQL lets Claude list tables, inspect schemas, and run SELECT queries against your database. Here's how to build it.\n\n## Prerequisites\n\n- Node.js 18+ or Python 3.10+\n- PostgreSQL database with connection credentials\n- `@modelcontextprotocol/sdk` (TypeScript) or `mcp` (Python)\n\n## TypeScript Implementation\n\n```bash\nmkdir postgres-mcp && cd postgres-mcp\nnpm init -y\nnpm install @modelcontextprotocol/sdk pg\nnpm install -D typescript @types/node @types/pg\n```\n\n### `src/index.ts`\n\n```typescript\nimport { Server } from \"@modelcontextprotocol/sdk/server/index.js\";\nimport { StdioServerTransport } from \"@modelcontextprotocol/sdk/server/stdio.js\";\nimport { Pool } from \"pg\";\n\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n});\n\nconst server = new Server({\n  name: \"postgres-mcp\",\n  version: \"1.0.0\",\n}, {\n  capabilities: { tools: {} }\n});\n\nserver.setRequestHandler(\"tools/list\", async () => ({\n  tools: [\n    {\n      name: \"list_tables\",\n      description: \"List all tables in the database\",\n      inputSchema: { type: \"object\", properties: {} }\n    },\n    {\n      name: \"describe_table\",\n      description: \"Get column info for a table\",\n      inputSchema: {\n        type: \"object\",\n        properties: {\n          table_name: { type: \"string\", description: \"Name of the table\" }\n        },\n        required: [\"table_name\"]\n      }\n    },\n    {\n      name: \"run_query\",\n      description: \"Run a SELECT query\",\n      inputSchema: {\n        type: \"object\",\n        properties: {\n          query: { type: \"string\", description: \"SQL SELECT query to run\" }\n        },\n        required: [\"query\"]\n      }\n    }\n  ]\n}));\n\nserver.setRequestHandler(\"tools/call\", async (request) => {\n  const { name, arguments: args } = request.params;\n\n  if (name === \"list_tables\") {\n    const result = await pool.query(\n      \"SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'\"\n    );\n    return { content: [{ type: \"text\", text: JSON.stringify(result.rows) }] };\n  }\n\n  if (name === \"describe_table\") {\n    const result = await pool.query(\n      \"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = $1\",\n      [args.table_name]\n    );\n    return { content: [{ type: \"text\", text: JSON.stringify(result.rows) }] };\n  }\n\n  if (name === \"run_query\") {\n    // Basic safety: only allow SELECT\n    if (!args.query.trim().toUpperCase().startsWith(\"SELECT\")) {\n      throw new Error(\"Only SELECT queries are allowed\");\n    }\n    const result = await pool.query(args.query);\n    return { content: [{ type: \"text\", text: JSON.stringify(result.rows) }] };\n  }\n});\n\nconst transport = new StdioServerTransport();\nawait server.connect(transport);\n```\n\n## Claude Desktop Configuration\n\n```json\n{\n  \"mcpServers\": {\n    \"postgres\": {\n      \"command\": \"node\",\n      \"args\": [\"/path/to/postgres-mcp/dist/index.js\"],\n      \"env\": {\n        \"DATABASE_URL\": \"postgresql://user:password@localhost:5432/mydb\"\n      }\n    }\n  }\n}\n```\n\n## Python Alternative\n\n```python\nfrom mcp.server import Server\nfrom mcp.server.stdio import stdio_server\nimport psycopg2, os\n\napp = Server(\"postgres-mcp\")\nconn = psycopg2.connect(os.environ[\"DATABASE_URL\"])\n\n@app.list_tools()\nasync def list_tools():\n    return [...]  # same 3 tools\n\n@app.call_tool()\nasync def call_tool(name, arguments):\n    # implementation\n    pass\n\nasync def main():\n    async with stdio_server() as (read_stream, write_stream):\n        await app.run(read_stream, write_stream, app.create_initialization_options())\n```\n\n*(Note: agent hit permission denial \u00e2\u20ac\u201d response reconstructed from task notification summary)*\n"}], "grading": {"expectations": [{"text": "Response defines or names at least 3 distinct tools", "passed": true, "evidence": "3 tools: list_tables, describe_table, run_query in server.setRequestHandler('tools/list')"}, {"text": "Response addresses read-only safety \u00e2\u20ac\u201d blocking non-SELECT statements", "passed": true, "evidence": "run_query handler checks: if (!args.query.trim().toUpperCase().startsWith('SELECT')) throw new Error('Only SELECT queries are allowed')"}, {"text": "Response uses an environment variable for the database connection string", "passed": true, "evidence": "new Pool({ connectionString: process.env.DATABASE_URL })"}, {"text": "Response includes error handling with actionable messages for bad queries or connection failures", "passed": false, "evidence": "The SELECT check throws a basic error. No handling for connection failures, table-not-found errors, or permission issues. Uses old low-level Server API without structured error handling."}, {"text": "Response mentions the @modelcontextprotocol/sdk package or MCP SDK", "passed": true, "evidence": "npm install @modelcontextprotocol/sdk pg, import from '@modelcontextprotocol/sdk/server/index.js'"}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}, {"id": "github-tool-definition-with_skill", "prompt": "I'm building an MCP server for the GitHub API. I've got the basic structure working but I'm not sure how to write good tool descriptions and what annotations to use. Can you help me write a great tool definition for a 'list pull requests' endpoint?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Writing a Great MCP Tool Definition: `github_list_pull_requests`\n\n## The Complete Tool Definition\n\n```typescript\nserver.registerTool(\n  \"github_list_pull_requests\",\n  {\n    title: \"List Pull Requests\",\n    description:\n      \"List pull requests for a GitHub repository. Returns PR number, title, state, \" +\n      \"author login, labels, assignees, milestone, head/base branch names, draft status, \" +\n      \"and timestamps (created_at, updated_at, merged_at). Supports filtering by state, \" +\n      \"head branch, base branch, and sort order. Results are paginated; use `page` and \" +\n      \"`per_page` to walk through large result sets. Requires a token with `repo` scope \" +\n      \"for private repositories; public repositories work without authentication.\",\n    inputSchema: {\n      owner: z.string().describe(\n        \"GitHub username or organization name that owns the repository (e.g. 'octocat' or 'microsoft')\"\n      ),\n      repo: z.string().describe(\n        \"Repository name without the owner prefix (e.g. 'hello-world', not 'octocat/hello-world')\"\n      ),\n      state: z.enum([\"open\", \"closed\", \"all\"]).default(\"open\").describe(\n        \"'open' = currently open, 'closed' = merged or rejected, 'all' = every PR regardless of state. Defaults to 'open'.\"\n      ),\n      head: z.string().optional().describe(\n        \"Filter by head branch. Use 'user:branch-name' format to filter across forks (e.g. 'octocat:feature-login'), or just 'branch-name' within the same repo.\"\n      ),\n      base: z.string().optional().describe(\n        \"Filter by base (target) branch name (e.g. 'main', 'develop'). Only returns PRs targeting this branch.\"\n      ),\n      sort: z.enum([\"created\", \"updated\", \"popularity\", \"long-running\"]).default(\"created\").describe(\n        \"'created' = creation time, 'updated' = last update, 'popularity' = comment count, 'long-running' = oldest open PRs first.\"\n      ),\n      direction: z.enum([\"asc\", \"desc\"]).default(\"desc\").describe(\n        \"'desc' = newest/highest first (default), 'asc' = oldest/lowest first.\"\n      ),\n      per_page: z.number().int().min(1).max(100).default(30).describe(\n        \"Results per page (1-100). Use 100 to minimize API calls. Defaults to 30.\"\n      ),\n      page: z.number().int().min(1).default(1).describe(\n        \"Page number (1-indexed). If the response returns fewer items than per_page, you are on the last page.\"\n      ),\n    },\n    annotations: {\n      readOnlyHint: true,\n      destructiveHint: false,\n      idempotentHint: true,\n      openWorldHint: true,\n    },\n  },\n  async ({ owner, repo, state, head, base, sort, direction, per_page, page }) => {\n    const params = new URLSearchParams({ state, sort, direction, per_page: String(per_page), page: String(page) });\n    if (head) params.set(\"head\", head);\n    if (base) params.set(\"base\", base);\n\n    const response = await fetch(\n      `https://api.github.com/repos/${owner}/${repo}/pulls?${params}`,\n      {\n        headers: {\n          Accept: \"application/vnd.github+json\",\n          \"X-GitHub-Api-Version\": \"2022-11-28\",\n          ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),\n        },\n      }\n    );\n\n    if (!response.ok) {\n      const body = await response.text();\n      throw new Error(\n        `GitHub API ${response.status} for ${owner}/${repo}: ${body}. ` +\n        (response.status === 404 ? \"Check that the repository exists and you have access.\" :\n         response.status === 401 ? \"Set GITHUB_TOKEN env var with a valid personal access token.\" :\n         response.status === 403 ? \"Rate limit exceeded or insufficient token scope.\" : \"\")\n      );\n    }\n\n    const hasNextPage = (response.headers.get(\"link\") ?? \"\").includes('rel=\"next\"');\n    const pulls = await response.json();\n\n    const items = pulls.map((pr) => ({\n      number: pr.number,\n      title: pr.title,\n      state: pr.state,\n      draft: pr.draft,\n      author: pr.user?.login ?? null,\n      labels: pr.labels.map((l) => l.name),\n      assignees: pr.assignees.map((a) => a.login),\n      milestone: pr.milestone?.title ?? null,\n      head_branch: pr.head.ref,\n      base_branch: pr.base.ref,\n      created_at: pr.created_at,\n      updated_at: pr.updated_at,\n      merged_at: pr.merged_at ?? null,\n      html_url: pr.html_url,\n    }));\n\n    const summary = {\n      repository: `${owner}/${repo}`,\n      filter: { state, head: head ?? null, base: base ?? null },\n      pagination: { page, per_page, has_next_page: hasNextPage },\n      count: items.length,\n      pull_requests: items,\n    };\n\n    return {\n      content: [{ type: \"text\", text: JSON.stringify(summary, null, 2) }],\n      structuredContent: summary,\n    };\n  }\n);\n```\n\n## Key Principles Explained\n\n**Tool Name** (`github_list_pull_requests`): Uses `{service}_{action}_{resource}` pattern.\n\n**Description**: Leads with what is returned (field names), mentions filters and pagination, states auth requirements. The LLM selects your tool based almost entirely on the description.\n\n**Every input `.describe()`**:\n- Format hints with examples prevent mistakes (e.g. `repo` says \"not 'octocat/hello-world'\")\n- Enum values get individual explanations\n- Pagination fields explain the stopping condition\n\n**Annotations**:\n\n| Annotation | Value | Why |\n|---|---|---|\n| `readOnlyHint: true` | true | GET operation, never modifies data, safe to retry |\n| `destructiveHint: false` | false | Explicitly false \u00e2\u20ac\u201d do not leave undefined |\n| `idempotentHint: true` | true | Same args = same result, safe to retry on timeout |\n| `openWorldHint: true` | true | Calls external API (GitHub), results reflect live state |\n\n**Output shaping**: Returns only 14 fields from the raw 80-field GitHub response. Returns both `content` (text) and `structuredContent` (typed object for modern clients). Includes `has_next_page` parsed from the `Link` header.\n\n**Error messages**: Status code + affected resource + specific fix. \"GitHub API 404 for octocat/hello-world: Check that the repository exists and you have access.\" beats \"Not found\" every time.\n"}], "grading": {"expectations": [{"text": "Response provides a TypeScript code block using server.registerTool or equivalent MCP registration", "passed": true, "evidence": "Full server.registerTool('github_list_pull_requests', {...}, async (...) => {...}) code block"}, {"text": "Tool description explains what the tool *returns* not just what it does", "passed": true, "evidence": "Description explicitly names return fields: 'Returns PR number, title, state, author login, labels, assignees, milestone, head/base branch names, draft status, and timestamps'"}, {"text": "Input schema uses Zod with .describe() annotations on at least 2 fields", "passed": true, "evidence": "All 9 parameters use z.string/number/enum with .describe() \u00e2\u20ac\u201d examples: owner, repo, state, head, base, sort, direction, per_page, page"}, {"text": "Response includes readOnlyHint: true in the annotations", "passed": true, "evidence": "annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }"}, {"text": "Response includes pagination support (per_page or page parameter) with a max constraint", "passed": true, "evidence": "per_page: z.number().int().min(1).max(100).default(30) and page: z.number().int().min(1).default(1)"}, {"text": "Response returns both content (text) and structuredContent in the tool handler", "passed": true, "evidence": "return { content: [{ type: 'text', text: JSON.stringify(summary, null, 2) }], structuredContent: summary }"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "github-tool-definition-without_skill", "prompt": "I'm building an MCP server for the GitHub API. I've got the basic structure working but I'm not sure how to write good tool descriptions and what annotations to use. Can you help me write a great tool definition for a 'list pull requests' endpoint?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Writing Great MCP Tool Definitions for GitHub API: List Pull Requests\n\n## The Complete Tool Definition\n\n```typescript\n{\n  name: \"list_pull_requests\",\n  description: `List pull requests for a GitHub repository.\n\nReturns an array of pull request objects matching the specified filters. Use this tool when you need to:\n- Find open, closed, or merged pull requests in a repository\n- Search for PRs by author, branch, or label\n- Get a summary of recent PR activity\n- Locate a specific PR by its head branch or base branch\n\nResults are paginated (default 30 per page, max 100). Use the 'page' parameter to retrieve subsequent pages.\n\nNote: Requires at least read access to the repository. For private repositories, the authenticated user must have explicit access.`,\n\n  annotations: {\n    title: \"List Pull Requests\",\n    readOnlyHint: true,\n    destructiveHint: false,\n    idempotentHint: true,\n    openWorldHint: true\n  },\n\n  inputSchema: {\n    type: \"object\",\n    properties: {\n      owner: {\n        type: \"string\",\n        description: \"The GitHub username or organization name that owns the repository.\"\n      },\n      repo: {\n        type: \"string\",\n        description: \"The repository name (without the owner prefix).\"\n      },\n      state: {\n        type: \"string\",\n        enum: [\"open\", \"closed\", \"all\"],\n        default: \"open\",\n        description: \"Filter pull requests by state.\"\n      },\n      per_page: {\n        type: \"integer\",\n        minimum: 1,\n        maximum: 100,\n        default: 30,\n        description: \"Number of results per page (max 100).\"\n      },\n      page: {\n        type: \"integer\",\n        minimum: 1,\n        default: 1,\n        description: \"Page number (1-indexed).\"\n      }\n    },\n    required: [\"owner\", \"repo\"]\n  }\n}\n```\n\n## Annotations Explained\n\n| Annotation | Value | Reason |\n|---|---|---|\n| `readOnlyHint` | `true` | Only performs GET requests \u00e2\u20ac\u201d no side effects |\n| `destructiveHint` | `false` | Cannot delete or modify anything |\n| `idempotentHint` | `true` | Same parameters always yield the same result |\n| `openWorldHint` | `true` | Accesses live external data from GitHub |\n\n## Key Principles\n\n1. **Descriptions explain when AND what** \u00e2\u20ac\u201d not just what the parameter is named\n2. **Annotate read-only tools** so clients skip unnecessary confirmation dialogs\n3. **Document non-obvious formats** like `user:branch` for the `head` parameter\n4. **Put pagination info at the top level** so models see it before scanning parameters\n5. **Explain enum values individually** so models can match user intent to the right value\n6. **Use `default` in schema** so models know what happens when parameters are omitted\n\n*(Note: agent hit permission denial \u00e2\u20ac\u201d response captured from task output. Uses raw JSON schema, not Zod/server.registerTool pattern.)*\n"}], "grading": {"expectations": [{"text": "Response provides a TypeScript code block using server.registerTool or equivalent MCP registration", "passed": false, "evidence": "Uses a plain JSON object literal format (not server.registerTool). No TypeScript SDK registration shown \u00e2\u20ac\u201d just a raw tool config object."}, {"text": "Tool description explains what the tool *returns* not just what it does", "passed": true, "evidence": "Description says 'Returns an array of pull request objects' and lists use cases for finding PRs"}, {"text": "Input schema uses Zod with .describe() annotations on at least 2 fields", "passed": false, "evidence": "Uses raw JSON Schema format (type: 'string', description: '...') not Zod. No Zod imports or .describe() chains."}, {"text": "Response includes readOnlyHint: true in the annotations", "passed": true, "evidence": "annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }"}, {"text": "Response includes pagination support (per_page or page parameter) with a max constraint", "passed": true, "evidence": "per_page: { type: 'integer', minimum: 1, maximum: 100, default: 30 } and page parameter included"}, {"text": "Response returns both content (text) and structuredContent in the tool handler", "passed": false, "evidence": "No tool handler/implementation shown. Response only provides the tool definition schema, not the async handler that returns content + structuredContent."}], "summary": {"passed": 3, "failed": 3, "total": 6, "pass_rate": 0.5}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "mcp-skill", "skill_path": "C:\\Users\\richm\\.claude\\skills\\mcp-skill", "executor_model": "claude-sonnet-4-6", "timestamp": "2026-03-05T00:00:00Z", "evals_run": ["notion-planning", "postgres-server", "github-tool-definition"], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "notion-planning", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 412.9, "tokens": 45255, "tool_calls": 16, "errors": 0}, "expectations": [{"text": "Lists 3+ notion_ prefixed tool names", "passed": true, "evidence": "8 tools listed with notion_ prefix"}, {"text": "Recommends TypeScript", "passed": true, "evidence": "TypeScript setup in Phase 2"}, {"text": "Mentions Zod", "passed": true, "evidence": "Zod used in all tool inputSchema definitions"}, {"text": "Env var for API key", "passed": true, "evidence": "NOTION_API_KEY in process.env with startup validation"}, {"text": "Tool annotations included", "passed": true, "evidence": "readOnlyHint on all read tools, destructiveHint on create/update"}, {"text": "Mentions MCP Inspector", "passed": true, "evidence": "Inspector command shown with 4-item checklist"}], "notes": []}, {"eval_id": 1, "eval_name": "notion-planning", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.667, "passed": 4, "failed": 2, "total": 6, "time_seconds": 71.6, "tokens": 16184, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Lists 3+ notion_ prefixed tool names", "passed": true, "evidence": "3 tools listed as headings"}, {"text": "Recommends TypeScript", "passed": true, "evidence": "TypeScript/Python mentioned"}, {"text": "Mentions Zod", "passed": true, "evidence": "Zod in npm install command"}, {"text": "Env var for API key", "passed": true, "evidence": "NOTION_API_KEY in Claude Desktop config env"}, {"text": "Tool annotations included", "passed": false, "evidence": "Tools listed as headings only \u00e2\u20ac\u201d no annotation objects shown"}, {"text": "Mentions MCP Inspector", "passed": false, "evidence": "No testing step, goes straight to Claude Desktop config"}], "notes": ["Partial response due to permission denial \u00e2\u20ac\u201d missing full code samples"]}, {"eval_id": 2, "eval_name": "postgres-server", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 304.1, "tokens": 36633, "tool_calls": 12, "errors": 0}, "expectations": [{"text": "Defines 3+ distinct tools", "passed": true, "evidence": "6 tools: pg_list_schemas through pg_get_foreign_keys"}, {"text": "Addresses read-only safety", "passed": true, "evidence": "assertReadOnly() + keyword blocking + session-level READ ONLY"}, {"text": "Env var for connection string", "passed": true, "evidence": "PGHOST, PGDATABASE, PGUSER, PGPASSWORD with startup validation"}, {"text": "Actionable error messages", "passed": true, "evidence": "Table not found suggests pg_list_tables, forbidden keyword names the keyword"}, {"text": "Mentions @modelcontextprotocol/sdk", "passed": true, "evidence": "npm install @modelcontextprotocol/sdk, McpServer import"}], "notes": []}, {"eval_id": 2, "eval_name": "postgres-server", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": 111.7, "tokens": 20457, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Defines 3+ distinct tools", "passed": true, "evidence": "list_tables, describe_table, run_query defined"}, {"text": "Addresses read-only safety", "passed": true, "evidence": "startsWith('SELECT') check present"}, {"text": "Env var for connection string", "passed": true, "evidence": "process.env.DATABASE_URL used"}, {"text": "Actionable error messages", "passed": false, "evidence": "Only 'Only SELECT queries are allowed' \u00e2\u20ac\u201d no guidance on connection failures or table-not-found"}, {"text": "Mentions @modelcontextprotocol/sdk", "passed": true, "evidence": "npm install @modelcontextprotocol/sdk"}], "notes": ["Uses old low-level Server API vs McpServer; no structured error handling"]}, {"eval_id": 3, "eval_name": "github-tool-definition", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 231.7, "tokens": 34456, "tool_calls": 11, "errors": 0}, "expectations": [{"text": "server.registerTool code block", "passed": true, "evidence": "Full server.registerTool call shown"}, {"text": "Description names return fields", "passed": true, "evidence": "Lists 14 returned fields explicitly in description"}, {"text": "Zod with .describe() on 2+ fields", "passed": true, "evidence": "All 9 inputs have .describe() chains"}, {"text": "readOnlyHint: true", "passed": true, "evidence": "annotations: { readOnlyHint: true, ... }"}, {"text": "Pagination with max constraint", "passed": true, "evidence": "per_page max(100), page min(1)"}, {"text": "content + structuredContent returned", "passed": true, "evidence": "return { content: [...], structuredContent: summary }"}], "notes": []}, {"eval_id": 3, "eval_name": "github-tool-definition", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.5, "passed": 3, "failed": 3, "total": 6, "time_seconds": 82.8, "tokens": 16451, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "server.registerTool code block", "passed": false, "evidence": "Raw JSON schema object, not server.registerTool + Zod pattern"}, {"text": "Description names return fields", "passed": true, "evidence": "Description mentions PR objects and use cases"}, {"text": "Zod with .describe() on 2+ fields", "passed": false, "evidence": "Uses JSON Schema format with 'description' strings, not Zod .describe()"}, {"text": "readOnlyHint: true", "passed": true, "evidence": "readOnlyHint: true in annotations"}, {"text": "Pagination with max constraint", "passed": true, "evidence": "per_page maximum: 100 in JSON Schema"}, {"text": "content + structuredContent returned", "passed": false, "evidence": "No handler implementation \u00e2\u20ac\u201d schema definition only"}], "notes": ["Well-structured annotations table is a nice bonus; good description quality"]}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 316.2, "stddev": 91.7, "min": 231.7, "max": 412.9}, "tokens": {"mean": 38781, "stddev": 5524, "min": 34456, "max": 45255}}, "without_skill": {"pass_rate": {"mean": 0.656, "stddev": 0.138, "min": 0.5, "max": 0.8}, "time_seconds": {"mean": 88.7, "stddev": 20.6, "min": 71.6, "max": 111.7}, "tokens": {"mean": 17697, "stddev": 2179, "min": 16184, "max": 20457}}, "delta": {"pass_rate": "+0.344", "time_seconds": "+227.5", "tokens": "+21084"}}, "notes": ["Skill achieves 100% pass rate on all 3 evals vs 50-80% without skill \u00e2\u20ac\u201d clear quality improvement", "Biggest win on Eval 3 (GitHub tool definition): skill drives use of server.registerTool + Zod pattern + structuredContent, which baseline entirely missed", "Eval 2 (PostgreSQL) shows smallest delta \u00e2\u20ac\u201d baseline Claude already knows the MCP SDK basics, but skill adds multi-layer safety and better error messages", "Skill costs ~3.5x more tokens and ~3x more time \u00e2\u20ac\u201d agents fetch docs (WebFetch calls) and do more thorough research; worth it for quality", "All baseline agents hit permission denials trying to write files; with-skill agents fetched MCP docs first as instructed"]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "tool_calls": { "Read": 1, "Write": 0, "WebFetch": 3, "Bash": 0 },
+  "total_tool_calls": 11,
+  "total_steps": 5,
+  "files_created": [],
+  "errors_encountered": 1,
+  "output_chars": 5200,
+  "transcript_chars": 6800,
+  "notes": "Agent read SKILL.md, fetched MCP docs, composed full response but hit Write permission denial"
+}

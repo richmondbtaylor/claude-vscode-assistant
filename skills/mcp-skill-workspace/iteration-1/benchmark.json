@@ -1,0 +1,184 @@
+{
+  "metadata": {
+    "skill_name": "mcp-skill",
+    "skill_path": "C:\\Users\\richm\\.claude\\skills\\mcp-skill",
+    "executor_model": "claude-sonnet-4-6",
+    "timestamp": "2026-03-05T00:00:00Z",
+    "evals_run": ["notion-planning", "postgres-server", "github-tool-definition"],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "notion-planning",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 412.9,
+        "tokens": 45255,
+        "tool_calls": 16,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Lists 3+ notion_ prefixed tool names", "passed": true, "evidence": "8 tools listed with notion_ prefix" },
+        { "text": "Recommends TypeScript", "passed": true, "evidence": "TypeScript setup in Phase 2" },
+        { "text": "Mentions Zod", "passed": true, "evidence": "Zod used in all tool inputSchema definitions" },
+        { "text": "Env var for API key", "passed": true, "evidence": "NOTION_API_KEY in process.env with startup validation" },
+        { "text": "Tool annotations included", "passed": true, "evidence": "readOnlyHint on all read tools, destructiveHint on create/update" },
+        { "text": "Mentions MCP Inspector", "passed": true, "evidence": "Inspector command shown with 4-item checklist" }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "notion-planning",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.667,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": 71.6,
+        "tokens": 16184,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Lists 3+ notion_ prefixed tool names", "passed": true, "evidence": "3 tools listed as headings" },
+        { "text": "Recommends TypeScript", "passed": true, "evidence": "TypeScript/Python mentioned" },
+        { "text": "Mentions Zod", "passed": true, "evidence": "Zod in npm install command" },
+        { "text": "Env var for API key", "passed": true, "evidence": "NOTION_API_KEY in Claude Desktop config env" },
+        { "text": "Tool annotations included", "passed": false, "evidence": "Tools listed as headings only — no annotation objects shown" },
+        { "text": "Mentions MCP Inspector", "passed": false, "evidence": "No testing step, goes straight to Claude Desktop config" }
+      ],
+      "notes": ["Partial response due to permission denial — missing full code samples"]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "postgres-server",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 304.1,
+        "tokens": 36633,
+        "tool_calls": 12,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Defines 3+ distinct tools", "passed": true, "evidence": "6 tools: pg_list_schemas through pg_get_foreign_keys" },
+        { "text": "Addresses read-only safety", "passed": true, "evidence": "assertReadOnly() + keyword blocking + session-level READ ONLY" },
+        { "text": "Env var for connection string", "passed": true, "evidence": "PGHOST, PGDATABASE, PGUSER, PGPASSWORD with startup validation" },
+        { "text": "Actionable error messages", "passed": true, "evidence": "Table not found suggests pg_list_tables, forbidden keyword names the keyword" },
+        { "text": "Mentions @modelcontextprotocol/sdk", "passed": true, "evidence": "npm install @modelcontextprotocol/sdk, McpServer import" }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "postgres-server",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 111.7,
+        "tokens": 20457,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "Defines 3+ distinct tools", "passed": true, "evidence": "list_tables, describe_table, run_query defined" },
+        { "text": "Addresses read-only safety", "passed": true, "evidence": "startsWith('SELECT') check present" },
+        { "text": "Env var for connection string", "passed": true, "evidence": "process.env.DATABASE_URL used" },
+        { "text": "Actionable error messages", "passed": false, "evidence": "Only 'Only SELECT queries are allowed' — no guidance on connection failures or table-not-found" },
+        { "text": "Mentions @modelcontextprotocol/sdk", "passed": true, "evidence": "npm install @modelcontextprotocol/sdk" }
+      ],
+      "notes": ["Uses old low-level Server API vs McpServer; no structured error handling"]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "github-tool-definition",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 231.7,
+        "tokens": 34456,
+        "tool_calls": 11,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "server.registerTool code block", "passed": true, "evidence": "Full server.registerTool call shown" },
+        { "text": "Description names return fields", "passed": true, "evidence": "Lists 14 returned fields explicitly in description" },
+        { "text": "Zod with .describe() on 2+ fields", "passed": true, "evidence": "All 9 inputs have .describe() chains" },
+        { "text": "readOnlyHint: true", "passed": true, "evidence": "annotations: { readOnlyHint: true, ... }" },
+        { "text": "Pagination with max constraint", "passed": true, "evidence": "per_page max(100), page min(1)" },
+        { "text": "content + structuredContent returned", "passed": true, "evidence": "return { content: [...], structuredContent: summary }" }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "github-tool-definition",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5,
+        "passed": 3,
+        "failed": 3,
+        "total": 6,
+        "time_seconds": 82.8,
+        "tokens": 16451,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        { "text": "server.registerTool code block", "passed": false, "evidence": "Raw JSON schema object, not server.registerTool + Zod pattern" },
+        { "text": "Description names return fields", "passed": true, "evidence": "Description mentions PR objects and use cases" },
+        { "text": "Zod with .describe() on 2+ fields", "passed": false, "evidence": "Uses JSON Schema format with 'description' strings, not Zod .describe()" },
+        { "text": "readOnlyHint: true", "passed": true, "evidence": "readOnlyHint: true in annotations" },
+        { "text": "Pagination with max constraint", "passed": true, "evidence": "per_page maximum: 100 in JSON Schema" },
+        { "text": "content + structuredContent returned", "passed": false, "evidence": "No handler implementation — schema definition only" }
+      ],
+      "notes": ["Well-structured annotations table is a nice bonus; good description quality"]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": { "mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0 },
+      "time_seconds": { "mean": 316.2, "stddev": 91.7, "min": 231.7, "max": 412.9 },
+      "tokens": { "mean": 38781, "stddev": 5524, "min": 34456, "max": 45255 }
+    },
+    "without_skill": {
+      "pass_rate": { "mean": 0.656, "stddev": 0.138, "min": 0.5, "max": 0.8 },
+      "time_seconds": { "mean": 88.7, "stddev": 20.6, "min": 71.6, "max": 111.7 },
+      "tokens": { "mean": 17697, "stddev": 2179, "min": 16184, "max": 20457 }
+    },
+    "delta": {
+      "pass_rate": "+0.344",
+      "time_seconds": "+227.5",
+      "tokens": "+21084"
+    }
+  },
+  "notes": [
+    "Skill achieves 100% pass rate on all 3 evals vs 50-80% without skill — clear quality improvement",
+    "Biggest win on Eval 3 (GitHub tool definition): skill drives use of server.registerTool + Zod pattern + structuredContent, which baseline entirely missed",
+    "Eval 2 (PostgreSQL) shows smallest delta — baseline Claude already knows the MCP SDK basics, but skill adds multi-layer safety and better error messages",
+    "Skill costs ~3.5x more tokens and ~3x more time — agents fetch docs (WebFetch calls) and do more thorough research; worth it for quality",
+    "All baseline agents hit permission denials trying to write files; with-skill agents fetched MCP docs first as instructed"
+  ]
+}

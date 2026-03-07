@@ -1,0 +1,18 @@
+{
+  "eval_id": 1,
+  "eval_name": "saas-hero-page",
+  "run_type": "with_skill",
+  "expectations": [
+    { "text": "Output is a single valid HTML file (has <!DOCTYPE html> and closing </html>)", "passed": true, "evidence": "<!DOCTYPE html> on line 64, </html> on line 499" },
+    { "text": "File contains a design rationale comment block documenting source material, detected niche, preserved elements, and improvements", "passed": true, "evidence": "Lines 1-63: comment with Source Material, Detected Niche, Preserved Elements, and Improvements Made sections" },
+    { "text": "Tailwind CSS is loaded via CDN script tag", "passed": true, "evidence": "<script src=\"https://cdn.tailwindcss.com\"></script> on line 111" },
+    { "text": "The exact headline 'Ship faster. Break nothing.' appears in the output", "passed": true, "evidence": "Line 242: 'Ship faster.<br>Break nothing.' — exact text, <br> is formatting only" },
+    { "text": "Both 'Start Free Trial' and 'See Demo' CTAs are present", "passed": true, "evidence": "Lines 255 and 267 in hero section; also repeated in pricing section" },
+    { "text": "Mobile hamburger menu is implemented (look for hamburger/menu icon and toggle logic in JS)", "passed": true, "evidence": "button#menu-btn with SVG hamburger; JS toggles hidden class, swaps icons, updates aria-expanded" },
+    { "text": "Page includes more than just the hero — has at least one additional section (features, testimonials, pricing, or footer)", "passed": true, "evidence": "Features, Testimonials, Pricing CTA, and Footer all present" },
+    { "text": "Page has at least title, meta description, and og:title tags", "passed": true, "evidence": "<title>, <meta name='description'>, and <meta property='og:title'> all present" },
+    { "text": "Uses semantic HTML5 elements: <header>, <nav>, <main>, <footer>", "passed": true, "evidence": "<header>, <nav>, <main>, <footer> all present with role attributes" },
+    { "text": "File contains at least 10 lines of vanilla JavaScript for interactivity", "passed": true, "evidence": "~47 lines of JS for mobile menu toggle, smooth scroll, and sticky nav" }
+  ],
+  "overall_pass_rate": 1.0
+}

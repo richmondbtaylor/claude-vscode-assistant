@@ -1,0 +1,9 @@
+{
+  "tool_calls": {"Read": 0, "Write": 0, "WebFetch": 0},
+  "total_tool_calls": 0,
+  "total_steps": 1,
+  "files_created": [],
+  "errors_encountered": 1,
+  "output_chars": 820,
+  "notes": "Haiku baseline — Python-first, 3 tools without prefixes, no actionable error messages, no SDK import shown"
+}
