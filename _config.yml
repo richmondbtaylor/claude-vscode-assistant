@@ -1,0 +1,6 @@
+exclude:
+  - bishop-brand-workspace
+  - skills/infographic-generator-workspace
+  - skills/bishop-brand
+  - plugins
+  - settings.json
