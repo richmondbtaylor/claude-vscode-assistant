@@ -1,0 +1,11 @@
+{
+  "eval_id": 3,
+  "eval_name": "unreadable-date",
+  "prompt": "I have a crumpled receipt photo (JPG) where the date is blurry and I can't make it out clearly. The vendor name looks like 'FedEx Office' and the amount is $22.13. What happens when you try to file this?",
+  "assertions": [
+    "Claude stops and asks the user to provide the date before proceeding",
+    "The question asks for the date in YYYY-MM-DD format specifically",
+    "Claude does NOT attempt to create a folder or upload the file without a confirmed date",
+    "Claude acknowledges the vendor name (FedEx Office or FedEx_Office) and amount it was able to read"
+  ]
+}

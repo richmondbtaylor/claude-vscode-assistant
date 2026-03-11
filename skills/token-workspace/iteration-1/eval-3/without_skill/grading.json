@@ -1,0 +1,48 @@
+{
+  "expectations": [
+    {
+      "text": "Response includes 3 to 5 distinct recommendations",
+      "passed": true,
+      "evidence": "Three clearly labeled problem areas (Redundancy, No-op instructions, Verbose phrasing) plus an optimized prompt. Exactly 3 recommendations — within the 3–5 range."
+    },
+    {
+      "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+      "passed": true,
+      "evidence": "'The model doesn't skip reading' — explains why the 'read thoroughly' instruction is a no-op. 'These are instructional habits from human writing that don't translate to LLM prompting.'"
+    },
+    {
+      "text": "Response includes a token savings estimate (percentage or count)",
+      "passed": true,
+      "evidence": "'~47 tokens, ~64% reduction' and 'cuts ~83 tokens (~64%) while preserving all functional constraints.'"
+    },
+    {
+      "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+      "passed": false,
+      "evidence": "Opens with 'Analysis of the original prompt (~130 tokens):' — a label/header. The actual diagnosis ('The prompt has three main problems:') follows but is not a single synthesized diagnosis sentence."
+    },
+    {
+      "text": "Response acknowledges or highlights the high-volume context (cost impact at scale)",
+      "passed": true,
+      "evidence": "Explicitly recommends prompt caching 'regardless of how many times it's reused' and frames it as 'the highest-ROI optimization for high-volume pipelines.' Addresses scale directly."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  },
+  "execution_metrics": {
+    "output_chars": 1580,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "executor_duration_seconds": 35.3,
+    "total_duration_seconds": 35.3
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Good discrimination. The diagnosis assertion catches a real structural difference — the baseline jumps to analysis without a framing statement, while the skill consistently opens with a clear single-sentence diagnosis."
+  }
+}

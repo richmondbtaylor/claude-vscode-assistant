@@ -1,0 +1,323 @@
+{
+  "metadata": {
+    "skill_name": "token",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-03-08T13:15:28Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 62.2,
+        "tokens": 2180,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Response includes 3 to 5 distinct recommendations",
+          "passed": true,
+          "evidence": "Response contains exactly 5 numbered recommendations: filler wrappers, consolidated behavioral constraints, merged identity/role, tightened grounding, cut implicit behaviors."
+        },
+        {
+          "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+          "passed": true,
+          "evidence": "Every recommendation has a 'Why it saves tokens' sub-bullet. E.g., Rec 1: 'These are meta-commentary phrases. Claude does not require emphasis preambles \u00e2\u20ac\u201d stating the rule directly is equally effective. Each wrapper costs 4\u00e2\u20ac\u201c8 tokens; there are ~7\u00e2\u20ac\u201c8 of them here.'"
+        },
+        {
+          "text": "Response includes a token savings estimate (percentage or count)",
+          "passed": true,
+          "evidence": "Closing line: 'Token reduction estimate: ~130 \u00e2\u2020\u2019 ~52 tokens, approximately 60% reduction.'"
+        },
+        {
+          "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+          "passed": true,
+          "evidence": "Opening: 'This prompt's biggest opportunity is eliminating redundant constraint language \u00e2\u20ac\u201d the same behavioral instructions (be polite, don't make things up, be professional, be helpful) are restated in slightly different words across nearly every sentence.'"
+        },
+        {
+          "text": "At least one recommendation mentions a potential quality trade-off or flags it as low-risk",
+          "passed": true,
+          "evidence": "All 5 recommendations include explicit 'Quality note' lines (e.g., 'Low risk. These phrases add no behavioral signal.'; 'Low risk. This is the most important instruction \u00e2\u20ac\u201d review it carefully, but the meaning is unchanged.')"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 68.7,
+        "tokens": 2350,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Response includes 3 to 5 distinct recommendations",
+          "passed": true,
+          "evidence": "Response contains exactly 5 labeled recommendations: Collapse Language List, Cut Role-Credential Sentence, Consolidate Behavioral Instruction Block, Cut Dead-Weight Filler Phrases, Front-Load Key Differentiating Constraint."
+        },
+        {
+          "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+          "passed": true,
+          "evidence": "Each recommendation has a 'Why it saves tokens' section. E.g., Rec 1: 'Enumerating languages costs ~15 tokens and adds zero information \u00e2\u20ac\u201d \"expert software engineer\" already implies broad language knowledge. The long list is a habit from human resumes, not a functional constraint.'"
+        },
+        {
+          "text": "Response includes a token savings estimate (percentage or count)",
+          "passed": true,
+          "evidence": "Closing: 'TOKEN REDUCTION ESTIMATE: Original: ~175 tokens. Optimized: ~55\u00e2\u20ac\u201c65 tokens. Reduction: ~110 tokens (~60\u00e2\u20ac\u201c65%)'"
+        },
+        {
+          "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+          "passed": true,
+          "evidence": "Opens with: 'The prompt's biggest opportunity is collapsing a verbose, sentence-by-sentence instruction list into a compact set of directives \u00e2\u20ac\u201d most behaviors described are either Claude defaults or can be expressed in far fewer words.'"
+        },
+        {
+          "text": "Response specifically identifies the language enumeration list as a token optimization opportunity",
+          "passed": true,
+          "evidence": "Recommendation 1 is entirely dedicated to this: 'Replace \"Python, JavaScript, TypeScript, Go, Rust, Java, C++, and many other programming languages\" with \"across all major programming languages.\"'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 55.3,
+        "tokens": 2410,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Response includes 3 to 5 distinct recommendations",
+          "passed": true,
+          "evidence": "Response contains exactly 5 labeled recommendations: Eliminate Redundant Accuracy Constraints, Cut Filler Scaffolding, Consolidate Length and Quality Constraints, Compress the 5W Instruction, Tighten the Role and Task Opening."
+        },
+        {
+          "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+          "passed": true,
+          "evidence": "Every recommendation includes 'Why it saves tokens'. E.g., Rec 2: 'These are instructional habits from human writing that don't translate to LLM prompting. Claude doesn't need to be told to read its input.'"
+        },
+        {
+          "text": "Response includes a token savings estimate (percentage or count)",
+          "passed": true,
+          "evidence": "'TOKEN REDUCTION ESTIMATE: Original: ~128 tokens. Optimized: ~38 tokens. Reduction: ~90 tokens (~70%)'"
+        },
+        {
+          "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+          "passed": true,
+          "evidence": "Opens with: 'This prompt's biggest inefficiency is repetitive constraint language \u00e2\u20ac\u201d the same core instructions (accuracy, no added content, plain English, meaningful sentences) are restated multiple times across separate sentences rather than consolidated into tight directives.'"
+        },
+        {
+          "text": "Response acknowledges or highlights the high-volume context (cost impact at scale)",
+          "passed": true,
+          "evidence": "'At thousands of runs per day, this is a substantial cost and latency improvement.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": 24.9,
+        "tokens": 1320,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Response includes 3 to 5 distinct recommendations",
+          "passed": false,
+          "evidence": "The baseline identifies 3 problems in bullet form but doesn't structure them as 3\u00e2\u20ac\u201c5 distinct recommendations. The structure is: problems \u00e2\u2020\u2019 rewrite \u00e2\u2020\u2019 4 extra tips (prompt caching, summarizing history, smaller model, knowledge base). The 'tips' are infrastructure suggestions unrelated to prompt text optimization. No recommendation count of 3\u00e2\u20ac\u201c5 clearly labeled."
+        },
+        {
+          "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+          "passed": true,
+          "evidence": "'Filler phrases like \"Please make sure to always\" and \"It is very important that you\" add tokens without adding meaning' \u00e2\u20ac\u201d this explains why removing them saves tokens."
+        },
+        {
+          "text": "Response includes a token savings estimate (percentage or count)",
+          "passed": true,
+          "evidence": "'The rewrite alone saves ~60-70 tokens per call. Combined with prompt caching and model tiering, you could cut API costs by 70-80%'"
+        },
+        {
+          "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+          "passed": true,
+          "evidence": "Opens with: 'The prompt has a lot of redundancy that's costing you tokens on every API call.' \u00e2\u20ac\u201d satisfies the diagnosis intent."
+        },
+        {
+          "text": "At least one recommendation mentions a potential quality trade-off or flags it as low-risk",
+          "passed": false,
+          "evidence": "No quality trade-off mentions anywhere in the response. The baseline jumps straight to a rewrite and tips with no quality caveats."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": 33.4,
+        "tokens": 1580,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Response includes 3 to 5 distinct recommendations",
+          "passed": false,
+          "evidence": "Baseline gives 8 numbered items (Language list, Experience list, Process narration, Quality adjective stack, Follow best practices, Test mentally, Always aim to be helpful, Alternatives instruction). This exceeds the 3\u00e2\u20ac\u201c5 range, indicating a lack of prioritization \u00e2\u20ac\u201d surfacing everything rather than identifying the highest-impact changes."
+        },
+        {
+          "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+          "passed": true,
+          "evidence": "Item 1: '\"Expert software engineer\" implies all of it.' Item 6: 'Unmeasurable, no real effect.' These provide causal reasoning."
+        },
+        {
+          "text": "Response includes a token savings estimate (percentage or count)",
+          "passed": true,
+          "evidence": "'Suggested lean version (~60 tokens, ~75% reduction)' and 'Token savings: ~160-175 tokens per call. At 100k calls/month, that is 16-17 million tokens saved.'"
+        },
+        {
+          "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+          "passed": false,
+          "evidence": "Starts with 'Original prompt: ~175 words / ~220-240 tokens' then 'What to cut:' \u00e2\u20ac\u201d this is a data point and a section header, not a diagnosis sentence."
+        },
+        {
+          "text": "Response specifically identifies the language enumeration list as a token optimization opportunity",
+          "passed": true,
+          "evidence": "Item 1: 'Language list \u00e2\u20ac\u201d \"Python, JavaScript, TypeScript, Go, Rust, Java, C++, and many other programming languages\" is unnecessary. \"Expert software engineer\" implies all of it.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 35.3,
+        "tokens": 1580,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Response includes 3 to 5 distinct recommendations",
+          "passed": true,
+          "evidence": "Three clearly labeled problem areas (Redundancy, No-op instructions, Verbose phrasing) plus an optimized prompt. Exactly 3 recommendations \u00e2\u20ac\u201d within the 3\u00e2\u20ac\u201c5 range."
+        },
+        {
+          "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+          "passed": true,
+          "evidence": "'The model doesn't skip reading' \u00e2\u20ac\u201d explains why the 'read thoroughly' instruction is a no-op. 'These are instructional habits from human writing that don't translate to LLM prompting.'"
+        },
+        {
+          "text": "Response includes a token savings estimate (percentage or count)",
+          "passed": true,
+          "evidence": "'~47 tokens, ~64% reduction' and 'cuts ~83 tokens (~64%) while preserving all functional constraints.'"
+        },
+        {
+          "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+          "passed": false,
+          "evidence": "Opens with 'Analysis of the original prompt (~130 tokens):' \u00e2\u20ac\u201d a label/header. The actual diagnosis ('The prompt has three main problems:') follows but is not a single synthesized diagnosis sentence."
+        },
+        {
+          "text": "Response acknowledges or highlights the high-volume context (cost impact at scale)",
+          "passed": true,
+          "evidence": "Explicitly recommends prompt caching 'regardless of how many times it's reused' and frames it as 'the highest-ROI optimization for high-volume pipelines.' Addresses scale directly."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 62.0667,
+        "stddev": 6.701,
+        "min": 55.3,
+        "max": 68.7
+      },
+      "tokens": {
+        "mean": 2313.3333,
+        "stddev": 119.3035,
+        "min": 2180,
+        "max": 2410
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.6667,
+        "stddev": 0.1155,
+        "min": 0.6,
+        "max": 0.8
+      },
+      "time_seconds": {
+        "mean": 31.2,
+        "stddev": 5.5381,
+        "min": 24.9,
+        "max": 35.3
+      },
+      "tokens": {
+        "mean": 1493.3333,
+        "stddev": 150.1111,
+        "min": 1320,
+        "max": 1580
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.33",
+      "time_seconds": "+30.9",
+      "tokens": "+820"
+    }
+  },
+  "notes": []
+}

@@ -1,0 +1,25 @@
+The prompt has a lot of redundancy that's costing you tokens on every API call. Here's the breakdown:
+
+**Problems with the current prompt:**
+
+- "always be polite and respectful" / "respond in a professional manner" / "avoid being rude or dismissive" — all say the same thing three times
+- "do not make up information" / "Always answer based only on the information provided" — redundant pair
+- Filler phrases like "Please make sure to always" and "It is very important that you" add tokens without adding meaning
+
+**Optimized version (~60% shorter):**
+
+> You are a customer support assistant for Acme SaaS. Be concise, professional, and friendly.
+>
+> Rules:
+> - Only answer based on provided information. If you don't know, say so and direct the customer to support.
+> - Address the customer by name if provided.
+> - Ask clarifying questions when needed.
+
+**Additional cost-reduction tips:**
+
+1. Use **prompt caching** — put this in the system prompt; after the first call, cached tokens cost ~10% of normal input rates
+2. **Summarize older conversation turns** instead of sending full chat history
+3. **Use a smaller model** (Claude Haiku) for simple FAQ-style queries — a fraction of the cost of Sonnet/Opus
+4. Keep your knowledge base in the system prompt so it benefits from caching
+
+The rewrite alone saves ~60-70 tokens per call. Combined with prompt caching and model tiering, you could cut API costs by 70-80% for a high-volume support bot.

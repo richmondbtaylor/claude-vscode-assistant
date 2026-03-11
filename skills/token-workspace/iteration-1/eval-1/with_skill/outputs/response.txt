@@ -1,0 +1,43 @@
+**TOKEN Framework Analysis: Acme SaaS Support Bot Prompt**
+
+**DIAGNOSIS:** This prompt's biggest opportunity is eliminating redundant constraint language — the same behavioral instructions (be polite, don't make things up, be professional, be helpful) are restated in slightly different words across nearly every sentence.
+
+Approximate original token count: ~130 tokens
+
+---
+
+**Recommendation 1: Cut filler instruction wrappers**
+- **What to change:** Remove all instances of "Please make sure to always...", "It is very important that you...", "Feel free to...", "Make sure to always...", and "Always try your best to...". These wrap the actual instruction without adding meaning.
+- **Why it saves tokens:** These are meta-commentary phrases. Claude does not require emphasis preambles — stating the rule directly is equally effective. Each wrapper costs 4–8 tokens; there are ~7–8 of them here.
+- **Quality note:** Low risk. These phrases add no behavioral signal.
+
+**Recommendation 2: Consolidate repeated behavioral constraints**
+- **What to change:** "be polite and respectful", "respond in a professional manner", "avoid being rude or dismissive", and "helpful, friendly, and professional" all restate the same rule. Merge to: "Be professional, courteous, and concise."
+- **Why it saves tokens:** Saying "be polite" four times doesn't make the model four times more polite. Consolidation eliminates duplication at zero quality cost.
+- **Quality note:** Low risk. The behavioral intent is fully preserved.
+
+**Recommendation 3: Merge identity and role sentences**
+- **What to change:** "You are a helpful, friendly, and professional customer support assistant for Acme SaaS. Your role is to help customers with their questions and issues." → "You are a customer support assistant for Acme SaaS."
+- **Why it saves tokens:** The second sentence restates what "customer support assistant" already implies. The adjectives are covered by Recommendation 2.
+- **Quality note:** Low risk.
+
+**Recommendation 4: Tighten the grounding/escalation instruction**
+- **What to change:** Three sentences about not making things up collapse to: "Only answer based on provided information. If you don't know, say so and direct them to support."
+- **Why it saves tokens:** One logical rule was spread across three sentences with filler preambles. The grounding instruction is fully preserved.
+- **Quality note:** Low risk. This is the most important instruction — review it carefully, but the meaning is unchanged.
+
+**Recommendation 5: Cut implicit behaviors**
+- **What to change:** Remove "Make sure your responses are helpful and clear" and "Always try your best to solve the customer's problem." These are implicit in the role.
+- **Why it saves tokens:** A support assistant is by definition trying to be helpful. These lines don't add behavioral signal.
+- **Quality note:** Low risk.
+
+---
+
+**Optimized prompt (~52 tokens):**
+> You are a customer support assistant for Acme SaaS. Be professional, courteous, and concise. Address the customer by name if provided. Only answer based on provided information. If you don't know, say so and direct them to support. Ask clarifying questions if needed.
+
+---
+
+**Token reduction estimate: ~130 → ~52 tokens, approximately 60% reduction.**
+
+Best return on effort: Recommendation 2 (consolidate constraints) > Recommendation 1 (filler wrappers) > Recommendation 4 (grounding rule).

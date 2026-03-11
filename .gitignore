@@ -31,3 +31,4 @@ file-history/
 # OAuth tokens and credentials
 *.pickle
 gdrive_token*
+client_secret_*.json

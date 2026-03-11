@@ -1,0 +1,47 @@
+{
+  "eval_id": 3,
+  "eval_name": "small-business-ai",
+  "prompt": "Transcript busting the myth that AI is only for big companies. Single-person consulting client automated onboarding in 4 hours. User explicitly asks for LinkedIn to be 'professional and polished'.",
+  "assertions": [
+    {
+      "text": "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "LinkedIn post reflects the user's explicit request to be 'professional and polished' — no casual slang or excessive emoji",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "The myth-busting angle ('AI isn't just for big companies') appears in at least one platform's hook",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "YouTube description includes keywords relevant to 'AI for small business' or 'AI productivity'",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "At least 3 niche hashtags from the approved list are present",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Instagram caption is concise (under 5 sentences) with hashtags",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "TikTok caption is under 150 characters and casual in tone",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "No fear-mongering or hype language (no 'AI will change everything', 'AI is taking over')",
+      "passed": null,
+      "evidence": null
+    }
+  ]
+}

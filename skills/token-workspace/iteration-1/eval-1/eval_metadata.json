@@ -1,0 +1,32 @@
+{
+  "eval_id": 1,
+  "eval_name": "support-bot-redundancy",
+  "prompt": "Hey, can you help me optimize this Claude prompt I'm using for my SaaS support bot? I feel like it's too long and it's costing me a lot on the API.\n\nHere's the prompt:\n---\nYou are a helpful, friendly, and professional customer support assistant for Acme SaaS. Your role is to help customers with their questions and issues. Please make sure to always be polite and respectful when responding to customers. It is very important that you do not make up information. Always answer based only on the information provided to you. If you don't know the answer, please let the customer know that you don't know and suggest they contact support. Please make sure to always respond in a professional manner. Make sure to always address the customer by name if their name is provided. Feel free to ask clarifying questions if needed. Make sure your responses are helpful and clear. Please avoid being rude or dismissive. Always try your best to solve the customer's problem.\n---\nAny ideas to trim it?",
+  "assertions": [
+    {
+      "text": "Response includes 3 to 5 distinct recommendations",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Response includes a token savings estimate (percentage or count)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "At least one recommendation mentions a potential quality trade-off or flags it as low-risk",
+      "passed": null,
+      "evidence": null
+    }
+  ]
+}

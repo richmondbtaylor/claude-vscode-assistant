@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+      "passed": true,
+      "evidence": "All five sections present under labeled dashes: YOUTUBE DESCRIPTION, INSTAGRAM CAPTION, LINKEDIN CAPTION, TIKTOK CAPTION, TWITTER / X."
+    },
+    {
+      "text": "LinkedIn post is between 150 and 250 words",
+      "passed": true,
+      "evidence": "LinkedIn section is approximately 215 words — from 'I've been building automation workflows...' to '...I'd love to hear it in the comments.' Within range."
+    },
+    {
+      "text": "Twitter/X post is under 280 characters (or clearly structured as a numbered thread)",
+      "passed": true,
+      "evidence": "Two options given: a standalone tweet (~205 chars) and a 5-tweet thread (1/ through 5/). Both valid."
+    },
+    {
+      "text": "TikTok caption is under 150 characters (excluding hashtags and sound suggestion)",
+      "passed": false,
+      "evidence": "TikTok section begins '4 nodes. 25 minutes. 3 hours saved per person per day. This is what automation actually looks like — not some crazy AI system, just a simple workflow that does the boring stuff for you.' — that alone is ~175 characters, plus embedded timestamps added. No sound suggestion provided."
+    },
+    {
+      "text": "At least 3 niche hashtags from the approved list appear across the outputs (e.g., #AIAutomation, #AutomationNation, #WorkSmarter, #Productivity, #AITools)",
+      "passed": false,
+      "evidence": "Hashtags used are primarily #n8n, #automation, #nocode, #workflowautomation — non-niche tags. Only #AItools and #Productivity from the approved list appear. The approved niche hashtags (#AIAutomation, #AutomationNation, #WorkSmarter, #FutureOfWork, etc.) are absent."
+    },
+    {
+      "text": "No hard-sell language appears (no 'buy now', 'limited time', 'don't miss out')",
+      "passed": true,
+      "evidence": "No hard-sell language found. Post ends with open-ended questions and 'Save this post' — soft engagement CTAs."
+    },
+    {
+      "text": "YouTube description includes at least one timestamp reference",
+      "passed": true,
+      "evidence": "YouTube description includes 6 timestamps from 0:00 to 3:20 with descriptive labels."
+    },
+    {
+      "text": "Each platform section has a distinct hook — not identical opening lines reused across platforms",
+      "passed": true,
+      "evidence": "Each platform opens differently: YouTube hooks on simplicity vs complexity, Instagram on the numbers, LinkedIn on the 8-month learning, TikTok on raw numbers, Twitter on a question. Distinct enough."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 2,
+    "total": 8,
+    "pass_rate": 0.75
+  }
+}

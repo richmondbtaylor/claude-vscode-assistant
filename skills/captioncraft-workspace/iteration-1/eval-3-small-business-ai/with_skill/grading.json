@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+      "passed": true,
+      "evidence": "All five sections present with ━━━ dividers: YOUTUBE DESCRIPTION, LINKEDIN POST, INSTAGRAM CAPTION, TIKTOK CAPTION, TWITTER / X."
+    },
+    {
+      "text": "LinkedIn post reflects the user's explicit request to be 'professional and polished' — no casual slang or excessive emoji",
+      "passed": true,
+      "evidence": "LinkedIn is formal, no emoji, clear structure, professional vocabulary: 'structural speed advantage', 'procurement processes', 'barrier to entry has never been lower'. No slang. Polished."
+    },
+    {
+      "text": "The myth-busting angle ('AI isn't just for big companies') appears in at least one platform's hook",
+      "passed": true,
+      "evidence": "YouTube: 'Small business owners have a bigger AI advantage than enterprise companies right now — and most don't even realize it.' Instagram: 'AI isn't just for big companies — small businesses actually have the speed advantage right now.' Both lead with the myth-bust."
+    },
+    {
+      "text": "YouTube description includes keywords relevant to 'AI for small business' or 'AI productivity'",
+      "passed": true,
+      "evidence": "YouTube description contains: 'small businesses', 'AI advantage', 'AI for companies with big tech budgets', 'AI transformation', 'business productivity'. Keyword-rich for the topic."
+    },
+    {
+      "text": "At least 3 niche hashtags from the approved list are present",
+      "passed": true,
+      "evidence": "#AIForBusiness, #BusinessAutomation, #AITools, #Productivity, #WorkSmarter, #FutureOfWork, #AutomationNation, #AIAutomation — 8 approved hashtags appear across platform outputs."
+    },
+    {
+      "text": "Instagram caption is concise (under 5 sentences) with hashtags",
+      "passed": true,
+      "evidence": "'AI isn't just for big companies — small businesses actually have the speed advantage right now. No approval chains. No procurement cycles. Just you, a tool, and results by Tuesday. Full breakdown in the link in bio.' — 4 sentences. ✓"
+    },
+    {
+      "text": "TikTok caption is under 150 characters and casual in tone",
+      "passed": true,
+      "evidence": "'Small businesses have a bigger AI advantage than enterprise rn and most owners don't even know it yet' = 99 characters. Casual ('rn' instead of 'right now'). ✓"
+    },
+    {
+      "text": "No fear-mongering or hype language (no 'AI will change everything', 'AI is taking over')",
+      "passed": true,
+      "evidence": "No fear-mongering. Tone is empowering and practical. 'The question is just: are you going to use it?' — matter-of-fact, not hyped."
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8,
+    "pass_rate": 1.0
+  }
+}

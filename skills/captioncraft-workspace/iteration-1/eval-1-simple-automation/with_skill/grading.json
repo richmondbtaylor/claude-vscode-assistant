@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+      "passed": true,
+      "evidence": "All five sections present with ━━━ dividers: YOUTUBE DESCRIPTION, LINKEDIN POST, INSTAGRAM CAPTION, TIKTOK CAPTION, TWITTER / X"
+    },
+    {
+      "text": "LinkedIn post is between 150 and 250 words",
+      "passed": true,
+      "evidence": "LinkedIn post is approximately 185 words — from 'The automations saving my clients 10–15 hours...' to '...see exactly how it's set up.' Well within range."
+    },
+    {
+      "text": "Twitter/X post is under 280 characters (or clearly structured as a numbered thread)",
+      "passed": true,
+      "evidence": "Structured as a 3-tweet thread labeled 1/, 2/, 3/ — each individual tweet is well under 280 characters."
+    },
+    {
+      "text": "TikTok caption is under 150 characters (excluding hashtags and sound suggestion)",
+      "passed": true,
+      "evidence": "'You don't need to boil the ocean. You just need to drain the puddle in front of you. 4 nodes. 25 mins. 3 hrs saved daily.' = ~122 characters."
+    },
+    {
+      "text": "At least 3 niche hashtags from the approved list appear across the outputs (e.g., #AIAutomation, #AutomationNation, #WorkSmarter, #Productivity, #AITools)",
+      "passed": true,
+      "evidence": "Outputs contain #AIAutomation, #BusinessAutomation, #Productivity, #WorkSmarter, #FutureOfWork, #AutomationNation, #AITools, #AIForBusiness, #SalesAI, #GTM — all from the approved list."
+    },
+    {
+      "text": "No hard-sell language appears (no 'buy now', 'limited time', 'don't miss out')",
+      "passed": true,
+      "evidence": "No hard-sell language found. CTAs are soft: 'Full video in the comments', 'Link in bio for the full breakdown', 'Like and subscribe'."
+    },
+    {
+      "text": "YouTube description includes at least one timestamp reference",
+      "passed": true,
+      "evidence": "YouTube description includes 6 timestamps: 00:00, 00:45, 01:20, 02:00, 02:30, 02:55 with descriptive labels."
+    },
+    {
+      "text": "Each platform section has a distinct hook — not identical opening lines reused across platforms",
+      "passed": true,
+      "evidence": "YouTube: 'The most powerful AI automations aren't the complicated ones'; LinkedIn: 'The automations saving my clients 10–15 hours a week aren't the fancy ones'; Instagram: 'A 4-node workflow. 25 minutes to build.'; TikTok: 'You don't need to boil the ocean'; Twitter: 'The automation saving my client's sales team 3 hrs/person/day?' — all distinct."
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8,
+    "pass_rate": 1.0
+  }
+}

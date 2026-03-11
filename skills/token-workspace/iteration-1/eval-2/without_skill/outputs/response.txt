@@ -1,0 +1,29 @@
+**PROMPT TOKEN REDUCTION ANALYSIS**
+
+Original prompt: ~175 words / ~220-240 tokens
+
+**What to cut:**
+
+1. **Language list** — "Python, JavaScript, TypeScript, Go, Rust, Java, C++, and many other programming languages" is unnecessary. "Expert software engineer" implies all of it.
+
+2. **Experience list** — "You have extensive experience in software architecture, design patterns..." is fully implied by "expert." Cut entirely.
+
+3. **Process narration** — "first carefully read and fully understand... think step by step" is partially redundant. If chain-of-thought matters, keep only: "Think through problems step by step."
+
+4. **Quality adjective stack** — "clean, readable, well-commented" can trim to "clean, well-commented."
+
+5. **"Follow best practices"** — Redundant with "expert." Cut.
+
+6. **"Test mentally before presenting"** — Unmeasurable, no real effect. Cut.
+
+7. **"Always aim to be helpful, accurate, and educational"** — Every assistant prompt implies this. Cut.
+
+8. **Alternatives instruction** — Fine to keep but trim to: "Note alternatives briefly if relevant."
+
+**Suggested lean version (~60 tokens, ~75% reduction):**
+
+> "You are an expert software engineer. Think through problems step by step. Write clean, well-commented code with appropriate error handling. Explain your reasoning. Note alternative approaches briefly when relevant. Ask for clarification if the question is unclear."
+
+**Why this works:** "Expert software engineer" carries all implied knowledge. Step-by-step thinking is preserved because it affects output quality. Error handling and explanation specify *what* to produce. Clarification requests are kept because they change behavior in a specific edge case. Everything else was implied, redundant, or default behavior.
+
+**Token savings: ~160-175 tokens per call.** At 100k calls/month, that is 16-17 million tokens saved.

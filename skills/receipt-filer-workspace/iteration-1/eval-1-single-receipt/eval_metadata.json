@@ -1,0 +1,11 @@
+{
+  "eval_id": 1,
+  "eval_name": "single-receipt",
+  "prompt": "Hey, just got back from a client lunch. Here's the receipt from The Capital Grille — it's a PDF I saved from their email. Date on it is January 15, 2026, total was $187.40. Please file it for me in Google Drive. (Simulate the Google Drive interaction — describe exactly what you would do step by step, what the folder path would be, and what the final filename would be.)",
+  "assertions": [
+    "The proposed filename is 'The_Capital_Grille_187.40.pdf' (spaces replaced with underscores, no dollar sign, .pdf extension preserved)",
+    "The destination folder path includes 'Bishop AI finances / 2026-01-15'",
+    "The response mentions checking whether the 2026-01-15 folder already exists before creating it",
+    "The response includes a confirmation with the folder name and describes where to find the file link"
+  ]
+}
