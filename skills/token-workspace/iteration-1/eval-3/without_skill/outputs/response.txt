@@ -1,0 +1,31 @@
+**Analysis of the original prompt (~130 tokens):**
+
+The prompt has three main problems:
+
+1. **Redundancy** — Multiple phrases say the same thing:
+   - "accurate and faithfully represent" — pick one
+   - "main ideas, key points, and important details" — heavily overlapping
+   - "clear, plain English that is easy to understand" — "plain English" already implies clarity
+   - "Make sure each sentence is meaningful and contributes to the overall summary. Avoid filler sentences." — identical instruction stated twice
+
+2. **No-op instructions** — "Please read the article thoroughly before writing your summary" adds tokens but zero signal. The model doesn't skip reading.
+
+3. **Verbose phrasing** — "Your task is to read the following article carefully and produce" can simply be an imperative.
+
+---
+
+**Recommended compressed prompt (~47 tokens, ~64% reduction):**
+
+> "Summarize the article in 3–5 sentences. Cover the key points accurately, including who, what, when, where, and why when present. Do not add information or opinions beyond what the article states."
+
+All load-bearing instructions are preserved: length constraint, accuracy requirement, 5W coverage, and strict grounding. Nothing meaningful is lost.
+
+---
+
+**Highest-leverage optimization:**
+
+If your API setup supports prompt caching (e.g., Anthropic's `cache_control`), move the system prompt there entirely. A cached system prompt is billed at a fraction of normal token cost regardless of how many times it's reused — that beats any wording optimization by an order of magnitude.
+
+---
+
+**Summary:** A prompt audit identifying redundancy, dead-weight instructions, and verbose phrasing, followed by a compressed 3-sentence replacement prompt that cuts ~83 tokens (~64%) while preserving all functional constraints. Also flagged prompt caching as the highest-ROI optimization for high-volume pipelines.

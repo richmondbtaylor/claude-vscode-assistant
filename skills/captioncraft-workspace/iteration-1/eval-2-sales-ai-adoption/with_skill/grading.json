@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+      "passed": true,
+      "evidence": "All five sections present with ━━━ dividers: YOUTUBE DESCRIPTION, LINKEDIN POST, INSTAGRAM CAPTION, TIKTOK CAPTION, TWITTER / X."
+    },
+    {
+      "text": "LinkedIn post opens with a strong hook (question, bold claim, or surprising stat) — not a generic opener like 'In this video'",
+      "passed": true,
+      "evidence": "'Your sales team isn't ignoring your AI tool because they're resistant to change. They're ignoring it because you didn't give them a reason to care.' — bold reframe, not generic."
+    },
+    {
+      "text": "LinkedIn post includes a soft CTA rather than aggressive sales language",
+      "passed": true,
+      "evidence": "'Full video in the comments if you want to go deeper.' — genuinely soft, no urgency or pressure."
+    },
+    {
+      "text": "TikTok caption includes a trending sound suggestion",
+      "passed": true,
+      "evidence": "'Trending sound suggestion: Viral explainer/talking-head tone (low-key background music, clear voice-forward mix)' — explicitly included."
+    },
+    {
+      "text": "At least 2 of these hashtags appear: #SalesAI #GTM #AIAutomation #AITools #FutureOfWork #AutomationNation",
+      "passed": true,
+      "evidence": "#SalesAI, #GTM, #AIAutomation, #FutureOfWork, #AutomationNation all appear across platform outputs."
+    },
+    {
+      "text": "No competitor tool names are mentioned",
+      "passed": true,
+      "evidence": "No specific tool names mentioned. References to 'AI email writer' and 'AI call summarizer' are generic categories, not named competitors."
+    },
+    {
+      "text": "The core insight ('reps have to win first') is reflected in at least one platform's caption",
+      "passed": true,
+      "evidence": "LinkedIn: 'Rule #1 of AI adoption in sales: the reps have to win first.' Twitter thread: 'Rule #1: the rep has to win first.' — directly reflected."
+    },
+    {
+      "text": "Each platform section uses the correct structural separator (━━━ dividers) as specified in the skill",
+      "passed": true,
+      "evidence": "All five sections use ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ dividers as required by the skill format."
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8,
+    "pass_rate": 1.0
+  }
+}

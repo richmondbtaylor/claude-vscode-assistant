@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "batch-upload",
+  "prompt": "I'm uploading three receipts from last week — process all of them:\n1. Amazon order confirmation (screenshot, PNG): March 5, 2026, $34.99\n2. Starbucks receipt (phone photo, JPG): March 7, 2026, $8.75\n3. Another Starbucks (phone photo, JPG): March 7, 2026, $6.50\n\nFile all of them in Google Drive please. (Simulate the full process for each one.)",
+  "assertions": [
+    "Amazon receipt is routed to a '2026-03-05' subfolder",
+    "Both Starbucks receipts are routed to a '2026-03-07' subfolder (same folder, not duplicate folders)",
+    "The second Starbucks receipt reuses the existing 2026-03-07 folder rather than creating a new one",
+    "File extensions are preserved (.png for Amazon, .jpg for Starbucks)",
+    "No dollar signs appear in any of the proposed filenames",
+    "Three separate confirmation blocks are provided, one per receipt"
+  ]
+}

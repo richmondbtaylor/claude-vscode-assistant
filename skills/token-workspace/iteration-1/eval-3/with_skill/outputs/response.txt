@@ -1,0 +1,43 @@
+**DIAGNOSIS:** This prompt's biggest inefficiency is repetitive constraint language — the same core instructions (accuracy, no added content, plain English, meaningful sentences) are restated multiple times across separate sentences rather than consolidated into tight directives.
+
+---
+
+**RECOMMENDATION 1: Eliminate Redundant Accuracy Constraints**
+- **What to change:** Merge "The summary should be accurate and faithfully represent the main ideas, key points, and important details," "The summary should NOT include any information that was not present in the original article," and "Do not add your own opinions or interpretations" into one: "Summarize only what is in the article — no added opinions or outside information."
+- **Why it saves tokens:** These three sentences express the same constraint from three angles. A single well-formed directive is as effective as three overlapping ones.
+- **Quality note:** Low-risk. Accuracy constraints are among the clearest Claude processes.
+
+**RECOMMENDATION 2: Cut Filler Scaffolding**
+- **What to change:** Remove "Your task is to read the following article carefully and," "Make sure each sentence is meaningful and contributes to the overall summary," and "Please read the article thoroughly before writing your summary."
+- **Why it saves tokens:** These are instructional habits from human writing that don't translate to LLM prompting. Claude doesn't need to be told to read its input, and "meaningful sentences" is already covered by "avoid filler."
+- **Quality note:** Very low-risk. These phrases don't change Claude's behavior.
+
+**RECOMMENDATION 3: Consolidate Length and Quality Constraints**
+- **What to change:** Replace "The summary should be between 3 to 5 sentences long. Make sure each sentence is meaningful and contributes to the overall summary. Avoid filler sentences." with "Write 3–5 sentences. No filler."
+- **Why it saves tokens:** Three sentences doing the work of one. "No filler" covers both sub-constraints.
+- **Quality note:** Low-risk. Sentence-count constraints are concrete and don't need elaboration.
+
+**RECOMMENDATION 4: Compress the 5W Instruction**
+- **What to change:** Replace the full sentence with "Include who/what/when/where/why when present."
+- **Why it saves tokens:** 22 words → 6 words, identical meaning.
+- **Quality note:** No quality risk.
+
+**RECOMMENDATION 5: Tighten the Role and Task Opening**
+- **What to change:** Replace "You are a professional content summarizer. Your task is to read the following article carefully and produce a high-quality summary." with "Summarize the following article."
+- **Why it saves tokens:** The role declaration doesn't add behavioral value when strong downstream constraints are present. The task verb gets you into the instructions faster.
+- **Trade-off:** Keep "You are a content summarizer." if you believe role framing measurably improves quality — but test without it first.
+
+---
+
+**OPTIMIZED PROMPT:**
+
+> Summarize the following article in 3–5 sentences using clear, plain English. Summarize only what is in the article — no added opinions or outside information. Include who/what/when/where/why when present. No filler.
+
+---
+
+**TOKEN REDUCTION ESTIMATE:**
+- Original: ~128 tokens
+- Optimized: ~38 tokens
+- Reduction: ~90 tokens (~70%)
+
+At thousands of runs per day, this is a substantial cost and latency improvement. Best return on effort comes from Recommendations 1 (redundant accuracy constraints) and 5 (role/task opening) — make those two changes first.

@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+      "passed": true,
+      "evidence": "All five platform sections present: YOUTUBE, INSTAGRAM, LINKEDIN, TIKTOK, TWITTER / X."
+    },
+    {
+      "text": "LinkedIn post reflects the user's explicit request to be 'professional and polished' — no casual slang or excessive emoji",
+      "passed": true,
+      "evidence": "LinkedIn is formal and structured: 'There's a persistent myth in the small business world that needs to be addressed.' No emoji, no casual slang. Professional tone maintained."
+    },
+    {
+      "text": "The myth-busting angle ('AI isn't just for big companies') appears in at least one platform's hook",
+      "passed": true,
+      "evidence": "Instagram opens: 'Hot take: small business owners are in a BETTER position to benefit from AI than enterprise companies right now.' Twitter thread starts the same. Myth-busting angle present."
+    },
+    {
+      "text": "YouTube description includes keywords relevant to 'AI for small business' or 'AI productivity'",
+      "passed": true,
+      "evidence": "YouTube mentions 'small businesses', 'AI', 'tech budget', 'business owners'. Reasonably keyword-rich for the topic, though less structured for SEO than the with_skill version."
+    },
+    {
+      "text": "At least 3 niche hashtags from the approved list are present",
+      "passed": true,
+      "evidence": "#AIForBusiness, #BusinessAutomation, #AITools, #WorkSmarter, #FutureOfWork appear across outputs — 5+ approved hashtags present."
+    },
+    {
+      "text": "Instagram caption is concise (under 5 sentences) with hashtags",
+      "passed": false,
+      "evidence": "Instagram caption is 7+ sentences long with a full retelling of the client story. Exceeds the 5-sentence limit significantly — reads more like a LinkedIn post than an Instagram caption."
+    },
+    {
+      "text": "TikTok caption is under 150 characters and casual in tone",
+      "passed": true,
+      "evidence": "'Small business owners are actually winning the AI race right now and most of them don't even know it' = 99 characters. Casual tone appropriate for TikTok."
+    },
+    {
+      "text": "No fear-mongering or hype language (no 'AI will change everything', 'AI is taking over')",
+      "passed": true,
+      "evidence": "No fear-mongering found. Tone is empowering and practical throughout all platforms."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 1,
+    "total": 8,
+    "pass_rate": 0.875
+  }
+}

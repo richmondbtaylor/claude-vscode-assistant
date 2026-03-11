@@ -1,0 +1,43 @@
+**DIAGNOSIS:** The prompt's biggest opportunity is collapsing a verbose, sentence-by-sentence instruction list into a compact set of directives — most behaviors described are either Claude defaults or can be expressed in far fewer words.
+
+---
+
+**RECOMMENDATION 1: Collapse the Language List**
+- **What to change:** Replace "Python, JavaScript, TypeScript, Go, Rust, Java, C++, and many other programming languages" with "across all major programming languages."
+- **Why it saves tokens:** Enumerating languages costs ~15 tokens and adds zero information — "expert software engineer" already implies broad language knowledge. The long list is a habit from human resumes, not a functional constraint.
+- **Quality note:** Low-risk. The model's coding ability is not constrained by the system prompt's language list.
+
+**RECOMMENDATION 2: Cut the Role-Credential Sentence**
+- **What to change:** Remove "You have extensive experience in software architecture, design patterns, algorithms, data structures, testing methodologies, and software engineering best practices." — or fold the one unique element ("testing methodologies") into a single phrase.
+- **Why it saves tokens:** This sentence restates the expert persona already established in sentence one. "Expert software engineer" subsumes all of these. Saves ~20 tokens.
+- **Quality note:** Low-risk.
+
+**RECOMMENDATION 3: Consolidate the Behavioral Instruction Block**
+- **What to change:** The ~110-token block of behavioral instructions ("first carefully read...think step by step...write clean...make sure...include error handling...explain...present alternatives...test mentally...ask for clarification...always aim...") describes mostly default model behavior. Replace with a compact bullet list of only non-default constraints.
+- **Why it saves tokens:** Instructing an expert model to "carefully read the question" doesn't change its behavior — it already does this. Only instructions that diverge from defaults need stating. Saves ~65 tokens.
+- **Quality note:** Moderate — worth keeping "think step by step" if you rely on chain-of-thought reasoning, as this can affect output quality for complex problems.
+
+**RECOMMENDATION 4: Cut Dead-Weight Filler Phrases**
+- **What to change:** Remove: "carefully read and fully understand what they are asking," "Make sure to test your solution mentally before presenting it," and "Always aim to be helpful, accurate, and educational in your responses."
+- **Why it saves tokens:** These are padding. "Test mentally" is unverifiable. "Helpful and accurate" is Claude's default. Saves ~20 tokens.
+- **Quality note:** Very low-risk.
+
+**RECOMMENDATION 5: Front-Load the Key Differentiating Constraint**
+- **What to change:** Move "Explain your code so the user can understand it" to the top of the behavioral instructions — it's the primary differentiator from a plain code-generation prompt and currently buried mid-block.
+- **Why it saves tokens:** Indirectly — a clearer structure lets you trim scaffolding elsewhere. Front-loading also improves instruction adherence.
+- **Quality note:** No quality risk; likely improves quality.
+
+---
+
+**OPTIMIZED PROMPT (~55 tokens):**
+
+> You are an expert software engineer across all major languages. For each coding question: write clean, well-commented code with appropriate error handling; explain your solution clearly; briefly mention key alternatives. Think step by step for complex problems. Ask for clarification if the request is ambiguous.
+
+---
+
+**TOKEN REDUCTION ESTIMATE:**
+- Original: ~175 tokens
+- Optimized: ~55–65 tokens
+- Reduction: ~110 tokens (~60–65%)
+
+Best return on effort: Recommendations 3 and 4 together account for ~85 of the ~110 token savings — start there.

@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "Claude stops and asks the user to provide the date before proceeding",
+      "passed": true,
+      "evidence": "Response explicitly stops and asks for the date: 'the date is not legible in the photo... pause and ask'"
+    },
+    {
+      "text": "The question asks for the date in YYYY-MM-DD format specifically",
+      "passed": false,
+      "evidence": "Without skill, Claude asks about the date but does NOT request it in YYYY-MM-DD format. It instead asks for 'a general timeframe (e.g., I know it was sometime in February 2026)' — not a specific format requirement."
+    },
+    {
+      "text": "Claude does NOT attempt to create a folder or upload the file without a confirmed date",
+      "passed": true,
+      "evidence": "Response correctly does not attempt to file the receipt — concludes 'I cannot file this receipt without a date'"
+    },
+    {
+      "text": "Claude acknowledges the vendor name (FedEx Office or FedEx_Office) and amount it was able to read",
+      "passed": true,
+      "evidence": "Response states: 'I can see this is a FedEx Office receipt for $22.13'"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 1,
+    "total": 4,
+    "pass_rate": 0.75
+  }
+}

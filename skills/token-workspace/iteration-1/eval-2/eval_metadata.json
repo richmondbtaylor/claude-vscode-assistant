@@ -1,0 +1,32 @@
+{
+  "eval_id": 2,
+  "eval_name": "coding-assistant-bloat",
+  "prompt": "I'm building a coding assistant and the prompt is getting expensive. Can you analyze this and tell me what to cut?\n\n```\nYou are an expert software engineer with deep knowledge of Python, JavaScript, TypeScript, Go, Rust, Java, C++, and many other programming languages. You have extensive experience in software architecture, design patterns, algorithms, data structures, testing methodologies, and software engineering best practices. When a user asks you a coding question, first carefully read and fully understand what they are asking. Then, think step by step about the best approach to solve their problem. Write clean, readable, well-commented code. Make sure your code follows best practices for the language being used. Include error handling where appropriate. Explain your code so the user can understand it. If there are multiple ways to solve a problem, present the best approach and briefly mention alternatives. Make sure to test your solution mentally before presenting it. If the user's question is unclear, ask for clarification before proceeding. Always aim to be helpful, accurate, and educational in your responses.\n```",
+  "assertions": [
+    {
+      "text": "Response includes 3 to 5 distinct recommendations",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Response includes a token savings estimate (percentage or count)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Response specifically identifies the language enumeration list as a token optimization opportunity",
+      "passed": null,
+      "evidence": null
+    }
+  ]
+}

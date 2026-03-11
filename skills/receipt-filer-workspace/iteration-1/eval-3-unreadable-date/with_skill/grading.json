@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "Claude stops and asks the user to provide the date before proceeding",
+      "passed": true,
+      "evidence": "Response clearly halts at Step 3 and states: 'processing stops here and the user is asked to provide the date manually'"
+    },
+    {
+      "text": "The question asks for the date in YYYY-MM-DD format specifically",
+      "passed": true,
+      "evidence": "Response asks: 'Please type the date in YYYY-MM-DD format so I can file it correctly.' — exact format specified"
+    },
+    {
+      "text": "Claude does NOT attempt to create a folder or upload the file without a confirmed date",
+      "passed": true,
+      "evidence": "Filing is paused entirely at Step 3 (handle missing data). No folder creation or upload attempted. Steps 5-8 are deferred until date is provided."
+    },
+    {
+      "text": "Claude acknowledges the vendor name (FedEx Office or FedEx_Office) and amount it was able to read",
+      "passed": true,
+      "evidence": "Response documents extracted data: 'Vendor name — FedEx Office' and 'Amount — $22.13', and shows future filename would be FedEx_Office_22.13.jpg"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

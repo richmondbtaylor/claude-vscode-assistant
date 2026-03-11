@@ -1,0 +1,43 @@
+{
+  "skill_name": "receipt-filer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Hey, just got back from a client lunch. Here's the receipt from The Capital Grille — it's a PDF I saved from their email. Date on it is January 15, 2026, total was $187.40. Please file it for me in Google Drive. (Simulate the Google Drive interaction — describe exactly what you would do step by step, what the folder path would be, and what the final filename would be.)",
+      "expected_output": "Claude should extract: date=2026-01-15, vendor=The_Capital_Grille, amount=187.40. Filename should be The_Capital_Grille_187.40.pdf. It should look for 'Bishop AI finances' at the root of My Drive, then check/create a '2026-01-15' subfolder. Final confirmation should show the folder path and a link format.",
+      "files": [],
+      "assertions": [
+        "The proposed filename is 'The_Capital_Grille_187.40.pdf' (or similar with underscores, no dollar sign, correct extension)",
+        "The destination folder path includes 'Bishop AI finances / 2026-01-15'",
+        "The response mentions checking whether the 2026-01-15 folder already exists before creating it",
+        "The response includes a confirmation with the folder name and describes where to find the link"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm uploading three receipts from last week — process all of them:\n1. Amazon order confirmation (screenshot, PNG): March 5, 2026, $34.99\n2. Starbucks receipt (phone photo, JPG): March 7, 2026, $8.75\n3. Another Starbucks (phone photo, JPG): March 7, 2026, $6.50\n\nFile all of them in Google Drive please. (Simulate the full process for each one.)",
+      "expected_output": "Claude should process each receipt independently. Amazon → Amazon_34.99.png in folder 2026-03-05. Both Starbucks receipts → Starbucks_8.75.jpg and Starbucks_6.50.jpg in the same existing 2026-03-07 folder (not creating duplicate date folders). Three separate confirmation blocks, one per receipt.",
+      "files": [],
+      "assertions": [
+        "Amazon receipt is routed to a '2026-03-05' subfolder",
+        "Both Starbucks receipts are routed to a '2026-03-07' subfolder (not two separate folders for same date)",
+        "The second Starbucks receipt reuses the existing 2026-03-07 folder rather than creating a new one",
+        "File extensions are preserved (.png for Amazon, .jpg for Starbucks)",
+        "No dollar signs appear in any of the proposed filenames",
+        "Three separate confirmation blocks are provided, one per receipt"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I have a crumpled receipt photo (JPG) where the date is blurry and I can't make it out clearly. The vendor name looks like 'FedEx Office' and the amount is $22.13. What happens when you try to file this?",
+      "expected_output": "Claude should stop processing and ask the user to provide the date in YYYY-MM-DD format. It should NOT proceed to create folders or upload until the date is confirmed. It may note the vendor (FedEx_Office) and amount (22.13) it extracted, but must ask about the date first.",
+      "files": [],
+      "assertions": [
+        "Claude stops and asks the user to provide the date before proceeding",
+        "The question asks for the date in YYYY-MM-DD format specifically",
+        "Claude does NOT attempt to create a folder or upload the file without a confirmed date",
+        "Claude acknowledges the vendor name (FedEx Office or FedEx_Office) and amount ($22.13 or 22.13) it was able to read"
+      ]
+    }
+  ]
+}

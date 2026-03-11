@@ -1,0 +1,61 @@
+{
+  "expectations": [
+    {
+      "text": "Response includes 3 to 5 distinct recommendations",
+      "passed": true,
+      "evidence": "Response contains exactly 5 numbered recommendations: filler wrappers, consolidated behavioral constraints, merged identity/role, tightened grounding, cut implicit behaviors."
+    },
+    {
+      "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+      "passed": true,
+      "evidence": "Every recommendation has a 'Why it saves tokens' sub-bullet. E.g., Rec 1: 'These are meta-commentary phrases. Claude does not require emphasis preambles — stating the rule directly is equally effective. Each wrapper costs 4–8 tokens; there are ~7–8 of them here.'"
+    },
+    {
+      "text": "Response includes a token savings estimate (percentage or count)",
+      "passed": true,
+      "evidence": "Closing line: 'Token reduction estimate: ~130 → ~52 tokens, approximately 60% reduction.'"
+    },
+    {
+      "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+      "passed": true,
+      "evidence": "Opening: 'This prompt's biggest opportunity is eliminating redundant constraint language — the same behavioral instructions (be polite, don't make things up, be professional, be helpful) are restated in slightly different words across nearly every sentence.'"
+    },
+    {
+      "text": "At least one recommendation mentions a potential quality trade-off or flags it as low-risk",
+      "passed": true,
+      "evidence": "All 5 recommendations include explicit 'Quality note' lines (e.g., 'Low risk. These phrases add no behavioral signal.'; 'Low risk. This is the most important instruction — review it carefully, but the meaning is unchanged.')"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 2180,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "executor_duration_seconds": 62.2,
+    "total_duration_seconds": 62.2
+  },
+  "claims": [
+    {
+      "claim": "Original prompt is ~130 tokens",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The support-bot prompt is approximately 130-140 tokens — estimate is reasonable."
+    },
+    {
+      "claim": "Optimized prompt is ~52 tokens",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The offered optimized prompt ('You are a customer support assistant for Acme SaaS. Be professional, courteous, and concise. Address the customer by name if provided. Only answer based on provided information. If you don't know, say so and direct them to support. Ask clarifying questions if needed.') is approximately 52 tokens."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Assertions are well-targeted and discriminating. The skill-triggered output clearly outperforms what a bare response produces in terms of structure, quality annotation, and coverage. No suggestions."
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "expectations": [
+    {
+      "text": "Response includes 3 to 5 distinct recommendations",
+      "passed": true,
+      "evidence": "Response contains exactly 5 labeled recommendations: Collapse Language List, Cut Role-Credential Sentence, Consolidate Behavioral Instruction Block, Cut Dead-Weight Filler Phrases, Front-Load Key Differentiating Constraint."
+    },
+    {
+      "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+      "passed": true,
+      "evidence": "Each recommendation has a 'Why it saves tokens' section. E.g., Rec 1: 'Enumerating languages costs ~15 tokens and adds zero information — \"expert software engineer\" already implies broad language knowledge. The long list is a habit from human resumes, not a functional constraint.'"
+    },
+    {
+      "text": "Response includes a token savings estimate (percentage or count)",
+      "passed": true,
+      "evidence": "Closing: 'TOKEN REDUCTION ESTIMATE: Original: ~175 tokens. Optimized: ~55–65 tokens. Reduction: ~110 tokens (~60–65%)'"
+    },
+    {
+      "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+      "passed": true,
+      "evidence": "Opens with: 'The prompt's biggest opportunity is collapsing a verbose, sentence-by-sentence instruction list into a compact set of directives — most behaviors described are either Claude defaults or can be expressed in far fewer words.'"
+    },
+    {
+      "text": "Response specifically identifies the language enumeration list as a token optimization opportunity",
+      "passed": true,
+      "evidence": "Recommendation 1 is entirely dedicated to this: 'Replace \"Python, JavaScript, TypeScript, Go, Rust, Java, C++, and many other programming languages\" with \"across all major programming languages.\"'"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 2350,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "executor_duration_seconds": 68.7,
+    "total_duration_seconds": 68.7
+  },
+  "claims": [
+    {
+      "claim": "Original prompt is ~175 tokens",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The coding assistant prompt is approximately 170-180 tokens — estimate is accurate."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Assertions are well-calibrated. All discriminating — the language-list assertion is particularly good since it requires identifying a specific structural pattern, not just generic advice."
+  }
+}

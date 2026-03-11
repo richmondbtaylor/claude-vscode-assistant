@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Amazon receipt is routed to a '2026-03-05' subfolder",
+      "passed": false,
+      "evidence": "Without skill, folder is 'Receipts/2026/03-March/Shopping/' — no 'Bishop AI finances', no flat YYYY-MM-DD subfolder"
+    },
+    {
+      "text": "Both Starbucks receipts are routed to a '2026-03-07' subfolder (same folder, not duplicate folders)",
+      "passed": false,
+      "evidence": "Without skill, both Starbucks go to 'Receipts/2026/03-March/Food-and-Drink/' (same folder, but wrong parent folder structure entirely)"
+    },
+    {
+      "text": "The second Starbucks receipt reuses the existing 2026-03-07 folder rather than creating a new one",
+      "passed": false,
+      "evidence": "Without skill, there is no YYYY-MM-DD folder at all — uses category-based folders. The concept of checking for an existing date folder is absent."
+    },
+    {
+      "text": "File extensions are preserved (.png for Amazon, .jpg for Starbucks)",
+      "passed": true,
+      "evidence": "Amazon filename ends in .png, both Starbucks filenames end in .jpg — extensions correct"
+    },
+    {
+      "text": "No dollar signs appear in any of the proposed filenames",
+      "passed": false,
+      "evidence": "All three filenames contain dollar signs: '2026-03-05_Amazon_$34.99.png', '2026-03-07_Starbucks_$8.75_1of2.jpg', '2026-03-07_Starbucks_$6.50_2of2.jpg'"
+    },
+    {
+      "text": "Three separate confirmation blocks are provided, one per receipt",
+      "passed": false,
+      "evidence": "Without skill, response uses a summary table rather than per-receipt confirmation blocks with Drive links"
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 5,
+    "total": 6,
+    "pass_rate": 0.17
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "skill_name": "token",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Hey, can you help me optimize this Claude prompt I'm using for my SaaS support bot? I feel like it's too long and it's costing me a lot on the API.\n\nHere's the prompt:\n---\nYou are a helpful, friendly, and professional customer support assistant for Acme SaaS. Your role is to help customers with their questions and issues. Please make sure to always be polite and respectful when responding to customers. It is very important that you do not make up information. Always answer based only on the information provided to you. If you don't know the answer, please let the customer know that you don't know and suggest they contact support. Please make sure to always respond in a professional manner. Make sure to always address the customer by name if their name is provided. Feel free to ask clarifying questions if needed. Make sure your responses are helpful and clear. Please avoid being rude or dismissive. Always try your best to solve the customer's problem.\n---\nAny ideas to trim it?",
+      "expected_output": "3-5 specific, actionable token reduction recommendations targeting the redundancy and filler phrases in the support bot prompt, with quality notes and a token savings estimate.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm building a coding assistant and the prompt is getting expensive. Can you analyze this and tell me what to cut?\n\n```\nYou are an expert software engineer with deep knowledge of Python, JavaScript, TypeScript, Go, Rust, Java, C++, and many other programming languages. You have extensive experience in software architecture, design patterns, algorithms, data structures, testing methodologies, and software engineering best practices. When a user asks you a coding question, first carefully read and fully understand what they are asking. Then, think step by step about the best approach to solve their problem. Write clean, readable, well-commented code. Make sure your code follows best practices for the language being used. Include error handling where appropriate. Explain your code so the user can understand it. If there are multiple ways to solve a problem, present the best approach and briefly mention alternatives. Make sure to test your solution mentally before presenting it. If the user's question is unclear, ask for clarification before proceeding. Always aim to be helpful, accurate, and educational in your responses.\n```",
+      "expected_output": "3-5 targeted recommendations identifying the language-list bloat, redundant instruction patterns, and verbose setup prose, with concrete rewrites and an estimated token reduction.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I'm running a content summarization pipeline and the prompt below is eating tokens. Help me shrink it without making the summaries worse:\n\n\"You are a professional content summarizer. Your task is to read the following article carefully and produce a high-quality summary. The summary should be accurate and faithfully represent the main ideas, key points, and important details of the original article. The summary should NOT include any information that was not present in the original article. Do not add your own opinions or interpretations. The summary should be written in clear, plain English that is easy to understand. The summary should be between 3 to 5 sentences long. Make sure each sentence is meaningful and contributes to the overall summary. Avoid filler sentences. The summary should capture the who, what, when, where, and why if those details are present in the article. Please read the article thoroughly before writing your summary.\"\n\nThis runs thousands of times a day so even small savings matter.",
+      "expected_output": "3-5 recommendations targeting the redundant constraint patterns, over-specified length guidance, and filler instructions, with a high-ROI note given the high-volume use case.",
+      "files": []
+    }
+  ]
+}

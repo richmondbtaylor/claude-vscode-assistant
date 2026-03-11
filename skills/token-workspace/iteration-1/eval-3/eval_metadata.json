@@ -1,0 +1,32 @@
+{
+  "eval_id": 3,
+  "eval_name": "summarization-pipeline-volume",
+  "prompt": "I'm running a content summarization pipeline and the prompt below is eating tokens. Help me shrink it without making the summaries worse:\n\n\"You are a professional content summarizer. Your task is to read the following article carefully and produce a high-quality summary. The summary should be accurate and faithfully represent the main ideas, key points, and important details of the original article. The summary should NOT include any information that was not present in the original article. Do not add your own opinions or interpretations. The summary should be written in clear, plain English that is easy to understand. The summary should be between 3 to 5 sentences long. Make sure each sentence is meaningful and contributes to the overall summary. Avoid filler sentences. The summary should capture the who, what, when, where, and why if those details are present in the article. Please read the article thoroughly before writing your summary.\"\n\nThis runs thousands of times a day so even small savings matter.",
+  "assertions": [
+    {
+      "text": "Response includes 3 to 5 distinct recommendations",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Response includes a token savings estimate (percentage or count)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Response acknowledges or highlights the high-volume context (cost impact at scale)",
+      "passed": null,
+      "evidence": null
+    }
+  ]
+}

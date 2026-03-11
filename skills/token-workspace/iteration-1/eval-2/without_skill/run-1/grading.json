@@ -1,0 +1,48 @@
+{
+  "expectations": [
+    {
+      "text": "Response includes 3 to 5 distinct recommendations",
+      "passed": false,
+      "evidence": "Baseline gives 8 numbered items (Language list, Experience list, Process narration, Quality adjective stack, Follow best practices, Test mentally, Always aim to be helpful, Alternatives instruction). This exceeds the 3–5 range, indicating a lack of prioritization — surfacing everything rather than identifying the highest-impact changes."
+    },
+    {
+      "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+      "passed": true,
+      "evidence": "Item 1: '\"Expert software engineer\" implies all of it.' Item 6: 'Unmeasurable, no real effect.' These provide causal reasoning."
+    },
+    {
+      "text": "Response includes a token savings estimate (percentage or count)",
+      "passed": true,
+      "evidence": "'Suggested lean version (~60 tokens, ~75% reduction)' and 'Token savings: ~160-175 tokens per call. At 100k calls/month, that is 16-17 million tokens saved.'"
+    },
+    {
+      "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+      "passed": false,
+      "evidence": "Starts with 'Original prompt: ~175 words / ~220-240 tokens' then 'What to cut:' — this is a data point and a section header, not a diagnosis sentence."
+    },
+    {
+      "text": "Response specifically identifies the language enumeration list as a token optimization opportunity",
+      "passed": true,
+      "evidence": "Item 1: 'Language list — \"Python, JavaScript, TypeScript, Go, Rust, Java, C++, and many other programming languages\" is unnecessary. \"Expert software engineer\" implies all of it.'"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 2,
+    "total": 5,
+    "pass_rate": 0.6
+  },
+  "execution_metrics": {
+    "output_chars": 1580,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "executor_duration_seconds": 33.4,
+    "total_duration_seconds": 33.4
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The recommendation-count assertion is a strong discriminator here — the baseline's list of 8 items vs the skill's 5 prioritized recommendations is a meaningful quality difference the assertion catches."
+  }
+}

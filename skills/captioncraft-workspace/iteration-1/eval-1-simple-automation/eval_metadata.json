@@ -1,0 +1,47 @@
+{
+  "eval_id": 1,
+  "eval_name": "simple-automation",
+  "prompt": "Transcript about simple automation workflows (n8n, 4-node workflow, 3 hrs/day saved). User asks for captions for all platforms with timestamps.",
+  "assertions": [
+    {
+      "text": "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "LinkedIn post is between 150 and 250 words",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Twitter/X post is under 280 characters (or clearly structured as a numbered thread)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "TikTok caption is under 150 characters (excluding hashtags and sound suggestion)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "At least 3 niche hashtags from the approved list appear across the outputs (e.g., #AIAutomation, #AutomationNation, #WorkSmarter, #Productivity, #AITools)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "No hard-sell language appears (no 'buy now', 'limited time', 'don't miss out')",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "YouTube description includes at least one timestamp reference",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Each platform section has a distinct hook — not identical opening lines reused across platforms",
+      "passed": null,
+      "evidence": null
+    }
+  ]
+}

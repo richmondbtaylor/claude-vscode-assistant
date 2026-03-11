@@ -1,0 +1,72 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YOUTUBE DESCRIPTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+The most powerful AI automations aren't the complicated ones — they're the boring, simple ones nobody talks about.
+I built a 4-node workflow that's saving a sales team 3 hours per person, per day. Here's what that actually looks like.
+
+If you've been putting off automation because you think you need to build something complex, this video is going to change how you think about it. After 8 months of building n8n workflows for clients, the ones delivering the most value aren't the 40-node monsters — they're the simple, repetitive-task killers. In this video, I walk through a real client example: a 4-node workflow that watches a shared inbox, pulls contact info from new leads, logs it to a Google Sheet, and pings the right sales rep on Slack. Took 25 minutes to build. Saved junior SDRs 3 hours of manual data entry every single day. The lesson? Stop trying to boil the ocean. Start by draining the puddle right in front of you.
+
+TIMESTAMPS:
+00:00 — The myth: automation has to be complicated
+00:45 — What 8 months of real client workflows actually taught me
+01:20 — The 4-node workflow that changed everything for one sales team
+02:00 — The result: 3 hours saved per SDR, per day
+02:30 — How to find your first automation (it's simpler than you think)
+02:55 — "Drain the puddle" — the only mindset shift you need
+
+Like and subscribe if this was useful — I drop new automation walkthroughs every week.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LINKEDIN POST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+The automations saving my clients 10–15 hours a week aren't the fancy ones.
+
+They're embarrassingly simple.
+
+Last week I built a workflow for a sales team. Four nodes. It watches a shared inbox, pulls contact info from new lead emails, logs it to a Google Sheet, and fires a Slack message to the right rep.
+
+That's it.
+
+Took me 25 minutes to build.
+
+Their team lead told me it's saving each junior SDR about 3 hours of manual data entry. Per day.
+
+After 8 months of building automation workflows for clients, here's what I keep seeing:
+
+— The 40-node "intelligent" systems get demoed and forgotten
+— The 4-node "boring" systems get used every single day
+
+The mistake most people make is waiting until they have a big, worthy problem to automate. But the best first automation isn't ambitious. It's just the thing you do every week that you hate doing.
+
+Start there. Don't try to boil the ocean.
+
+Just drain the puddle in front of you.
+
+Full video in the comments if you want to see exactly how it's set up.
+
+#AIAutomation #BusinessAutomation #Productivity #WorkSmarter #FutureOfWork
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INSTAGRAM CAPTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+A 4-node workflow. 25 minutes to build. 3 hours saved per person, per day. The most valuable automations aren't complicated — they're just consistent. Link in bio for the full breakdown.
+
+#AIAutomation #BusinessAutomation #Productivity #WorkSmarter #AutomationNation #AITools #FutureOfWork #AIForBusiness #SalesAI #GTM
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TIKTOK CAPTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+You don't need to boil the ocean. You just need to drain the puddle in front of you. 4 nodes. 25 mins. 3 hrs saved daily.
+
+Trending sound suggestion: lo-fi focus beat or a calm "explainer mode" voiceover style (productivity/workflow breakdown energy)
+
+#AIAutomation #WorkSmarter #Productivity #AutomationNation #AITools
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TWITTER / X
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1/ The automation saving my client's sales team 3 hrs/person/day? Four nodes. 25 minutes to build. Not a single line of code.
+
+2/ It watches a shared inbox → pulls lead contact info → logs it to a Google Sheet → pings the right sales rep on Slack. That's the whole thing. Junior SDRs went from drowning in data entry to actually selling.
+
+3/ You don't need a 40-node AI system to win with automation. You just need to find the thing you hate doing every week — and kill it. Drain the puddle. Full breakdown on YouTube (link below).

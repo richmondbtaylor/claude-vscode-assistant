@@ -1,18 +1,18 @@
 ---
 name: bishop-research-agent
-description: Manage, run, troubleshoot, or modify the Bishop AI Research Agent — a Python agent that monitors Reddit, LinkedIn, Quora, Twitter/X, and the web for AI automation leads. Use this skill when the user asks to run the agent, change keywords, add subreddits, adjust thresholds, fix errors, view leads, update the Google Sheet, or make any changes to how the agent finds or scores leads.
+description: Manage, run, troubleshoot, or modify the Bishop AI Research Agent — a Python agent that monitors Reddit, n8n Community Jobs, and the web for AI automation and prompting leads. Use this skill when the user asks to run the agent, change keywords, add subreddits, adjust thresholds, fix errors, view leads, update the Google Sheet, or make any changes to how the agent finds or scores leads.
 ---
 
 # Bishop AI Research Agent
 
-A continuously running lead intelligence agent that monitors social platforms for people actively seeking AI automation, education, or prompting help. Claude Sonnet 4.6 scores each post, classifies intent, checks for decision-maker status and budget signals, then sends batched alerts to Slack and logs everything to Google Sheets.
+A daily lead intelligence agent that monitors Reddit, n8n Community Jobs, and the web (via Brave Search with DuckDuckGo fallback) for people actively seeking AI automation, education, or prompting help. Claude Sonnet 4.6 scores each post, classifies intent, checks for decision-maker status and budget signals, then sends batched alerts to Slack and logs qualifying leads to Google Sheets.
 
 ---
 
 ## Project Location
 
 ```
-C:\Users\richm\bishop-research-agent\
+C:\Users\richm\.claude\bishop-research-agent\
 ```
 
 ---
@@ -21,89 +21,120 @@ C:\Users\richm\bishop-research-agent\
 
 ```bash
 cd C:\Users\richm\bishop-research-agent
-venv\Scripts\activate
+source venv/Scripts/activate   # bash syntax (not venv\Scripts\activate)
 
-python main.py --once        # Single pass through all sources (Reddit + Web)
-python main.py --once --reddit-only   # Reddit only
-python main.py --once --web-only      # LinkedIn / Quora / Twitter / Web only
-python main.py               # Continuous mode (Reddit every 15 min, Web every 1 hour)
+python main.py --once              # Full pass (Reddit + Brave/Web + n8n jobs)
+python main.py --once --reddit-only
+python main.py --once --web-only
 ```
 
-**Scheduled:** Windows Task Scheduler runs `run-daily.bat` at 8:00 AM daily.
-Logs are written to `logs\agent.log`.
+**Scheduled:** Windows Task Scheduler runs `run-daily.bat` at **7:00 AM EST** daily (`--once` mode only — does NOT run continuously).
+
+**To run manually:** use `python main.py --once` or ask Claude Code to run it.
 
 ---
 
 ## Architecture
 
 ```
-main.py              Orchestrator — schedules cycles, runs the pipeline
-config.py            All tunable settings (keywords, subreddits, thresholds)
-analyzer.py          Claude Sonnet 4.6 lead scoring and intent classification
-reddit_monitor.py    Reddit via public RSS feeds (no API key needed)
-web_monitor.py       DuckDuckGo search (LinkedIn, Quora, Twitter/X, forums, web)
-linkedin_monitor.py  LinkedIn-specific DuckDuckGo searches
-notifier.py          Google Sheets logging + Slack batch digest
-storage.py           SQLite deduplication (seen_posts.db)
-setup_sheets.py      One-time Google OAuth authorization
+main.py                Orchestrator — runs the pipeline in --once mode
+config.py              All tunable settings (keywords, subreddits, thresholds, sheet columns)
+analyzer.py            Claude Sonnet 4.6 lead scoring — returns relevance_score + intent_score
+reddit_monitor.py      Reddit via public RSS feeds (no API key needed). 7-day filter via published_parsed.
+web_monitor.py         DuckDuckGo fallback (used if BRAVE_API_KEY not set). timelimit='w' for 7-day filter.
+brave_monitor.py       Brave Search API (preferred over DDG). freshness=pw filters to past week server-side.
+n8n_jobs_monitor.py    Scrapes community.n8n.io/c/jobs/ via Discourse JSON API. Runs at end of web cycle.
+notifier.py            Logs to Google Sheets + sends Slack batch digests (count + sheet link only, no per-lead detail)
+storage.py             SQLite dedup (seen_posts.db). Also tracks authors for cross-platform detection.
+config.py              All tunable settings
+setup_sheets.py        One-time Google OAuth authorization
 update_sheet_headers.py  One-time script to update Sheet header row
-run-daily.bat        Windows Task Scheduler entry point
+run-daily.bat          Windows Task Scheduler entry point
 ```
 
 ---
 
 ## Key Configuration (config.py)
 
-| Setting | Default | What it controls |
+| Setting | Current Value | What it controls |
 |---|---|---|
-| `REDDIT_SUBREDDITS` | 29 subs | Which communities to monitor |
-| `REDDIT_KEYWORDS` | 20+ phrases | Keyword filter for Reddit posts |
-| `WEB_SEARCH_QUERIES` | 36 queries | DuckDuckGo queries (LinkedIn/Quora/Twitter/web) |
+| `REDDIT_SUBREDDITS` | 47 subs | Which communities to monitor |
+| `REDDIT_KEYWORDS` | 50+ phrases | Keyword filter for Reddit posts (includes Prompt Anything signals) |
+| `WEB_SEARCH_QUERIES` | 44 queries | site: operator queries for forums, n8n, OpenAI Community, Make, Zapier, etc. |
 | `MIN_RELEVANCE_FOR_ALERT` | 50 | Minimum score to queue for Slack |
-| `MIN_RELEVANCE_FOR_SHEETS` | 40 | Minimum score to log to Sheets |
-| `LOG_ALL_TO_SHEETS` | True | If True, logs everything regardless of score |
-| `REDDIT_POLL_INTERVAL_MINUTES` | 15 | Reddit cycle frequency |
-| `WEB_POLL_INTERVAL_HOURS` | 1 | Web cycle frequency |
-| `BISHOP_AI_CONTEXT` | — | Description of Bishop AI fed to Claude |
+| `MIN_RELEVANCE_FOR_SHEETS` | 50 | Minimum score to log to Sheets |
+| `LOG_ALL_TO_SHEETS` | False | Only leads scoring 50+ are logged |
+| `REDDIT_POLL_INTERVAL_MINUTES` | 15 | Reddit cycle frequency (continuous mode only) |
+| `WEB_POLL_INTERVAL_HOURS` | 1 | Web cycle frequency (continuous mode only) |
+| `BISHOP_AI_CONTEXT` | — | Description of Bishop AI + Prompt Anything fed to Claude |
+
+---
+
+## Bishop AI — Two Products to Score For
+
+### Service: AI Automation & Education Agency
+- Automate workflows (n8n, Zapier, Make, custom GPT pipelines)
+- Build AI chatbots and agents for business operations
+- Team training, workshops, AI strategy
+
+**Ideal clients:** SMBs 5–200 employees, agency owners, e-commerce, marketing agencies, professional services. NOT a SaaS/mobile app dev shop.
+
+### Product: Prompt Anything (promptanything.io)
+- $15.99/month prompt engineering tool
+- Helps people write better prompts for ChatGPT, Claude, Gemini using CRISPE/CLEAR/SOPS/STAR frameworks
+- **Ideal customers:** Anyone frustrated that AI gives bad/generic results. Individuals welcome — doesn't need to be a business owner.
 
 ---
 
 ## Claude Scoring System (analyzer.py)
 
-### Relevance Score (0–100)
-- **90–100** — Explicitly asking for AI automation help, mentions budget, seeking agency
-- **70–89** — Struggling with a problem Bishop AI solves, asking for tool recs
-- **50–69** — Tangentially related, discussing AI automation
-- **30–49** — Curious / educational, not a near-term buyer
-- **0–29** — Not relevant, competitor, or already solved
+### Relevance Score (0–100) — fit for Bishop AI
+- **90–100** — Real person explicitly asking for AI automation help, mentions budget, or actively seeking an agency RIGHT NOW
+- **70–89** — Real person struggling with a problem Bishop AI solves, asking for tool/service recommendation
+- **50–69** — Real person tangentially related, discussing AI automation but not clearly looking for help yet
+- **30–49** — Real person with curious/educational interest, not a near-term buyer
+- **0–15** — Marketing article, blog post, tutorial, directory, aggregator, competitor, news, already-solved problem, or anything NOT written by a real person with an active need
+
+### Intent Score (0–100) — buying intent only
+- **90–100** — Actively seeking to hire/buy right now with budget signals
+- **70–89** — Strong buying signals but no explicit budget
+- **50–69** — Moderate intent (pain is real, solution-seeking)
+- **30–49** — Mild interest
+- **0–29** — No buying signals at all
 
 ### Intent Types
 - `ai_automation_help` — Needs help building/managing AI workflows (n8n, Zapier, Make, GPT pipelines)
 - `ai_education` — Wants training, workshops, or coaching on AI tools
-- `ai_prompting_help` — Needs better prompts or help using ChatGPT/Claude effectively
+- `ai_prompting_help` — Struggling with prompts / bad AI outputs → **valid Prompt Anything lead, score 70+ if clearly frustrated**
 - `purchase_intent` — Clear buying signals: budget, hire, quote, agency comparison
 - `pain_expressing` — Frustrated about a problem Bishop AI solves, not yet asking for help
 - `competitor` — Post is from a competing agency or freelancer
 - `not_relevant` — Doesn't fit Bishop AI's services
 
+### Disqualifying Content (score 0–10, no contact)
+Marketing articles, blog posts, listicles, tutorials, success announcements, past-tense problems, directory/aggregator pages, job board aggregate pages, news articles, academic content, promotional content.
+
 ### Additional Signals
-- **already_solved** — Post is a tutorial, success announcement, or solved problem → score 0–15, no contact
+- **already_solved** — Solved problem → score 0–15, no contact
 - **is_decision_maker** — Owner, founder, CEO, manager with buying authority
 - **budget_tier** — `can_afford` | `uncertain` | `budget_limited`
+- **cross_platform** — SQLite tracks author names; sheet shows if same author appears on multiple platforms
 
 ---
 
-## Google Sheets Columns (18 total)
+## Google Sheets — 20 Columns
 
 | Column | Description |
 |---|---|
-| Timestamp | Date/time found (MM/DD/YYYY HH:MM) |
-| Platform | Reddit, LinkedIn, Twitter, Quora, Web |
+| Timestamp | Date/time found (MM/DD/YYYY HH:MM UTC) |
+| Platform | Reddit, Web, n8n Community, OpenAI Community, etc. |
 | Subreddit | Which subreddit (Reddit only) |
 | URL | Link to original post |
 | Author | Username or name |
 | Title / Snippet | First 120 chars of the post |
-| Relevance Score | 0–100 from Claude |
+| Relevance Score | 0–100 — fit for Bishop AI |
+| Intent Score | 0–100 — buying intent only |
+| Cross Platform | Other platforms where this author was seen, or "No" |
 | Intent Type | One of the 7 intent categories above |
 | Urgency | high / medium / low |
 | Decision Maker | Yes / No |
@@ -116,53 +147,63 @@ run-daily.bat        Windows Task Scheduler entry point
 | Claude Reasoning | 1–2 sentence explanation of the score |
 | Status | **User fills in** — "Contacted", "Pass", "Replied", etc. |
 
-Sheet ID: `15PVXkBIr4Xqa2k3dWtygsUjLfXw47wSxhxfyDmw_B_E`
-Sheet name: `VS Code <> Research Agent` → Worksheet: `Leads`
+**Sheet ID:** `15PVXkBIr4Xqa2k3dWtygsUjLfXw47wSxhxfyDmw_B_E`
+**Worksheet:** `Leads`
 
 ---
 
 ## Slack Output
 
-Leads are **batched in groups of 5** before sending. Each batch digest includes:
-- Header with lead count
-- "Open Google Sheet" button
-- Per-lead: score, intent, urgency, contact recommendation, decision maker, budget tier, author, pain points, suggested reply, "View Post" button
+Leads batch in groups of 5. Each Slack message contains **only**:
+- Header: "Bishop AI — X New Leads Found"
+- Body: "X new leads have been logged to Google Sheets. Click below to review."
+- Button: "View Leads in Google Sheets" → direct link to sheet
 
-Slack only receives leads scoring ≥ 50. At the end of each cycle, any remaining queued leads (fewer than 5) are flushed automatically.
+No per-lead detail in Slack. All detail lives in Google Sheets.
 
 ---
 
 ## Environment Variables (.env)
 
 ```
-ANTHROPIC_API_KEY=sk-ant-...
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
-GOOGLE_OAUTH_CREDENTIALS=./client_secret_....json
+ANTHROPIC_API_KEY=         # Claude API — required
+BRAVE_API_KEY=             # Brave Search — preferred web source. Get free key at brave.com/search/api (2,000 queries/month free). Falls back to DuckDuckGo if blank.
+SLACK_WEBHOOK_URL=         # Already set
+GOOGLE_OAUTH_CREDENTIALS=  # Already set
 GOOGLE_SHEET_ID=15PVXkBIr4Xqa2k3dWtygsUjLfXw47wSxhxfyDmw_B_E
 ```
 
-Google OAuth token is cached at `~/.config/gspread/authorized_user.json` after first run.
+Google OAuth token cached at `~/.config/gspread/authorized_user.json` after first run.
 
 ---
 
 ## Common Tasks
 
-### Add a new subreddit to monitor
+### Run the agent now
+```bash
+cd C:\Users\richm\bishop-research-agent && source venv/Scripts/activate && python main.py --once
+```
+
+### Add a subreddit
 Edit `REDDIT_SUBREDDITS` in `config.py`.
 
-### Add a new keyword to search for on Reddit
+### Add a Reddit keyword
 Edit `REDDIT_KEYWORDS` in `config.py`.
 
-### Add a new web search query (LinkedIn, Twitter, Quora, etc.)
-Edit `WEB_SEARCH_QUERIES` in `config.py`. Use natural language — `site:` operators don't work programmatically with DuckDuckGo. Use `-site:reddit.com` to exclude Reddit.
+### Add a web search query
+Edit `WEB_SEARCH_QUERIES` in `config.py`. Use `site:` operators (e.g. `site:community.n8n.io`) — DDG handles these well for indexed forums. Avoid natural-language LinkedIn/Twitter queries — they return articles, not real posts.
 
-### Lower or raise the Slack alert threshold
-Change `MIN_RELEVANCE_FOR_ALERT` in `config.py`.
+### Change the Slack/Sheets score threshold
+Change `MIN_RELEVANCE_FOR_ALERT` and/or `MIN_RELEVANCE_FOR_SHEETS` in `config.py`.
 
-### Reset deduplication (re-process all posts)
+### Reset deduplication (reprocess all posts)
 ```bash
-cd C:\Users\richm\bishop-research-agent
-del seen_posts.db
+rm C:\Users\richm\.claude\bishop-research-agent\seen_posts.db
+```
+
+### Clear Google Sheet data (keep headers)
+```bash
+python -c "import gspread, os; from dotenv import load_dotenv; load_dotenv(); gc=gspread.oauth(credentials_filename=os.environ['GOOGLE_OAUTH_CREDENTIALS']); ws=gc.open_by_key(os.environ['GOOGLE_SHEET_ID']).worksheet('Leads'); rows=len(ws.get_all_values()); ws.delete_rows(2,rows) if rows>1 else None"
 ```
 
 ### Update Google Sheet headers after adding columns
@@ -175,14 +216,10 @@ python update_sheet_headers.py
 python setup_sheets.py
 ```
 
-### Check the Task Scheduler job
+### Check or change the Task Scheduler job
 ```powershell
 powershell -Command "schtasks /query /tn 'BishopAI Research Agent' /fo LIST"
-```
-
-### Change the scheduled run time (e.g., 9 AM instead of 8 AM)
-```powershell
-powershell -Command "schtasks /change /tn 'BishopAI Research Agent' /st 09:00"
+powershell -Command "schtasks /change /tn 'BishopAI Research Agent' /st 07:00"
 ```
 
 ---
@@ -191,25 +228,29 @@ powershell -Command "schtasks /change /tn 'BishopAI Research Agent' /st 09:00"
 
 | Error | Fix |
 |---|---|
-| `ANTHROPIC_API_KEY` not found | Check `.env` file exists and `load_dotenv()` runs before imports |
-| `UnicodeEncodeError` on Windows | `sys.stdout.reconfigure(encoding="utf-8")` is in main.py — already fixed |
-| `ddgs` import error | `pip install ddgs` — the package was renamed from `duckduckgo_search` |
+| `ANTHROPIC_API_KEY` not found | Check `.env` exists and `load_dotenv()` runs before imports |
+| `UnicodeEncodeError` on Windows | `sys.stdout.reconfigure(encoding="utf-8")` already in main.py |
+| `ddgs` import error | `pip install ddgs` — renamed from `duckduckgo_search` |
 | Google Sheets auth error | Run `python setup_sheets.py` to re-authorize |
-| 0 results from web monitor | DuckDuckGo rate limit — increase `_REQUEST_DELAY` in web_monitor.py |
+| 0 results from web monitor | DDG rate limit — increase `_REQUEST_DELAY` in web_monitor.py, or add `BRAVE_API_KEY` |
+| Brave API returning 0 results | Check key is valid at brave.com/search/api; confirm `BRAVE_API_KEY` is set in `.env` |
 | Slack not receiving alerts | Check score threshold (50+), check `SLACK_WEBHOOK_URL` in `.env` |
-| SQLite ResourceWarning | Already fixed — storage.py uses context manager with `finally: conn.close()` |
-| JSON parse error from Claude | Claude returned markdown — stripping is handled in analyzer.py |
+| JSON parse error from Claude | Claude returned markdown — stripping already handled in analyzer.py |
+| n8n jobs monitor errors | community.n8n.io Discourse API may be rate-limiting — check n8n_jobs_monitor.py `_REQUEST_DELAY` |
+| Sheet has wrong columns | Run `python update_sheet_headers.py` after any SHEET_COLUMNS change |
 
 ---
 
 ## File Map (quick reference)
 
-- `config.py` — Edit this to tune keywords, subreddits, thresholds, and Bishop AI context
-- `analyzer.py` — Edit this to change Claude's scoring logic, intent types, or add new fields
-- `notifier.py` — Edit this to change Slack formatting, Sheets columns, or batch size
-- `main.py` — Edit this to change the pipeline, add new sources, or adjust scheduling
-- `reddit_monitor.py` — Reddit RSS polling and keyword filtering
-- `web_monitor.py` — DuckDuckGo multi-platform search
-- `storage.py` — SQLite deduplication — touch only if adding new tables
-- `seen_posts.db` — SQLite database — delete to reset dedup history
-- `logs/agent.log` — Daily run logs from Task Scheduler
+- `config.py` — Tune keywords, subreddits, thresholds, Bishop AI context, sheet columns
+- `analyzer.py` — Claude scoring logic, intent types, relevance + intent scores
+- `notifier.py` — Slack formatting (count + link only), Sheets logging
+- `main.py` — Pipeline orchestration, --once / --reddit-only / --web-only flags
+- `reddit_monitor.py` — Reddit RSS polling, keyword filtering, 7-day date filter
+- `web_monitor.py` — DuckDuckGo fallback, 7-day `timelimit='w'`
+- `brave_monitor.py` — Brave Search API (preferred), `freshness=pw` for 7-day filter
+- `n8n_jobs_monitor.py` — n8n Community Jobs via Discourse JSON API
+- `storage.py` — SQLite dedup + cross-platform author tracking
+- `seen_posts.db` — Delete to reset dedup history
+- `run-daily.bat` — Task Scheduler entry point (runs at 7:00 AM EST)

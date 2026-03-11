@@ -1,0 +1,53 @@
+{
+  "skill_name": "captioncraft",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Here's the transcript from my latest YouTube video. Can you write captions for all the platforms?\n\n---\nOkay so today I want to talk about something that's been coming up a lot with my clients lately — and honestly it's something I struggled with too when I first started building AI workflows. And that's the idea that automation has to be complicated to be worth it.\n\nSo here's the thing. I've been using n8n for about eight months now, and the workflows that have saved my clients the most time — we're talking like 10, 15 hours a week — are the dead simple ones. Not the fancy 40-node monsters. The simple stuff.\n\nLike last week I built a workflow for a sales team that just — it watches a shared inbox, it pulls out the contact info from any new lead email, throws it into a Google Sheet, and fires off a Slack message to the sales rep. That's it. Four nodes. Took me maybe 25 minutes to build.\n\nAnd the team lead told me it saved their junior SDRs about 3 hours a day of manual data entry. Three hours. Per person. Per day.\n\nSo the lesson here isn't 'go build complicated AI systems.' The lesson is: start with the thing that's annoying you right now. The repetitive thing. The thing you do every single week that you hate doing. That's your first automation.\n\nYou don't need to boil the ocean. You just need to drain the puddle in front of you.\n---\n\nMake sure to include timestamps where possible based on the flow of the content.",
+      "expected_output": "Platform-specific captions for YouTube, LinkedIn, Instagram, TikTok, and Twitter/X. YouTube description should be keyword-rich with timestamps based on the transcript flow. LinkedIn should be 150-250 words, insight-led, professional. Instagram should be punchy with hashtags. TikTok should be casual, under 150 chars, with a trending sound suggestion. Twitter should be under 280 chars or a 3-tweet thread. All should include niche hashtags from the approved list and avoid hard-sell language.",
+      "files": [],
+      "expectations": [
+        "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+        "LinkedIn post is between 150 and 250 words",
+        "Twitter/X post is under 280 characters (or clearly structured as a numbered thread)",
+        "TikTok caption is under 150 characters (excluding hashtags and sound suggestion)",
+        "At least 3 niche hashtags from the approved list appear across the outputs (e.g., #AIAutomation, #AutomationNation, #WorkSmarter, #Productivity, #AITools)",
+        "No hard-sell language appears (no 'buy now', 'limited time', 'don't miss out')",
+        "YouTube description includes at least one timestamp reference",
+        "Each platform section has a distinct hook — not identical opening lines reused across platforms"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Write captions for this transcript — I need posts for all my socials.\n\n---\nAlright, let's talk about why most AI implementations in sales teams fail. And I'm not talking about the technology failing. The tech works fine. I'm talking about adoption failing.\n\nI've worked with probably 15 or 20 sales teams in the last year and a half who bought some AI tool — whether that's an AI email writer, an AI call summarizer, whatever — and six months later, nobody's using it. The tool is just sitting there.\n\nAnd when I dig into why, it's almost always the same answer: the reps didn't see what was in it for them. Leadership bought the tool to make the team more efficient, which in rep-speak means 'so we can fire some of you.' And the reps picked up on that energy immediately.\n\nSo rule number one of AI adoption in sales: the reps have to win first. If your AI tool saves the rep time, makes their quota more achievable, helps them close more deals — they'll use it. If it feels like surveillance or a squeeze play, they'll quietly ignore it.\n\nThe second thing — and this one's sneaky — is that most tools get rolled out with zero workflow integration. Like somebody just dumps a login in the Slack channel and says 'here you go.' No training, no custom setup, no showing people exactly when and how to use it during their actual day.\n\nSo two things: win the rep first, and integrate it into their existing workflow. Not as an add-on. As a replacement for something they already hate doing.\n---",
+      "expected_output": "Five platform-specific captions. YouTube description should be keyword-rich, focused on AI sales adoption. LinkedIn should present as a professional insight piece with a hook about AI adoption failure. Instagram and TikTok should be punchy and casual respectively. Twitter should capture the core insight in 280 chars or less. All outputs should reflect Rich's educational, non-salesy voice.",
+      "files": [],
+      "expectations": [
+        "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+        "LinkedIn post opens with a strong hook (question, bold claim, or surprising stat) — not a generic opener like 'In this video'",
+        "LinkedIn post includes a soft CTA rather than aggressive sales language",
+        "TikTok caption includes a trending sound suggestion",
+        "At least 2 of these hashtags appear: #SalesAI #GTM #AIAutomation #AITools #FutureOfWork #AutomationNation",
+        "No competitor tool names are mentioned",
+        "The core insight ('reps have to win first') is reflected in at least one platform's caption",
+        "Each platform section uses the correct structural separator (━━━ dividers) as specified in the skill"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Hey can you turn this into social media content? It's from a video I did on AI and productivity for small business owners.\n\n---\nI want to bust a myth today. The myth that AI is only for big companies with big tech budgets.\n\nBecause here's what I'm seeing on the ground — and I work with small businesses every week — small business owners are actually in a better position to benefit from AI right now than enterprise companies are. And the reason is simple: small businesses can move fast.\n\nA 500-person company has procurement processes, IT approval cycles, legal reviews. It takes them nine months to roll out a tool that a solo founder can have running by Tuesday.\n\nI had a client recently — single-person consulting business — who automated her entire client onboarding process in about four hours. Intake form, welcome email, project brief template, calendar link, payment reminder sequence — all automated. She said it felt like she hired an assistant overnight.\n\nSo if you're a small business owner watching this thinking AI is for the big guys — I want to flip that. You are the big guys right now. You can move faster, test cheaper, and get ROI quicker than any enterprise team.\n\nThe tools are there. The question is just: are you going to use them?\n---\n\nPlease include platform-specific hashtags and make sure the LinkedIn one feels really professional and polished.",
+      "expected_output": "Five platform-specific captions with a focus on the 'AI for small business' angle. LinkedIn should be especially polished and professional, highlighting the insight that small businesses have a competitive speed advantage. YouTube should target keywords around AI productivity and small business. All platforms should capture the empowering, myth-busting tone of the transcript.",
+      "files": [],
+      "expectations": [
+        "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+        "LinkedIn post reflects the user's explicit request to be 'professional and polished' — no casual slang or emoji overuse",
+        "The myth-busting angle ('AI isn't just for big companies') appears in at least one platform's hook",
+        "YouTube description includes keywords relevant to 'AI for small business' or 'AI productivity'",
+        "At least 3 niche hashtags from the approved list are present",
+        "Instagram caption is concise (under 5 sentences) with hashtags",
+        "TikTok caption is under 150 characters and casual in tone",
+        "No fear-mongering or hype language (no 'AI will change everything', 'AI is taking over')"
+      ]
+    }
+  ]
+}

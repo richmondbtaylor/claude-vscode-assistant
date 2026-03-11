@@ -1,0 +1,47 @@
+{
+  "eval_id": 2,
+  "eval_name": "sales-ai-adoption",
+  "prompt": "Transcript about why AI fails in sales teams (adoption problem, reps need to win first, workflow integration). User asks for all socials.",
+  "assertions": [
+    {
+      "text": "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "LinkedIn post opens with a strong hook (question, bold claim, or surprising stat) — not a generic opener like 'In this video'",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "LinkedIn post includes a soft CTA rather than aggressive sales language",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "TikTok caption includes a trending sound suggestion",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "At least 2 of these hashtags appear: #SalesAI #GTM #AIAutomation #AITools #FutureOfWork #AutomationNation",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "No competitor tool names are mentioned",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "The core insight ('reps have to win first') is reflected in at least one platform's caption",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Each platform section uses the correct structural separator (━━━ dividers) as specified in the skill",
+      "passed": null,
+      "evidence": null
+    }
+  ]
+}

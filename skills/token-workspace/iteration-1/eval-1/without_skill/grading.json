@@ -1,0 +1,48 @@
+{
+  "expectations": [
+    {
+      "text": "Response includes 3 to 5 distinct recommendations",
+      "passed": false,
+      "evidence": "The baseline identifies 3 problems in bullet form but doesn't structure them as 3–5 distinct recommendations. The structure is: problems → rewrite → 4 extra tips (prompt caching, summarizing history, smaller model, knowledge base). The 'tips' are infrastructure suggestions unrelated to prompt text optimization. No recommendation count of 3–5 clearly labeled."
+    },
+    {
+      "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+      "passed": true,
+      "evidence": "'Filler phrases like \"Please make sure to always\" and \"It is very important that you\" add tokens without adding meaning' — this explains why removing them saves tokens."
+    },
+    {
+      "text": "Response includes a token savings estimate (percentage or count)",
+      "passed": true,
+      "evidence": "'The rewrite alone saves ~60-70 tokens per call. Combined with prompt caching and model tiering, you could cut API costs by 70-80%'"
+    },
+    {
+      "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+      "passed": true,
+      "evidence": "Opens with: 'The prompt has a lot of redundancy that's costing you tokens on every API call.' — satisfies the diagnosis intent."
+    },
+    {
+      "text": "At least one recommendation mentions a potential quality trade-off or flags it as low-risk",
+      "passed": false,
+      "evidence": "No quality trade-off mentions anywhere in the response. The baseline jumps straight to a rewrite and tips with no quality caveats."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 2,
+    "total": 5,
+    "pass_rate": 0.6
+  },
+  "execution_metrics": {
+    "output_chars": 1320,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "executor_duration_seconds": 24.9,
+    "total_duration_seconds": 24.9
+  },
+  "claims": [],
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Assertions discriminate well. The baseline's lack of structured recommendations and quality notes are genuine gaps the skill addresses."
+  }
+}

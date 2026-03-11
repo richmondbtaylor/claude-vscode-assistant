@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Output contains all five platform sections: YouTube Description, LinkedIn Post, Instagram Caption, TikTok Caption, and Twitter/X",
+      "passed": true,
+      "evidence": "All five platform sections present: YOUTUBE DESCRIPTION, INSTAGRAM CAPTION, LINKEDIN CAPTION, TIKTOK CAPTION, TWITTER / X."
+    },
+    {
+      "text": "LinkedIn post opens with a strong hook (question, bold claim, or surprising stat) — not a generic opener like 'In this video'",
+      "passed": true,
+      "evidence": "'I've seen it happen over and over: a sales leader buys an AI tool, rolls it out to the team, and 6 months later nobody's using it.' — story-based hook, not generic."
+    },
+    {
+      "text": "LinkedIn post includes a soft CTA rather than aggressive sales language",
+      "passed": true,
+      "evidence": "'What's been your experience with AI tool adoption in sales? Drop a comment below.' — conversational engagement CTA, not salesy."
+    },
+    {
+      "text": "TikTok caption includes a trending sound suggestion",
+      "passed": false,
+      "evidence": "No trending sound suggestion included in the TikTok section. Baseline Claude doesn't know to include this."
+    },
+    {
+      "text": "At least 2 of these hashtags appear: #SalesAI #GTM #AIAutomation #AITools #FutureOfWork #AutomationNation",
+      "passed": true,
+      "evidence": "#SalesAI, #GTM, #FutureOfWork appear in the LinkedIn and Twitter sections."
+    },
+    {
+      "text": "No competitor tool names are mentioned",
+      "passed": true,
+      "evidence": "No specific competitor tools named. References to 'AI tools' are generic."
+    },
+    {
+      "text": "The core insight ('reps have to win first') is reflected in at least one platform's caption",
+      "passed": true,
+      "evidence": "Twitter: 'Win the rep first. Make the AI serve them.' LinkedIn: 'the reps have to win first' implied through narrative. Core insight present."
+    },
+    {
+      "text": "Each platform section uses the correct structural separator (━━━ dividers) as specified in the skill",
+      "passed": false,
+      "evidence": "Uses plain text headers (YOUTUBE DESCRIPTION, INSTAGRAM CAPTION, etc.) with no separator lines. Not the ━━━ format specified in the skill."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 2,
+    "total": 8,
+    "pass_rate": 0.75
+  }
+}

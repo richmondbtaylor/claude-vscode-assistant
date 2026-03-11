@@ -1,0 +1,172 @@
+{
+  "metadata": {
+    "skill_name": "receipt-filer",
+    "skill_path": "C:/Users/richm/.claude/skills/receipt-filer",
+    "timestamp": "2026-03-11T00:00:00Z",
+    "evals_run": ["single-receipt", "batch-upload", "unreadable-date"],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "single-receipt",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 37.5,
+        "tokens": 11919,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Filename is The_Capital_Grille_187.40.pdf", "passed": true, "evidence": "Exact match found in response"},
+        {"text": "Folder path is Bishop AI finances / 2026-01-15", "passed": true, "evidence": "Exact folder confirmed in response"},
+        {"text": "Checks for existing folder before creating", "passed": true, "evidence": "Step 6 explicitly checks"},
+        {"text": "Confirmation with folder name and Drive link", "passed": true, "evidence": "Confirmation block with link present"}
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "single-receipt",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.0,
+        "passed": 0,
+        "failed": 4,
+        "total": 4,
+        "time_seconds": 22.6,
+        "tokens": 10120,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Filename is The_Capital_Grille_187.40.pdf", "passed": false, "evidence": "Used '2026-01-15_The-Capital-Grille_Client-Lunch_$187.40.pdf' — wrong convention entirely"},
+        {"text": "Folder path is Bishop AI finances / 2026-01-15", "passed": false, "evidence": "Used 'Expenses/2026/01-January/Meals & Entertainment' — invented hierarchy"},
+        {"text": "Checks for existing folder before creating", "passed": false, "evidence": "Creates multi-level hierarchy with no existence check"},
+        {"text": "Confirmation with folder name and Drive link", "passed": false, "evidence": "Only summary table, no Drive link"}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "batch-upload",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 44.9,
+        "tokens": 13176,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Amazon routed to 2026-03-05 subfolder", "passed": true, "evidence": "Confirmed in receipt 1 section"},
+        {"text": "Both Starbucks in same 2026-03-07 subfolder", "passed": true, "evidence": "Both show Bishop AI finances / 2026-03-07"},
+        {"text": "Second Starbucks reuses existing folder", "passed": true, "evidence": "Explicit: 'reusing it. No duplicate folder created.'"},
+        {"text": "Extensions preserved (.png, .jpg)", "passed": true, "evidence": "Amazon_34.99.png, Starbucks_8.75.jpg, Starbucks_6.50.jpg"},
+        {"text": "No dollar signs in filenames", "passed": true, "evidence": "All filenames use bare numbers"},
+        {"text": "Three separate confirmation blocks", "passed": true, "evidence": "Three distinct confirmation sections present"}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "batch-upload",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.17,
+        "passed": 1,
+        "failed": 5,
+        "total": 6,
+        "time_seconds": 35.7,
+        "tokens": 11009,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Amazon routed to 2026-03-05 subfolder", "passed": false, "evidence": "Routed to 'Receipts/2026/03-March/Shopping/' instead"},
+        {"text": "Both Starbucks in same 2026-03-07 subfolder", "passed": false, "evidence": "Uses category folders, no YYYY-MM-DD date folders"},
+        {"text": "Second Starbucks reuses existing folder", "passed": false, "evidence": "No date folder concept — uses category-based hierarchy"},
+        {"text": "Extensions preserved (.png, .jpg)", "passed": true, "evidence": ".png and .jpg preserved correctly"},
+        {"text": "No dollar signs in filenames", "passed": false, "evidence": "All filenames include $ sign"},
+        {"text": "Three separate confirmation blocks", "passed": false, "evidence": "Single summary table, no per-receipt confirmation"}
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "unreadable-date",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 29.8,
+        "tokens": 11975,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Stops and asks for date before proceeding", "passed": true, "evidence": "Halts at step 3, requests date"},
+        {"text": "Asks for date in YYYY-MM-DD format specifically", "passed": true, "evidence": "Exact phrasing: 'Please type the date in YYYY-MM-DD format'"},
+        {"text": "Does not create folder or upload without date", "passed": true, "evidence": "Filing paused entirely at step 3"},
+        {"text": "Acknowledges vendor and amount it could read", "passed": true, "evidence": "Shows FedEx_Office_22.13.jpg as planned filename"}
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "unreadable-date",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.75,
+        "passed": 3,
+        "failed": 1,
+        "total": 4,
+        "time_seconds": 27.7,
+        "tokens": 10263,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Stops and asks for date before proceeding", "passed": true, "evidence": "Correctly stops and asks"},
+        {"text": "Asks for date in YYYY-MM-DD format specifically", "passed": false, "evidence": "Asks for general timeframe, not YYYY-MM-DD format"},
+        {"text": "Does not create folder or upload without date", "passed": true, "evidence": "Does not attempt to file"},
+        {"text": "Acknowledges vendor and amount it could read", "passed": true, "evidence": "States 'FedEx Office receipt for $22.13'"}
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 37.4, "stddev": 7.6, "min": 29.8, "max": 44.9},
+      "tokens": {"mean": 12357, "stddev": 635, "min": 11919, "max": 13176}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.31, "stddev": 0.33, "min": 0.0, "max": 0.75},
+      "time_seconds": {"mean": 28.7, "stddev": 5.5, "min": 22.6, "max": 35.7},
+      "tokens": {"mean": 10464, "stddev": 573, "min": 10120, "max": 11009}
+    },
+    "delta": {
+      "pass_rate": "+0.69",
+      "time_seconds": "+8.7",
+      "tokens": "+1893"
+    }
+  },
+  "notes": [
+    "With-skill achieves 100% pass rate across all 3 evals; without-skill averages 31%",
+    "Eval 3 (unreadable-date) is the most forgiving — without-skill passes 3/4 because stopping on missing date is natural behavior; only the YYYY-MM-DD format requirement differentiates",
+    "Eval 1 and 2 show the strongest skill signal — 0% and 17% without skill vs 100% with skill",
+    "The biggest differentiators are: folder naming convention (Bishop AI finances + YYYY-MM-DD), filename format (no $, underscores), and per-receipt confirmation with Drive link",
+    "Without-skill adds ~$-sign to filenames in 2/3 evals and invents category-based folder hierarchies every time",
+    "Skill costs ~1900 extra tokens and ~9 extra seconds per run — modest overhead for correct behavior"
+  ]
+}

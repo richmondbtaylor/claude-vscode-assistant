@@ -1,0 +1,65 @@
+{
+  "expectations": [
+    {
+      "text": "Response includes 3 to 5 distinct recommendations",
+      "passed": true,
+      "evidence": "Response contains exactly 5 labeled recommendations: Eliminate Redundant Accuracy Constraints, Cut Filler Scaffolding, Consolidate Length and Quality Constraints, Compress the 5W Instruction, Tighten the Role and Task Opening."
+    },
+    {
+      "text": "At least one recommendation explains WHY the change saves tokens (not just what to change)",
+      "passed": true,
+      "evidence": "Every recommendation includes 'Why it saves tokens'. E.g., Rec 2: 'These are instructional habits from human writing that don't translate to LLM prompting. Claude doesn't need to be told to read its input.'"
+    },
+    {
+      "text": "Response includes a token savings estimate (percentage or count)",
+      "passed": true,
+      "evidence": "'TOKEN REDUCTION ESTIMATE: Original: ~128 tokens. Optimized: ~38 tokens. Reduction: ~90 tokens (~70%)'"
+    },
+    {
+      "text": "Response opens with a one-sentence diagnosis of the prompt's main inefficiency",
+      "passed": true,
+      "evidence": "Opens with: 'This prompt's biggest inefficiency is repetitive constraint language — the same core instructions (accuracy, no added content, plain English, meaningful sentences) are restated multiple times across separate sentences rather than consolidated into tight directives.'"
+    },
+    {
+      "text": "Response acknowledges or highlights the high-volume context (cost impact at scale)",
+      "passed": true,
+      "evidence": "'At thousands of runs per day, this is a substantial cost and latency improvement.'"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 2410,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "executor_duration_seconds": 55.3,
+    "total_duration_seconds": 55.3
+  },
+  "claims": [
+    {
+      "claim": "Original prompt is ~128 tokens",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The summarization prompt is approximately 125-135 tokens — estimate is accurate."
+    },
+    {
+      "claim": "Optimized prompt is ~38 tokens",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The offered 4-sentence optimized prompt is approximately 35-42 tokens."
+    }
+  ],
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Consider adding an assertion that checks whether the response provides a concrete rewritten prompt example — the skill's output here includes one but the current assertions don't verify it. A response that only lists what to cut without showing the result is less useful."
+      }
+    ],
+    "overall": "Solid assertions. The scale-awareness assertion is particularly discriminating. One addition worth considering: verify that an optimized prompt example is provided."
+  }
+}
