@@ -178,3 +178,14 @@ images/infographics/ai-adoption-v2-bold.jpg
 - **Env file:** `C:/Users/richm/.env`
 - **Output dir:** `C:/Users/richm/Downloads/images/infographics/`
 - **Prompt dir:** `C:/Users/richm/Downloads/prompts/infographics/`
+
+
+## Copy Language Standards
+
+Any text content in infographics -- headlines, stat labels, callouts, section titles -- must avoid overused AI and corporate language.
+
+**Full banned list:** `~/.claude/skills/references/banned-phrases.md`
+
+Never write headlines or labels using: game-changer, transformative, cutting-edge, revolutionary, innovative, seamless, robust, scalable (vague), synergy, actionable insights, thought leader, skyrocket, dominate, paradigm shift, disruptive, frictionless, unlock (vague), empower, unprecedented, groundbreaking, holistic, multifaceted.
+
+Write headlines as direct, specific claims -- e.g., "AI cuts response time by 40%" not "Transformative AI revolutionizes workflows".

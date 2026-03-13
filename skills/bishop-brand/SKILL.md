@@ -113,3 +113,16 @@ BLUE        = RGBColor(24, 148, 201)
 - **Dark-first default** — Bishop AI's visual identity leans dark; use light backgrounds sparingly
 - **Gold as the hero accent** — it signals authority and trust; use it on the most important element
 - **Clean hierarchy** — let the typography do the work; don't rely on color chaos to create interest
+
+
+---
+
+## Language & Copy Standards
+
+All copy in or accompanying any Bishop AI visual must avoid overused AI, corporate, and salesy language.
+
+**Full banned list:** `~/.claude/skills/references/banned-phrases.md`
+
+Never use: game-changer, transformative, cutting-edge, seamless, revolutionize, innovative, robust, scalable (as vague praise), synergy, circle back, actionable insights, stakeholder buy-in, deep dive, leverage (as verb), crushing it, skyrocket, dominate your niche, thought leader, pain points, humbled and honored, let that sink in, hot take, certainly!, great question!, in today's digital landscape, delve into, it is worth noting that, holistic, multifaceted, foster, empower, utilize, unprecedented, groundbreaking.
+
+**The standard:** If it sounds like a generic marketing email or corporate press release, rewrite it. Be specific, direct, and plain-spoken.

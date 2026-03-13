@@ -141,3 +141,10 @@ Before outputting, ask yourself:
 - Would Rich be proud to post this, or does it feel generic?
 
 If something feels generic or cookie-cutter, rewrite it. The goal is posts Rich could copy-paste with only minor edits.
+
+
+## Banned Language
+
+Before delivering any output, check all copy against `~/.claude/skills/references/banned-phrases.md`.
+
+Never use: game-changer, transformative, cutting-edge, seamless, revolutionize, innovative, robust, scalable (vague), synergy, circle back, actionable insights, deep dive, leverage (verb), crushing it, skyrocket, dominate your niche, thought leader, pain points, humbled and honored, let that sink in, hot take, I'm excited to share, certainly!, great question!, in today's digital landscape, delve into, holistic, multifaceted, foster, empower, utilize, unprecedented, groundbreaking, paradigm shift, disruptive, at the forefront, frictionless, unlock (vague), streamline, no-brainer, secret sauce, go viral (empty goal), low-hanging fruit, move the needle.
