@@ -1,7 +1,8 @@
 """
-Upload a file to Google Drive after infographic generation.
-Usage: python upload_gdrive.py <local_file_path>
-Always uploads to the fixed Bishop AI infographics Drive folder.
+Upload a file to Google Drive.
+Usage: python upload_gdrive.py <local_file_path> [folder_id]
+
+If folder_id is omitted, uploads to the default Bishop AI Drive folder.
 """
 import sys
 import pickle
@@ -17,8 +18,8 @@ SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 CREDENTIALS_PATH = Path("C:/Users/richm/bishop-research-agent/client_secret_538050013679-2u4jsv7rglht96qkom62o3a70gcuimog.apps.googleusercontent.com.json")
 TOKEN_PATH = Path(__file__).parent / "gdrive_token.pickle"
 
-# Fixed destination folder ID — Bishop AI Infographics
-DRIVE_FOLDER_ID = "1LhCsKe9poKHFdXYfOFmBnX4kPeIpH8AZ"
+# Default destination folder ID — Bishop AI Drive
+DEFAULT_FOLDER_ID = "1LhCsKe9poKHFdXYfOFmBnX4kPeIpH8AZ"
 
 
 def get_service():
@@ -39,11 +40,13 @@ def get_service():
     return build("drive", "v3", credentials=creds)
 
 
-def upload_file(local_path):
+def upload_file(local_path, folder_id=None):
     local_path = Path(local_path)
     if not local_path.exists():
         print(f"ERROR: File not found: {local_path}")
         sys.exit(1)
+
+    folder_id = folder_id or DEFAULT_FOLDER_ID
 
     MIME_TYPES = {
         ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
@@ -55,7 +58,7 @@ def upload_file(local_path):
     mime_type = MIME_TYPES.get(local_path.suffix.lower(), "application/octet-stream")
 
     service = get_service()
-    file_meta = {"name": local_path.name, "parents": [DRIVE_FOLDER_ID]}
+    file_meta = {"name": local_path.name, "parents": [folder_id]}
     media = MediaFileUpload(str(local_path), mimetype=mime_type, resumable=True)
 
     result = service.files().create(body=file_meta, media_body=media, fields="id, webViewLink").execute()
@@ -65,6 +68,7 @@ def upload_file(local_path):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python upload_gdrive.py <file_path>")
+        print("Usage: python upload_gdrive.py <file_path> [folder_id]")
         sys.exit(1)
-    upload_file(sys.argv[1])
+    folder = sys.argv[2] if len(sys.argv) > 2 else None
+    upload_file(sys.argv[1], folder)

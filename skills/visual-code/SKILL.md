@@ -255,3 +255,12 @@ Run through this before outputting. If anything fails, fix it first.
 - [ ] Layout adapts at 640 / 768 / 1024 / 1280px breakpoints
 - [ ] Touch targets >= 44px on mobile
 - [ ] Dark mode implemented (if source is dark-themed)
+
+
+## Copy Language Standards
+
+When generating placeholder copy for any section, avoid overused AI, corporate, and salesy language.
+
+**Full banned list:** `~/.claude/skills/references/banned-phrases.md`
+
+Never write placeholder copy using: game-changer, transformative, cutting-edge, revolutionary, innovative, seamless, robust, scalable (vague), synergy, actionable insights, thought leader, skyrocket, paradigm shift, disruptive, frictionless, unlock (vague), empower, unprecedented, groundbreaking, holistic, comprehensive (vague), dynamic (vague). Write specific, concrete placeholder copy that reflects what a real business would actually say.

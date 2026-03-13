@@ -20,7 +20,17 @@ Action verbs to favor: activate, architect, amplify, build, drive, transform, sc
 
 Never use these — they signal vague thinking and erode trust:
 
-**Buzzwords:** hype, leverage, utilize, synergy, holistic, transformative, robust, scalable, cutting-edge, groundbreaking, game-changer, paradigm shift, best practices, innovative, seamless, comprehensive, dynamic, impactful, unprecedented
+**Buzzwords:** hype, leverage, utilize, synergy, holistic, transformative, robust, scalable, cutting-edge, bleeding-edge, groundbreaking, game-changer, game-changing, paradigm shift, best practices, innovative, innovative solution, seamless, comprehensive, dynamic, impactful, unprecedented, pioneering, state-of-the-art, best-in-class, world-class, future-proof, frictionless, revolutionize, disruptive, at the forefront, next-level, streamline, "harness the power of", "in today's fast-paced world", "the future is now", delve into, "it goes without saying"
+
+**Corporate jargon (extended):** circle back, touch base, move the needle, low-hanging fruit, deep dive, double down, boil the ocean, alignment, "at the end of the day", net-net, actionable insights, learnings, cadence (for meetings), stakeholder buy-in, swim lanes, ideate, operationalize, productize
+
+**Bro marketing / hustle culture:** crushing it, 10x (as a verb), level up (abstract), no-brainer, secret sauce, pain points (overused), "this changes everything", skyrocket, explode your growth, go viral (empty goal), thought leader (self-applied), "the [X] space", done-for-you, plug and play, set it and forget it
+
+**LinkedIn clichés:** "I'm excited to share", "humbled and honored", "unpopular opinion", "let that sink in", "here's what nobody tells you", "hot take", "real talk", "we need to talk about", "stop doing X, start doing Y", "obsessed with this"
+
+**AI-sounding openers:** certainly!, absolutely!, "great question!", "it's important to note that", "in today's digital landscape", "in conclusion" (on short answers), "tailored to your unique needs", "in the realm of", "navigating [anything]", multifaceted, "robust framework", foster (foster growth, foster connection)
+
+**Full reference:** `~/.claude/skills/references/banned-phrases.md`
 
 **Corporate filler:** empower, optimize, streamline, foster, facilitate, enhance, drive (when used abstractly), enable, actionable insights, deep dive, journey, ecosystem, stakeholders, pivotal
 

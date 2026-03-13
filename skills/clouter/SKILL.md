@@ -146,3 +146,12 @@ Do not add headers, bullet points, or labels to the statement itself — it shou
 - **User wants to skip steps**: Explain briefly why each step matters for the log and the statement quality, then let them decide. Don't force it.
 - **Collaboration level is ambiguous**: Help them choose by asking a clarifying question: "Did AI write any full paragraphs or sections, or was its role more advisory?"
 - **Internal-only project**: Note that a statement is optional, but offer to generate one anyway for internal records.
+
+
+## Copy Language Standards
+
+All generated statements must avoid overused AI, corporate, and salesy language in addition to the explicit banned words already listed in the Tone & Transparency Standards section.
+
+**Full banned list:** `~/.claude/skills/references/banned-phrases.md`
+
+Additional terms never to use: game-changer, transformative, cutting-edge, revolutionize, innovative, seamless, robust, synergy, circle back, actionable insights, deep dive, leverage (verb), thought leader, paradigm shift, disruptive, at the forefront, frictionless, unlock (vague), empower, unprecedented, groundbreaking, holistic, multifaceted, foster, facilitate, enhance, optimize (when abstract).
