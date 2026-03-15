@@ -1,0 +1,46 @@
+{
+  "eval_id": 3,
+  "run_type": "without_skill",
+  "assertions": [
+    {
+      "text": "has-high-level-feedback-section",
+      "passed": false,
+      "evidence": "The output has no 'High-Level Presentation Feedback' section. It uses 'Overall Assessment' and 'Summary' sections instead."
+    },
+    {
+      "text": "has-slide-by-slide-section",
+      "passed": false,
+      "evidence": "The output has a '## Slide-by-Slide Feedback' section, not 'Slide-by-Slide Suggestions' as specified in the assertion."
+    },
+    {
+      "text": "covers-all-5-slides",
+      "passed": true,
+      "evidence": "All 5 slides are addressed: Slide 1 (Introduction to Prompt Engineering), Slide 2 (Anatomy of a Good Prompt), Slide 3 (Common Mistakes), Slide 4 (Live Exercise), and Slide 5 (Key Takeaways)."
+    },
+    {
+      "text": "has-visual-and-copy-subsections",
+      "passed": false,
+      "evidence": "The slide sections use 'Strengths' and 'Opportunities' subsections with no separation between visual and copywriting feedback. There are no 'Visual Improvement Ideas' or 'Copywriting Enhancement Recommendations' subsections."
+    },
+    {
+      "text": "training-outcome-language",
+      "passed": true,
+      "evidence": "Suggestions are consistently framed around learner engagement and understanding, e.g., 'making the learning stick beyond the session,' 'lower the barrier to entry,' and 'dramatically affects post-training behavior change.'"
+    },
+    {
+      "text": "visual-diagram-suggestion",
+      "passed": true,
+      "evidence": "Slide 2 recommends 'a layered diagram or color-coded prompt block rather than text bullets alone' and Slide 3 suggests 'a visual dial or spectrum would be more memorable than a list,' both being structured visual layouts appropriate for training."
+    },
+    {
+      "text": "references-brand-colors",
+      "passed": false,
+      "evidence": "The output contains no mentions of brand hex colors (#0A4C84 or #5E97D1) anywhere in the document; all feedback is content-focused with no specific color or brand design guidance."
+    },
+    {
+      "text": "no-assumed-outcome-note",
+      "passed": true,
+      "evidence": "The output states '**Outcome Goal:** Training sessions for my team' in the header and includes no 'Assumed Outcome' disclaimer, since the outcome was explicitly provided."
+    }
+  ]
+}

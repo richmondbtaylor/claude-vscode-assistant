@@ -1,0 +1,41 @@
+{
+  "eval_id": 2,
+  "run_type": "with_skill",
+  "assertions": [
+    {
+      "text": "has-high-level-feedback-section",
+      "passed": true,
+      "evidence": "The output contains a '## High-Level Presentation Feedback' section at line 8, providing narrative context about the deck reading 'more like a status log than a leadership communication.'"
+    },
+    {
+      "text": "has-slide-by-slide-section",
+      "passed": true,
+      "evidence": "The output contains a '## Slide-by-Slide Suggestions' section at line 14, with four individual slide subsections following."
+    },
+    {
+      "text": "covers-all-4-slides",
+      "passed": true,
+      "evidence": "The output addresses all 4 slides: Slide 1 (Q1 2026 AI Initiative Update), Slide 2 (Key Milestones), Slide 3 (Risks & Blockers), and Slide 4 (Next Steps)."
+    },
+    {
+      "text": "assumed-outcome-stated",
+      "passed": true,
+      "evidence": "The output header explicitly states '> **Assumed Outcome:** Internal project updates for leadership' on line 3, making the assumed default outcome clear."
+    },
+    {
+      "text": "has-visual-and-copy-subsections",
+      "passed": true,
+      "evidence": "Every slide section contains both '#### Visual Improvement Ideas' and '#### Copywriting Enhancement Recommendations' subsections, consistently applied across all 4 slides."
+    },
+    {
+      "text": "leadership-clarity-language",
+      "passed": true,
+      "evidence": "The feedback repeatedly emphasizes clarity for leadership, e.g., 'Leadership wants the bottom line fast' and suggestions to 'lead with the so-what,' and recommends reframing content to be 'immediately scannable' for a leadership audience."
+    },
+    {
+      "text": "references-brand-colors",
+      "passed": true,
+      "evidence": "Multiple slides reference brand colors, including '#0A4C84' and '#5E97D1', e.g., Slide 1 recommends 'a horizontal progress bar using `#0A4C84` as the filled portion and `#5E97D1` as the remaining capacity.'"
+    }
+  ]
+}

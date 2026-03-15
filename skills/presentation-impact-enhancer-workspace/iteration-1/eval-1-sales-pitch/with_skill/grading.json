@@ -1,0 +1,46 @@
+{
+  "eval_id": 1,
+  "run_type": "with_skill",
+  "assertions": [
+    {
+      "text": "has-high-level-feedback-section",
+      "passed": true,
+      "evidence": "The output contains a '## High-Level Presentation Feedback' section starting at line 7, providing narrative feedback about the deck's structure and opportunities."
+    },
+    {
+      "text": "has-slide-by-slide-section",
+      "passed": true,
+      "evidence": "The output contains a '## Slide-by-Slide Suggestions' section starting at line 13, with individual slide subsections following."
+    },
+    {
+      "text": "covers-all-5-slides",
+      "passed": true,
+      "evidence": "The output addresses all 5 slides: Slide 1 (Bishop AI title), Slide 2 (The Problem), Slide 3 (Our Solution), Slide 4 (How It Works), and Slide 5 (Pricing)."
+    },
+    {
+      "text": "has-visual-and-copy-subsections",
+      "passed": true,
+      "evidence": "Every slide section contains both '#### Visual Improvement Ideas' and '#### Copywriting Enhancement Recommendations' subsections, consistently applied across all 5 slides."
+    },
+    {
+      "text": "references-brand-colors",
+      "passed": true,
+      "evidence": "Multiple slides reference brand colors explicitly, including '#0A4C84' (e.g., Slide 1: 'full-bleed `#0A4C84` background') and '#5E97D1' (e.g., Slide 2: 'styled in `#5E97D1`')."
+    },
+    {
+      "text": "sales-outcome-language",
+      "passed": true,
+      "evidence": "Copywriting suggestions consistently use benefit-first language, e.g., 'Bishop AI gives your team back the hours they're losing' and 'Your Team Spends Nearly Half Their Day Not Doing Their Job,' directly addressing client outcomes rather than generic improvements."
+    },
+    {
+      "text": "no-banned-visual-suggestions",
+      "passed": true,
+      "evidence": "The output contains no mentions of memes, GIFs, or clip art anywhere in the visual suggestions; all recommendations are data visualizations, diagrams, and branded layouts."
+    },
+    {
+      "text": "no-assumed-outcome-note",
+      "passed": true,
+      "evidence": "The output header states '> **Outcome:** Sales pitches to new clients' with no 'Assumed Outcome' disclaimer, since the outcome was explicitly provided."
+    }
+  ]
+}

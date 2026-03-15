@@ -1,0 +1,6 @@
+{
+  "eval_id": 3,
+  "eval_name": "training-prompt-engineering",
+  "prompt": "/enhance_presentation\n\nOutcome: Training sessions for my team\n\nSlide 1: Introduction to Prompt Engineering\nWhat is a prompt?\nWhy does prompt quality matter?\nObjectives for today's session\n\nSlide 2: Anatomy of a Good Prompt\nRole: Tell the AI who it is\nContext: Give relevant background\nTask: Specify exactly what you want\nFormat: Define the output structure\nConstraints: Set limits (length, tone, etc.)\n\nSlide 3: Common Mistakes\nBeing too vague\nOverloading with instructions\nForgetting to specify format\nNot iterating on the prompt\n\nSlide 4: Live Exercise\nPrompt 1: Write a cold email for a SaaS product\nImprove it using the RCTFC framework\nShare results with the group\n\nSlide 5: Key Takeaways\nPrompts are instructions, not searches\nClarity beats brevity\nIterate and test\nContext is everything",
+  "assertions": []
+}

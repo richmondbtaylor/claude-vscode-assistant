@@ -11,7 +11,11 @@
 - Projects output dir: `C:/Users/richm/.claude/projects/`
 
 ## User Preferences
-- Communication style: direct, concise — no filler
+- Communication style: direct, concise - no filler
 - No emojis unless asked
+- **No em dashes** ever in any output (use hyphens or rewrite the sentence instead)
 ## Deliverable Format Rules
-- [feedback_always_pdf_not_html.md](feedback_always_pdf_not_html.md) — Always output PDF (never HTML or .md) for pitches/presentations; auto-upload to Google Drive
+- [feedback_always_pdf_not_html.md](feedback_always_pdf_not_html.md) - Always output PDF (never HTML or .md) for pitches/presentations; auto-upload to Google Drive
+
+## Writing Rules
+- [feedback_no_em_dashes.md](feedback_no_em_dashes.md) - Never use em dashes in any output; use hyphens or rewrite instead

@@ -1,0 +1,121 @@
+{
+  "skill_name": "presentation-impact-enhancer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/enhance_presentation\n\nOutcome: Sales pitches to new clients\n\nSlide 1: Title Slide\nBishop AI — Intelligent Automation for Modern Teams\n\nSlide 2: The Problem\nCompanies waste time on repetitive tasks\nEmployees spend 40% of their day on manual processes\nExisting tools don't integrate well\nHigh cost of custom development\n\nSlide 3: Our Solution\nBishop AI automates your workflows\nConnects to 100+ tools\nNo-code setup\nROI in 30 days\n\nSlide 4: How It Works\nStep 1: Connect your tools\nStep 2: Define your workflow\nStep 3: Let Bishop AI run it\nMonitor results in real time\n\nSlide 5: Pricing\nStarter: $99/month (up to 5 users)\nGrowth: $299/month (up to 20 users)\nEnterprise: Custom pricing\n30-day free trial available",
+      "expected_output": "Structured Markdown report with High-Level Presentation Feedback and slide-by-slide Visual + Copywriting suggestions tailored to sales outcome. Headlines rewritten to be benefit-first, visual suggestions tied to data or persuasion, brand colors referenced.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "has-high-level-feedback-section",
+          "description": "Output contains a 'High-Level Presentation Feedback' section"
+        },
+        {
+          "name": "has-slide-by-slide-section",
+          "description": "Output contains a 'Slide-by-Slide Suggestions' section"
+        },
+        {
+          "name": "covers-all-5-slides",
+          "description": "Output addresses all 5 slides from the input"
+        },
+        {
+          "name": "has-visual-and-copy-subsections",
+          "description": "Each slide section contains both 'Visual Improvement Ideas' and 'Copywriting Enhancement Recommendations' subsections"
+        },
+        {
+          "name": "references-brand-colors",
+          "description": "Output mentions at least one of the brand colors (#0A4C84 or #5E97D1) in visual suggestions"
+        },
+        {
+          "name": "sales-outcome-language",
+          "description": "Copywriting suggestions use benefit-first, persuasive language appropriate for a sales outcome (not generic)"
+        },
+        {
+          "name": "no-banned-visual-suggestions",
+          "description": "Output does NOT suggest memes, GIFs, or clip art"
+        },
+        {
+          "name": "no-assumed-outcome-note",
+          "description": "Output does NOT include an 'Assumed Outcome' disclaimer (since outcome was explicitly provided)"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/enhance_presentation\n\nSlide 1: Q1 2026 AI Initiative Update\nProject Status: On Track\nBudget: $240k of $300k used\nTeam: 8 engineers, 2 PMs\n\nSlide 2: Key Milestones\nCompleted: Data pipeline integration (Feb 3)\nCompleted: Model fine-tuning phase 1 (Feb 28)\nIn Progress: API gateway development (due Mar 20)\nUpcoming: Beta launch (Apr 1)\n\nSlide 3: Risks & Blockers\nCloud cost overrun risk — currently 12% over forecast\nOne engineer leaving in March — backfill in progress\nThird-party API rate limits impacting testing speed\n\nSlide 4: Next Steps\nFinalize API gateway by March 20\nBegin beta onboarding with 3 pilot customers\nPresent full Q2 roadmap to board on April 15",
+      "expected_output": "Structured Markdown report defaulting to 'Internal project updates for leadership' outcome (with explicit assumption note). Feedback focuses on clarity and conciseness. Visual suggestions for data/timeline charts. Copy suggestions strengthen executive summaries and bottom-line clarity.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "has-high-level-feedback-section",
+          "description": "Output contains a 'High-Level Presentation Feedback' section"
+        },
+        {
+          "name": "has-slide-by-slide-section",
+          "description": "Output contains a 'Slide-by-Slide Suggestions' section"
+        },
+        {
+          "name": "covers-all-4-slides",
+          "description": "Output addresses all 4 slides from the input"
+        },
+        {
+          "name": "assumed-outcome-stated",
+          "description": "Output explicitly states that 'Internal project updates for leadership' was assumed as the default outcome"
+        },
+        {
+          "name": "has-visual-and-copy-subsections",
+          "description": "Each slide section contains both 'Visual Improvement Ideas' and 'Copywriting Enhancement Recommendations' subsections"
+        },
+        {
+          "name": "leadership-clarity-language",
+          "description": "Feedback emphasizes 'clear and concise' framing appropriate for a leadership audience"
+        },
+        {
+          "name": "references-brand-colors",
+          "description": "Output mentions at least one of the brand colors (#0A4C84 or #5E97D1)"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/enhance_presentation\n\nOutcome: Training sessions for my team\n\nSlide 1: Introduction to Prompt Engineering\nWhat is a prompt?\nWhy does prompt quality matter?\nObjectives for today's session\n\nSlide 2: Anatomy of a Good Prompt\nRole: Tell the AI who it is\nContext: Give relevant background\nTask: Specify exactly what you want\nFormat: Define the output structure\nConstraints: Set limits (length, tone, etc.)\n\nSlide 3: Common Mistakes\nBeing too vague\nOverloading with instructions\nForgetting to specify format\nNot iterating on the prompt\n\nSlide 4: Live Exercise\nPrompt 1: Write a cold email for a SaaS product\nImprove it using the RCTFC framework\nShare results with the group\n\nSlide 5: Key Takeaways\nPrompts are instructions, not searches\nClarity beats brevity\nIterate and test\nContext is everything",
+      "expected_output": "Structured Markdown report tailored to training outcome. Visual suggestions include diagrams/frameworks for RCTFC anatomy. Copy suggestions make bullets more memorable and pedagogically engaging. Suggestions simplify jargon.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "has-high-level-feedback-section",
+          "description": "Output contains a 'High-Level Presentation Feedback' section"
+        },
+        {
+          "name": "has-slide-by-slide-section",
+          "description": "Output contains a 'Slide-by-Slide Suggestions' section"
+        },
+        {
+          "name": "covers-all-5-slides",
+          "description": "Output addresses all 5 slides from the input"
+        },
+        {
+          "name": "has-visual-and-copy-subsections",
+          "description": "Each slide section contains both 'Visual Improvement Ideas' and 'Copywriting Enhancement Recommendations' subsections"
+        },
+        {
+          "name": "training-outcome-language",
+          "description": "Suggestions are framed around making content engaging and easy to understand for learners"
+        },
+        {
+          "name": "visual-diagram-suggestion",
+          "description": "Visual suggestions recommend a diagram, framework visual, or structured layout appropriate for training material"
+        },
+        {
+          "name": "references-brand-colors",
+          "description": "Output mentions at least one of the brand colors (#0A4C84 or #5E97D1)"
+        },
+        {
+          "name": "no-assumed-outcome-note",
+          "description": "Output does NOT include an 'Assumed Outcome' disclaimer (since outcome was explicitly provided)"
+        }
+      ]
+    }
+  ]
+}

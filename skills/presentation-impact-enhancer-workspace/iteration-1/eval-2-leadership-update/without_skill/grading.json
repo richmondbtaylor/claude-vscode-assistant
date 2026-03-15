@@ -1,0 +1,41 @@
+{
+  "eval_id": 2,
+  "run_type": "without_skill",
+  "assertions": [
+    {
+      "text": "has-high-level-feedback-section",
+      "passed": false,
+      "evidence": "The output has no 'High-Level Presentation Feedback' section. It uses 'Overall Assessment' and 'Structural Feedback' sections instead."
+    },
+    {
+      "text": "has-slide-by-slide-section",
+      "passed": false,
+      "evidence": "The output has a '## Slide-by-Slide Feedback' section, not 'Slide-by-Slide Suggestions' as specified in the assertion."
+    },
+    {
+      "text": "covers-all-4-slides",
+      "passed": true,
+      "evidence": "All 4 slides are addressed: Slide 1 (Q1 2026 AI Initiative Update), Slide 2 (Key Milestones), Slide 3 (Risks & Blockers), and Slide 4 (Next Steps)."
+    },
+    {
+      "text": "assumed-outcome-stated",
+      "passed": false,
+      "evidence": "The output does not state that 'Internal project updates for leadership' was assumed as a default outcome. It mentions the outcome in the title ('Presentation Feedback: Q1 2026 AI Initiative Update') but never explicitly identifies it as an assumed default."
+    },
+    {
+      "text": "has-visual-and-copy-subsections",
+      "passed": false,
+      "evidence": "The slide sections use 'What works' and 'What needs improvement' subsections with no separation between visual and copywriting feedback. There are no 'Visual Improvement Ideas' or 'Copywriting Enhancement Recommendations' subsections."
+    },
+    {
+      "text": "leadership-clarity-language",
+      "passed": true,
+      "evidence": "The output emphasizes clarity for leadership throughout, e.g., 'it reads more like an internal project tracker than a leadership communication' and recommendations to add 'a one-sentence initiative summary' and 'clear ask' for leadership."
+    },
+    {
+      "text": "references-brand-colors",
+      "passed": false,
+      "evidence": "The output contains no mentions of brand hex colors (#0A4C84 or #5E97D1) anywhere in the document; all feedback is content-focused with no visual design or color guidance."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "eval_id": 1,
+  "eval_name": "sales-pitch-bishop-ai",
+  "prompt": "/enhance_presentation\n\nOutcome: Sales pitches to new clients\n\nSlide 1: Title Slide\nBishop AI — Intelligent Automation for Modern Teams\n\nSlide 2: The Problem\nCompanies waste time on repetitive tasks\nEmployees spend 40% of their day on manual processes\nExisting tools don't integrate well\nHigh cost of custom development\n\nSlide 3: Our Solution\nBishop AI automates your workflows\nConnects to 100+ tools\nNo-code setup\nROI in 30 days\n\nSlide 4: How It Works\nStep 1: Connect your tools\nStep 2: Define your workflow\nStep 3: Let Bishop AI run it\nMonitor results in real time\n\nSlide 5: Pricing\nStarter: $99/month (up to 5 users)\nGrowth: $299/month (up to 20 users)\nEnterprise: Custom pricing\n30-day free trial available",
+  "assertions": []
+}
