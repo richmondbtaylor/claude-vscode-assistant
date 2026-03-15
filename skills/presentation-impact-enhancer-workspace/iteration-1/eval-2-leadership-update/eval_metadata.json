@@ -1,0 +1,6 @@
+{
+  "eval_id": 2,
+  "eval_name": "leadership-q1-update-no-outcome-specified",
+  "prompt": "/enhance_presentation\n\nSlide 1: Q1 2026 AI Initiative Update\nProject Status: On Track\nBudget: $240k of $300k used\nTeam: 8 engineers, 2 PMs\n\nSlide 2: Key Milestones\nCompleted: Data pipeline integration (Feb 3)\nCompleted: Model fine-tuning phase 1 (Feb 28)\nIn Progress: API gateway development (due Mar 20)\nUpcoming: Beta launch (Apr 1)\n\nSlide 3: Risks & Blockers\nCloud cost overrun risk — currently 12% over forecast\nOne engineer leaving in March — backfill in progress\nThird-party API rate limits impacting testing speed\n\nSlide 4: Next Steps\nFinalize API gateway by March 20\nBegin beta onboarding with 3 pilot customers\nPresent full Q2 roadmap to board on April 15",
+  "assertions": []
+}

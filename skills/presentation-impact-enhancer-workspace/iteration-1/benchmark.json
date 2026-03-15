@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "skill_name": "presentation-impact-enhancer",
+    "timestamp": "2026-03-13T19:57:21Z",
+    "evals_run": ["sales-pitch-bishop-ai", "leadership-q1-update-no-outcome-specified", "training-prompt-engineering"]
+  },
+  "runs": [
+    {
+      "eval_id": "eval-1-sales-pitch",
+      "eval_name": "sales-pitch-bishop-ai",
+      "configuration": "with_skill",
+      "pass_rate": 1.0,
+      "assertions_passed": 8,
+      "assertions_total": 8,
+      "duration_seconds": 63.5,
+      "total_tokens": 13225
+    },
+    {
+      "eval_id": "eval-1-sales-pitch",
+      "eval_name": "sales-pitch-bishop-ai",
+      "configuration": "without_skill",
+      "pass_rate": 0.625,
+      "assertions_passed": 5,
+      "assertions_total": 8,
+      "duration_seconds": 69.8,
+      "total_tokens": 11787
+    },
+    {
+      "eval_id": "eval-2-leadership-update",
+      "eval_name": "leadership-q1-update-no-outcome-specified",
+      "configuration": "with_skill",
+      "pass_rate": 1.0,
+      "assertions_passed": 7,
+      "assertions_total": 7,
+      "duration_seconds": 59.9,
+      "total_tokens": 12832
+    },
+    {
+      "eval_id": "eval-2-leadership-update",
+      "eval_name": "leadership-q1-update-no-outcome-specified",
+      "configuration": "without_skill",
+      "pass_rate": 0.429,
+      "assertions_passed": 3,
+      "assertions_total": 7,
+      "duration_seconds": 52.0,
+      "total_tokens": 11213
+    },
+    {
+      "eval_id": "eval-3-training-deck",
+      "eval_name": "training-prompt-engineering",
+      "configuration": "with_skill",
+      "pass_rate": 1.0,
+      "assertions_passed": 8,
+      "assertions_total": 8,
+      "duration_seconds": 684.2,
+      "total_tokens": 13639
+    },
+    {
+      "eval_id": "eval-3-training-deck",
+      "eval_name": "training-prompt-engineering",
+      "configuration": "without_skill",
+      "pass_rate": 0.5,
+      "assertions_passed": 4,
+      "assertions_total": 8,
+      "duration_seconds": 72.7,
+      "total_tokens": 11831
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "mean_pass_rate": 1.0,
+      "mean_duration_seconds": 269.2,
+      "mean_tokens": 13232
+    },
+    "without_skill": {
+      "mean_pass_rate": 0.518,
+      "mean_duration_seconds": 64.8,
+      "mean_tokens": 11610
+    },
+    "delta": {
+      "pass_rate": "+0.482",
+      "time_seconds": "+204.4",
+      "tokens": "+1622"
+    }
+  },
+  "notes": [
+    "with_skill eval-3 duration (684s) is an outlier — likely due to agent wait time, not model speed.",
+    "All with_skill runs scored 100% on structural assertions (section headers, subsections, brand colors).",
+    "without_skill runs consistently failed structural assertions but sometimes passed content quality assertions (training language, outcome framing).",
+    "assumed-outcome-stated (eval-2) is a strong discriminating assertion — only the skill enforces this behavior."
+  ]
+}

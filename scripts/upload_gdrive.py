@@ -54,11 +54,19 @@ def upload_file(local_path, folder_id=None):
         ".mp4": "video/mp4", ".mov": "video/quicktime", ".avi": "video/x-msvideo",
         ".mkv": "video/x-matroska", ".webm": "video/webm",
         ".pdf": "application/pdf",
+        ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    }
+    # Convert .pptx to Google Slides on upload
+    CONVERT_TO_GOOGLE = {
+        ".pptx": "application/vnd.google-apps.presentation",
     }
     mime_type = MIME_TYPES.get(local_path.suffix.lower(), "application/octet-stream")
+    google_mime = CONVERT_TO_GOOGLE.get(local_path.suffix.lower())
 
     service = get_service()
-    file_meta = {"name": local_path.name, "parents": [folder_id]}
+    file_meta = {"name": local_path.stem, "parents": [folder_id]}
+    if google_mime:
+        file_meta["mimeType"] = google_mime
     media = MediaFileUpload(str(local_path), mimetype=mime_type, resumable=True)
 
     result = service.files().create(body=file_meta, media_body=media, fields="id, webViewLink").execute()
