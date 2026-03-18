@@ -1,0 +1,29 @@
+{
+  "instagram": [
+    { "handle": "noevarner.ai", "url": "https://www.instagram.com/noevarner.ai/", "focus": "AI content, automation", "active": true },
+    { "handle": "nick_saraev", "url": "https://www.instagram.com/nick_saraev/", "focus": "AI systems, solopreneurs", "active": true },
+    { "handle": "nateherkai", "url": "https://www.instagram.com/nateherkai/", "focus": "AI tools, workflows", "active": true },
+    { "handle": "pranathi.rai", "url": "https://www.instagram.com/pranathi.rai/", "focus": "AI education", "active": true },
+    { "handle": "hormozi", "url": "https://www.instagram.com/hormozi/", "focus": "Business, offers, scale", "active": true },
+    { "handle": "bigggwinter", "url": "https://www.instagram.com/bigggwinter/", "focus": "Content creation strategy", "active": true },
+    { "handle": "leadgenman", "url": "https://www.instagram.com/leadgenman/", "focus": "Lead gen, AI outreach", "active": true }
+  ],
+  "youtube": [
+    { "handle": "nateherk", "url": "https://www.youtube.com/@nateherk", "focus": "AI tools, automation tutorials", "active": true },
+    { "handle": "nicksaraev", "url": "https://www.youtube.com/@nicksaraev", "focus": "AI systems, solopreneur scaling", "active": true },
+    { "handle": "Itssssss_Jack", "url": "https://www.youtube.com/@Itssssss_Jack", "focus": "AI content, creator economy", "active": true }
+  ],
+  "hashtags": {
+    "primary": ["#AIimplementation", "#businessautomation", "#founderproductivity", "#AIscaling", "#solopreneur"],
+    "secondary": ["#AItools", "#operatorlife", "#promptengineering", "#nocode", "#agencyowner"]
+  },
+  "reference_resources": [
+    {
+      "name": "Hook and Content Formulas",
+      "url": "https://www.youtube.com/watch?v=xnOe8aA9Pmw&t=39s",
+      "notes": "Primary reference for hook formulas. Save transcript to references/hook_formulas.md when available."
+    }
+  ],
+  "off_limits_patterns": [],
+  "last_updated": "2026-03-17"
+}
