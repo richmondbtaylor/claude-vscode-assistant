@@ -19,3 +19,7 @@
 
 ## Writing Rules
 - [feedback_no_em_dashes.md](feedback_no_em_dashes.md) - Never use em dashes in any output; use hyphens or rewrite instead
+- [feedback_human_first_ai_framing.md](feedback_human_first_ai_framing.md) - Human-first always: never talk about firing, replacing, or eliminating people/roles. AI amplifies humans, never substitutes them. All content must be rooted in viral AI topics.
+
+## Skills
+- **ig-tiktok-scan** (`~/.claude/skills/ig-tiktok-scan/SKILL.md`) - IG/TikTok viral content intelligence + weekly Reel/TikTok batch generation. Trigger: `/viral-content-batch`, `/analyze-and-generate`, `/ig-tiktok-scan`, or any request to find viral patterns and generate short-form content packages in Rich's voice
