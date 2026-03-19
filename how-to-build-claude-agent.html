@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Build a Custom Claude Agent Workspace — Prompt Anything</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Montserrat:wght@400;500;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --dark-1:  #101319;
+      --dark-2:  #000814;
+      --dark-3:  #1B201F;
+      --gold:    #E0B848;
+      --blue:    #1894C9;
+      --red:     #E32E52;
+      --cream:   #F9F6F0;
+      --gray:    #E6E2DE;
+      --white:   #FFFFFF;
+      --text-muted: #6b6b6b;
+      --text-dim:   #9a9a9a;
+      --border:  rgba(16,19,25,0.1);
+
+      --font-title: 'Poppins', sans-serif;
+      --font-sub:   'Montserrat', sans-serif;
+      --font-body:  'Open Sans', sans-serif;
+      --font-mono:  'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--dark-1);
+      font-family: var(--font-body);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LAYOUT ── */
+    .page-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 40px 120px;
+    }
+
+    /* ── GRID LINE AESTHETIC ── */
+    .grid-line-v {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: var(--dark-1);
+      opacity: 0.08;
+      pointer-events: none;
+    }
+    .grid-line-h {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: var(--dark-1);
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 80px 0 72px;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .hero h1 {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--dark-1);
+      margin-bottom: 28px;
+      max-width: 72%;
+    }
+    .hero-sub {
+      font-family: var(--font-body);
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .hero-meta-item {
+      font-family: var(--font-sub);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-meta-item::before {
+      content: '';
+      width: 4px; height: 4px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: block;
+    }
+    /* logo in hero top-right */
+    .hero-logo {
+      position: absolute;
+      top: 80px; right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.12;
+    }
+    .hero-logo-wordmark {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-align: center;
+      color: var(--dark-1);
+      line-height: 1.4;
+    }
+
+    /* ── WHAT THIS IS ── */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-top: none;
+      margin-bottom: 72px;
+    }
+    .intro-card {
+      padding: 32px 32px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .intro-card:nth-child(2n) { border-right: none; }
+    .intro-card-num {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 48px;
+      color: var(--gray);
+      line-height: 1;
+      margin-bottom: 8px;
+      letter-spacing: -0.03em;
+    }
+    .intro-card h3 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--dark-1);
+      margin-bottom: 8px;
+    }
+    .intro-card p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--dark-1);
+      padding: 48px;
+      margin-bottom: 72px;
+      position: relative;
+      overflow: hidden;
+    }
+    .toc-headline {
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      color: var(--cream);
+      letter-spacing: -0.02em;
+      margin-bottom: 36px;
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px 40px;
+    }
+    .toc a {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 12px 0;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(249,246,240,0.06);
+      transition: opacity 0.2s;
+    }
+    .toc a:hover { opacity: 0.7; }
+    .toc-num {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--cream);
+      min-width: 32px;
+    }
+    .toc-title {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: rgba(249,246,240,0.55);
+    }
+
+    /* ── SECTION ── */
+    .section {
+      margin-bottom: 80px;
+      padding-top: 8px;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 36px;
+    }
+    .section-header-left {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+    }
+    .section-num {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 52px;
+      color: var(--gray);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .section h2 {
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      color: var(--dark-1);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .section-tag {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding: 4px 10px;
+      border: 1px solid var(--gold);
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .section h3 {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dark-1);
+      margin: 36px 0 14px;
+    }
+    .section h3:first-of-type { margin-top: 0; }
+    .section p {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.75;
+    }
+    .section p strong { color: var(--dark-1); font-weight: 600; }
+
+    /* ── CALLOUT ── */
+    .callout {
+      border-left: 3px solid var(--gold);
+      background: rgba(224,184,72,0.06);
+      padding: 20px 24px;
+      margin: 28px 0;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .callout.blue { border-left-color: var(--blue); background: rgba(24,148,201,0.05); }
+    .callout.red  { border-left-color: var(--red);  background: rgba(227,46,82,0.05); }
+    .callout strong {
+      display: block;
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dark-1);
+      margin-bottom: 8px;
+    }
+
+    /* ── CODE BLOCKS ── */
+    .code-label {
+      font-family: var(--font-sub);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    pre {
+      background: var(--dark-1);
+      border: none;
+      padding: 28px 32px;
+      overflow-x: auto;
+      margin: 4px 0 28px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.8;
+      color: rgba(249,246,240,0.85);
+    }
+    code.inline {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      background: var(--gray);
+      border-radius: 2px;
+      padding: 2px 6px;
+      color: var(--dark-1);
+    }
+    .c-comment { color: rgba(249,246,240,0.25); }
+    .c-key     { color: #E0B848; }
+    .c-val     { color: #a8d8a0; }
+    .c-str     { color: #98c9a3; }
+    .c-dir     { color: #88bfe8; }
+
+    /* ── LISTS ── */
+    .section ol, .section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px;
+    }
+    .section ol li, .section ul li {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-muted);
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      line-height: 1.6;
+    }
+    .section ol li:last-child,
+    .section ul li:last-child { border-bottom: none; }
+    .li-num {
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--gray);
+      min-width: 28px;
+      line-height: 1;
+      margin-top: 1px;
+    }
+    .li-dash {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      color: var(--gold);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 4px 0 32px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    thead { background: var(--dark-1); }
+    thead th {
+      padding: 14px 20px;
+      text-align: left;
+      font-family: var(--font-sub);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(249,246,240,0.5);
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(224,184,72,0.03); }
+    tbody td {
+      padding: 12px 20px;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      vertical-align: top;
+    }
+    tbody td strong { color: var(--dark-1); font-weight: 600; }
+    .badge {
+      display: inline-block;
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+    }
+    .badge-gold { background: rgba(224,184,72,0.15); color: #a07d28; border: 1px solid rgba(224,184,72,0.3); }
+    .badge-blue { background: rgba(24,148,201,0.1); color: var(--blue); border: 1px solid rgba(24,148,201,0.25); }
+    .badge-red  { background: rgba(227,46,82,0.08); color: var(--red); border: 1px solid rgba(227,46,82,0.2); }
+    .badge-dark { background: rgba(16,19,25,0.08); color: var(--dark-1); border: 1px solid rgba(16,19,25,0.15); }
+
+    /* ── MEMORY TYPES GRID ── */
+    .type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 4px 0 32px;
+    }
+    .type-card {
+      background: var(--cream);
+      padding: 28px;
+    }
+    .type-card-label {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .type-card-label.gold { color: #a07d28; }
+    .type-card-label.blue { color: var(--blue); }
+    .type-card-label.red  { color: var(--red); }
+    .type-card-label.dark { color: var(--dark-1); }
+    .type-card h4 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--dark-1);
+      margin-bottom: 8px;
+    }
+    .type-card p {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline { margin: 4px 0 8px; }
+    .timeline-item {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0;
+    }
+    .timeline-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 88px;
+    }
+    .timeline-week {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cream);
+      background: var(--dark-1);
+      padding: 8px 12px;
+      width: 100%;
+      text-align: center;
+    }
+    .timeline-week.gold { background: var(--gold); color: var(--dark-1); }
+    .timeline-week.blue { background: var(--blue); color: white; }
+    .timeline-week.red  { background: var(--red);  color: white; }
+    .timeline-line {
+      width: 1px;
+      flex: 1;
+      background: var(--border);
+      min-height: 16px;
+    }
+    .timeline-right {
+      flex: 1;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0 28px 32px;
+    }
+    .timeline-item:last-child .timeline-right { border-bottom: none; }
+    .timeline-right h4 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--dark-1);
+      margin-bottom: 12px;
+    }
+    .timeline-right ul {
+      list-style: none;
+      padding: 0; margin: 0;
+    }
+    .timeline-right ul li {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-muted);
+      padding: 5px 0;
+      border: none;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .timeline-right ul li::before {
+      content: '—';
+      color: var(--gold);
+      font-family: var(--font-sub);
+      font-weight: 600;
+      flex-shrink: 0;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    /* ── LESSONS ── */
+    .lesson-item {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 28px 0;
+    }
+    .lesson-item:first-child { border-top: 1px solid var(--border); }
+    .lesson-num-large {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 72px;
+      color: var(--gray);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      min-width: 96px;
+    }
+    .lesson-body { flex: 1; padding-top: 8px; }
+    .lesson-body h4 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--dark-1);
+      margin-bottom: 8px;
+    }
+    .lesson-body p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* ── FILE TREE ── */
+    .file-tree {
+      background: var(--dark-1);
+      padding: 32px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 2;
+      overflow-x: auto;
+      margin: 4px 0 28px;
+    }
+    .ft-dir  { color: var(--gold); }
+    .ft-file { color: rgba(249,246,240,0.65); }
+    .ft-comment { color: rgba(249,246,240,0.2); }
+
+    /* ── QUICK REF ── */
+    .ref-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 4px 0;
+    }
+    .ref-item {
+      background: var(--cream);
+      padding: 20px 24px;
+    }
+    .ref-goal {
+      font-family: var(--font-sub);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    .ref-tool {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark-1);
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding-top: 56px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .footer-wordmark {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dark-1);
+      line-height: 1.4;
+    }
+    .footer-right {
+      font-family: var(--font-sub);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-align: right;
+    }
+
+    /* ── DARK BAND ── */
+    .dark-band {
+      background: var(--dark-1);
+      margin: 0 -40px 72px;
+      padding: 56px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-band h2 {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: var(--cream);
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      margin-bottom: 12px;
+    }
+    .dark-band p {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: rgba(249,246,240,0.5);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .page-wrap { padding: 0 20px 80px; }
+      .hero h1 { max-width: 100%; font-size: 2.5rem; }
+      .intro-grid { grid-template-columns: 1fr; }
+      .toc-grid { grid-template-columns: 1fr; }
+      .type-grid { grid-template-columns: 1fr; }
+      .ref-grid { grid-template-columns: 1fr; }
+      .dark-band { margin: 0 -20px 72px; padding: 40px 20px; }
+      .lesson-num-large { font-size: 48px; min-width: 64px; }
+      .hero-logo { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-logo" aria-hidden="true">
+      <svg width="80" height="88" viewBox="0 0 80 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2.5" y="2.5" width="75" height="66" rx="16" stroke="#101319" stroke-width="4"/>
+        <path d="M40 16 L43 32 L59 35 L43 38 L40 54 L37 38 L21 35 L37 32 Z" fill="#101319"/>
+        <line x1="49" y1="21" x2="54" y2="16" stroke="#101319" stroke-width="3" stroke-linecap="round"/>
+        <path d="M16 69 L9 86 L28 76" fill="#F9F6F0" stroke="#101319" stroke-width="4" stroke-linejoin="round"/>
+      </svg>
+      <div class="hero-logo-wordmark">PROMPT<br/>ANYTHING</div>
+    </div>
+
+    <div class="hero-eyebrow">Internal Reference Guide</div>
+    <h1>HOW TO BUILD A CUSTOM CLAUDE AGENT WORKSPACE</h1>
+    <p class="hero-sub">Everything you need to go from zero to a fully personalized AI agent system — with persistent memory, custom skills, automation, and brand-consistent output on every run.</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item">10 Sections</span>
+      <span class="hero-meta-item">16 Custom Skills</span>
+      <span class="hero-meta-item">Full Build Guide</span>
+      <span class="hero-meta-item">Updated March 2026</span>
+    </div>
+  </header>
+
+  <!-- WHAT THIS IS -->
+  <div style="padding-top: 56px; margin-bottom: 8px;">
+    <div class="callout">
+      <strong>The Core Idea</strong>
+      Claude Code is a platform, not just a chatbot. The <code class="inline">~/.claude/</code> folder is your configuration layer. Skills are your saved playbooks. Memory is your persistent context. Scripts are your integrations. Everything else builds on that foundation.
+    </div>
+  </div>
+
+  <div class="intro-grid">
+    <div class="intro-card">
+      <div class="intro-card-num">01</div>
+      <h3>Skills</h3>
+      <p>Saved prompt frameworks that trigger automatically based on what you say. Write them once, use them forever.</p>
+    </div>
+    <div class="intro-card">
+      <div class="intro-card-num">02</div>
+      <h3>Memory</h3>
+      <p>Persistent context Claude reads before every response. No more re-explaining your preferences each session.</p>
+    </div>
+    <div class="intro-card">
+      <div class="intro-card-num">03</div>
+      <h3>Scripts</h3>
+      <p>Automation connecting Claude's output to the real world — PDF generation, Drive uploads, daily agents.</p>
+    </div>
+    <div class="intro-card">
+      <div class="intro-card-num">04</div>
+      <h3>Settings</h3>
+      <p>Permissions and directory access controls. Define exactly what Claude can do without asking you first.</p>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <nav class="toc" aria-label="Contents">
+    <div class="toc-headline">TABLE<br/>OF CONTENTS</div>
+    <div class="toc-grid">
+      <a href="#part1"><span class="toc-num">01</span><span class="toc-title">Prerequisites</span></a>
+      <a href="#part6"><span class="toc-num">06</span><span class="toc-title">Brand System Integration</span></a>
+      <a href="#part2"><span class="toc-num">02</span><span class="toc-title">The Memory System</span></a>
+      <a href="#part7"><span class="toc-num">07</span><span class="toc-title">Build Order</span></a>
+      <a href="#part3"><span class="toc-num">03</span><span class="toc-title">Building Skills</span></a>
+      <a href="#part8"><span class="toc-num">08</span><span class="toc-title">Key Lessons Learned</span></a>
+      <a href="#part4"><span class="toc-num">04</span><span class="toc-title">Settings Configuration</span></a>
+      <a href="#part9"><span class="toc-num">09</span><span class="toc-title">Complete File Structure</span></a>
+      <a href="#part5"><span class="toc-num">05</span><span class="toc-title">Automation Scripts</span></a>
+      <a href="#part10"><span class="toc-num">10</span><span class="toc-title">Quick Reference</span></a>
+    </div>
+  </nav>
+
+  <!-- PART 1 -->
+  <section class="section" id="part1">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">01</span>
+        <h2>PREREQUISITES</h2>
+      </div>
+      <span class="section-tag">Setup</span>
+    </div>
+
+    <h3>Install Claude Code</h3>
+    <div class="code-label">Terminal</div>
+    <pre><code>npm install -g @anthropic-ai/claude-code</code></pre>
+
+    <h3>Authenticate</h3>
+    <div class="code-label">Terminal</div>
+    <pre><code>claude
+<span class="c-comment"># Follow the browser login flow</span></code></pre>
+
+    <h3>Understand the workspace</h3>
+    <p>Everything lives at <code class="inline">~/.claude/</code>. Claude Code reads this automatically at startup. This is your entire workspace — once that clicks, everything else follows.</p>
+  </section>
+
+  <!-- PART 2 -->
+  <section class="section" id="part2">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">02</span>
+        <h2>THE MEMORY SYSTEM</h2>
+      </div>
+      <span class="section-tag">Foundation</span>
+    </div>
+
+    <p>Memory is how Claude remembers who you are across sessions. Without it, every conversation starts from zero.</p>
+
+    <h3>Step 1 — Create the memory folder</h3>
+    <pre><code><span class="c-dir">~/.claude/memory/</span></code></pre>
+
+    <h3>Step 2 — Create MEMORY.md</h3>
+    <p>This file is <strong>always loaded</strong> into context at startup. Keep it under 200 lines. It's a pointer index, not the actual content.</p>
+
+    <div class="code-label">~/.claude/memory/MEMORY.md</div>
+    <pre><code><span class="c-comment">## Memory Index</span>
+
+- [user_profile.md](memory/user_profile.md)              <span class="c-comment">Who I am, my business, my goals</span>
+- [feedback_no_em_dashes.md](memory/feedback_no_em_dashes.md)  <span class="c-comment">Never use em dashes</span>
+- [feedback_always_pdf.md](memory/feedback_always_pdf.md)     <span class="c-comment">Output PDFs, not HTML</span>
+- [feedback_human_first.md](memory/feedback_human_first.md)   <span class="c-comment">AI amplifies, never replaces</span>
+- [brand_guidelines.md](memory/brand_guidelines.md)           <span class="c-comment">Colors, fonts, voice</span></code></pre>
+
+    <h3>Step 3 — Write individual memory files</h3>
+    <div class="code-label">~/.claude/memory/feedback_no_em_dashes.md</div>
+    <pre><code><span class="c-comment">---</span>
+<span class="c-key">name:</span> <span class="c-val">No Em Dashes</span>
+<span class="c-key">description:</span> <span class="c-val">Never use em dashes in any output</span>
+<span class="c-key">type:</span> <span class="c-val">feedback</span>
+<span class="c-comment">---</span>
+
+Never use em dashes (—) in any response or document.
+Use a hyphen (-) or restructure the sentence instead.</code></pre>
+
+    <h3>The four memory types</h3>
+    <div class="type-grid">
+      <div class="type-card">
+        <div class="type-card-label gold">User</div>
+        <h4>Who you are</h4>
+        <p>Your name, role, expertise, business context. This is the baseline — write it first.</p>
+      </div>
+      <div class="type-card">
+        <div class="type-card-label blue">Feedback</div>
+        <h4>Corrections &amp; preferences</h4>
+        <p>Every time you correct Claude twice on the same thing, save it. This is the highest-ROI memory type.</p>
+      </div>
+      <div class="type-card">
+        <div class="type-card-label red">Project</div>
+        <h4>Active work context</h4>
+        <p>Current goals, active initiatives, deadlines. Update when projects change.</p>
+      </div>
+      <div class="type-card">
+        <div class="type-card-label dark">Reference</div>
+        <h4>External pointers</h4>
+        <p>Google Sheets IDs, Drive folder paths, Slack channels, API endpoints.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>High-ROI memories to write first</strong>
+      1. Your name, business, what you do. 2. Communication style (no emojis, no em dashes, terse responses). 3. Output format rules (PDF vs HTML, auto-upload). 4. Brand voice and banned phrases. 5. Any rule you've had to correct Claude on more than once.
+    </div>
+  </section>
+
+  <!-- PART 3 -->
+  <section class="section" id="part3">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">03</span>
+        <h2>BUILDING SKILLS</h2>
+      </div>
+      <span class="section-tag">Core System</span>
+    </div>
+
+    <p>Skills are reusable prompt frameworks stored as files. Claude reads the <code class="inline">SKILL.md</code> when you invoke the skill by name.</p>
+
+    <h3>Folder structure</h3>
+    <pre><code><span class="c-dir">~/.claude/skills/</span>
+└── <span class="c-dir">your-skill-name/</span>
+    └── <span class="ft-file">SKILL.md</span></code></pre>
+
+    <h3>The anatomy of a great SKILL.md</h3>
+    <div class="code-label">SKILL.md template</div>
+    <pre><code><span class="c-comment"># Skill Name</span>
+
+<span class="c-comment">## Overview</span>
+One paragraph: what this skill does and when to use it.
+
+<span class="c-comment">## Trigger Conditions</span>
+- "generate a weekly batch"
+- "analyze viral content"
+- User uploads a receipt
+
+<span class="c-comment">## Framework</span>
+Name it. Give it an acronym (CAPTAIN, PRISM, CLOUTER).
+Each letter = a phase or principle.
+
+<span class="c-comment">## Step-by-Step Execution</span>
+<span class="c-comment">### Phase 1: [Name]</span>
+1. Do this
+2. Then this
+
+<span class="c-comment">## Output Format</span>
+File types, section names, length guidelines.
+
+<span class="c-comment">## Hard Rules</span>
+- Never do X
+- Always include Y
+
+<span class="c-comment">## Examples</span>
+1-2 example inputs and expected outputs.</code></pre>
+
+    <div class="callout">
+      <strong>The trigger description is everything</strong>
+      Write it to match how you actually talk, not formal language. If Claude doesn't invoke the skill at the right time, rewrite the trigger first. It is the most important line in the entire file.
+    </div>
+
+    <h3>The 16 skills we built</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Skill</th><th>Framework</th><th>Core Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>ig-tiktok-scan</strong></td><td><span class="badge badge-dark">Custom</span></td><td>Viral content intelligence + weekly TikTok/Reel batch generation</td></tr>
+          <tr><td><strong>bishop-brand</strong></td><td><span class="badge badge-dark">Custom</span></td><td>Authoritative brand guidelines for all visual content</td></tr>
+          <tr><td><strong>bishop-research-agent</strong></td><td><span class="badge badge-dark">Custom</span></td><td>Manage the daily lead-gen agent (Reddit + web monitoring)</td></tr>
+          <tr><td><strong>captioncraft</strong></td><td><span class="badge badge-gold">CAPTAIN</span></td><td>Platform-specific social captions from video transcripts</td></tr>
+          <tr><td><strong>captivate</strong></td><td><span class="badge badge-gold">CAPTIVATE</span></td><td>Content repurposing + YouTube script writing</td></tr>
+          <tr><td><strong>clouter</strong></td><td><span class="badge badge-gold">CLOUTER</span></td><td>AI collaboration diligence statements for client work</td></tr>
+          <tr><td><strong>infographic-generator</strong></td><td><span class="badge badge-gold">PRISM</span></td><td>Professional infographic generation via AI image pipeline</td></tr>
+          <tr><td><strong>prestige</strong></td><td><span class="badge badge-gold">PRESTIGE v2</span></td><td>High-impact presentations — webinars, keynotes, courses</td></tr>
+          <tr><td><strong>token</strong></td><td><span class="badge badge-gold">TOKEN</span></td><td>Reduce prompt token usage by 20%+ without quality loss</td></tr>
+          <tr><td><strong>visual-code</strong></td><td><span class="badge badge-gold">VISUAL-CODE</span></td><td>Screenshot or design-to-HTML converter</td></tr>
+          <tr><td><strong>codecraft</strong></td><td><span class="badge badge-dark">Custom</span></td><td>React team documentation system generator</td></tr>
+          <tr><td><strong>mcp-skill</strong></td><td><span class="badge badge-dark">Custom</span></td><td>Build MCP (Model Context Protocol) servers from scratch</td></tr>
+          <tr><td><strong>presentation-impact-enhancer</strong></td><td><span class="badge badge-dark">Custom</span></td><td>Visual deliverable analysis and improvement</td></tr>
+          <tr><td><strong>receipt-filer</strong></td><td><span class="badge badge-dark">Custom</span></td><td>Auto-file receipts to Google Drive by date/vendor/amount</td></tr>
+          <tr><td><strong>skill-creator</strong></td><td><span class="badge badge-red">Meta</span></td><td>Build, test, and benchmark new skills</td></tr>
+          <tr><td><strong>keybindings-help</strong></td><td><span class="badge badge-blue">Built-in</span></td><td>Customize Claude Code keyboard shortcuts</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>How to build your first skill</h3>
+    <ol>
+      <li><span class="li-num">01</span><div><strong>Identify a repeated task.</strong> What do you ask Claude every week that requires the same context or setup?</div></li>
+      <li><span class="li-num">02</span><div><strong>Write the framework first.</strong> Give it an acronym. Each letter = a phase. This makes outputs consistent and teachable.</div></li>
+      <li><span class="li-num">03</span><div><strong>Draft the SKILL.md.</strong> Focus on what triggers it, what phases to run, what the output must look like, what it must never do.</div></li>
+      <li><span class="li-num">04</span><div><strong>Test it on a real task.</strong> Refine based on output quality. Iterate until it's tight.</div></li>
+      <li><span class="li-num">05</span><div><strong>Use <code class="inline">skill-creator</code> to evaluate.</strong> The meta-skill benchmarks your skill against sample inputs and scores consistency.</div></li>
+    </ol>
+  </section>
+
+  <!-- PART 4 -->
+  <section class="section" id="part4">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">04</span>
+        <h2>SETTINGS CONFIGURATION</h2>
+      </div>
+      <span class="section-tag">Permissions</span>
+    </div>
+
+    <p>Controls what Claude is allowed to do without prompting you every time.</p>
+
+    <div class="code-label">~/.claude/settings.json</div>
+    <pre><code>{
+  <span class="c-key">"permissions"</span>: {
+    <span class="c-key">"allow"</span>: [
+      <span class="c-str">"Bash(python scripts/generate_pdf.py:*)"</span>,
+      <span class="c-str">"Bash(python scripts/upload_gdrive.py:*)"</span>,
+      <span class="c-str">"Bash(pip install *)"</span>,
+      <span class="c-str">"Bash(powershell -File scripts/auto-push.ps1)"</span>
+    ],
+    <span class="c-key">"additionalDirectories"</span>: [
+      <span class="c-str">"C:/Users/yourname/Downloads"</span>,
+      <span class="c-str">"C:/Users/yourname/Documents/Projects"</span>
+    ]
+  }
+}</code></pre>
+
+    <p>Add to <code class="inline">allow</code>: any Python scripts you run repeatedly, <code class="inline">pip install</code>, PowerShell scripts, any CLI tool Claude needs to invoke silently.</p>
+    <p><code class="inline">additionalDirectories</code> opens folders outside <code class="inline">~/.claude</code> for Claude to read and write — add your Downloads folder, project directories, anywhere Claude needs access.</p>
+  </section>
+
+  <!-- PART 5 -->
+  <section class="section" id="part5">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">05</span>
+        <h2>AUTOMATION SCRIPTS</h2>
+      </div>
+      <span class="section-tag">Integrations</span>
+    </div>
+
+    <p>These are the scripts that connect Claude's output to the real world.</p>
+
+    <h3>generate_pdf.py — HTML to PDF via Playwright</h3>
+    <div class="code-label">scripts/generate_pdf.py</div>
+    <pre><code><span class="c-comment"># Claude generates the HTML, this script renders it to PDF</span>
+from playwright.sync_api import sync_playwright
+
+<span class="c-comment"># Usage: python generate_pdf.py input.html output.pdf
+# Install: pip install playwright && playwright install chromium</span></code></pre>
+
+    <h3>upload_gdrive.py — Google Drive upload</h3>
+    <div class="code-label">scripts/upload_gdrive.py</div>
+    <pre><code>from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+
+<span class="c-comment"># Setup required:
+# 1. Google Cloud Console project
+# 2. Drive API enabled
+# 3. OAuth2 credentials.json downloaded
+# 4. First run generates gdrive_token.pickle (cached auth)</span></code></pre>
+
+    <h3>auto-push.ps1 — Daily Git backup</h3>
+    <div class="code-label">scripts/auto-push.ps1</div>
+    <pre><code>cd C:\Users\yourname\.claude
+git add -A
+git commit -m <span class="c-str">"auto: daily sync $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"</span>
+git push
+
+<span class="c-comment"># Schedule with Windows Task Scheduler to run daily at 7AM</span></code></pre>
+  </section>
+
+  <!-- PART 6 -->
+  <section class="section" id="part6">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">06</span>
+        <h2>BRAND SYSTEM INTEGRATION</h2>
+      </div>
+      <span class="section-tag">Consistency</span>
+    </div>
+
+    <p>The brand skill is the <strong>source of truth</strong> for all visual output. Every other skill that generates visuals references it by name.</p>
+
+    <h3>What to document in your brand skill</h3>
+    <div class="code-label">skills/bishop-brand/SKILL.md (excerpt)</div>
+    <pre><code><span class="c-comment">## Colors</span>
+| <span class="c-key">Deep Charcoal</span> | <span class="c-str">#101319</span> | Backgrounds, primary text      |
+| <span class="c-key">Gold</span>          | <span class="c-str">#E0B848</span> | CTAs, highlights, key stats    |
+| <span class="c-key">Blue</span>          | <span class="c-str">#1894C9</span> | Links, secondary CTAs          |
+| <span class="c-key">Red</span>           | <span class="c-str">#E32E52</span> | Alerts, emphasis               |
+| <span class="c-key">Cream</span>         | <span class="c-str">#F9F6F0</span> | Light backgrounds, page bg     |
+
+<span class="c-comment">## Typography</span>
+| H1/H2       | Poppins Bold          |
+| Subheadings | Montserrat SemiBold   |
+| Body        | Open Sans Regular     |
+
+<span class="c-comment">## Voice Rules</span>
+- Lead with the outcome, not the process
+- No buzzwords (see banned-phrases.md)
+- Human-first: AI amplifies, it does not replace</code></pre>
+
+    <h3>The banned phrases list</h3>
+    <p>Create <code class="inline">skills/references/banned-phrases.md</code> with every overused word you want removed from your output. Reference it from every content-generating skill. Ours has 110+ entries:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Examples</th></tr></thead>
+        <tbody>
+          <tr><td><strong>AI Buzzwords</strong></td><td>Game-changer, disruptive, revolutionary, cutting-edge, transformative, seamless</td></tr>
+          <tr><td><strong>Corporate Speak</strong></td><td>Synergy, circle back, deep dive, stakeholder buy-in, actionable insights, leverage</td></tr>
+          <tr><td><strong>Bro Marketing</strong></td><td>Crushing it, 10x, no-brainer, secret sauce, thought leader, dominate your niche</td></tr>
+          <tr><td><strong>LinkedIn Clichés</strong></td><td>"Humbled and honored", "let that sink in", "I'm excited to share"</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <strong>The rule</strong>
+      If it could appear in a generic marketing email or corporate press release, rewrite it. Be specific, direct, and plain-spoken.
+    </div>
+  </section>
+
+  <!-- PART 7 -->
+  <section class="section" id="part7">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">07</span>
+        <h2>BUILD ORDER</h2>
+      </div>
+      <span class="section-tag">Roadmap</span>
+    </div>
+
+    <p>If starting from scratch, follow this sequence.</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-week">W1</div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-right">
+          <h4>Foundation</h4>
+          <ul>
+            <li>Install Claude Code and authenticate</li>
+            <li>Create <code class="inline">~/.claude/memory/MEMORY.md</code></li>
+            <li>Write 5 core memory files (profile, top 3 feedback items, brand voice)</li>
+            <li>Configure <code class="inline">settings.json</code> with basic permissions</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-week gold">W2</div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-right">
+          <h4>First Skills</h4>
+          <ul>
+            <li>Build your most-used skill first (the one you'd use daily)</li>
+            <li>Use <code class="inline">skill-creator</code> to evaluate and refine it</li>
+            <li>Add a brand/style skill so all outputs are consistent</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-week blue">W3</div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-right">
+          <h4>Content Production</h4>
+          <ul>
+            <li>Build content generation skills (captions, scripts, repurposing)</li>
+            <li>Add the banned-phrases reference file</li>
+            <li>Connect to Google Drive via upload script</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-week red">W4</div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-right">
+          <h4>Automation</h4>
+          <ul>
+            <li>Set up PDF generation pipeline</li>
+            <li>Build or adapt the research agent for your niche</li>
+            <li>Schedule daily automation with Task Scheduler</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout blue">
+      <strong>Month 2+ — Iteration</strong>
+      Review which skills you actually use. Cut or merge underused ones. Benchmark with <code class="inline">skill-creator</code> to improve consistency. Add workspace folders for A/B testing skill variations.
+    </div>
+  </section>
+
+  <!-- PART 8 -->
+  <section class="section" id="part8">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">08</span>
+        <h2>KEY LESSONS LEARNED</h2>
+      </div>
+      <span class="section-tag">Hard-Won</span>
+    </div>
+
+    <div class="lesson-item">
+      <div class="lesson-num-large">01</div>
+      <div class="lesson-body">
+        <h4>The trigger description is the most important part of a skill</h4>
+        <p>If Claude doesn't invoke the skill at the right time, rewrite the trigger. Be specific. Include exact phrases you actually use — not formal language.</p>
+      </div>
+    </div>
+    <div class="lesson-item">
+      <div class="lesson-num-large">02</div>
+      <div class="lesson-body">
+        <h4>Memory compounds over time</h4>
+        <p>Every time Claude gives you a wrong output, ask: should this be a memory? If you'll hit this situation again, save it. These stack up fast and the system gets measurably better each month.</p>
+      </div>
+    </div>
+    <div class="lesson-item">
+      <div class="lesson-num-large">03</div>
+      <div class="lesson-body">
+        <h4>Named frameworks make skills consistent</h4>
+        <p>CAPTAIN, PRISM, TOKEN — these give Claude a structure to follow. Without a named framework, outputs vary too much across sessions.</p>
+      </div>
+    </div>
+    <div class="lesson-item">
+      <div class="lesson-num-large">04</div>
+      <div class="lesson-body">
+        <h4>Hard Rules prevent recurring mistakes</h4>
+        <p>Every skill needs a Hard Rules section. "Never frame AI as replacing humans" is ours. These are the guardrails that protect your brand and prevent costly corrections later.</p>
+      </div>
+    </div>
+    <div class="lesson-item">
+      <div class="lesson-num-large">05</div>
+      <div class="lesson-body">
+        <h4>Output format clarity = better outputs</h4>
+        <p>Don't say "write a LinkedIn post." Say "Under 300 words, hook in first line, 3 bullet points max, no hashtags, end with one question." Specificity wins every time.</p>
+      </div>
+    </div>
+    <div class="lesson-item">
+      <div class="lesson-num-large">06</div>
+      <div class="lesson-body">
+        <h4>Build skill-creator early</h4>
+        <p>It lets you benchmark other skills against sample inputs, measure consistency, and iterate without manual testing. It is the force multiplier for everything else.</p>
+      </div>
+    </div>
+    <div class="lesson-item">
+      <div class="lesson-num-large">07</div>
+      <div class="lesson-body">
+        <h4>Keep MEMORY.md under 200 lines</h4>
+        <p>It is always loaded. If it gets long, consolidate or cut. Individual memory files can be longer since they are only loaded when relevant to the task.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 9 -->
+  <section class="section" id="part9">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">09</span>
+        <h2>COMPLETE FILE STRUCTURE</h2>
+      </div>
+      <span class="section-tag">Reference</span>
+    </div>
+
+    <p>The full directory layout to recreate from scratch:</p>
+
+    <div class="file-tree">
+<span class="ft-dir">~/.claude/</span>
+├── <span class="ft-file">settings.json</span>                     <span class="ft-comment"># Permissions + allowed directories</span>
+├── <span class="ft-file">settings.local.json</span>               <span class="ft-comment"># Local overrides</span>
+│
+├── <span class="ft-dir">memory/</span>
+│   ├── <span class="ft-file">MEMORY.md</span>                      <span class="ft-comment"># Index file — keep under 200 lines</span>
+│   ├── <span class="ft-file">user_profile.md</span>
+│   ├── <span class="ft-file">feedback_*.md</span>                  <span class="ft-comment"># One file per feedback item</span>
+│   ├── <span class="ft-file">project_*.md</span>                   <span class="ft-comment"># Active project context</span>
+│   └── <span class="ft-file">reference_*.md</span>                 <span class="ft-comment"># Pointers to external resources</span>
+│
+├── <span class="ft-dir">skills/</span>
+│   ├── <span class="ft-dir">references/</span>
+│   │   └── <span class="ft-file">banned-phrases.md</span>           <span class="ft-comment"># Shared across all content skills</span>
+│   ├── <span class="ft-dir">[skill-name]/</span>
+│   │   └── <span class="ft-file">SKILL.md</span>                   <span class="ft-comment"># One per skill</span>
+│   └── <span class="ft-dir">[skill-name]-workspace/</span>         <span class="ft-comment"># Optional: A/B testing</span>
+│
+├── <span class="ft-dir">scripts/</span>
+│   ├── <span class="ft-file">generate_pdf.py</span>               <span class="ft-comment"># HTML → PDF via Playwright</span>
+│   ├── <span class="ft-file">upload_gdrive.py</span>              <span class="ft-comment"># Upload files to Google Drive</span>
+│   └── <span class="ft-file">auto-push.ps1</span>                 <span class="ft-comment"># Daily Git backup</span>
+│
+└── <span class="ft-dir">bishop-research-agent/</span>           <span class="ft-comment"># Standalone Python lead agent</span>
+    ├── <span class="ft-file">main.py</span>                        <span class="ft-comment"># Orchestrator</span>
+    ├── <span class="ft-file">analyzer.py</span>                    <span class="ft-comment"># Claude Sonnet 4.6 scoring</span>
+    ├── <span class="ft-file">reddit_monitor.py</span>             <span class="ft-comment"># 47 subreddits via RSS</span>
+    ├── <span class="ft-file">web_monitor.py</span>                <span class="ft-comment"># DuckDuckGo/Brave search queries</span>
+    ├── <span class="ft-file">n8n_monitor.py</span>                <span class="ft-comment"># n8n Community Jobs scraper</span>
+    ├── <span class="ft-file">notifier.py</span>                   <span class="ft-comment"># Slack batch alerts</span>
+    ├── <span class="ft-file">storage.py</span>                    <span class="ft-comment"># SQLite dedup database</span>
+    └── <span class="ft-file">sheets.py</span>                     <span class="ft-comment"># Google Sheets output (20 columns)</span>
+    </div>
+  </section>
+
+  <!-- PART 10 -->
+  <section class="section" id="part10">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-num">10</span>
+        <h2>QUICK REFERENCE</h2>
+      </div>
+      <span class="section-tag">Cheat Sheet</span>
+    </div>
+
+    <div class="ref-grid">
+      <div class="ref-item">
+        <div class="ref-goal">Claude remembers a preference</div>
+        <div class="ref-tool">Add a feedback memory file + update MEMORY.md</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Automate a repeated task</div>
+        <div class="ref-tool">Build a skill with a named framework</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Connect to Google Drive</div>
+        <div class="ref-tool">OAuth2 setup + upload_gdrive.py</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Generate PDFs from output</div>
+        <div class="ref-tool">generate_pdf.py via Playwright</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Daily lead intelligence</div>
+        <div class="ref-tool">Python research agent + Task Scheduler</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">All outputs look on-brand</div>
+        <div class="ref-tool">Brand skill as the single source of truth</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Improve a skill's consistency</div>
+        <div class="ref-tool">skill-creator benchmark and eval tools</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Prevent a recurring mistake</div>
+        <div class="ref-tool">Hard Rules section in the skill's SKILL.md</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Allow a script without prompting</div>
+        <div class="ref-tool">Add it to permissions.allow in settings.json</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Access files outside ~/.claude</div>
+        <div class="ref-tool">Add the path to additionalDirectories</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">
+      <svg width="36" height="40" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Prompt Anything">
+        <rect x="1.5" y="1.5" width="33" height="29" rx="7" stroke="#101319" stroke-width="2.5"/>
+        <path d="M18 7 L19.8 15 L28 16.5 L19.8 18 L18 26 L16.2 18 L8 16.5 L16.2 15 Z" fill="#101319"/>
+        <line x1="22" y1="9.5" x2="25" y2="7" stroke="#101319" stroke-width="2" stroke-linecap="round"/>
+        <path d="M7 31 L3 39 L12 34" fill="#F9F6F0" stroke="#101319" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+      <div class="footer-wordmark">PROMPT<br/>ANYTHING</div>
+    </div>
+    <div class="footer-right">
+      Internal Guide<br/>
+      March 2026
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

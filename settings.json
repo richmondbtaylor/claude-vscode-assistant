@@ -60,5 +60,13 @@
       "c:\\Users\\richm\\.claude",
       "C:\\Users\\richm\\.claude\\skills\\bishop-brand"
     ]
+  },
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    }
   }
 }
