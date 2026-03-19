@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Install Claude Skills — Bishop AI</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Montserrat:wght@400;500;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --dark:   #101319;
+      --gold:   #E0B848;
+      --blue:   #1894C9;
+      --red:    #E32E52;
+      --cream:  #F9F6F0;
+      --gray:   #E6E2DE;
+      --muted:  #6b6b6b;
+      --dim:    #9a9a9a;
+      --border: rgba(16,19,25,0.1);
+
+      --font-title: 'Poppins', sans-serif;
+      --font-sub:   'Montserrat', sans-serif;
+      --font-body:  'Open Sans', sans-serif;
+      --font-mono:  'JetBrains Mono', monospace;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--dark);
+      font-family: var(--font-body);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 40px 120px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 0 64px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .eyebrow {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 32px; height: 1px;
+      background: var(--gold);
+      display: block;
+    }
+    .hero h1 {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: clamp(2.6rem, 5.5vw, 4.8rem);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--dark);
+      margin-bottom: 24px;
+      max-width: 75%;
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 540px;
+      line-height: 1.75;
+      margin-bottom: 36px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .hero-meta span {
+      font-family: var(--font-sub);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .hero-meta span::before {
+      content: '';
+      width: 4px; height: 4px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: block;
+    }
+    .hero-logo {
+      position: absolute;
+      top: 72px; right: 0;
+      opacity: 0.18;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-logo-wm {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.35;
+      color: var(--dark);
+    }
+
+    /* ── PIPELINE ── */
+    .pipeline {
+      display: flex;
+      border: 1px solid var(--border);
+      margin: 48px 0 64px;
+      overflow: hidden;
+    }
+    .p-step {
+      flex: 1;
+      padding: 24px 20px;
+      border-right: 1px solid var(--border);
+    }
+    .p-step:last-child { border-right: none; }
+    .p-num {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 36px;
+      color: var(--gray);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .p-step h3 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    .p-step p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--dark);
+      padding: 44px 48px;
+      margin-bottom: 72px;
+    }
+    .toc-head {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+      color: var(--cream);
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+    .toc-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 40px;
+    }
+    .toc a {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding: 11px 0;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(249,246,240,0.06);
+      transition: opacity 0.2s;
+    }
+    .toc a:hover { opacity: 0.65; }
+    .toc-n {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--cream);
+      min-width: 30px;
+    }
+    .toc-t {
+      font-size: 14px;
+      color: rgba(249,246,240,0.5);
+      font-family: var(--font-body);
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 80px; }
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 32px;
+    }
+    .section-head-left {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+    .s-num {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 48px;
+      color: var(--gray);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .section h2 {
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: clamp(1.3rem, 2.8vw, 2rem);
+      color: var(--dark);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .s-tag {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding: 4px 10px;
+      border: 1px solid var(--gold);
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .section h3 {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dark);
+      margin: 32px 0 12px;
+    }
+    .section h3:first-of-type { margin-top: 0; }
+    .section p {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.75;
+    }
+    .section p strong { color: var(--dark); font-weight: 600; }
+
+    /* ── CALLOUT ── */
+    .callout {
+      border-left: 3px solid var(--gold);
+      background: rgba(224,184,72,0.07);
+      padding: 18px 22px;
+      margin: 22px 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .callout.blue { border-left-color: var(--blue); background: rgba(24,148,201,0.05); }
+    .callout.red  { border-left-color: var(--red);  background: rgba(227,46,82,0.05); }
+    .callout strong {
+      display: block;
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+
+    /* ── STEPS ── */
+    .steps { margin: 4px 0 28px; }
+    .step {
+      display: flex;
+      gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .step:first-child { border-top: 1px solid var(--border); }
+    .step-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--dark);
+      color: var(--cream);
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-dot.gold { background: var(--gold); color: var(--dark); }
+    .step-dot.blue { background: var(--blue); color: white; }
+    .step-body h4 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    .step-body p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.65;
+    }
+    .step-body p + p { margin-top: 8px; }
+
+    /* ── OS BLOCK ── */
+    .os-block {
+      margin: 4px 0 28px;
+      border: 1px solid var(--border);
+    }
+    .os-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .os-col {
+      padding: 20px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .os-col:last-child { border-right: none; }
+    .os-label {
+      font-family: var(--font-sub);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 10px;
+    }
+    .os-label.mac { color: var(--blue); }
+    .os-label.win { color: var(--gold); }
+    .os-col p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.65;
+    }
+    .os-col p + p { margin-top: 10px; }
+
+    /* ── CODE ── */
+    .code-label {
+      font-family: var(--font-sub);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 5px;
+    }
+    pre {
+      background: var(--dark);
+      padding: 24px 28px;
+      overflow-x: auto;
+      margin: 4px 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.8;
+      color: rgba(249,246,240,0.85);
+    }
+    code.inline {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      background: var(--gray);
+      border-radius: 2px;
+      padding: 2px 6px;
+      color: var(--dark);
+    }
+    .c-comment { color: rgba(249,246,240,0.25); }
+    .c-key { color: #E0B848; }
+    .c-str { color: #a8d8a0; }
+
+    /* ── SKILL GRID ── */
+    .skill-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 4px 0 28px;
+    }
+    .skill-card {
+      background: var(--cream);
+      padding: 20px 22px;
+    }
+    .skill-icon {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+    .skill-name {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    .skill-card p {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* ── PA STEPS ── */
+    .pa-steps { counter-reset: pa; margin: 4px 0 28px; }
+    .pa-step {
+      counter-increment: pa;
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .pa-step:first-child { border-top: 1px solid var(--border); }
+    .pa-left {
+      padding: 22px 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      border-right: 1px solid var(--border);
+    }
+    .pa-left::before {
+      content: counter(pa, decimal-leading-zero);
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 17px;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .pa-right { padding: 22px 26px; }
+    .pa-right h4 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--dark);
+      margin-bottom: 7px;
+    }
+    .pa-right p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.65;
+    }
+    .pa-right p + p { margin-top: 8px; }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 14px; }
+    .footer-wordmark {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dark);
+      line-height: 1.4;
+    }
+    .footer-wordmark span {
+      display: block;
+      font-weight: 400;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+    }
+    .footer-right {
+      font-family: var(--font-sub);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-align: right;
+    }
+
+    @media (max-width: 680px) {
+      .page-wrap { padding: 0 20px 80px; }
+      .hero h1 { max-width: 100%; font-size: 2.2rem; }
+      .pipeline { flex-direction: column; }
+      .toc-list { grid-template-columns: 1fr; }
+      .os-row { grid-template-columns: 1fr; }
+      .os-col { border-right: none; border-bottom: 1px solid var(--border); }
+      .skill-grid { grid-template-columns: 1fr 1fr; }
+      .hero-logo { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+
+    <div class="hero-logo" aria-hidden="true">
+      <svg width="72" height="86" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Large left circle (bishop head) -->
+        <circle cx="38" cy="30" r="26" fill="#101319"/>
+        <!-- Small right circle (top of comma) -->
+        <circle cx="68" cy="40" r="17" fill="#101319"/>
+        <!-- Comma tail — filled teardrop sweeping down-right from right circle -->
+        <path d="M72,55 C84,60 90,76 84,90 C80,98 72,98 70,92 C68,86 70,70 68,57 Z" fill="#101319"/>
+        <!-- Chess base: 3 tiers widening downward -->
+        <rect x="30" y="100" width="26" height="5" rx="2.5" fill="#101319"/>
+        <rect x="22" y="106" width="42" height="5" rx="2.5" fill="#101319"/>
+        <rect x="14" y="112" width="58" height="8" rx="3" fill="#101319"/>
+      </svg>
+      <div class="hero-logo-wm">BISHOP<br/>AI</div>
+    </div>
+
+    <div class="eyebrow">Claude Skills Setup Guide</div>
+    <h1>INSTALL CLAUDE AND BUILD ANY SKILL YOU WANT</h1>
+    <p class="hero-sub">Install two free tools, add one skill file to a folder on your computer, and you'll have a personal AI assistant that learns your workflow, remembers your preferences, and handles any repeatable task on command — permanently.</p>
+    <div class="hero-meta">
+      <span>3 Free Tools</span>
+      <span>~15 Min Setup</span>
+      <span>Build Unlimited Skills</span>
+    </div>
+  </header>
+
+  <!-- PIPELINE -->
+  <div style="padding-top: 40px; margin-bottom: 10px;">
+    <p style="font-family: var(--font-sub); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);">What you're building</p>
+  </div>
+  <div class="pipeline">
+    <div class="p-step">
+      <div class="p-num">01</div>
+      <h3>VS Code</h3>
+      <p>Free editor where you'll work with Claude — your home base for everything</p>
+    </div>
+    <div class="p-step">
+      <div class="p-num">02</div>
+      <h3>Claude Code</h3>
+      <p>The Claude extension inside VS Code — your AI that reads and writes files directly on your computer</p>
+    </div>
+    <div class="p-step">
+      <div class="p-num">03</div>
+      <h3>Skill Creator</h3>
+      <p>A file you add once that lets Claude build and test any new skill you want — from scratch</p>
+    </div>
+    <div class="p-step">
+      <div class="p-num">04</div>
+      <h3>Prompt Anything</h3>
+      <p>Design the logic of every skill here first — then hand the structured prompt to Claude to build it</p>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <div class="toc-head">TABLE OF CONTENTS</div>
+    <div class="toc-list">
+      <a href="#part1"><span class="toc-n">01</span><span class="toc-t">Install VS Code</span></a>
+      <a href="#part3"><span class="toc-n">03</span><span class="toc-t">Install the Skill Creator</span></a>
+      <a href="#part2"><span class="toc-n">02</span><span class="toc-t">Install Claude Code</span></a>
+      <a href="#part4"><span class="toc-n">04</span><span class="toc-t">Build Skills with Prompt Anything</span></a>
+    </div>
+  </nav>
+
+  <!-- PART 1 -->
+  <section class="section" id="part1">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">01</span>
+        <h2>INSTALL VS CODE</h2>
+      </div>
+      <span class="s-tag">Start Here</span>
+    </div>
+
+    <p>VS Code is a free editor made by Microsoft. You don't need to know how to code to use it — think of it as the window where you'll talk to Claude and see everything Claude does on your computer.</p>
+
+    <h3>Download and install</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <h4>Go to code.visualstudio.com</h4>
+          <p>Click the big blue Download button. The site automatically detects whether you're on a Mac or PC. VS Code is completely free and always will be.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <h4>Run the installer</h4>
+          <p>Open the downloaded file. On <strong>Mac</strong>: a window opens — drag the VS Code icon into your Applications folder, then eject the window. On <strong>Windows</strong>: an installer opens — click Next through every screen and hit Install at the end. All default options are correct.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="step-body">
+          <h4>Open VS Code</h4>
+          <p>Launch it from your <strong>Applications</strong> folder on Mac or your <strong>Start menu</strong> on Windows. A welcome tab will open — you can close it. VS Code is ready.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>That's step one done</strong>
+      VS Code is just a window right now. The next step installs Claude inside it — that's what makes it useful.
+    </div>
+  </section>
+
+  <!-- PART 2 -->
+  <section class="section" id="part2">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">02</span>
+        <h2>INSTALL CLAUDE CODE</h2>
+      </div>
+      <span class="s-tag">The AI Part</span>
+    </div>
+
+    <p>Claude Code is an extension that runs inside VS Code. Once installed, Claude can read files on your computer, create new ones, run tasks, and remember things between every session. It's more capable than the claude.ai website because it works <em>inside</em> your files — not just in a chat window.</p>
+
+    <h3>Install the Claude Code extension</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <h4>Open the Extensions panel in VS Code</h4>
+          <p>Look at the left sidebar — click the icon that looks like four squares (one slightly offset from the others). Or use the keyboard shortcut: <code class="inline">Ctrl+Shift+X</code> on Windows, <code class="inline">Cmd+Shift+X</code> on Mac.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <h4>Search for "Claude Code"</h4>
+          <p>A search bar appears at the top. Type <strong>Claude Code</strong>. In the results, find the one published by <strong>Anthropic</strong> — that's the official one. Click the blue <strong>Install</strong> button next to it.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">3</div>
+        <div class="step-body">
+          <h4>Find the Claude icon in your sidebar</h4>
+          <p>After it installs, a new icon appears in the left sidebar — it looks like a small Claude logo (a stylized "C" or sparkle). Click it to open the Claude panel on the right side of your screen.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">4</div>
+        <div class="step-body">
+          <h4>Sign in to your Anthropic account</h4>
+          <p>In the Claude panel, click <strong>Sign In</strong>. Your browser will open and ask you to log in at claude.ai. Use the same account you use on claude.ai. You'll need either a <strong>Claude Pro or Max subscription</strong> (starting at $20/month at claude.ai) or an API key from <code class="inline">console.anthropic.com</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout blue">
+      <strong>How Claude Code is different from claude.ai</strong>
+      The claude.ai website is just a conversation. Claude Code is an agent — it can open folders, create files, run scripts, and build things directly on your computer. When you give it a task, it does the actual work, not just talks about it.
+    </div>
+
+    <h3>Open your .claude folder in VS Code</h3>
+    <p>Claude stores all your skills and personal notes in a hidden folder on your computer called <code class="inline">.claude</code>. Think of it as Claude's memory drive — everything it learns about you lives here. Open it in VS Code so you can see what Claude builds for you over time.</p>
+
+    <div class="callout">
+      <strong>First time? Create the folder first</strong>
+      The <code class="inline">.claude</code> folder doesn't exist until you use Claude Code for the first time. Before opening it, type anything in the Claude panel — even just "hello" — then come back to do the steps below. Claude will have created the folder automatically.
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <h4>Go to File → Open Folder</h4>
+          <p>In VS Code, click <strong>File</strong> in the top menu bar, then click <strong>Open Folder</strong>. A file picker window will open.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <h4>Navigate to your .claude folder</h4>
+          <p>The folder is hidden by default on both Mac and Windows. See below for how to find it on your system.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="os-block">
+      <div class="os-row">
+        <div class="os-col">
+          <div class="os-label mac">Mac</div>
+          <p>In the file picker, press <code class="inline">Cmd+Shift+G</code>. A small "Go to folder" box appears. Type exactly: <code class="inline">~/.claude</code> and press Enter. The folder will open.</p>
+          <p>Alternatively, press <code class="inline">Cmd+Shift+.</code> in the file picker to show hidden files and folders — then navigate to your home folder (named after your Mac username) and click <code class="inline">.claude</code>.</p>
+        </div>
+        <div class="os-col">
+          <div class="os-label win">Windows</div>
+          <p>In the file picker, click inside the address bar at the top and type the full path: <code class="inline">C:\Users\YourName\.claude</code> — replacing <strong>YourName</strong> with your Windows account name (the name on your Start menu). Press Enter.</p>
+          <p>If you can't find it in File Explorer, open File Explorer, click <strong>View</strong> in the top menu, then check the box for <strong>Hidden items</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="step-body">
+          <h4>Click Open (or Select Folder)</h4>
+          <p>VS Code will reload and now show your <code class="inline">.claude</code> folder in the left panel. This is your workspace — every skill, memory file, and setting Claude creates will appear here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 3 -->
+  <section class="section" id="part3">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">03</span>
+        <h2>INSTALL THE SKILL CREATOR</h2>
+      </div>
+      <span class="s-tag">The Main Event</span>
+    </div>
+
+    <p>A skill is a file you create once that tells Claude how to handle a specific type of task — every single time. Instead of re-explaining a job from scratch in every conversation, you build a skill and Claude just knows how to do it going forward.</p>
+
+    <p>The <strong>Skill Creator</strong> is a special skill made by Anthropic that helps you build, test, and improve any other skill you want to create. Once it's in your <code class="inline">.claude</code> folder, you can use it to build as many new skills as you like.</p>
+
+    <h3>Get the Skill Creator file</h3>
+    <p>The Skill Creator is a text file that Anthropic distributes as part of Claude Code. There are two ways to get it:</p>
+
+    <div class="callout blue">
+      <strong>Option A — Ask Claude to install it for you (easiest)</strong>
+      Open the Claude panel in VS Code and type exactly this: <em>"I want to build custom skills. Can you help me get the skill-creator set up in my .claude folder?"</em> Claude will walk you through where to get the file and how to place it.
+    </div>
+
+    <div class="callout">
+      <strong>Option B — Download from claude.ai</strong>
+      Log in at <strong>claude.ai</strong>. Click on your profile or look in the left sidebar for a <strong>Skills</strong> section. Find the <strong>Skill Creator</strong> skill published by Anthropic and download it. The file will be a text file — save it to your Downloads folder.
+    </div>
+
+    <h3>Place the file in the right folder</h3>
+    <p>Whether you used Option A or B, the Skill Creator file needs to live in a specific location inside your <code class="inline">.claude</code> folder. Here's how to set it up:</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <h4>Create the skills folder</h4>
+          <p>In VS Code with your <code class="inline">.claude</code> folder open, right-click anywhere in the left file panel and choose <strong>New Folder</strong>. Name it exactly: <code class="inline">skills</code> (all lowercase).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <h4>Create a skill-creator folder inside it</h4>
+          <p>Right-click on the <code class="inline">skills</code> folder you just made and choose <strong>New Folder</strong> again. Name this one: <code class="inline">skill-creator</code> (all lowercase, hyphen between the words).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">3</div>
+        <div class="step-body">
+          <h4>Move the file into that folder and name it SKILL.md</h4>
+          <p>Drag the downloaded file into the <code class="inline">skill-creator</code> folder. The file must be named <code class="inline">SKILL.md</code> — that's what Claude looks for. If it downloaded with a different name (like <code class="inline">skill-creator.skill</code> or <code class="inline">skill-creator.txt</code>), right-click it in VS Code, choose <strong>Rename</strong>, and change the name to <code class="inline">SKILL.md</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">4</div>
+        <div class="step-body">
+          <h4>Confirm the structure looks right</h4>
+          <p>In the VS Code left panel, you should see: <code class="inline">.claude</code> → <code class="inline">skills</code> → <code class="inline">skill-creator</code> → <code class="inline">SKILL.md</code>. If it looks like that, you're done.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot blue">5</div>
+        <div class="step-body">
+          <h4>Tell Claude you're ready to build</h4>
+          <p>Open the Claude panel in VS Code and type: <em>"I just installed the skill-creator. I want to build my first skill."</em> Claude will read the file and guide you through the whole process from there — you won't need to do any manual setup.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout blue">
+      <strong>Why the folder structure matters</strong>
+      Every skill lives in its own named folder inside <code class="inline">.claude/skills/</code>. The instructions for each skill live in a file called <code class="inline">SKILL.md</code> inside that folder. Claude automatically finds and reads any skill placed here — there's no other configuration needed.
+    </div>
+
+    <div class="code-label">What your .claude folder looks like after this step</div>
+    <pre><code>.claude/
+  skills/
+    skill-creator/
+      <span class="c-key">SKILL.md</span>          <span class="c-comment"># ← the file you just installed</span>
+    your-next-skill/    <span class="c-comment"># ← Claude will build new ones here</span>
+      <span class="c-key">SKILL.md</span>
+  memory/               <span class="c-comment"># ← Claude stores notes about you here automatically</span>
+  <span class="c-key">CLAUDE.md</span>             <span class="c-comment"># ← your permanent preferences (Claude reads this every session)</span></code></pre>
+
+    <div class="callout">
+      <strong>What is CLAUDE.md?</strong>
+      CLAUDE.md is a file Claude reads at the start of every conversation. You can use it to tell Claude things like: your name, what your business does, how you like responses formatted, words you never want it to use. You don't need to create it right now — Claude will create it for you when you first build a skill and fill in the relevant details.
+    </div>
+
+    <h3>How the skill building process works</h3>
+    <p>Once the skill creator is installed, building a new skill takes 10–20 minutes. Always start with Prompt Anything — it designs the logic before Claude builds anything.</p>
+
+    <div class="pa-steps">
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Go to promptanything.io first</h4>
+          <p>Log in or create a free account at <strong>promptanything.io</strong>. This is where you design the logic of your skill before handing it to Claude to build. Describe what you want the skill to do in plain language — <em>"I want something that takes a video transcript and writes Instagram, LinkedIn, and TikTok captions in my voice."</em></p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Prompt Anything structures it for you</h4>
+          <p>It applies a proven framework to your rough idea and turns it into a clear, structured prompt — with a role, context, step-by-step instructions, and output format already defined. Test it directly in the tool until the output looks right. Adjust the wording until you're happy with it.</p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Bring it to Claude Code as a skill</h4>
+          <p>Copy your finished prompt from Prompt Anything. Open the Claude panel in VS Code and say: <em>"Turn this into a skill."</em> Paste the prompt. The skill creator takes it from there.</p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Claude writes and tests it automatically</h4>
+          <p>Claude creates the skill file, runs 2–3 test cases, and opens a results viewer in your browser so you can see the actual output side by side. No extra steps from you at this point.</p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Give feedback in plain language</h4>
+          <p>In the viewer, type what you'd change — <em>"make the tone more casual"</em>, <em>"shorten the LinkedIn version"</em>, <em>"never start with 'I'"</em>. Claude rewrites the skill and retests. Usually 1–2 rounds when you started with Prompt Anything.</p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>The skill is live — permanently</h4>
+          <p>The finished skill sits in your <code class="inline">.claude/skills/</code> folder. Claude uses it automatically any time the situation matches — no commands to run, no reminders needed. Ever.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 4 -->
+  <section class="section" id="part4">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">04</span>
+        <h2>WHAT YOU CAN BUILD NOW</h2>
+      </div>
+      <span class="s-tag">Ideas</span>
+    </div>
+
+    <p>Once the skill creator is installed, any task you do repeatedly is a candidate for a skill. Here are six you could build today:</p>
+
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="skill-icon">✍️</div>
+        <div class="skill-name">Caption Writer</div>
+        <p>Paste a transcript and get ready-to-post captions for Instagram, LinkedIn, and TikTok — in your voice, every time.</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📧</div>
+        <div class="skill-name">Email Responder</div>
+        <p>Paste a client email and get a draft reply that matches your tone and handles the situation correctly.</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📋</div>
+        <div class="skill-name">Proposal Writer</div>
+        <p>Answer a few questions about a project and get a formatted proposal outline ready to send.</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🗂️</div>
+        <div class="skill-name">Receipt Filer</div>
+        <p>Drop a receipt image and have Claude extract the date, vendor, and amount — then file it automatically.</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🎬</div>
+        <div class="skill-name">Script Writer</div>
+        <p>Give a topic and length, get a full video script written in your voice with scene-by-scene direction.</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📊</div>
+        <div class="skill-name">Lead Scorer</div>
+        <p>Paste any post or message and get an instant score on how likely this person is to buy — and why.</p>
+      </div>
+    </div>
+
+    <div class="callout blue">
+      <strong>There is no limit to what you can build</strong>
+      If you find yourself explaining the same task to Claude more than twice, it belongs in a skill. The skill creator makes it fast — describe the task, answer the questions, review the output, and it's done.
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">
+      <!-- Bishop AI logo mark -->
+      <svg width="28" height="32" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="38" cy="32" r="26" fill="#101319"/>
+        <circle cx="66" cy="40" r="17" fill="#101319"/>
+        <path d="M70 52 C76 64 72 80 66 90" stroke="#101319" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <rect x="30" y="93" width="26" height="5" rx="2" fill="#101319"/>
+        <rect x="22" y="98" width="42" height="5" rx="2" fill="#101319"/>
+        <rect x="14" y="103" width="58" height="7" rx="2" fill="#101319"/>
+      </svg>
+      <div class="footer-wordmark">
+        BISHOP AI
+        <span>Claude Skills Setup Guide</span>
+      </div>
+    </div>
+    <div class="footer-right">
+      promptanything.io<br/>
+      bishopai.com
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

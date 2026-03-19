@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Find Hot Leads with AI — Prompt Anything</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Montserrat:wght@400;500;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --dark:   #101319;
+      --gold:   #E0B848;
+      --blue:   #1894C9;
+      --red:    #E32E52;
+      --cream:  #F9F6F0;
+      --gray:   #E6E2DE;
+      --muted:  #6b6b6b;
+      --dim:    #9a9a9a;
+      --border: rgba(16,19,25,0.1);
+
+      --font-title: 'Poppins', sans-serif;
+      --font-sub:   'Montserrat', sans-serif;
+      --font-body:  'Open Sans', sans-serif;
+      --font-mono:  'JetBrains Mono', monospace;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--dark);
+      font-family: var(--font-body);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 40px 120px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 0 64px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .eyebrow {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 32px; height: 1px;
+      background: var(--gold);
+      display: block;
+    }
+    .hero h1 {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: clamp(2.6rem, 5.5vw, 4.8rem);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--dark);
+      margin-bottom: 24px;
+      max-width: 75%;
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 540px;
+      line-height: 1.75;
+      margin-bottom: 36px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .hero-meta span {
+      font-family: var(--font-sub);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .hero-meta span::before {
+      content: '';
+      width: 4px; height: 4px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: block;
+    }
+    .hero-logo {
+      position: absolute;
+      top: 80px; right: 0;
+      opacity: 0.18;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-logo-wm {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ── PIPELINE ── */
+    .pipeline {
+      display: flex;
+      border: 1px solid var(--border);
+      margin: 48px 0 64px;
+      overflow: hidden;
+    }
+    .p-step {
+      flex: 1;
+      padding: 24px 20px;
+      border-right: 1px solid var(--border);
+    }
+    .p-step:last-child { border-right: none; }
+    .p-num {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 36px;
+      color: var(--gray);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .p-step h3 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    .p-step p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--dark);
+      padding: 44px 48px;
+      margin-bottom: 72px;
+    }
+    .toc-head {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+      color: var(--cream);
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+    .toc-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 40px;
+    }
+    .toc a {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding: 11px 0;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(249,246,240,0.06);
+      transition: opacity 0.2s;
+    }
+    .toc a:hover { opacity: 0.65; }
+    .toc-n {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--cream);
+      min-width: 30px;
+    }
+    .toc-t {
+      font-size: 14px;
+      color: rgba(249,246,240,0.5);
+      font-family: var(--font-body);
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 80px; }
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 32px;
+    }
+    .section-head-left {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+    .s-num {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 48px;
+      color: var(--gray);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .section h2 {
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: clamp(1.3rem, 2.8vw, 2rem);
+      color: var(--dark);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .s-tag {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding: 4px 10px;
+      border: 1px solid var(--gold);
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .section h3 {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dark);
+      margin: 32px 0 12px;
+    }
+    .section h3:first-of-type { margin-top: 0; }
+    .section p {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.75;
+    }
+    .section p strong { color: var(--dark); font-weight: 600; }
+
+    /* ── CALLOUT ── */
+    .callout {
+      border-left: 3px solid var(--gold);
+      background: rgba(224,184,72,0.07);
+      padding: 18px 22px;
+      margin: 22px 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .callout.blue { border-left-color: var(--blue); background: rgba(24,148,201,0.05); }
+    .callout.red  { border-left-color: var(--red);  background: rgba(227,46,82,0.05); }
+    .callout strong {
+      display: block;
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+
+    /* ── STEPS ── */
+    .steps { margin: 4px 0 28px; }
+    .step {
+      display: flex;
+      gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .step:first-child { border-top: 1px solid var(--border); }
+    .step-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--dark);
+      color: var(--cream);
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-dot.gold { background: var(--gold); color: var(--dark); }
+    .step-dot.blue { background: var(--blue); color: white; }
+    .step-body h4 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    .step-body p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.65;
+    }
+    .step-body p + p { margin-top: 8px; }
+
+    /* ── CODE ── */
+    .code-label {
+      font-family: var(--font-sub);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 5px;
+    }
+    pre {
+      background: var(--dark);
+      padding: 24px 28px;
+      overflow-x: auto;
+      margin: 4px 0 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.8;
+      color: rgba(249,246,240,0.85);
+    }
+    code.inline {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      background: var(--gray);
+      border-radius: 2px;
+      padding: 2px 6px;
+      color: var(--dark);
+    }
+    .c-comment { color: rgba(249,246,240,0.22); }
+    .c-key { color: #E0B848; }
+    .c-str { color: #a8d8a0; }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 4px 0 28px;
+      border: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead { background: var(--dark); }
+    thead th {
+      padding: 12px 18px;
+      text-align: left;
+      font-family: var(--font-sub);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(249,246,240,0.45);
+    }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(224,184,72,0.03); }
+    tbody td {
+      padding: 11px 18px;
+      color: var(--muted);
+      font-family: var(--font-body);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+    tbody td strong { color: var(--dark); font-weight: 600; }
+
+    /* ── SCORE GRID ── */
+    .score-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 4px 0 28px;
+    }
+    .score-card {
+      background: var(--cream);
+      padding: 20px 22px;
+    }
+    .score-range {
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .score-label {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .hot  { color: var(--red); }
+    .warm { color: var(--gold); }
+    .cool { color: var(--blue); }
+    .cold { color: var(--dim); }
+    .score-card p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+
+    /* ── PA STEPS ── */
+    .pa-steps { counter-reset: pa; margin: 4px 0 28px; }
+    .pa-step {
+      counter-increment: pa;
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .pa-step:first-child { border-top: 1px solid var(--border); }
+    .pa-left {
+      padding: 22px 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      border-right: 1px solid var(--border);
+    }
+    .pa-left::before {
+      content: counter(pa, decimal-leading-zero);
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 17px;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .pa-right { padding: 22px 26px; }
+    .pa-right h4 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--dark);
+      margin-bottom: 7px;
+    }
+    .pa-right p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.65;
+    }
+    .pa-right p + p { margin-top: 8px; }
+
+    /* ── ENV GRID ── */
+    .env-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      border: 1px solid var(--border);
+      margin: 4px 0 28px;
+    }
+    .env-key {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--dark);
+      padding: 11px 18px;
+      background: var(--gray);
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .env-val {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 11px 18px;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+    }
+    .env-key:last-of-type, .env-val:last-of-type { border-bottom: none; }
+    .req {
+      font-family: var(--font-sub);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 2px 5px;
+      background: rgba(227,46,82,0.08);
+      color: var(--red);
+      border: 1px solid rgba(227,46,82,0.2);
+      border-radius: 2px;
+      margin-left: 6px;
+    }
+    .opt {
+      font-family: var(--font-sub);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 2px 5px;
+      background: rgba(16,19,25,0.06);
+      color: var(--dim);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      margin-left: 6px;
+    }
+
+    /* ── REF GRID ── */
+    .ref-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 4px 0;
+    }
+    .ref-item { background: var(--cream); padding: 16px 20px; }
+    .ref-goal {
+      font-family: var(--font-sub);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 4px;
+    }
+    .ref-tool {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark);
+      font-family: var(--font-body);
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 12px; }
+    .footer-wm {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      line-height: 1.4;
+    }
+    .footer-right {
+      font-family: var(--font-sub);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-align: right;
+    }
+
+    @media (max-width: 680px) {
+      .page-wrap { padding: 0 20px 80px; }
+      .hero h1 { max-width: 100%; font-size: 2.2rem; }
+      .pipeline { flex-direction: column; }
+      .toc-list { grid-template-columns: 1fr; }
+      .score-grid { grid-template-columns: 1fr; }
+      .ref-grid { grid-template-columns: 1fr; }
+      .hero-logo { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-logo" aria-hidden="true">
+      <svg width="72" height="80" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="38" cy="32" r="26" fill="#101319"/>
+        <circle cx="66" cy="40" r="17" fill="#101319"/>
+        <path d="M70 52 C76 64 72 80 66 90" stroke="#101319" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <rect x="30" y="93" width="26" height="5" rx="2" fill="#101319"/>
+        <rect x="22" y="98" width="42" height="5" rx="2" fill="#101319"/>
+        <rect x="14" y="103" width="58" height="7" rx="2" fill="#101319"/>
+      </svg>
+      <div class="hero-logo-wm">BISHOP<br/>AI</div>
+    </div>
+
+    <div class="eyebrow">Lead Intelligence System</div>
+    <h1>HOW TO FIND HOT LEADS WITH AN AI AGENT</h1>
+    <p class="hero-sub">Install two free tools, connect your accounts, and wake up every morning with a spreadsheet full of people actively looking for what you sell — scored and ready to contact.</p>
+    <div class="hero-meta">
+      <span>3 Downloads</span>
+      <span>~30 Min Setup</span>
+      <span>Runs Every Morning Automatically</span>
+    </div>
+  </header>
+
+  <!-- PIPELINE -->
+  <div style="padding-top: 40px; margin-bottom: 10px;">
+    <p style="font-family: var(--font-sub); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);">What gets built</p>
+  </div>
+  <div class="pipeline">
+    <div class="p-step">
+      <div class="p-num">01</div>
+      <h3>Reddit + Web Monitoring</h3>
+      <p>Scans 47 subreddits and 44 web searches daily for people asking about your service</p>
+    </div>
+    <div class="p-step">
+      <div class="p-num">02</div>
+      <h3>AI Lead Scoring</h3>
+      <p>Claude scores every post 0-100 for fit and buying intent — filters out the noise automatically</p>
+    </div>
+    <div class="p-step">
+      <div class="p-num">03</div>
+      <h3>Google Sheets Log</h3>
+      <p>Qualified leads land in a spreadsheet with a suggested reply already written for you</p>
+    </div>
+    <div class="p-step">
+      <div class="p-num">04</div>
+      <h3>Slack Alert</h3>
+      <p>One daily message with the lead count and a link straight to your sheet</p>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <div class="toc-head">TABLE OF CONTENTS</div>
+    <div class="toc-list">
+      <a href="#part1"><span class="toc-n">01</span><span class="toc-t">Install VS Code + Claude Code</span></a>
+      <a href="#part4"><span class="toc-n">04</span><span class="toc-t">Build Skills with Prompt Anything</span></a>
+      <a href="#part2"><span class="toc-n">02</span><span class="toc-t">Set Up Your Workspace</span></a>
+      <a href="#part5"><span class="toc-n">05</span><span class="toc-t">Set Up the Lead Agent</span></a>
+      <a href="#part3"><span class="toc-n">03</span><span class="toc-t">Build Your First Skill</span></a>
+      <a href="#part6"><span class="toc-n">06</span><span class="toc-t">Quick Reference</span></a>
+    </div>
+  </nav>
+
+  <!-- PART 1 -->
+  <section class="section" id="part1">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">01</span>
+        <h2>INSTALL VS CODE + CLAUDE CODE</h2>
+      </div>
+      <span class="s-tag">Start Here</span>
+    </div>
+
+    <p>You need two things installed: <strong>VS Code</strong> (your editor) and the <strong>Claude Code extension</strong> inside it. That's it. Everything else runs from there.</p>
+
+    <h3>Step 1 — Install VS Code</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <h4>Go to code.visualstudio.com</h4>
+          <p>Click the big blue Download button. Open the installer and click through — all defaults are fine. VS Code is free.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <h4>Open VS Code</h4>
+          <p>Launch it from your Start menu or Applications folder. You'll see a welcome screen — you can close that tab.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Step 2 — Install the Claude Code extension</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot gold">1</div>
+        <div class="step-body">
+          <h4>Open the Extensions panel</h4>
+          <p>Click the four-square icon on the left sidebar (or press <code class="inline">Ctrl+Shift+X</code> on Windows, <code class="inline">Cmd+Shift+X</code> on Mac).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">2</div>
+        <div class="step-body">
+          <h4>Search for "Claude Code"</h4>
+          <p>Type it in the search box at the top. Click the result from Anthropic and hit <strong>Install</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">3</div>
+        <div class="step-body">
+          <h4>Sign in to Claude</h4>
+          <p>A Claude icon will appear in your left sidebar. Click it. It will ask you to log in — use your Anthropic account (the same one you use at claude.ai). You'll need a Claude Pro subscription or API access.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>That's the setup</strong>
+      VS Code is your workspace. The Claude Code panel (the Claude icon in the sidebar) is where you talk to Claude. It can read, edit, and create files on your computer — that's what makes it powerful. From here on everything happens inside VS Code.
+    </div>
+  </section>
+
+  <!-- PART 2 -->
+  <section class="section" id="part2">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">02</span>
+        <h2>SET UP YOUR WORKSPACE</h2>
+      </div>
+      <span class="s-tag">5 Minutes</span>
+    </div>
+
+    <p>Claude Code reads from a special folder on your computer called <code class="inline">.claude</code>. This folder holds your skills, your memory, and your preferences. Think of it as Claude's brain that persists between sessions.</p>
+
+    <h3>Open your .claude folder in VS Code</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <h4>File → Open Folder</h4>
+          <p>In VS Code, click <strong>File</strong> in the top menu, then <strong>Open Folder</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <h4>Navigate to your home folder and select .claude</h4>
+          <p><strong>Windows:</strong> <code class="inline">C:\Users\YourName\.claude</code><br/>
+          <strong>Mac:</strong> <code class="inline">/Users/YourName/.claude</code><br/><br/>
+          If the <code class="inline">.claude</code> folder doesn't exist yet, Claude Code creates it automatically the first time you use it. If you can't see it, it may be hidden — on Windows enable "Show hidden items" in File Explorer.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="step-body">
+          <h4>Click Select Folder</h4>
+          <p>VS Code will now show your .claude folder in the left panel. This is your workspace — every skill and memory file you create will live here.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Tell Claude who you are</h3>
+    <p>Ask Claude to create your first memory file. Click the Claude icon in the sidebar to open the chat, then type:</p>
+
+    <div class="callout blue">
+      <strong>Paste this into Claude</strong>
+      "Create a memory file for me. My name is [Your Name]. I run [Your Business] at [your website]. I help [your audience] with [what you do]. My ideal client is [describe them]. I want you to always be direct, skip the fluff, and never use em dashes."
+    </div>
+
+    <p>Claude will create the memory files automatically. You'll see them appear in your .claude folder. From now on, Claude remembers all of this at the start of every conversation — you never have to explain it again.</p>
+  </section>
+
+  <!-- PART 3 -->
+  <section class="section" id="part3">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">03</span>
+        <h2>BUILD YOUR FIRST SKILL</h2>
+      </div>
+      <span class="s-tag">Skill Builder</span>
+    </div>
+
+    <p>A skill is a saved set of instructions that Claude follows every time you trigger it. Instead of explaining a complex task from scratch each session, you build it once and invoke it with a phrase. The <strong>skill builder</strong> walks you through the whole process.</p>
+
+    <h3>How to create a skill</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <h4>Describe what you want the skill to do</h4>
+          <p>In the Claude Code panel, say something like: <em>"I want to build a skill that takes a video transcript and turns it into captions for Instagram, LinkedIn, and TikTok."</em> Be specific about the input, the output, and any rules you want enforced.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <h4>Claude asks clarifying questions</h4>
+          <p>It will ask about tone, length, format, and what it should never do. Answer honestly — the more specific you are, the better the skill performs.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">3</div>
+        <div class="step-body">
+          <h4>Claude drafts and tests it automatically</h4>
+          <p>The skill builder writes the skill file, runs 2-3 test cases, and opens a viewer in your browser showing you the results. You'll see the output with the skill vs. without it side by side.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">4</div>
+        <div class="step-body">
+          <h4>Leave feedback and repeat</h4>
+          <p>In the viewer, type what you'd change. Claude reads your notes and rewrites the skill. You keep going until it's right — usually 2-3 rounds.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot blue">5</div>
+        <div class="step-body">
+          <h4>The skill is live</h4>
+          <p>Once finished, the skill sits in your <code class="inline">.claude/skills/</code> folder. Claude will automatically use it whenever the situation matches — no extra steps needed.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>The one rule that matters most</strong>
+      The trigger description is the line in the skill file that tells Claude when to use it. Write it in plain language that matches how you actually talk — not formal language. If Claude isn't using your skill when it should, the trigger description is almost always why. Just rewrite it to be more specific.
+    </div>
+  </section>
+
+  <!-- PART 4 -->
+  <section class="section" id="part4">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">04</span>
+        <h2>BUILD SKILLS WITH PROMPT ANYTHING</h2>
+      </div>
+      <span class="s-tag">Better Output</span>
+    </div>
+
+    <p>Before building a skill in Claude Code, use <strong>Prompt Anything</strong> to design the logic. It structures your raw idea into a precise, tested prompt — so when you hand it to the skill builder, it's already well thought out.</p>
+
+    <p>Think of it this way: Prompt Anything figures out <em>what</em> the skill should do and <em>how</em> it should think. The skill builder then locks that thinking into a repeatable file.</p>
+
+    <h3>The workflow</h3>
+    <div class="pa-steps">
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Go to promptanything.io</h4>
+          <p>Log in or create a free account. This is where you'll design the prompt logic before turning it into a skill.</p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Describe your task in plain language</h4>
+          <p>Type what you want Claude to do — the same way you'd explain it to a person. Example: <em>"I want an agent that finds people on Reddit asking for AI automation help and scores them by how likely they are to buy."</em></p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Prompt Anything structures it for you</h4>
+          <p>It applies a proven framework (CRISPE, CLEAR, STAR, etc.) to turn your messy description into a clear, structured prompt. You'll see sections like Role, Context, Steps, and Output Format appear automatically.</p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Test it directly in the tool</h4>
+          <p>Run the prompt against Claude, GPT, or Gemini right inside Prompt Anything. See what you get. Adjust the wording until the output looks exactly right.</p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Bring it to Claude Code as a skill</h4>
+          <p>Copy your refined prompt. Open Claude Code in VS Code and say: <em>"Turn this into a skill."</em> Paste the prompt. The skill builder takes it from there — testing, iterating, and locking it into your <code class="inline">.claude/skills/</code> folder.</p>
+        </div>
+      </div>
+      <div class="pa-step">
+        <div class="pa-left"></div>
+        <div class="pa-right">
+          <h4>Add your hard rules</h4>
+          <p>Once the skill is built, tell Claude what it should never do. Example: <em>"Never suggest reaching out to someone who already solved their problem. Never use corporate buzzwords."</em> These guardrails get added to the skill file and enforce your standards on every run.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout blue">
+      <strong>Why this order matters</strong>
+      Skipping Prompt Anything and going straight to the skill builder works — but the skill usually needs more rounds of iteration to get right. Designing the prompt logic first in Prompt Anything cuts that back to one or two rounds. It's a 10 minute investment that saves 30.
+    </div>
+  </section>
+
+  <!-- PART 5 -->
+  <section class="section" id="part5">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">05</span>
+        <h2>SET UP THE LEAD AGENT</h2>
+      </div>
+      <span class="s-tag">The Main Event</span>
+    </div>
+
+    <p>This is the agent that runs every morning and finds people actively looking for your services. It watches Reddit, the web, and n8n Community Jobs — scores every post with AI — and sends the best ones to your Slack and Google Sheet.</p>
+
+    <h3>What you'll need before starting</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <h4>An Anthropic API key</h4>
+          <p>Go to <code class="inline">console.anthropic.com</code> → API Keys → Create Key. This lets the agent use Claude to score leads. You'll be charged a tiny amount per run — typically under $0.10/day.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <h4>A Slack webhook URL</h4>
+          <p>In Slack: click your workspace name → Settings → Integrations → Incoming Webhooks → Add New. Copy the webhook URL — it starts with <code class="inline">https://hooks.slack.com/...</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="step-body">
+          <h4>A Google Sheet</h4>
+          <p>Create a new blank Google Sheet. Copy the ID from the URL — it's the long string between <code class="inline">/d/</code> and <code class="inline">/edit</code> in your browser address bar.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">4</div>
+        <div class="step-body">
+          <h4>Google API credentials</h4>
+          <p>Go to <code class="inline">console.cloud.google.com</code> → New Project → Enable the Google Sheets API and Google Drive API → Create OAuth 2.0 credentials → Download the <code class="inline">credentials.json</code> file. Save it somewhere you'll remember.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Brave Search API (optional but recommended)</strong>
+      The agent searches the web for leads. Without a key it uses DuckDuckGo, which sometimes rate-limits. Get a free Brave Search API key at <code class="inline">brave.com/search/api</code> — the free tier gives 2,000 searches/month which is more than enough.
+    </div>
+
+    <h3>Install and configure the agent</h3>
+    <p>Open the Claude Code panel in VS Code and say:</p>
+
+    <div class="callout blue">
+      <strong>Paste this into Claude</strong>
+      "Help me set up the bishop-research-agent. Walk me through installing the dependencies, creating my .env file with my API keys, and running it for the first time."
+    </div>
+
+    <p>Claude will guide you through each step. When it asks for your keys, have them ready. Here's what goes in the <code class="inline">.env</code> file:</p>
+
+    <div class="env-grid">
+      <div class="env-key">ANTHROPIC_API_KEY <span class="req">Required</span></div>
+      <div class="env-val">From console.anthropic.com → API Keys</div>
+      <div class="env-key">SLACK_WEBHOOK_URL <span class="req">Required</span></div>
+      <div class="env-val">From Slack → Settings → Incoming Webhooks</div>
+      <div class="env-key">GOOGLE_OAUTH_CREDENTIALS <span class="req">Required</span></div>
+      <div class="env-val">Path to the credentials.json file you downloaded from Google Cloud</div>
+      <div class="env-key">GOOGLE_SHEET_ID <span class="req">Required</span></div>
+      <div class="env-val">The long ID from your Google Sheet URL</div>
+      <div class="env-key">BRAVE_API_KEY <span class="opt">Optional</span></div>
+      <div class="env-val">From brave.com/search/api — free tier, 2,000 queries/month</div>
+    </div>
+
+    <h3>Customize it for your business</h3>
+    <p>Open <code class="inline">config.py</code> in VS Code. Three things to update:</p>
+
+    <div class="code-label">config.py — change these three things</div>
+    <pre><code><span class="c-comment"># 1. Tell Claude what your business does so it knows what a good lead looks like</span>
+BISHOP_AI_CONTEXT = <span class="c-str">"""
+We are [Your Company]. We help [your audience] with [your service].
+Our product [Product Name] costs $X/month and helps people [outcome].
+Ideal client: [describe them — industry, size, pain points].
+"""</span>
+
+<span class="c-comment"># 2. Subreddits where your ideal clients hang out</span>
+REDDIT_SUBREDDITS = [
+    <span class="c-str">"entrepreneur"</span>, <span class="c-str">"smallbusiness"</span>, <span class="c-str">"marketing"</span>,
+    <span class="c-comment"># Add more based on your niche</span>
+]
+
+<span class="c-comment"># 3. Keywords that signal someone needs your help</span>
+REDDIT_KEYWORDS = [
+    <span class="c-str">"looking to hire"</span>, <span class="c-str">"need help with"</span>, <span class="c-str">"anyone recommend"</span>,
+    <span class="c-comment"># Use phrases your clients actually type when they're stuck</span>
+]</code></pre>
+
+    <h3>How the scoring works</h3>
+    <p>Every post gets two AI scores. Posts above 50 on both land in your Sheet.</p>
+
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="score-label hot">Relevance 90-100</div>
+        <div class="score-range hot">Contact Now</div>
+        <p>Actively asking for help, mentions budget, or ready to hire right now</p>
+      </div>
+      <div class="score-card">
+        <div class="score-label warm">Relevance 70-89</div>
+        <div class="score-range warm">Strong Lead</div>
+        <p>Struggling with a problem you solve, asking for recommendations</p>
+      </div>
+      <div class="score-card">
+        <div class="score-label cool">Relevance 50-69</div>
+        <div class="score-range cool">Warm Lead</div>
+        <p>In the right space, showing early signs of needing help</p>
+      </div>
+      <div class="score-card">
+        <div class="score-label cold">Relevance 0-49</div>
+        <div class="score-range cold">Filtered Out</div>
+        <p>Articles, tutorials, already-solved problems — never hits your Sheet</p>
+      </div>
+    </div>
+
+    <h3>What lands in your Google Sheet</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Column</th><th>What it tells you</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Relevance Score</strong></td><td>How well this person fits your service (0-100)</td></tr>
+          <tr><td><strong>Intent Score</strong></td><td>How likely they are to buy (0-100)</td></tr>
+          <tr><td><strong>Decision Maker</strong></td><td>Yes/No — are they the person who can actually pay you?</td></tr>
+          <tr><td><strong>Budget Tier</strong></td><td>Can afford / Uncertain / Budget limited</td></tr>
+          <tr><td><strong>Pain Points</strong></td><td>The specific problems Claude pulled from the post</td></tr>
+          <tr><td><strong>Suggested Reply</strong></td><td>A ready-to-send 2-4 sentence response Claude drafted for you</td></tr>
+          <tr><td><strong>Should Contact</strong></td><td>Claude's Yes/No recommendation</td></tr>
+          <tr><td><strong>Status</strong></td><td>You fill this in: Contacted / Pass / Replied / Closed</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Test it first, then schedule it</h3>
+    <p>Before scheduling the daily run, test it manually. In VS Code, open a terminal (<code class="inline">Ctrl+`</code>) and run:</p>
+
+    <div class="code-label">VS Code Terminal</div>
+    <pre><code>cd bishop-research-agent
+python main.py --once --reddit-only   <span class="c-comment"># Quick test — Reddit only</span>
+python main.py --once                  <span class="c-comment"># Full run when you're ready</span></code></pre>
+
+    <p>Check your Google Sheet. If leads are showing up and scoring makes sense, schedule it.</p>
+
+    <h3>Schedule the daily run</h3>
+
+    <div class="callout">
+      <strong>Windows — Task Scheduler</strong>
+      Search "Task Scheduler" in the Start menu → Create Basic Task → Name it "Lead Agent" → Trigger: Daily at 7:00 AM → Action: Start a program → point it at <code class="inline">run-daily.bat</code> in the agent folder. Done. You'll wake up to fresh leads in your Sheet every morning.
+    </div>
+
+    <div class="callout">
+      <strong>Mac — Cron Job</strong>
+      Open Terminal and type <code class="inline">crontab -e</code>. Add this line:<br/><br/>
+      <code class="inline">0 7 * * * cd /path/to/bishop-research-agent && source venv/bin/activate && python main.py --once</code><br/><br/>
+      Save and close. The agent runs at 7AM every day.
+    </div>
+
+    <h3>Troubleshooting</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td><strong>API key not found</strong></td><td>Check your <code class="inline">.env</code> file exists in the agent folder and has no typos</td></tr>
+          <tr><td><strong>Google Sheets error</strong></td><td>Run <code class="inline">python setup_sheets.py</code> — you need to authorize it once in a browser</td></tr>
+          <tr><td><strong>0 results from web search</strong></td><td>DuckDuckGo rate limited you — add a Brave API key to your <code class="inline">.env</code></td></tr>
+          <tr><td><strong>Slack not getting alerts</strong></td><td>Confirm the <code class="inline">SLACK_WEBHOOK_URL</code> in your <code class="inline">.env</code> matches exactly what Slack gave you</td></tr>
+          <tr><td><strong>Seeing too many low-quality leads</strong></td><td>Raise <code class="inline">MIN_RELEVANCE_FOR_SHEETS</code> from 50 to 70 in <code class="inline">config.py</code></td></tr>
+          <tr><td><strong>Not enough leads</strong></td><td>Add more subreddits and keywords to <code class="inline">config.py</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PART 6 -->
+  <section class="section" id="part6">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">06</span>
+        <h2>QUICK REFERENCE</h2>
+      </div>
+      <span class="s-tag">Cheat Sheet</span>
+    </div>
+
+    <div class="ref-grid">
+      <div class="ref-item">
+        <div class="ref-goal">Install everything</div>
+        <div class="ref-tool">VS Code → Claude Code extension → sign in</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Tell Claude who you are</div>
+        <div class="ref-tool">Ask it to create your memory files — paste your bio</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Build a new skill</div>
+        <div class="ref-tool">"I want to build a skill that..." in the Claude panel</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Design skill logic first</div>
+        <div class="ref-tool">Use Prompt Anything to structure the prompt before building</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Test the lead agent</div>
+        <div class="ref-tool">python main.py --once --reddit-only</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Add subreddits or keywords</div>
+        <div class="ref-tool">Edit REDDIT_SUBREDDITS or REDDIT_KEYWORDS in config.py</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Too much noise in Sheet</div>
+        <div class="ref-tool">Raise MIN_RELEVANCE_FOR_SHEETS to 70 in config.py</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Not enough leads</div>
+        <div class="ref-tool">Add more subreddits and keywords in config.py</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Schedule the daily run</div>
+        <div class="ref-tool">Windows Task Scheduler → run-daily.bat at 7AM</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Google Sheets won't connect</div>
+        <div class="ref-tool">python setup_sheets.py — authorize once in browser</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Re-authorize Google Sheets</div>
+        <div class="ref-tool">python setup_sheets.py</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-goal">Claude forgot a preference</div>
+        <div class="ref-tool">Ask it to save that preference as a memory file</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">
+      <svg width="34" height="38" viewBox="0 0 34 38" fill="none" aria-label="Prompt Anything">
+        <rect x="1.5" y="1.5" width="31" height="27" rx="7" stroke="#101319" stroke-width="2.5"/>
+        <path d="M17 7 L18.7 14.5 L26 16 L18.7 17.5 L17 25 L15.3 17.5 L8 16 L15.3 14.5 Z" fill="#101319"/>
+        <line x1="21" y1="9" x2="24" y2="6.5" stroke="#101319" stroke-width="2" stroke-linecap="round"/>
+        <path d="M7 29 L3 37 L11 32" fill="#F9F6F0" stroke="#101319" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+      <div class="footer-wm">PROMPT<br/>ANYTHING</div>
+    </div>
+    <div class="footer-right">
+      Internal Guide<br/>
+      March 2026
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
