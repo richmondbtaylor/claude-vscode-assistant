@@ -110,7 +110,7 @@ ANALYSIS_SCHEMA = {
     "pain_points": "array of short strings describing the author's specific problems (empty array if already_solved)",
     "budget_signals": "array of specific phrases or signals that informed your budget_tier assessment (can be empty)",
     "intent_score": "integer 0-100 measuring BUYING intent only — how likely this person is to hire or pay for help in the next 30 days. 90-100=actively seeking to hire/buy right now with budget signals, 70-89=strong buying signals but no explicit budget, 50-69=moderate intent (pain is real, solution-seeking), 30-49=mild interest, 0-29=no buying signals at all",
-    "suggested_reply": "a short, direct reply Bishop AI could leave on the post. 1-3 sentences max. Conversational and helpful, not salesy. No em dashes. End with a soft call to book a 15-min call: https://cal.com/bishopai.io/15min - embed the link naturally, do not announce it formally. Empty string '' if already_solved is true.",
+    "suggested_reply": "A Spartan-laconic reply Bishop AI could leave on the post. Max 30 characters total. One punchy line — no fluff, no sentences, no filler. Just the sharpest possible hook or observation. Always end with the booking link on its own line: https://cal.com/bishopai.io/15min. Empty string '' if already_solved is true.",
     "should_contact": "boolean — true if this is worth a DM or outreach (must be false if already_solved is true)",
     "reasoning": "1-2 sentences explaining your score, decision maker status, and budget assessment",
 }
