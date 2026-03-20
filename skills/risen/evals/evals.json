@@ -1,0 +1,23 @@
+{
+  "skill_name": "risen",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I run a B2B SaaS company that sells project management tools to construction firms. We use Webflow for our site and have RB2B installed. I want to set up an AI agent that calls people when they visit our pricing page. Where do I start and what do I actually need to build this? I've never done anything like this before.",
+      "expected_output": "A clear onboarding walkthrough: clarifying questions about their setup (telephony platform preference, Calendly, target industries), explanation of the full stack needed (RB2B → Apify → Vapi/Bland.ai → Calendly → Google Sheets → Slack), and a suggested first step.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm building the RISEN framework for my consulting firm. I've got RB2B and Apify set up and working. Now I need help with the actual call script — specifically the opening line, value prop, and how to handle the 'how did you find me?' objection when my AI voice agent calls someone who visited our services page.",
+      "expected_output": "A customized call script with opening line, a prompt for them to fill in their value prop, and the exact rebuttal for 'how did you find me?' from the objections reference. Should also mention the 10-second value prop constraint.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "My automated sales calling system has been hitting a few problems: sometimes Apify returns a contact but the phone number looks sketchy (no area code, too short), and sometimes Calendly is down when we're trying to book a meeting mid-call. What should the system do in each of these cases?",
+      "expected_output": "Clear error-handling guidance: validate phone format (E.164) before dialing and skip/log if invalid; if Calendly is unavailable during booking, capture preferred time manually and create a HubSpot task for a human to send the invite.",
+      "files": []
+    }
+  ]
+}

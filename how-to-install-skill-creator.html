@@ -556,16 +556,21 @@
     </div>
     <div class="p-step">
       <div class="p-num">02</div>
+      <h3>Node.js</h3>
+      <p>The runtime Claude Code runs on — install it once and it works invisibly in the background</p>
+    </div>
+    <div class="p-step">
+      <div class="p-num">03</div>
       <h3>Claude Code</h3>
       <p>The Claude extension inside VS Code — your AI that reads and writes files directly on your computer</p>
     </div>
     <div class="p-step">
-      <div class="p-num">03</div>
+      <div class="p-num">04</div>
       <h3>Skill Creator</h3>
       <p>A file you add once that lets Claude build and test any new skill you want — from scratch</p>
     </div>
     <div class="p-step">
-      <div class="p-num">04</div>
+      <div class="p-num">05</div>
       <h3>Prompt Anything</h3>
       <p>Design the logic of every skill here first — then hand the structured prompt to Claude to build it</p>
     </div>
@@ -576,9 +581,10 @@
     <div class="toc-head">TABLE OF CONTENTS</div>
     <div class="toc-list">
       <a href="#part1"><span class="toc-n">01</span><span class="toc-t">Install VS Code</span></a>
-      <a href="#part3"><span class="toc-n">03</span><span class="toc-t">Install the Skill Creator</span></a>
-      <a href="#part2"><span class="toc-n">02</span><span class="toc-t">Install Claude Code</span></a>
-      <a href="#part4"><span class="toc-n">04</span><span class="toc-t">Build Skills with Prompt Anything</span></a>
+      <a href="#part2"><span class="toc-n">02</span><span class="toc-t">Install Node.js</span></a>
+      <a href="#part3"><span class="toc-n">03</span><span class="toc-t">Install Claude Code</span></a>
+      <a href="#part4"><span class="toc-n">04</span><span class="toc-t">Install the Skill Creator</span></a>
+      <a href="#part5"><span class="toc-n">05</span><span class="toc-t">Build Skills with Prompt Anything</span></a>
     </div>
   </nav>
 
@@ -630,6 +636,51 @@
     <div class="section-head">
       <div class="section-head-left">
         <span class="s-num">02</span>
+        <h2>INSTALL NODE.JS</h2>
+      </div>
+      <span class="s-tag">Required for Claude Code</span>
+    </div>
+
+    <p>Claude Code runs on Node.js — a JavaScript engine that works silently in the background. You don't need to learn anything about it. Install it once, confirm it's working, and you're done with this step forever.</p>
+
+    <h3>Download and install</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <h4>Go to nodejs.org</h4>
+          <p>You'll see two download buttons — choose the one labelled <strong>LTS</strong> (Long Term Support). That's the stable version. The site detects your OS automatically. Node.js is completely free.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <h4>Run the installer</h4>
+          <p>Open the downloaded file. On <strong>Mac</strong>: double-click the <code class="inline">.pkg</code> file and follow the prompts — click Continue, Agree, Install. On <strong>Windows</strong>: run the <code class="inline">.msi</code> file and click Next through every screen. All default options are correct — don't change anything.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot gold">3</div>
+        <div class="step-body">
+          <h4>Confirm it's installed</h4>
+          <p>Open a terminal. On <strong>Mac</strong>: press <code class="inline">Cmd+Space</code>, type <strong>Terminal</strong>, hit Enter. On <strong>Windows</strong>: press <code class="inline">Win+R</code>, type <code class="inline">cmd</code>, hit Enter. Then type this and press Enter:</p>
+          <pre><code>node --version</code></pre>
+          <p>You should see a version number like <code class="inline">v20.11.0</code>. Any number starting with v18 or higher means it's installed correctly.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Already have Node.js?</strong>
+      If <code class="inline">node --version</code> already returns a number, you can skip this step entirely. If it returns v16 or lower, download the current LTS from nodejs.org to upgrade.
+    </div>
+  </section>
+
+  <!-- PART 3 -->
+  <section class="section" id="part3">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="s-num">03</span>
         <h2>INSTALL CLAUDE CODE</h2>
       </div>
       <span class="s-tag">The AI Part</span>
@@ -725,11 +776,11 @@
     </div>
   </section>
 
-  <!-- PART 3 -->
-  <section class="section" id="part3">
+  <!-- PART 4 -->
+  <section class="section" id="part4">
     <div class="section-head">
       <div class="section-head-left">
-        <span class="s-num">03</span>
+        <span class="s-num">04</span>
         <h2>INSTALL THE SKILL CREATOR</h2>
       </div>
       <span class="s-tag">The Main Event</span>
@@ -862,11 +913,11 @@
     </div>
   </section>
 
-  <!-- PART 4 -->
-  <section class="section" id="part4">
+  <!-- PART 5 -->
+  <section class="section" id="part5">
     <div class="section-head">
       <div class="section-head-left">
-        <span class="s-num">04</span>
+        <span class="s-num">05</span>
         <h2>WHAT YOU CAN BUILD NOW</h2>
       </div>
       <span class="s-tag">Ideas</span>
