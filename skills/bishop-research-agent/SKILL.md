@@ -1,18 +1,20 @@
 ---
 name: bishop-research-agent
-description: Manage, run, troubleshoot, or modify the Bishop AI Research Agent — a Python agent that monitors Reddit, n8n Community Jobs, and the web for AI automation and prompting leads. Use this skill when the user asks to run the agent, change keywords, add subreddits, adjust thresholds, fix errors, view leads, update the Google Sheet, or make any changes to how the agent finds or scores leads.
+description: Manage, run, troubleshoot, or modify the Bishop AI Research Agent — a Python agent that monitors Reddit, n8n Community Jobs, and the web for AI automation and prompting leads. Use this skill when the user asks to run the agent, change keywords, add subreddits, adjust thresholds, fix errors, view leads, update the Google Sheet, run the reply agent, or make any changes to how the agent finds or scores leads.
 ---
 
 # Bishop AI Research Agent
 
-A daily lead intelligence agent that monitors Reddit, n8n Community Jobs, and the web (via Brave Search with DuckDuckGo fallback) for people actively seeking AI automation, education, or prompting help. Claude Sonnet 4.6 scores each post, classifies intent, checks for decision-maker status and budget signals, then sends batched alerts to Slack and logs qualifying leads to Google Sheets.
+A daily lead intelligence agent that monitors Reddit, n8n Community Jobs, LinkedIn, Facebook, Twitter/X, and the web (via Brave Search with DuckDuckGo fallback) for people actively seeking AI automation, education, or prompting help. Claude Sonnet 4.6 scores each post, classifies intent, checks for decision-maker status and budget signals, then sends batched alerts to Slack and logs qualifying leads to Google Sheets.
+
+An auto-reply agent (`reply_agent.py`) then reads qualifying leads from the sheet and sends comments + DMs on behalf of Bishop AI across Reddit (PRAW API), n8n Community (Playwright/Discourse), LinkedIn (Playwright), and Facebook (assisted/clipboard).
 
 ---
 
 ## Project Location
 
 ```
-C:\Users\richm\.claude\bishop-research-agent\
+C:\Users\richm\bishop-research-agent\
 ```
 
 ---
@@ -20,12 +22,16 @@ C:\Users\richm\.claude\bishop-research-agent\
 ## How to Run
 
 ```bash
-cd C:\Users\richm\bishop-research-agent
+cd /c/Users/richm/bishop-research-agent
 source venv/Scripts/activate   # bash syntax (not venv\Scripts\activate)
 
 python main.py --once              # Full pass (Reddit + Brave/Web + n8n jobs)
 python main.py --once --reddit-only
 python main.py --once --web-only
+
+python reply_agent.py              # Send replies to all pending leads
+python reply_agent.py --dry-run    # Preview without posting
+python reply_agent.py --limit 5    # Process at most 5 leads
 ```
 
 **Scheduled:** Windows Task Scheduler runs `run-daily.bat` at **7:00 AM EST** daily (`--once` mode only — does NOT run continuously).
@@ -46,11 +52,14 @@ brave_monitor.py       Brave Search API (preferred over DDG). freshness=pw filte
 n8n_jobs_monitor.py    Scrapes community.n8n.io/c/jobs/ via Discourse JSON API. Runs at end of web cycle.
 notifier.py            Logs to Google Sheets + sends Slack batch digests (count + sheet link only, no per-lead detail)
 storage.py             SQLite dedup (seen_posts.db). Also tracks authors for cross-platform detection.
-config.py              All tunable settings
+reply_agent.py         Auto-reply agent — reads sheet leads, sends comments + DMs across all platforms
+setup_reddit_app.py    One-shot Playwright script to create Reddit API app and save credentials to .env
 setup_sheets.py        One-time Google OAuth authorization
 update_sheet_headers.py  One-time script to update Sheet header row
 run-daily.bat          Windows Task Scheduler entry point
 ```
+
+**Web search also covers:** LinkedIn, Facebook groups, Twitter/X — all via Brave/DDG site: queries.
 
 ---
 
@@ -60,7 +69,7 @@ run-daily.bat          Windows Task Scheduler entry point
 |---|---|---|
 | `REDDIT_SUBREDDITS` | 47 subs | Which communities to monitor |
 | `REDDIT_KEYWORDS` | 50+ phrases | Keyword filter for Reddit posts (includes Prompt Anything signals) |
-| `WEB_SEARCH_QUERIES` | 44 queries | site: operator queries for forums, n8n, OpenAI Community, Make, Zapier, etc. |
+| `WEB_SEARCH_QUERIES` | 44+ queries | site: operator queries for forums, n8n, OpenAI Community, Make, Zapier, LinkedIn, Facebook, Twitter/X, etc. |
 | `MIN_RELEVANCE_FOR_ALERT` | 50 | Minimum score to queue for Slack |
 | `MIN_RELEVANCE_FOR_SHEETS` | 50 | Minimum score to log to Sheets |
 | `LOG_ALL_TO_SHEETS` | False | Only leads scoring 50+ are logged |
@@ -120,6 +129,13 @@ Marketing articles, blog posts, listicles, tutorials, success announcements, pas
 - **budget_tier** — `can_afford` | `uncertain` | `budget_limited`
 - **cross_platform** — SQLite tracks author names; sheet shows if same author appears on multiple platforms
 
+### Suggested Reply Format
+- **2-3 sentences** — specific to the person's situation, not generic
+- Acknowledges their exact problem, then explains how Bishop AI solves it
+- No filler phrases ("great question", "we can help", "I understand your frustration")
+- Always ends with booking link on its own line: `https://cal.com/bishopai.io/15min`
+- Example: `Sounds like your n8n workflow is missing an error-handling layer — we build and maintain exactly this kind of automation for agencies. Took a client from 4 hours of manual reporting to 10 minutes last month.\nhttps://cal.com/bishopai.io/15min`
+
 ---
 
 ## Google Sheets — 20 Columns
@@ -127,7 +143,7 @@ Marketing articles, blog posts, listicles, tutorials, success announcements, pas
 | Column | Description |
 |---|---|
 | Timestamp | Date/time found (MM/DD/YYYY HH:MM UTC) |
-| Platform | Reddit, Web, n8n Community, OpenAI Community, etc. |
+| Platform | Reddit, Web, n8n Community, LinkedIn, Facebook, Twitter/X, etc. |
 | Subreddit | Which subreddit (Reddit only) |
 | URL | Link to original post |
 | Author | Username or name |
@@ -142,10 +158,10 @@ Marketing articles, blog posts, listicles, tutorials, success announcements, pas
 | Already Solved | Yes / No |
 | Pain Points | Pipe-separated list of specific problems |
 | Budget Signals | Phrases that informed the budget assessment |
-| Suggested Reply | Claude's draft response (2–4 sentences) |
+| Suggested Reply | Max 30 chars + booking link (Spartan-laconic) |
 | Should Contact | Yes / No |
 | Claude Reasoning | 1–2 sentence explanation of the score |
-| Status | **User fills in** — "Contacted", "Pass", "Replied", etc. |
+| Status | **User fills in** — "Contacted", "Pass", "Auto-Replied", "Manually Replied", etc. |
 
 **Sheet ID:** `15PVXkBIr4Xqa2k3dWtygsUjLfXw47wSxhxfyDmw_B_E`
 **Worksheet:** `Leads`
@@ -154,7 +170,7 @@ Marketing articles, blog posts, listicles, tutorials, success announcements, pas
 
 ## Slack Output
 
-Leads batch in groups of 5. Each Slack message contains **only**:
+Leads batch and flush at end of each cycle. Each Slack message contains **only**:
 - Header: "Bishop AI — X New Leads Found"
 - Body: "X new leads have been logged to Google Sheets. Click below to review."
 - Button: "View Leads in Google Sheets" → direct link to sheet
@@ -163,11 +179,59 @@ No per-lead detail in Slack. All detail lives in Google Sheets.
 
 ---
 
+## Auto-Reply Agent (reply_agent.py)
+
+Reads all leads from Google Sheets where `Should Contact = Yes` and `Status` is blank, then sends the `Suggested Reply` as both a public comment and a DM.
+
+### Platform behavior
+
+| Platform | Method | Comment | DM |
+|---|---|---|---|
+| Reddit | PRAW (official API — no browser) | `submission.reply()` | `redditor.message()` |
+| n8n Community | Playwright/Discourse | `.create` button → `.d-editor-input` | `/new-message?username=` |
+| LinkedIn | Playwright | Comment box → Ctrl+Enter | Navigate to profile → Message button |
+| Facebook | Assisted (clipboard) | Opens post, copies reply to clipboard, marks "Manually Replied" | Not automated |
+| Twitter/X, Other | Manual listing | Prints URL + reply text to terminal | N/A |
+
+### Delays (bot detection avoidance)
+- Reddit: 45–120s between comment and DM
+- n8n / LinkedIn: 45–120s comment, 60–150s DM
+- LinkedIn DM: 90–180s
+- All randomized via `random.uniform()`
+
+### Session persistence
+Browser sessions saved to `.browser_sessions/` for n8n and LinkedIn — avoids re-login on each run.
+
+### Usage
+```bash
+python reply_agent.py              # Process all pending leads
+python reply_agent.py --dry-run    # Preview without posting
+python reply_agent.py --limit 5    # Process at most 5 leads
+```
+
+---
+
 ## Environment Variables (.env)
 
 ```
 ANTHROPIC_API_KEY=         # Claude API — required
-BRAVE_API_KEY=             # Brave Search — preferred web source. Get free key at brave.com/search/api (2,000 queries/month free). Falls back to DuckDuckGo if blank.
+
+# Reddit (PRAW — official API)
+REDDIT_CLIENT_ID=          # From reddit.com/prefs/apps — short string under app name
+REDDIT_CLIENT_SECRET=      # From reddit.com/prefs/apps — next to "secret" label
+REDDIT_USERNAME=           # Your Reddit u/ handle
+REDDIT_PASSWORD=           # Your Reddit password
+
+# n8n Community
+N8N_COMMUNITY_USERNAME=richmondbishopai
+N8N_COMMUNITY_PASSWORD=    # Set this
+
+# LinkedIn
+LINKEDIN_USERNAME=richmondbtaylor@gmail.com
+LINKEDIN_PASSWORD=         # Set this
+
+# Other
+BRAVE_API_KEY=             # Brave Search — preferred web source. Falls back to DuckDuckGo if blank.
 SLACK_WEBHOOK_URL=         # Already set
 GOOGLE_OAUTH_CREDENTIALS=  # Already set
 GOOGLE_SHEET_ID=15PVXkBIr4Xqa2k3dWtygsUjLfXw47wSxhxfyDmw_B_E
@@ -179,10 +243,22 @@ Google OAuth token cached at `~/.config/gspread/authorized_user.json` after firs
 
 ## Common Tasks
 
-### Run the agent now
+### Run the research agent now
 ```bash
-cd C:\Users\richm\bishop-research-agent && source venv/Scripts/activate && python main.py --once
+cd /c/Users/richm/bishop-research-agent && source venv/Scripts/activate && python main.py --once
 ```
+
+### Run the reply agent (send messages to pending leads)
+```bash
+cd /c/Users/richm/bishop-research-agent && source venv/Scripts/activate && python reply_agent.py
+```
+
+### Create Reddit API app credentials (one-time setup)
+Run `setup_reddit_app.py` in an interactive terminal (not from Claude Code):
+```bash
+python setup_reddit_app.py
+```
+Then on `reddit.com/prefs/apps`, find your app: **Client ID** = short string under "personal use script"; **Client Secret** = string next to "secret" label.
 
 ### Add a subreddit
 Edit `REDDIT_SUBREDDITS` in `config.py`.
@@ -191,14 +267,14 @@ Edit `REDDIT_SUBREDDITS` in `config.py`.
 Edit `REDDIT_KEYWORDS` in `config.py`.
 
 ### Add a web search query
-Edit `WEB_SEARCH_QUERIES` in `config.py`. Use `site:` operators (e.g. `site:community.n8n.io`) — DDG handles these well for indexed forums. Avoid natural-language LinkedIn/Twitter queries — they return articles, not real posts.
+Edit `WEB_SEARCH_QUERIES` in `config.py`. Use `site:` operators (e.g. `site:community.n8n.io`) — DDG handles these well for indexed forums.
 
 ### Change the Slack/Sheets score threshold
 Change `MIN_RELEVANCE_FOR_ALERT` and/or `MIN_RELEVANCE_FOR_SHEETS` in `config.py`.
 
 ### Reset deduplication (reprocess all posts)
 ```bash
-rm C:\Users\richm\.claude\bishop-research-agent\seen_posts.db
+rm /c/Users/richm/bishop-research-agent/seen_posts.db
 ```
 
 ### Clear Google Sheet data (keep headers)
@@ -238,19 +314,27 @@ powershell -Command "schtasks /change /tn 'BishopAI Research Agent' /st 07:00"
 | JSON parse error from Claude | Claude returned markdown — stripping already handled in analyzer.py |
 | n8n jobs monitor errors | community.n8n.io Discourse API may be rate-limiting — check n8n_jobs_monitor.py `_REQUEST_DELAY` |
 | Sheet has wrong columns | Run `python update_sheet_headers.py` after any SHEET_COLUMNS change |
+| Reddit reply_agent skipped | `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` missing in .env — run setup_reddit_app.py |
+| n8n reply_agent login failed | Wrong password for `richmondbishopai` — reset password at community.n8n.io |
+| LinkedIn security checkpoint | Playwright opens browser — complete the checkpoint manually, then press Enter |
+| Facebook automation blocked | By design — reply_agent copies text to clipboard and marks "Manually Replied" |
+| `setup_reddit_app.py` EOFError | Must run in an interactive terminal, not via Claude Code Bash tool |
 
 ---
 
 ## File Map (quick reference)
 
 - `config.py` — Tune keywords, subreddits, thresholds, Bishop AI context, sheet columns
-- `analyzer.py` — Claude scoring logic, intent types, relevance + intent scores
+- `analyzer.py` — Claude scoring logic, intent types, relevance + intent scores, suggested reply format
 - `notifier.py` — Slack formatting (count + link only), Sheets logging
 - `main.py` — Pipeline orchestration, --once / --reddit-only / --web-only flags
+- `reply_agent.py` — Auto-reply agent: reads sheet, sends comments + DMs across all platforms
 - `reddit_monitor.py` — Reddit RSS polling, keyword filtering, 7-day date filter
 - `web_monitor.py` — DuckDuckGo fallback, 7-day `timelimit='w'`
 - `brave_monitor.py` — Brave Search API (preferred), `freshness=pw` for 7-day filter
 - `n8n_jobs_monitor.py` — n8n Community Jobs via Discourse JSON API
 - `storage.py` — SQLite dedup + cross-platform author tracking
+- `setup_reddit_app.py` — One-shot script to create Reddit API app credentials
 - `seen_posts.db` — Delete to reset dedup history
+- `.browser_sessions/` — Playwright session storage for n8n and LinkedIn (avoids re-login)
 - `run-daily.bat` — Task Scheduler entry point (runs at 7:00 AM EST)
