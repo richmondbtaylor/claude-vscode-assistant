@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "answers-workflow-question-with-specifics", "passed": true, "evidence": "Draft lists: 'invoice processing and reconciliation, contract review routing, vendor onboarding, report generation, internal request triage' — 5 specific examples."},
+    {"text": "handles-cost-question-gracefully", "passed": true, "evidence": "Draft says 'I don't share ranges in DMs since it really depends on what we're building' — no price given, redirects to call."},
+    {"text": "no-evasive-deflection", "passed": false, "evidence": "'I don't share ranges in DMs' sounds like a policy rule. The skill version's 'fastest way to give you a real number' frames it as being in the prospect's interest — more natural."},
+    {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes https://cal.com/bishopai.io/15min"},
+    {"text": "maintains-conversational-momentum", "passed": true, "evidence": "Ends with clear CTA linking to the calendar."}
+  ],
+  "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8},
+  "timing": {"total_duration_seconds": 20.0}
+}

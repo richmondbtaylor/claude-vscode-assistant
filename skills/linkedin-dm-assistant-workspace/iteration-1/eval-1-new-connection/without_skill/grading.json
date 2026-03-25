@@ -1,0 +1,12 @@
+{
+  "expectations": [
+    {"text": "includes-structured-output-format", "passed": false, "evidence": "Output is just a draft message with no structured sections — no SENDER, PROFILE SUMMARY, FIT ASSESSMENT, RECOMMENDATION, or NOTES."},
+    {"text": "references-reconciliation-post", "passed": true, "evidence": "Draft says 'Saw your post about the 14-hour reconciliation process' — references the specific post."},
+    {"text": "avoids-banned-phrases", "passed": true, "evidence": "None of the banned phrases appear in the draft."},
+    {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes https://cal.com/bishopai.io/15min"},
+    {"text": "pitch-is-light-not-salesy", "passed": false, "evidence": "'That's exactly the kind of problem I work on' + 'Either way, glad to be connected!' filler at the end makes it feel more salesy than the skill version."},
+    {"text": "fit-assessed-as-good", "passed": false, "evidence": "No FIT ASSESSMENT section — no structured analysis of whether Marcus is a good prospect."}
+  ],
+  "summary": {"passed": 3, "failed": 3, "total": 6, "pass_rate": 0.5},
+  "timing": {"total_duration_seconds": 14.8}
+}

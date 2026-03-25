@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "flags-as-competitor", "passed": true, "evidence": "FIT ASSESSMENT explicitly states 'Possible competitor — Derek runs an AI automation agency, which puts him squarely in the do not pitch category.'"},
+    {"text": "no-bishop-ai-pitch", "passed": true, "evidence": "Draft does not pitch Bishop AI services. Mentions client focus only to distinguish verticals, not to sell."},
+    {"text": "no-booking-link-included", "passed": true, "evidence": "No booking link appears in the draft message."},
+    {"text": "response-is-polite-not-cold", "passed": true, "evidence": "Draft acknowledges Derek's work ('Six years in e-commerce automation is no joke') and leaves the referral door open warmly."},
+    {"text": "recommendation-is-no-pitch", "passed": true, "evidence": "RECOMMENDATION: 'Send (engage warmly, no pitch — explore the referral angle as peers)'"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "timing": {"total_duration_seconds": 37.3}
+}

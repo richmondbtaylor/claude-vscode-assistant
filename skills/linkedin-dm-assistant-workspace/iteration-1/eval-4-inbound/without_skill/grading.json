@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "treats-as-warm-lead", "passed": false, "evidence": "No FIT ASSESSMENT or explicit warm-lead framing. Reasoning notes she came inbound but there's no structured prioritization."},
+    {"text": "references-media-coverage-pain-point", "passed": true, "evidence": "Draft says 'that post about the Friday media report really stuck with me' and names 'pulling coverage, formatting it, summarizing it.'"},
+    {"text": "asks-question-or-shows-curiosity", "passed": false, "evidence": "Draft does NOT ask a question. It goes straight from the post reference to pitching Bishop AI to the booking link CTA."},
+    {"text": "does-not-lead-with-pitch", "passed": false, "evidence": "After the post reference, the draft immediately pivots to 'That's exactly what we build at Bishop AI' and jumps to the booking link. The pitch IS the message."},
+    {"text": "fit-assessed-as-good", "passed": false, "evidence": "No FIT ASSESSMENT section — no structured analysis."}
+  ],
+  "summary": {"passed": 1, "failed": 4, "total": 5, "pass_rate": 0.2},
+  "timing": {"total_duration_seconds": 23.7}
+}

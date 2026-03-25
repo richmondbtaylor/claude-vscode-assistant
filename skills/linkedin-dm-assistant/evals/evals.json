@@ -1,0 +1,121 @@
+{
+  "skill_name": "linkedin-dm-assistant",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Here's a LinkedIn DM I just got:\n\nSender: Marcus Webb\nMessage: 'Hey Rich, great to connect! Looking forward to seeing what you're up to.'\n\nHis profile:\n- Headline: Co-Founder & CEO @ Clearpath Ops | Helping logistics companies run leaner\n- About: We help mid-sized logistics and freight companies eliminate operational bottlenecks. Currently scaling a team of 22. Previous: 8 years in ops consulting at Deloitte.\n- Recent posts: Posted 3 days ago: 'Just finished a brutal manual reconciliation process that took our team 14 hours this week. There has to be a better way. If you've solved this in logistics, I'd love to hear how.' — 47 likes, 19 comments\n\nDraft me a reply.",
+      "expected_output": "A short, natural LinkedIn DM draft that references his reconciliation post genuinely, briefly introduces Bishop AI, and offers the booking link without being pushy. Should include the full output format with SENDER, PROFILE SUMMARY, THREAD SUMMARY, FIT ASSESSMENT, RECOMMENDATION, DRAFT MESSAGE, and NOTES sections.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "includes-structured-output-format",
+          "description": "Output contains the required structured sections: SENDER, PROFILE SUMMARY, FIT ASSESSMENT, RECOMMENDATION, and DRAFT MESSAGE"
+        },
+        {
+          "name": "references-reconciliation-post",
+          "description": "Draft message references Marcus's manual reconciliation post or the 14-hour process — not just his job title"
+        },
+        {
+          "name": "avoids-banned-phrases",
+          "description": "Draft does NOT contain banned phrases: 'I came across your profile', 'pick your brain', 'quick question', 'hope this message finds you'"
+        },
+        {
+          "name": "includes-booking-link",
+          "description": "Draft includes the Bishop AI booking link: https://cal.com/bishopai.io/15min"
+        },
+        {
+          "name": "pitch-is-light-not-salesy",
+          "description": "Bishop AI is introduced in one sentence as an offer of value, not a hard sell — the message doesn't feel like a pitch deck"
+        },
+        {
+          "name": "fit-assessed-as-good",
+          "description": "FIT ASSESSMENT marks Marcus as a good fit (founder, right company size, clear pain point)"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Ongoing LinkedIn thread I need help responding to:\n\nSender: Priya Nair\nTitle: Head of Operations @ Stackwell (SaaS, ~55 employees)\nRecent post: Article share about AI in finance ops, no original commentary.\n\nThread:\nRich (3 days ago): 'Hey Priya, saw your share on AI in finance ops — curious what you're actually seeing in practice at Stackwell. We build custom AI agents for ops teams. If any of your workflows are eating up hours, happy to brainstorm on a quick call: https://cal.com/bishopai.io/15min'\n\nPriya (today): 'Thanks Rich! Honestly curious what this actually looks like in practice. What kind of workflows do you typically automate? And what does something like this run cost-wise?'\n\nHow should I reply?",
+      "expected_output": "A response that answers the workflow question with genuine, specific examples (not vague), handles the cost question gracefully by redirecting to the call without being evasive, and keeps the momentum going. Should follow the full output format.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "answers-workflow-question-with-specifics",
+          "description": "Draft gives at least 2 specific, concrete examples of workflow types Bishop AI automates (e.g. reporting, data entry, onboarding, invoicing) — not just 'repetitive tasks'"
+        },
+        {
+          "name": "handles-cost-question-gracefully",
+          "description": "Draft does NOT state a price or price range, and redirects to a call without being dismissive or robotic"
+        },
+        {
+          "name": "no-evasive-deflection",
+          "description": "The cost redirection sounds natural and helpful, not like a scripted dodge — avoids 'I can't share that here' or similar corporate-speak"
+        },
+        {
+          "name": "includes-booking-link",
+          "description": "Draft includes the booking link: https://cal.com/bishopai.io/15min"
+        },
+        {
+          "name": "maintains-conversational-momentum",
+          "description": "Draft ends with a clear, low-friction invitation to continue the conversation (either a question or the call offer)"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Got this LinkedIn message and not sure how to handle it:\n\nSender: Derek Solis\nMessage: 'Hey Rich! Noticed you're in the AI automation space. I run an AI automation agency too — we mainly work with e-commerce brands. Would love to connect and maybe explore some collaboration or referral opportunities.'\n\nHis profile:\n- Headline: Founder @ Automate.io Agency | AI Workflows for E-Commerce | Make.com & Zapier Expert\n- About: We build custom automation workflows for Shopify brands. 6 years in e-commerce automation. Team of 8.\n- Recent posts: Case study about a Klaviyo + Shopify automation he built.\n\nWhat should I say?",
+      "expected_output": "Flags Derek as a competitor/adjacent space. Drafts a polite, friendly reply that builds the relationship without pitching Bishop AI services. Recommendation should be 'Send (no pitch)' or 'Skip' with clear reasoning. No booking link offered.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "flags-as-competitor",
+          "description": "FIT ASSESSMENT or NOTES identifies Derek as a competitor or adjacent agency — not a prospect"
+        },
+        {
+          "name": "no-bishop-ai-pitch",
+          "description": "Draft does NOT pitch Bishop AI services or suggest Derek book a discovery call"
+        },
+        {
+          "name": "no-booking-link-included",
+          "description": "Draft does NOT include the booking link https://cal.com/bishopai.io/15min"
+        },
+        {
+          "name": "response-is-polite-not-cold",
+          "description": "Draft is friendly and professional — not dismissive or rude — acknowledges the collaboration/referral angle"
+        },
+        {
+          "name": "recommendation-is-no-pitch",
+          "description": "RECOMMENDATION is either 'Send (no pitch)', 'Skip', or equivalent — explicitly notes not to pitch"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Someone reached out to me first on LinkedIn — here's the thread:\n\nSender: Amara Osei\nTitle: Founder & CEO @ Bloom & Co (boutique PR agency, 18 people)\nRecent posts: Post from 1 week ago about how her team spent an entire Friday manually compiling a media coverage report for a client. 'I keep telling myself we'll fix this next quarter. It's been 3 quarters.'\n\nAmara (today, she sent the connection request + message): 'Hi Rich! I came across your content and it really resonated. We're a small PR agency and honestly drowning in repetitive admin. Would love to learn more about what you do.'\n\nHelp me reply.",
+      "expected_output": "Treats Amara as a warm inbound lead. Response should be curious and conversational — ask about her specific situation before jumping to a pitch. Acknowledge she reached out first. The booking link can be offered but shouldn't be the entire message. Warm tone. Full output format.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "treats-as-warm-lead",
+          "description": "FIT ASSESSMENT or NOTES recognizes Amara as an inbound lead or warm prospect — higher priority than a cold outbound"
+        },
+        {
+          "name": "references-media-coverage-pain-point",
+          "description": "Draft references her specific pain point — manual reporting, media coverage compilation, or the 'fix it next quarter' delay — not just 'repetitive admin' generically"
+        },
+        {
+          "name": "asks-question-or-shows-curiosity",
+          "description": "Draft asks at least one open question about her situation, or demonstrates genuine curiosity before or instead of immediately pitching"
+        },
+        {
+          "name": "does-not-lead-with-pitch",
+          "description": "Draft does not open with a Bishop AI sales pitch as the first thing — relationship-building comes before the sell"
+        },
+        {
+          "name": "fit-assessed-as-good",
+          "description": "FIT ASSESSMENT marks Amara as a good fit (founder, right company size, clear pain point expressed directly)"
+        }
+      ]
+    }
+  ]
+}

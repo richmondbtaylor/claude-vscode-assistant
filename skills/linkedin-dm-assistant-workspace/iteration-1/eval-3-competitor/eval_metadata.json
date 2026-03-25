@@ -1,0 +1,27 @@
+{
+  "eval_id": 3,
+  "eval_name": "competitor-referral-outreach",
+  "prompt": "Got this LinkedIn message and not sure how to handle it:\n\nSender: Derek Solis\nMessage: 'Hey Rich! Noticed you're in the AI automation space. I run an AI automation agency too — we mainly work with e-commerce brands. Would love to connect and maybe explore some collaboration or referral opportunities.'\n\nHis profile:\n- Headline: Founder @ Automate.io Agency | AI Workflows for E-Commerce | Make.com & Zapier Expert\n- About: We build custom automation workflows for Shopify brands. 6 years in e-commerce automation. Team of 8.\n- Recent posts: Case study about a Klaviyo + Shopify automation he built.\n\nWhat should I say?",
+  "assertions": [
+    {
+      "name": "flags-as-competitor",
+      "description": "FIT ASSESSMENT or NOTES identifies Derek as a competitor or adjacent agency"
+    },
+    {
+      "name": "no-bishop-ai-pitch",
+      "description": "Draft does NOT pitch Bishop AI services or suggest Derek book a discovery call"
+    },
+    {
+      "name": "no-booking-link-included",
+      "description": "Draft does NOT include the booking link https://cal.com/bishopai.io/15min"
+    },
+    {
+      "name": "response-is-polite-not-cold",
+      "description": "Draft is friendly and professional — acknowledges the collaboration/referral angle"
+    },
+    {
+      "name": "recommendation-is-no-pitch",
+      "description": "RECOMMENDATION explicitly notes not to pitch or is equivalent to 'no pitch'"
+    }
+  ]
+}

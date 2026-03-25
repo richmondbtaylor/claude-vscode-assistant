@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "flags-as-competitor", "passed": false, "evidence": "The competitor analysis is buried in unstructured prose — no formal FIT ASSESSMENT section with an explicit competitor flag."},
+    {"text": "no-bishop-ai-pitch", "passed": true, "evidence": "Draft does not pitch Bishop AI. The reply is peer-to-peer and non-sales."},
+    {"text": "no-booking-link-included", "passed": true, "evidence": "No booking link in the draft."},
+    {"text": "response-is-polite-not-cold", "passed": true, "evidence": "Draft is warm: 'Sounds like you've built something solid — Shopify and Klaviyo workflows are no joke.'"},
+    {"text": "recommendation-is-no-pitch", "passed": false, "evidence": "No RECOMMENDATION section in the output — the guidance is embedded in unstructured reasoning text, not a clear labeled recommendation."}
+  ],
+  "summary": {"passed": 3, "failed": 2, "total": 5, "pass_rate": 0.6},
+  "timing": {"total_duration_seconds": 25.4}
+}
