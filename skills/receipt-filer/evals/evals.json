@@ -38,6 +38,20 @@
         "Claude does NOT attempt to create a folder or upload the file without a confirmed date",
         "Claude acknowledges the vendor name (FedEx Office or FedEx_Office) and amount ($22.13 or 22.13) it was able to read"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Here's a screenshot of an order confirmation email from Urban Pizza Cafe (ordered through Slice). Order number 146370944. It has a bunch of pizzas — 2x Pepperoni ($59.90), 2x Four Cheese ($61.90), 1x Chicken & BBQ ($27.95), 2x Meat Lover ($77.90), 2x Vegetarian ($57.90), 1x Calabrese ($31.95). Subtotal $317.50, tax $21.25, service fee $1.99, 5% discount -$15.88, total $324.86, paid with Apple Pay. No date shown on the receipt. File this please. (Simulate the process.)",
+      "expected_output": "Claude should extract vendor=Urban_Pizza_Cafe and amount=324.86 (the total, not the subtotal). Since no date is visible on the receipt, Claude must stop and ask the user to provide the date in YYYY-MM-DD format before proceeding. It should NOT guess the date or use today's date. Once the date is provided, the filename would be Urban_Pizza_Cafe_324.86.png (or .jpg depending on format).",
+      "files": [],
+      "assertions": [
+        "Claude identifies the vendor as Urban Pizza Cafe (or Urban_Pizza_Cafe)",
+        "Claude uses the total amount $324.86 (not the subtotal $317.50) for the filename",
+        "Claude stops and asks the user for the date in YYYY-MM-DD format since no date is visible",
+        "Claude does NOT guess the date or use today's date as a fallback",
+        "The proposed filename follows the pattern Urban_Pizza_Cafe_324.86.ext (no dollar sign, underscores for spaces)",
+        "Claude recognizes this as a valid receipt despite being an order confirmation email screenshot rather than a traditional paper receipt"
+      ]
     }
   ]
 }
