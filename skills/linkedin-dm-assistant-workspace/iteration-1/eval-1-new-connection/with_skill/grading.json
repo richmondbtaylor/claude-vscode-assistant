@@ -1,0 +1,12 @@
+{
+  "expectations": [
+    {"text": "includes-structured-output-format", "passed": true, "evidence": "Output contains SENDER, PROFILE SUMMARY, THREAD SUMMARY, FIT ASSESSMENT, RECOMMENDATION, DRAFT MESSAGE, NOTES, and a conversation tracking log table."},
+    {"text": "references-reconciliation-post", "passed": true, "evidence": "Draft opens with 'Saw your post about the 14-hour reconciliation process. That kind of thing is brutal' — directly references the specific post."},
+    {"text": "avoids-banned-phrases", "passed": true, "evidence": "None of the banned phrases appear in the draft message."},
+    {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes https://cal.com/bishopai.io/15min"},
+    {"text": "pitch-is-light-not-salesy", "passed": true, "evidence": "Bishop AI introduced in one sentence. The CTA is framed as 'happy to think through it with you' — an offer, not a close."},
+    {"text": "fit-assessed-as-good", "passed": true, "evidence": "FIT ASSESSMENT explicitly states 'Good fit — Founder/CEO at a 22-person ops-heavy company.' Also flagged HIGH PRIORITY."}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0},
+  "timing": {"total_duration_seconds": 34.7}
+}

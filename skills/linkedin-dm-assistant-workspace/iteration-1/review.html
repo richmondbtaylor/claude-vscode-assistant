@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "linkedin-dm-assistant", "runs": [{"id": "eval-1-new-connection-with_skill", "prompt": "Here's a LinkedIn DM I just got:\n\nSender: Marcus Webb\nMessage: 'Hey Rich, great to connect! Looking forward to seeing what you're up to.'\n\nHis profile:\n- Headline: Co-Founder & CEO @ Clearpath Ops | Helping logistics companies run leaner\n- About: We help mid-sized logistics and freight companies eliminate operational bottlenecks. Currently scaling a team of 22. Previous: 8 years in ops consulting at Deloitte.\n- Recent posts: Posted 3 days ago: 'Just finished a brutal manual reconciliation process that took our team 14 hours this week. There has to be a better way. If you've solved this in logistics, I'd love to hear how.' \u00e2\u20ac\u201d 47 likes, 19 comments\n\nDraft me a reply.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Eval 1 With Skill \u00e2\u20ac\u201d New Connection (Marcus Webb)\n\n**SENDER:** Marcus Webb \u00e2\u20ac\u201d Co-Founder & CEO at Clearpath Ops\n\n**PROFILE SUMMARY:** Marcus is a logistics-focused founder with 8 years of ops consulting experience at Deloitte, now running a 22-person company that helps mid-sized logistics and freight companies eliminate operational bottlenecks. He recently posted about a 14-hour manual reconciliation process that drained his team \u00e2\u20ac\u201d a specific, visible pain point that maps directly to what Bishop AI solves.\n\n**THREAD SUMMARY:** New connection. Marcus sent a generic opener: \"Hey Rich, great to connect! Looking forward to seeing what you're up to.\"\n\n**FIT ASSESSMENT:** Good fit \u00e2\u20ac\u201d Founder/CEO at a 22-person ops-heavy company, visibly struggling with manual processes, decision-maker, not a competitor.\n\n**RECOMMENDATION:** Send\n\n**DRAFT MESSAGE:**\n\n---\n\nHey Marcus \u00e2\u20ac\u201d likewise! Saw your post about the 14-hour reconciliation process. That kind of thing is brutal, especially when it's a known problem without an obvious fix.\n\nWe build custom AI agents and automations that help businesses knock out exactly that type of repetitive work \u00e2\u20ac\u201d typically saving teams 10\u00e2\u20ac\u201c20 hours a week using Claude and n8n.\n\nIf you're still looking for a better way to handle that reconciliation workflow (or anything else eating your team's time), happy to think through it with you. Here's my calendar if you want to grab 15 minutes: https://cal.com/bishopai.io/15min\n\n---\n\n**NOTES:** Marcus is a high-signal prospect. His recent post is a direct, unprompted articulation of a pain point Bishop AI addresses \u00e2\u20ac\u201d manual, time-consuming reconciliation work in a logistics ops context. The post had solid engagement (47 likes, 19 comments), suggesting he's genuinely frustrated, not just posting for visibility. Flag as HIGH PRIORITY. This is a warm open door \u00e2\u20ac\u201d referencing the post directly shows you actually read it, not just his headline.\n\n---\n\n**Conversation Tracking Log**\n\n| Field | Value |\n|---|---|\n| Name | Marcus Webb |\n| Company | Clearpath Ops |\n| Job Title | Co-Founder & CEO |\n| First Message Date | 2026-03-24 |\n| Last Message Date | 2026-03-24 |\n| Stage | New |\n| Booked Call? | No |\n| Notes | HIGH PRIORITY. Referenced 14-hour manual reconciliation post in opener. Strong fit \u00e2\u20ac\u201d logistics ops company, 22 employees, founder/CEO decision-maker. Pain point maps directly to Bishop AI's core offer. |\n"}], "grading": {"expectations": [{"text": "includes-structured-output-format", "passed": true, "evidence": "Output contains SENDER, PROFILE SUMMARY, THREAD SUMMARY, FIT ASSESSMENT, RECOMMENDATION, DRAFT MESSAGE, NOTES, and a conversation tracking log table."}, {"text": "references-reconciliation-post", "passed": true, "evidence": "Draft opens with 'Saw your post about the 14-hour reconciliation process. That kind of thing is brutal' \u00e2\u20ac\u201d directly references the specific post."}, {"text": "avoids-banned-phrases", "passed": true, "evidence": "None of the banned phrases appear in the draft message."}, {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes https://cal.com/bishopai.io/15min"}, {"text": "pitch-is-light-not-salesy", "passed": true, "evidence": "Bishop AI introduced in one sentence. The CTA is framed as 'happy to think through it with you' \u00e2\u20ac\u201d an offer, not a close."}, {"text": "fit-assessed-as-good", "passed": true, "evidence": "FIT ASSESSMENT explicitly states 'Good fit \u00e2\u20ac\u201d Founder/CEO at a 22-person ops-heavy company.' Also flagged HIGH PRIORITY."}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}, "timing": {"total_duration_seconds": 34.7}}}, {"id": "eval-1-new-connection-without_skill", "prompt": "Here's a LinkedIn DM I just got:\n\nSender: Marcus Webb\nMessage: 'Hey Rich, great to connect! Looking forward to seeing what you're up to.'\n\nHis profile:\n- Headline: Co-Founder & CEO @ Clearpath Ops | Helping logistics companies run leaner\n- About: We help mid-sized logistics and freight companies eliminate operational bottlenecks. Currently scaling a team of 22. Previous: 8 years in ops consulting at Deloitte.\n- Recent posts: Posted 3 days ago: 'Just finished a brutal manual reconciliation process that took our team 14 hours this week. There has to be a better way. If you've solved this in logistics, I'd love to hear how.' \u00e2\u20ac\u201d 47 likes, 19 comments\n\nDraft me a reply.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Eval 1 Baseline \u00e2\u20ac\u201d New Connection (Marcus Webb)\n\n**LinkedIn DM Reply to Marcus Webb:**\n\nHey Marcus, thanks for connecting! Saw your post about the 14-hour reconciliation process \u00e2\u20ac\u201d that's exactly the kind of problem I work on.\n\nAt Bishop AI, I build custom AI agents and automations that eliminate that kind of repetitive, time-heavy work. Most clients save 10\u00e2\u20ac\u201c20 hours a week once we get the right workflows automated.\n\nWould love to hear more about what that process looks like for your team \u00e2\u20ac\u201d could be a quick win. Happy to jump on a 15-min call if useful: https://cal.com/bishopai.io/15min\n\nEither way, glad to be connected!\n\nRich\n"}], "grading": {"expectations": [{"text": "includes-structured-output-format", "passed": false, "evidence": "Output is just a draft message with no structured sections \u00e2\u20ac\u201d no SENDER, PROFILE SUMMARY, FIT ASSESSMENT, RECOMMENDATION, or NOTES."}, {"text": "references-reconciliation-post", "passed": true, "evidence": "Draft says 'Saw your post about the 14-hour reconciliation process' \u00e2\u20ac\u201d references the specific post."}, {"text": "avoids-banned-phrases", "passed": true, "evidence": "None of the banned phrases appear in the draft."}, {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes https://cal.com/bishopai.io/15min"}, {"text": "pitch-is-light-not-salesy", "passed": false, "evidence": "'That's exactly the kind of problem I work on' + 'Either way, glad to be connected!' filler at the end makes it feel more salesy than the skill version."}, {"text": "fit-assessed-as-good", "passed": false, "evidence": "No FIT ASSESSMENT section \u00e2\u20ac\u201d no structured analysis of whether Marcus is a good prospect."}], "summary": {"passed": 3, "failed": 3, "total": 6, "pass_rate": 0.5}, "timing": {"total_duration_seconds": 14.8}}}, {"id": "eval-2-cost-question-with_skill", "prompt": "Ongoing LinkedIn thread I need help responding to:\n\nSender: Priya Nair\nTitle: Head of Operations @ Stackwell (SaaS, ~55 employees)\nRecent post: Article share about AI in finance ops, no original commentary.\n\nThread:\nRich (3 days ago): 'Hey Priya, saw your share on AI in finance ops \u00e2\u20ac\u201d curious what you're actually seeing in practice at Stackwell. We build custom AI agents for ops teams. If any of your workflows are eating up hours, happy to brainstorm on a quick call: https://cal.com/bishopai.io/15min'\n\nPriya (today): 'Thanks Rich! Honestly curious what this actually looks like in practice. What kind of workflows do you typically automate? And what does something like this run cost-wise?'\n\nHow should I reply?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Eval 2 With Skill \u00e2\u20ac\u201d Cost Question (Priya Nair)\n\n**SENDER:** Priya Nair \u00e2\u20ac\u201d Head of Operations at Stackwell\n\n**PROFILE SUMMARY:** Priya runs ops at Stackwell, a ~55-person SaaS company. She recently shared an article about AI in finance ops without adding her own commentary \u00e2\u20ac\u201d suggests she's paying attention to the space but hasn't formed a strong public opinion yet. As Head of Ops at a growth-stage SaaS company, she's a textbook fit for the kind of workflow automation Bishop AI handles.\n\n**THREAD SUMMARY:** Rich reached out referencing Priya's article share on AI in finance ops and briefly introduced Bishop AI, offering a 15-minute brainstorm call. Priya responded with genuine curiosity \u00e2\u20ac\u201d asking what workflows Bishop AI typically automates and what it costs. This is a warm, engaged reply with two clear questions that need real answers before pushing toward a call.\n\n**FIT ASSESSMENT:** Good fit \u00e2\u20ac\u201d Head of Ops at a ~55-person SaaS company is exactly the profile. Likely managing a mix of finance, HR, and operational workflows with a small team, meaning manual work is probably a real pain point. No competitor signals.\n\n**RECOMMENDATION:** Send \u00e2\u20ac\u201d HIGH PRIORITY. Priya asked specific questions about workflow types and pricing. That's buying behavior.\n\n---\n\n**DRAFT MESSAGE:**\n\nGood timing on the question \u00e2\u20ac\u201d finance ops is actually one of the more common areas we work in. Things like invoice processing, vendor onboarding, reconciliation handoffs, approval chains \u00e2\u20ac\u201d stuff that sounds simple but eats up hours when it's all manual or spread across tools.\n\nOn cost, it varies a lot depending on complexity, but honestly the fastest way to give you a real number is to hear what you're actually dealing with. Most projects scope out in a 15-minute conversation. If you're open to it: https://cal.com/bishopai.io/15min\n\n---\n\n**NOTES:** Priya asked directly about pricing \u00e2\u20ac\u201d per skill guidelines, a number wasn't fabricated. The draft gives enough context to feel substantive without overpromising, then redirects to the call naturally. This thread is moving fast (same-day reply, two specific questions) \u00e2\u20ac\u201d HIGH PRIORITY. Stage: Engaged.\n\n---\n\n**CONVERSATION TRACKING LOG:**\n\n| Field | Value |\n|---|---|\n| Name | Priya Nair |\n| Company | Stackwell |\n| Job Title | Head of Operations |\n| First Message Date | approx. 2026-03-21 |\n| Last Message Date | 2026-03-24 |\n| Stage | Engaged |\n| Booked Call? | No |\n| Notes | HIGH PRIORITY \u00e2\u20ac\u201d asked about workflow types and pricing in first reply. Strong buying signals. Redirect to cal link on next message. |\n"}], "grading": {"expectations": [{"text": "answers-workflow-question-with-specifics", "passed": true, "evidence": "Draft lists: 'invoice processing, vendor onboarding, reconciliation handoffs, approval chains' \u00e2\u20ac\u201d 4 specific workflow types."}, {"text": "handles-cost-question-gracefully", "passed": true, "evidence": "Draft says 'it varies a lot depending on complexity, but the fastest way to give you a real number is to hear what you're actually dealing with.' No price stated."}, {"text": "no-evasive-deflection", "passed": true, "evidence": "The framing 'fastest way to give you a real number' is honest and value-oriented, not a corporate dodge."}, {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes https://cal.com/bishopai.io/15min"}, {"text": "maintains-conversational-momentum", "passed": true, "evidence": "Ends with a clear CTA: 'If you're open to it: [link]' \u00e2\u20ac\u201d low friction, no pressure."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}, "timing": {"total_duration_seconds": 46.1}}}, {"id": "eval-2-cost-question-without_skill", "prompt": "Ongoing LinkedIn thread I need help responding to:\n\nSender: Priya Nair\nTitle: Head of Operations @ Stackwell (SaaS, ~55 employees)\nRecent post: Article share about AI in finance ops, no original commentary.\n\nThread:\nRich (3 days ago): 'Hey Priya, saw your share on AI in finance ops \u00e2\u20ac\u201d curious what you're actually seeing in practice at Stackwell. We build custom AI agents for ops teams. If any of your workflows are eating up hours, happy to brainstorm on a quick call: https://cal.com/bishopai.io/15min'\n\nPriya (today): 'Thanks Rich! Honestly curious what this actually looks like in practice. What kind of workflows do you typically automate? And what does something like this run cost-wise?'\n\nHow should I reply?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Eval 2 Baseline \u00e2\u20ac\u201d Cost Question (Priya Nair)\n\n**Suggested Reply to Priya:**\n\nHey Priya \u00e2\u20ac\u201d great questions.\n\nOn the workflow side, the most common ones we tackle for ops teams: invoice processing and reconciliation, contract review routing, vendor onboarding, report generation, and internal request triage (anything that involves copying data between tools or chasing down approvals manually). For a Head of Ops at a ~55-person SaaS company, the usual suspects tend to be finance ops and cross-functional handoffs living in spreadsheets or email.\n\nOn cost \u00e2\u20ac\u201d I don't share ranges in DMs since it really depends on what we're building and how much time it's actually saving you. What I'd rather do is spend 15 minutes understanding what's eating up your team's hours, and if there's a fit, I'll put together something specific.\n\nIf that sounds useful: https://cal.com/bishopai.io/15min\n\n---\n\n**Notes on the approach:**\n\n- Answered her workflow question concretely with examples relevant to her role and company size.\n- Deflected pricing gracefully \u00e2\u20ac\u201d framed it as \"depends on scope\" rather than a hard no, which is honest and doesn't feel evasive.\n- Kept the CTA soft but present.\n- Tone stays conversational and peer-level, not salesy.\n"}], "grading": {"expectations": [{"text": "answers-workflow-question-with-specifics", "passed": true, "evidence": "Draft lists: 'invoice processing and reconciliation, contract review routing, vendor onboarding, report generation, internal request triage' \u00e2\u20ac\u201d 5 specific examples."}, {"text": "handles-cost-question-gracefully", "passed": true, "evidence": "Draft says 'I don't share ranges in DMs since it really depends on what we're building' \u00e2\u20ac\u201d no price given, redirects to call."}, {"text": "no-evasive-deflection", "passed": false, "evidence": "'I don't share ranges in DMs' sounds like a policy rule. The skill version's 'fastest way to give you a real number' frames it as being in the prospect's interest \u00e2\u20ac\u201d more natural."}, {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes https://cal.com/bishopai.io/15min"}, {"text": "maintains-conversational-momentum", "passed": true, "evidence": "Ends with clear CTA linking to the calendar."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}, "timing": {"total_duration_seconds": 20.0}}}, {"id": "eval-3-competitor-with_skill", "prompt": "Got this LinkedIn message and not sure how to handle it:\n\nSender: Derek Solis\nMessage: 'Hey Rich! Noticed you're in the AI automation space. I run an AI automation agency too \u00e2\u20ac\u201d we mainly work with e-commerce brands. Would love to connect and maybe explore some collaboration or referral opportunities.'\n\nHis profile:\n- Headline: Founder @ Automate.io Agency | AI Workflows for E-Commerce | Make.com & Zapier Expert\n- About: We build custom automation workflows for Shopify brands. 6 years in e-commerce automation. Team of 8.\n- Recent posts: Case study about a Klaviyo + Shopify automation he built.\n\nWhat should I say?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Eval 3 With Skill \u00e2\u20ac\u201d Competitor (Derek Solis)\n\n**SENDER:** Derek Solis \u00e2\u20ac\u201d Founder at Automate.io Agency\n\n**PROFILE SUMMARY:** Derek runs an 8-person AI automation agency focused exclusively on e-commerce brands \u00e2\u20ac\u201d specifically Shopify stores. He's been in e-commerce automation for 6 years and specializes in Make.com and Zapier workflows. His recent content is hands-on and technical (Klaviyo + Shopify case study), so he knows what he's doing. This is someone actively building in the same space as Bishop AI.\n\n**THREAD SUMMARY:** First message, inbound. Derek reached out after noticing Rich is in the AI automation space. He leads with a collaboration/referral angle rather than a sales pitch, which reads as genuine peer outreach.\n\n**FIT ASSESSMENT:** Possible competitor \u00e2\u20ac\u201d Derek runs an AI automation agency, which puts him squarely in the \"do not pitch\" category per Bishop AI's disqualification logic. That said, his niche (e-commerce / Shopify) is distinct enough from Bishop AI's focus (service businesses, agencies, SaaS ops) that the overlap may be limited. The referral angle he's raising has some legitimate potential \u00e2\u20ac\u201d if he gets leads outside his e-commerce lane, he could send them Bishop AI's way, and vice versa.\n\n**RECOMMENDATION:** Send (engage warmly, no pitch \u00e2\u20ac\u201d explore the referral angle as peers)\n\n**DRAFT MESSAGE:**\n\nHey Derek \u00e2\u20ac\u201d appreciate the note. Six years in e-commerce automation is no joke, and the Klaviyo + Shopify work looks solid.\n\nWe're actually coming at this from a different angle \u00e2\u20ac\u201d our clients are mostly service businesses and agencies dealing with ops chaos, not so much e-commerce \u00e2\u20ac\u201d so we probably don't bump into each other much. That said, a referral relationship could make sense. Happy to chat if you want to feel it out.\n\n**NOTES:** Derek is a direct competitor by category (AI automation agency), but his vertical focus on e-commerce/Shopify is meaningfully different from Bishop AI's target market. No pitch was made. The draft keeps the door open for a referral exchange without overselling it or pretending there's no overlap. If this conversation progresses, Rich should probe whether Derek's leads ever include non-e-commerce businesses before committing to anything formal. Flag for Rich to decide if a 15-minute peer call is worth the time investment.\n\n---\n\n**CONVERSATION TRACKING LOG:**\n\n| Field | Value |\n|-------|-------|\n| Name | Derek Solis |\n| Company | Automate.io Agency |\n| Job Title | Founder |\n| First Message Date | 2026-03-24 |\n| Last Message Date | 2026-03-24 |\n| Stage | New |\n| Booked Call? | No |\n| Notes | Possible competitor \u00e2\u20ac\u201d e-commerce automation agency. Inbound with referral/collaboration framing. Engaged politely, no pitch. Referral relationship possible given different verticals. |\n"}], "grading": {"expectations": [{"text": "flags-as-competitor", "passed": true, "evidence": "FIT ASSESSMENT explicitly states 'Possible competitor \u00e2\u20ac\u201d Derek runs an AI automation agency, which puts him squarely in the do not pitch category.'"}, {"text": "no-bishop-ai-pitch", "passed": true, "evidence": "Draft does not pitch Bishop AI services. Mentions client focus only to distinguish verticals, not to sell."}, {"text": "no-booking-link-included", "passed": true, "evidence": "No booking link appears in the draft message."}, {"text": "response-is-polite-not-cold", "passed": true, "evidence": "Draft acknowledges Derek's work ('Six years in e-commerce automation is no joke') and leaves the referral door open warmly."}, {"text": "recommendation-is-no-pitch", "passed": true, "evidence": "RECOMMENDATION: 'Send (engage warmly, no pitch \u00e2\u20ac\u201d explore the referral angle as peers)'"}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}, "timing": {"total_duration_seconds": 37.3}}}, {"id": "eval-3-competitor-without_skill", "prompt": "Got this LinkedIn message and not sure how to handle it:\n\nSender: Derek Solis\nMessage: 'Hey Rich! Noticed you're in the AI automation space. I run an AI automation agency too \u00e2\u20ac\u201d we mainly work with e-commerce brands. Would love to connect and maybe explore some collaboration or referral opportunities.'\n\nHis profile:\n- Headline: Founder @ Automate.io Agency | AI Workflows for E-Commerce | Make.com & Zapier Expert\n- About: We build custom automation workflows for Shopify brands. 6 years in e-commerce automation. Team of 8.\n- Recent posts: Case study about a Klaviyo + Shopify automation he built.\n\nWhat should I say?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Eval 3 Baseline \u00e2\u20ac\u201d Competitor (Derek Solis)\n\n## Situation Analysis\n\n**Who is Derek:** Founder of an AI automation agency focused on e-commerce brands (Shopify, Klaviyo, Make.com, Zapier). Team of 8, 6 years in the space. He reached out with a \"collaboration or referral\" framing.\n\n**The tension:** Derek is a direct competitor. Both he and Bishop AI build custom automations for clients. The overlap is significant \u00e2\u20ac\u201d the pitch for \"collaboration or referral\" is vague and could be a precursor to a sales pitch, a partnership probe, or genuine networking.\n\n**Rich's constraint:** Does not want to pitch competitors. Should also avoid being pitched, getting drawn into a time-wasting back-and-forth, or appearing rude to someone in his professional network.\n\n**The right tone:** Warm but non-committal. Acknowledge the common ground, be honest about the overlap, leave the door open without inviting a sales call.\n\n---\n\n## Recommended Response\n\nHey Derek \u00e2\u20ac\u201d thanks for reaching out! Always good to connect with others in the automation space.\n\nSounds like you've built something solid \u00e2\u20ac\u201d Shopify and Klaviyo workflows are no joke. Our work at Bishop AI overlaps a fair amount (custom AI agents and automations), so we're probably more parallel than complementary, but I'm happy to be a connection in the space.\n\nIf something specific ever comes up where it makes sense to loop each other in, I'm open to it. Best of luck with the agency!\n\n\u00e2\u20ac\u201d Rich\n\n---\n\n## Reasoning\n\n- **\"Parallel than complementary\"** is a polite, honest signal that Rich sees them as competitors without being blunt or awkward about it.\n- Acknowledging his work (Shopify + Klaviyo) shows Rich actually read his profile, which keeps it human.\n- **No call-to-action, no meeting invite** \u00e2\u20ac\u201d this avoids opening the door to a sales pitch or a time-consuming exploratory call with no upside.\n- Leaves the relationship positive and professional \u00e2\u20ac\u201d the space is small, burning bridges with a peer is unnecessary.\n- Short and direct \u00e2\u20ac\u201d respects both parties' time.\n"}], "grading": {"expectations": [{"text": "flags-as-competitor", "passed": false, "evidence": "The competitor analysis is buried in unstructured prose \u00e2\u20ac\u201d no formal FIT ASSESSMENT section with an explicit competitor flag."}, {"text": "no-bishop-ai-pitch", "passed": true, "evidence": "Draft does not pitch Bishop AI. The reply is peer-to-peer and non-sales."}, {"text": "no-booking-link-included", "passed": true, "evidence": "No booking link in the draft."}, {"text": "response-is-polite-not-cold", "passed": true, "evidence": "Draft is warm: 'Sounds like you've built something solid \u00e2\u20ac\u201d Shopify and Klaviyo workflows are no joke.'"}, {"text": "recommendation-is-no-pitch", "passed": false, "evidence": "No RECOMMENDATION section in the output \u00e2\u20ac\u201d the guidance is embedded in unstructured reasoning text, not a clear labeled recommendation."}], "summary": {"passed": 3, "failed": 2, "total": 5, "pass_rate": 0.6}, "timing": {"total_duration_seconds": 25.4}}}, {"id": "eval-4-inbound-with_skill", "prompt": "Someone reached out to me first on LinkedIn \u00e2\u20ac\u201d here's the thread:\n\nSender: Amara Osei\nTitle: Founder & CEO @ Bloom & Co (boutique PR agency, 18 people)\nRecent posts: Post from 1 week ago about how her team spent an entire Friday manually compiling a media coverage report for a client. 'I keep telling myself we'll fix this next quarter. It's been 3 quarters.'\n\nAmara (today, she sent the connection request + message): 'Hi Rich! I came across your content and it really resonated. We're a small PR agency and honestly drowning in repetitive admin. Would love to learn more about what you do.'\n\nHelp me reply.", "eval_id": 4, "outputs": [{"name": "response.md", "type": "text", "content": "# Eval 4 With Skill \u00e2\u20ac\u201d Inbound Lead (Amara Osei)\n\n**SENDER:** Amara Osei \u00e2\u20ac\u201d Founder & CEO at Bloom & Co (boutique PR agency, 18 people)\n\n**PROFILE SUMMARY:** Amara runs an 18-person boutique PR agency. Her recent post \u00e2\u20ac\u201d about her team burning a full Friday manually compiling a media coverage report, with the self-aware kicker \"I keep telling myself we'll fix this next quarter. It's been 3 quarters.\" \u00e2\u20ac\u201d signals she's aware the problem is real and ready to act. She reached out first, which is a strong signal.\n\n**THREAD SUMMARY:** Amara sent a connection request with an opening message today. She said Rich's content resonated, described her agency as \"drowning in repetitive admin,\" and said she'd love to learn more about what he does. No prior exchange.\n\n**FIT ASSESSMENT:** Good fit. Founder and decision-maker at a 10\u00e2\u20ac\u201c20 person service business. Explicit pain point (manual reporting, repetitive admin) is exactly what Bishop AI addresses. Reached out inbound \u00e2\u20ac\u201d already warm.\n\n**RECOMMENDATION:** Send\n\n**DRAFT MESSAGE:**\n\n---\n\nThat media coverage report post really stuck with me \u00e2\u20ac\u201d three quarters of \"we'll fix it next quarter\" is usually when the pain is actually ready to be solved.\n\nHappy to tell you more about what we do. We build custom AI agents and automations \u00e2\u20ac\u201d typically helps teams save 10\u00e2\u20ac\u201c20 hours a week on exactly the kind of manual work you're describing.\n\nWhat does that reporting process look like for you right now? Curious whether it's one client or something the whole team deals with regularly.\n\n---\n\n**NOTES:** Strong inbound lead. Amara named the pain point unprompted and reached out first \u00e2\u20ac\u201d skip the soft intro, go straight to curiosity. The question at the end invites her to elaborate before the booking link appears, which keeps it from feeling like a pitch. Introduce the calendar link in the next reply once she confirms the scope of the problem. Flag as HIGH PRIORITY.\n\n---\n\n**CONVERSATION TRACKING:**\n\n| Field | Value |\n|-------|-------|\n| Name | Amara Osei |\n| Company | Bloom & Co |\n| Job Title | Founder & CEO |\n| First Message Date | 2026-03-24 |\n| Last Message Date | 2026-03-24 |\n| Stage | New |\n| Booked Call? | No |\n| Notes | HIGH PRIORITY \u00e2\u20ac\u201d inbound, named pain point explicitly (manual media coverage reporting, repetitive admin), 18-person boutique PR agency. Reached out after seeing Rich's content. Hold booking link until she responds. |\n"}], "grading": {"expectations": [{"text": "treats-as-warm-lead", "passed": true, "evidence": "NOTES explicitly says 'Strong inbound lead. Amara named the pain point unprompted and reached out first.' Flagged HIGH PRIORITY."}, {"text": "references-media-coverage-pain-point", "passed": true, "evidence": "Draft opens with 'That media coverage report post really stuck with me \u00e2\u20ac\u201d three quarters of \"we'll fix it next quarter\" is usually when the pain is actually ready to be solved.'"}, {"text": "asks-question-or-shows-curiosity", "passed": true, "evidence": "Draft ends with: 'What does that reporting process look like for you right now? Curious whether it's one client or something the whole team deals with regularly.'"}, {"text": "does-not-lead-with-pitch", "passed": true, "evidence": "Draft leads with a comment on her post, then a brief Bishop AI intro, then a question \u00e2\u20ac\u201d pitch is secondary to curiosity."}, {"text": "fit-assessed-as-good", "passed": true, "evidence": "FIT ASSESSMENT: 'Good fit. Founder and decision-maker at a 10\u00e2\u20ac\u201c20 person service business. Explicit pain point is exactly what Bishop AI addresses.'"}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}, "timing": {"total_duration_seconds": 41.1}}}, {"id": "eval-4-inbound-without_skill", "prompt": "Someone reached out to me first on LinkedIn \u00e2\u20ac\u201d here's the thread:\n\nSender: Amara Osei\nTitle: Founder & CEO @ Bloom & Co (boutique PR agency, 18 people)\nRecent posts: Post from 1 week ago about how her team spent an entire Friday manually compiling a media coverage report for a client. 'I keep telling myself we'll fix this next quarter. It's been 3 quarters.'\n\nAmara (today, she sent the connection request + message): 'Hi Rich! I came across your content and it really resonated. We're a small PR agency and honestly drowning in repetitive admin. Would love to learn more about what you do.'\n\nHelp me reply.", "eval_id": 4, "outputs": [{"name": "response.md", "type": "text", "content": "# Eval 4 Baseline \u00e2\u20ac\u201d Inbound Lead (Amara Osei)\n\n**Suggested Reply to Amara:**\n\nHi Amara, thanks for reaching out \u00e2\u20ac\u201d and that post about the Friday media report really stuck with me. Three quarters of \"we'll fix this next quarter\" is such an honest way to describe how this stuff tends to go.\n\nThat kind of report is actually a great candidate for automation \u00e2\u20ac\u201d pulling coverage, formatting it, summarizing it \u00e2\u20ac\u201d the kind of work that eats a full afternoon but doesn't really need a human in the loop.\n\nThat's exactly what we build at Bishop AI: custom agents and automations that handle the repetitive stuff so your team isn't spending Fridays on it. Most clients free up 10\u00e2\u20ac\u201c20 hours a week once we get the right workflows in place.\n\nHappy to do a quick 15-minute call to hear what's eating the most time on your end and see if it's a fit. Here's my booking link if you'd like to grab a time: https://cal.com/bishopai.io/15min\n\n---\n\n**Reasoning:**\n- She came inbound, so no need to oversell \u00e2\u20ac\u201d the tone is warm and direct\n- Led with her specific post (the Friday media report) to show genuine attention\n- Named the exact use case as an automation candidate to make it concrete and credible\n- Soft CTA with the booking link, not pushy\n"}], "grading": {"expectations": [{"text": "treats-as-warm-lead", "passed": false, "evidence": "No FIT ASSESSMENT or explicit warm-lead framing. Reasoning notes she came inbound but there's no structured prioritization."}, {"text": "references-media-coverage-pain-point", "passed": true, "evidence": "Draft says 'that post about the Friday media report really stuck with me' and names 'pulling coverage, formatting it, summarizing it.'"}, {"text": "asks-question-or-shows-curiosity", "passed": false, "evidence": "Draft does NOT ask a question. It goes straight from the post reference to pitching Bishop AI to the booking link CTA."}, {"text": "does-not-lead-with-pitch", "passed": false, "evidence": "After the post reference, the draft immediately pivots to 'That's exactly what we build at Bishop AI' and jumps to the booking link. The pitch IS the message."}, {"text": "fit-assessed-as-good", "passed": false, "evidence": "No FIT ASSESSMENT section \u00e2\u20ac\u201d no structured analysis."}], "summary": {"passed": 1, "failed": 4, "total": 5, "pass_rate": 0.2}, "timing": {"total_duration_seconds": 23.7}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "linkedin-dm-assistant", "executor_model": "claude-sonnet-4-6", "timestamp": "2026-03-24T23:00:00Z", "evals_run": ["new-connection-generic-opener", "ongoing-conversation-cost-question", "competitor-referral-outreach", "inbound-warm-lead"], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "New Connection - Generic Opener", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 34.7, "tokens": 12362, "errors": 0}, "expectations": [{"text": "includes-structured-output-format", "passed": true, "evidence": "Output contains SENDER, PROFILE SUMMARY, FIT ASSESSMENT, RECOMMENDATION, DRAFT MESSAGE, and tracking log."}, {"text": "references-reconciliation-post", "passed": true, "evidence": "Draft opens with the 14-hour reconciliation process reference."}, {"text": "avoids-banned-phrases", "passed": true, "evidence": "None of the banned phrases appear."}, {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes https://cal.com/bishopai.io/15min"}, {"text": "pitch-is-light-not-salesy", "passed": true, "evidence": "Bishop AI in one sentence, CTA framed as an offer."}, {"text": "fit-assessed-as-good", "passed": true, "evidence": "FIT ASSESSMENT: Good fit - Founder/CEO, HIGH PRIORITY flagged."}]}, {"eval_id": 1, "eval_name": "New Connection - Generic Opener", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.5, "passed": 3, "failed": 3, "total": 6, "time_seconds": 14.8, "tokens": 9267, "errors": 0}, "expectations": [{"text": "includes-structured-output-format", "passed": false, "evidence": "Output is just a draft message - no structured sections."}, {"text": "references-reconciliation-post", "passed": true, "evidence": "Draft mentions the 14-hour reconciliation process."}, {"text": "avoids-banned-phrases", "passed": true, "evidence": "None of the banned phrases appear."}, {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes booking link."}, {"text": "pitch-is-light-not-salesy", "passed": false, "evidence": "Salesy opener plus filler closing line."}, {"text": "fit-assessed-as-good", "passed": false, "evidence": "No FIT ASSESSMENT section at all."}]}, {"eval_id": 2, "eval_name": "Ongoing Conversation - Cost Question", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 46.1, "tokens": 13183, "errors": 0}, "expectations": [{"text": "answers-workflow-question-with-specifics", "passed": true, "evidence": "Lists 4 specific workflow types: invoice processing, vendor onboarding, reconciliation handoffs, approval chains."}, {"text": "handles-cost-question-gracefully", "passed": true, "evidence": "Fastest way to give a real number framing - no price stated."}, {"text": "no-evasive-deflection", "passed": true, "evidence": "Framing is honest and value-oriented."}, {"text": "includes-booking-link", "passed": true, "evidence": "Booking link included."}, {"text": "maintains-conversational-momentum", "passed": true, "evidence": "Ends with low-friction CTA."}]}, {"eval_id": 2, "eval_name": "Ongoing Conversation - Cost Question", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": 20.0, "tokens": 9380, "errors": 0}, "expectations": [{"text": "answers-workflow-question-with-specifics", "passed": true, "evidence": "Lists 5 specific examples."}, {"text": "handles-cost-question-gracefully", "passed": true, "evidence": "Does not share price, redirects to call."}, {"text": "no-evasive-deflection", "passed": false, "evidence": "I dont share ranges in DMs sounds like a policy rule, not an offer to help."}, {"text": "includes-booking-link", "passed": true, "evidence": "Booking link included."}, {"text": "maintains-conversational-momentum", "passed": true, "evidence": "Clear CTA at end."}]}, {"eval_id": 3, "eval_name": "Competitor - Referral Outreach", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 37.3, "tokens": 12457, "errors": 0}, "expectations": [{"text": "flags-as-competitor", "passed": true, "evidence": "FIT ASSESSMENT explicitly flags as competitor in do-not-pitch category."}, {"text": "no-bishop-ai-pitch", "passed": true, "evidence": "Draft does not pitch Bishop AI services."}, {"text": "no-booking-link-included", "passed": true, "evidence": "No booking link in the draft."}, {"text": "response-is-polite-not-cold", "passed": true, "evidence": "Six years in e-commerce automation is no joke - warm acknowledgment."}, {"text": "recommendation-is-no-pitch", "passed": true, "evidence": "RECOMMENDATION: Send (engage warmly, no pitch)"}]}, {"eval_id": 3, "eval_name": "Competitor - Referral Outreach", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.6, "passed": 3, "failed": 2, "total": 5, "time_seconds": 25.4, "tokens": 9536, "errors": 0}, "expectations": [{"text": "flags-as-competitor", "passed": false, "evidence": "Competitor analysis buried in unstructured prose - no formal FIT ASSESSMENT."}, {"text": "no-bishop-ai-pitch", "passed": true, "evidence": "Draft is peer-to-peer, no Bishop AI pitch."}, {"text": "no-booking-link-included", "passed": true, "evidence": "No booking link."}, {"text": "response-is-polite-not-cold", "passed": true, "evidence": "Warm and professional draft."}, {"text": "recommendation-is-no-pitch", "passed": false, "evidence": "No RECOMMENDATION section - guidance only in unstructured reasoning."}]}, {"eval_id": 4, "eval_name": "Inbound Warm Lead", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 41.1, "tokens": 13091, "errors": 0}, "expectations": [{"text": "treats-as-warm-lead", "passed": true, "evidence": "NOTES: Strong inbound lead - HIGH PRIORITY."}, {"text": "references-media-coverage-pain-point", "passed": true, "evidence": "That media coverage report post really stuck with me."}, {"text": "asks-question-or-shows-curiosity", "passed": true, "evidence": "What does that reporting process look like for you right now?"}, {"text": "does-not-lead-with-pitch", "passed": true, "evidence": "Leads with post comment, then intro, then question."}, {"text": "fit-assessed-as-good", "passed": true, "evidence": "FIT ASSESSMENT: Good fit, founder, decision-maker, explicit pain point."}]}, {"eval_id": 4, "eval_name": "Inbound Warm Lead", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.2, "passed": 1, "failed": 4, "total": 5, "time_seconds": 23.7, "tokens": 9521, "errors": 0}, "expectations": [{"text": "treats-as-warm-lead", "passed": false, "evidence": "No FIT ASSESSMENT or warm-lead framing."}, {"text": "references-media-coverage-pain-point", "passed": true, "evidence": "Mentions the Friday media report."}, {"text": "asks-question-or-shows-curiosity", "passed": false, "evidence": "No question asked - goes straight to pitch."}, {"text": "does-not-lead-with-pitch", "passed": false, "evidence": "After post reference: immediately pitches Bishop AI + booking link."}, {"text": "fit-assessed-as-good", "passed": false, "evidence": "No FIT ASSESSMENT section."}]}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 39.8, "stddev": 4.8, "min": 34.7, "max": 46.1}, "tokens": {"mean": 12773, "stddev": 380, "min": 12362, "max": 13183}}, "without_skill": {"pass_rate": {"mean": 0.53, "stddev": 0.23, "min": 0.2, "max": 0.8}, "time_seconds": {"mean": 21.0, "stddev": 4.3, "min": 14.8, "max": 25.4}, "tokens": {"mean": 9426, "stddev": 115, "min": 9267, "max": 9536}}, "delta": {"pass_rate": "+0.47", "time_seconds": "+18.8", "tokens": "+3347"}}, "notes": ["Eval 4 (inbound warm lead) shows the biggest gap: with_skill 100% vs without_skill 20%. Baseline pitched immediately and never asked a question.", "Eval 2 (cost question) shows the smallest gap (100% vs 80%) - both handled the workflow question well. Baseline only failed on price-redirection tone.", "Structured output format is entirely absent in all without_skill runs - the most consistently discriminating assertion.", "Skill adds ~19s and ~3,300 tokens per run - overhead from reading SKILL.md and producing structured output.", "All with_skill runs correctly withheld the booking link from the competitor - baseline missed this structural behavior even though its draft message was acceptable."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

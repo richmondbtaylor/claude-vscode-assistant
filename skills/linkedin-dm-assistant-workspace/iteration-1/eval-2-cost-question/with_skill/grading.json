@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "answers-workflow-question-with-specifics", "passed": true, "evidence": "Draft lists: 'invoice processing, vendor onboarding, reconciliation handoffs, approval chains' — 4 specific workflow types."},
+    {"text": "handles-cost-question-gracefully", "passed": true, "evidence": "Draft says 'it varies a lot depending on complexity, but the fastest way to give you a real number is to hear what you're actually dealing with.' No price stated."},
+    {"text": "no-evasive-deflection", "passed": true, "evidence": "The framing 'fastest way to give you a real number' is honest and value-oriented, not a corporate dodge."},
+    {"text": "includes-booking-link", "passed": true, "evidence": "Draft includes https://cal.com/bishopai.io/15min"},
+    {"text": "maintains-conversational-momentum", "passed": true, "evidence": "Ends with a clear CTA: 'If you're open to it: [link]' — low friction, no pressure."}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "timing": {"total_duration_seconds": 46.1}
+}

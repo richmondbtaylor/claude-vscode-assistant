@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "treats-as-warm-lead", "passed": true, "evidence": "NOTES explicitly says 'Strong inbound lead. Amara named the pain point unprompted and reached out first.' Flagged HIGH PRIORITY."},
+    {"text": "references-media-coverage-pain-point", "passed": true, "evidence": "Draft opens with 'That media coverage report post really stuck with me — three quarters of \"we'll fix it next quarter\" is usually when the pain is actually ready to be solved.'"},
+    {"text": "asks-question-or-shows-curiosity", "passed": true, "evidence": "Draft ends with: 'What does that reporting process look like for you right now? Curious whether it's one client or something the whole team deals with regularly.'"},
+    {"text": "does-not-lead-with-pitch", "passed": true, "evidence": "Draft leads with a comment on her post, then a brief Bishop AI intro, then a question — pitch is secondary to curiosity."},
+    {"text": "fit-assessed-as-good", "passed": true, "evidence": "FIT ASSESSMENT: 'Good fit. Founder and decision-maker at a 10–20 person service business. Explicit pain point is exactly what Bishop AI addresses.'"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "timing": {"total_duration_seconds": 41.1}
+}

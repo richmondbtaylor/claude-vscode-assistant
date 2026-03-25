@@ -1,0 +1,27 @@
+{
+  "eval_id": 4,
+  "eval_name": "inbound-warm-lead",
+  "prompt": "Someone reached out to me first on LinkedIn — here's the thread:\n\nSender: Amara Osei\nTitle: Founder & CEO @ Bloom & Co (boutique PR agency, 18 people)\nRecent posts: Post from 1 week ago about how her team spent an entire Friday manually compiling a media coverage report for a client. 'I keep telling myself we'll fix this next quarter. It's been 3 quarters.'\n\nAmara (today, she sent the connection request + message): 'Hi Rich! I came across your content and it really resonated. We're a small PR agency and honestly drowning in repetitive admin. Would love to learn more about what you do.'\n\nHelp me reply.",
+  "assertions": [
+    {
+      "name": "treats-as-warm-lead",
+      "description": "FIT ASSESSMENT or NOTES recognizes Amara as an inbound lead or warm prospect"
+    },
+    {
+      "name": "references-media-coverage-pain-point",
+      "description": "Draft references her specific pain point — manual reporting, media coverage compilation, or the 'fix it next quarter' delay"
+    },
+    {
+      "name": "asks-question-or-shows-curiosity",
+      "description": "Draft asks at least one open question about her situation, or demonstrates genuine curiosity"
+    },
+    {
+      "name": "does-not-lead-with-pitch",
+      "description": "Draft does not open with a Bishop AI sales pitch as the first thing"
+    },
+    {
+      "name": "fit-assessed-as-good",
+      "description": "FIT ASSESSMENT marks Amara as a good fit"
+    }
+  ]
+}

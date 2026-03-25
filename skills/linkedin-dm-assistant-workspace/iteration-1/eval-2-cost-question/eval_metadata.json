@@ -1,0 +1,27 @@
+{
+  "eval_id": 2,
+  "eval_name": "ongoing-conversation-cost-question",
+  "prompt": "Ongoing LinkedIn thread I need help responding to:\n\nSender: Priya Nair\nTitle: Head of Operations @ Stackwell (SaaS, ~55 employees)\nRecent post: Article share about AI in finance ops, no original commentary.\n\nThread:\nRich (3 days ago): 'Hey Priya, saw your share on AI in finance ops — curious what you're actually seeing in practice at Stackwell. We build custom AI agents for ops teams. If any of your workflows are eating up hours, happy to brainstorm on a quick call: https://cal.com/bishopai.io/15min'\n\nPriya (today): 'Thanks Rich! Honestly curious what this actually looks like in practice. What kind of workflows do you typically automate? And what does something like this run cost-wise?'\n\nHow should I reply?",
+  "assertions": [
+    {
+      "name": "answers-workflow-question-with-specifics",
+      "description": "Draft gives at least 2 specific, concrete examples of workflow types Bishop AI automates"
+    },
+    {
+      "name": "handles-cost-question-gracefully",
+      "description": "Draft does NOT state a price or price range, and redirects to a call without being dismissive"
+    },
+    {
+      "name": "no-evasive-deflection",
+      "description": "The cost redirection sounds natural and helpful, not like a scripted dodge"
+    },
+    {
+      "name": "includes-booking-link",
+      "description": "Draft includes the booking link: https://cal.com/bishopai.io/15min"
+    },
+    {
+      "name": "maintains-conversational-momentum",
+      "description": "Draft ends with a clear, low-friction invitation to continue the conversation"
+    }
+  ]
+}

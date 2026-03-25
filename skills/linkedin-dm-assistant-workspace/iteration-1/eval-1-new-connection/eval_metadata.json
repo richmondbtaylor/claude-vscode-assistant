@@ -1,0 +1,31 @@
+{
+  "eval_id": 1,
+  "eval_name": "new-connection-generic-opener",
+  "prompt": "Here's a LinkedIn DM I just got:\n\nSender: Marcus Webb\nMessage: 'Hey Rich, great to connect! Looking forward to seeing what you're up to.'\n\nHis profile:\n- Headline: Co-Founder & CEO @ Clearpath Ops | Helping logistics companies run leaner\n- About: We help mid-sized logistics and freight companies eliminate operational bottlenecks. Currently scaling a team of 22. Previous: 8 years in ops consulting at Deloitte.\n- Recent posts: Posted 3 days ago: 'Just finished a brutal manual reconciliation process that took our team 14 hours this week. There has to be a better way. If you've solved this in logistics, I'd love to hear how.' — 47 likes, 19 comments\n\nDraft me a reply.",
+  "assertions": [
+    {
+      "name": "includes-structured-output-format",
+      "description": "Output contains the required structured sections: SENDER, PROFILE SUMMARY, FIT ASSESSMENT, RECOMMENDATION, and DRAFT MESSAGE"
+    },
+    {
+      "name": "references-reconciliation-post",
+      "description": "Draft message references Marcus's manual reconciliation post or the 14-hour process — not just his job title"
+    },
+    {
+      "name": "avoids-banned-phrases",
+      "description": "Draft does NOT contain banned phrases: 'I came across your profile', 'pick your brain', 'quick question', 'hope this message finds you'"
+    },
+    {
+      "name": "includes-booking-link",
+      "description": "Draft includes the Bishop AI booking link: https://cal.com/bishopai.io/15min"
+    },
+    {
+      "name": "pitch-is-light-not-salesy",
+      "description": "Bishop AI is introduced in one sentence as an offer of value, not a hard sell"
+    },
+    {
+      "name": "fit-assessed-as-good",
+      "description": "FIT ASSESSMENT marks Marcus as a good fit"
+    }
+  ]
+}
