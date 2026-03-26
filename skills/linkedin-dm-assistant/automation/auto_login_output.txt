@@ -1,0 +1,5 @@
+URL after login: https://www.linkedin.com/checkpoint/challenge/AgFSW8wdkFNXEAAAAZ0mGQg7mcZKMbXPeu7MKH00JyS1uymVaicSEuiy67KAMQ5eXocXv1OFdbAYd5VnSjiqqrblBqWHLA?ut=0TbEKPKGz8hcc1
+CHECKPOINT_REACHED
+Verification required. Waiting for code in verification_code.txt...
+Timed out waiting for code.
+Saved 22 cookies to ./linkedin_cookies.json

@@ -14,7 +14,7 @@ An auto-reply agent (`reply_agent.py`) then reads qualifying leads from the shee
 ## Project Location
 
 ```
-C:\Users\richm\bishop-research-agent\
+C:\Users\richm\.claude\skills\bishop-research-agent\
 ```
 
 ---
@@ -22,7 +22,7 @@ C:\Users\richm\bishop-research-agent\
 ## How to Run
 
 ```bash
-cd /c/Users/richm/bishop-research-agent
+cd /c/Users/richm/.claude/skills/bishop-research-agent
 source venv/Scripts/activate   # bash syntax (not venv\Scripts\activate)
 
 python main.py --once              # Full pass (Reddit + Brave/Web + n8n jobs)
@@ -245,12 +245,12 @@ Google OAuth token cached at `~/.config/gspread/authorized_user.json` after firs
 
 ### Run the research agent now
 ```bash
-cd /c/Users/richm/bishop-research-agent && source venv/Scripts/activate && python main.py --once
+cd /c/Users/richm/.claude/skills/bishop-research-agent && source venv/Scripts/activate && python main.py --once
 ```
 
 ### Run the reply agent (send messages to pending leads)
 ```bash
-cd /c/Users/richm/bishop-research-agent && source venv/Scripts/activate && python reply_agent.py
+cd /c/Users/richm/.claude/skills/bishop-research-agent && source venv/Scripts/activate && python reply_agent.py
 ```
 
 ### Create Reddit API app credentials (one-time setup)
