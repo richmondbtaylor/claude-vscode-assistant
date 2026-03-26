@@ -32,3 +32,16 @@ file-history/
 *.pickle
 gdrive_token*
 client_secret_*.json
+
+# Browser sessions and cookies
+linkedin_cookies.json
+.browser_sessions/
+*.db
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Debug screenshots
+debug_*.png
+screenshot_*.png
