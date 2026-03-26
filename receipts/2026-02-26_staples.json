@@ -1,0 +1,43 @@
+{
+  "store": "Staples",
+  "store_number": 1831,
+  "address": "2121 Biscayne Blvd, Miami, FL 33137",
+  "phone": "305-573-1680",
+  "date": "2026-02-26",
+  "time": "12:35 PM",
+  "transaction": 6966,
+  "cashier": 3044068,
+  "register": 1,
+  "rewards_number": "******7987",
+  "items": [
+    {
+      "qty": 1,
+      "description": "Scotch LG Mounting",
+      "upc": "051141253817",
+      "price": 12.49,
+      "amount": 12.49
+    },
+    {
+      "qty": 1,
+      "description": "Name Bdg LBL",
+      "upc": "072782051471",
+      "price": 8.99,
+      "amount": 8.99
+    }
+  ],
+  "subtotal": 21.48,
+  "tax": {
+    "rate": "7%",
+    "jurisdiction": "Florida",
+    "amount": 1.50
+  },
+  "total": 22.98,
+  "payment": {
+    "method": "Visa Credit",
+    "card_last_four": "0404",
+    "type": "Contactless",
+    "auth_number": "O5793D"
+  },
+  "category": "Office & Supplies",
+  "expense_tab": "Personal"
+}
