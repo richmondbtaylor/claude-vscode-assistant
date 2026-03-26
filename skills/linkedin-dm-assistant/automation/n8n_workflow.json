@@ -1,0 +1,176 @@
+{
+  "name": "LinkedIn DM — Slack Approval → Send",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "linkedin-dm-approval",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-node",
+      "name": "Slack Interaction Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "linkedin-dm-approval"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Slack sends the interaction payload as URL-encoded form data\n// Parse it and extract what we need\nconst body = $input.first().json.body;\n\nlet payload;\nif (typeof body === 'string') {\n  // URL-encoded: payload=%7B%22type%22%3A...\n  const decoded = decodeURIComponent(body.replace('payload=', ''));\n  payload = JSON.parse(decoded);\n} else if (body.payload) {\n  payload = JSON.parse(body.payload);\n} else {\n  payload = body;\n}\n\nconst action = payload.actions?.[0];\nconst actionId = action?.action_id || '';\nconst value = action?.value ? JSON.parse(action.value) : {};\n\nreturn [{\n  json: {\n    action: actionId,          // 'approve_dm' or 'skip_dm'\n    conversation_url: value.conversation_url || '',\n    message: value.message || '',\n    sender_name: value.sender_name || '',\n    slack_message_ts: payload.message?.ts || '',\n    slack_channel: payload.channel?.id || '',\n    response_url: payload.response_url || ''\n  }\n}];"
+      },
+      "id": "parse-payload",
+      "name": "Parse Slack Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.action}}",
+              "value2": "approve_dm"
+            }
+          ]
+        }
+      },
+      "id": "check-action",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LOCAL_SERVER_PUBLIC_URL}}/send-dm",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Server-Secret",
+              "value": "={{$env.SERVER_SECRET}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "conversation_url",
+              "value": "={{$json.conversation_url}}"
+            },
+            {
+              "name": "message",
+              "value": "={{$json.message}}"
+            },
+            {
+              "name": "sender_name",
+              "value": "={{$json.sender_name}}"
+            },
+            {
+              "name": "slack_message_ts",
+              "value": "={{$json.slack_message_ts}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "call-playwright",
+      "name": "Trigger Playwright",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$json.response_url}}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "✅ Sent to {{$json.sender_name}}"
+            },
+            {
+              "name": "replace_original",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "slack-confirm-sent",
+      "name": "Update Slack — Sent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$json.response_url}}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "⏭️ Skipped — {{$json.sender_name}}"
+            },
+            {
+              "name": "replace_original",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "slack-confirm-skipped",
+      "name": "Update Slack — Skipped",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": ""
+      },
+      "id": "respond-200",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [460, 520]
+    }
+  ],
+  "connections": {
+    "Slack Interaction Webhook": {
+      "main": [[{"node": "Parse Slack Payload", "type": "main", "index": 0}]]
+    },
+    "Parse Slack Payload": {
+      "main": [
+        [{"node": "Approved?", "type": "main", "index": 0}],
+        [{"node": "Respond 200", "type": "main", "index": 0}]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [{"node": "Trigger Playwright", "type": "main", "index": 0}],
+        [{"node": "Update Slack — Skipped", "type": "main", "index": 0}]
+      ]
+    },
+    "Trigger Playwright": {
+      "main": [[{"node": "Update Slack — Sent", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

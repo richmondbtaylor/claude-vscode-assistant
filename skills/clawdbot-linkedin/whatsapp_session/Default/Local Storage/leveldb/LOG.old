@@ -1,0 +1,6 @@
+2026/02/18-11:31:48.622 192cc Reusing MANIFEST C:\Users\richm\ClawdBot-LinkedIn\whatsapp_session\Default\Local Storage\leveldb/MANIFEST-000001
+2026/02/18-11:31:48.628 192cc Recovering log #28
+2026/02/18-11:31:48.631 192cc Reusing old log C:\Users\richm\ClawdBot-LinkedIn\whatsapp_session\Default\Local Storage\leveldb/000028.log 
+2026/02/19-09:24:26.679 19268 Level-0 table #33: started
+2026/02/19-09:24:26.691 19268 Level-0 table #33: 13678 bytes OK
+2026/02/19-09:24:26.695 19268 Delete type=0 #28
