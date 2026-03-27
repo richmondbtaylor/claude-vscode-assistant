@@ -13,11 +13,15 @@ import os
 import hmac
 import hashlib
 import logging
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from send_dm import send_linkedin_dm
+
+_executor = ThreadPoolExecutor(max_workers=2)
 
 load_dotenv()
 
@@ -39,7 +43,10 @@ class SendDMPayload(BaseModel):
 
 async def _send_and_log(payload: SendDMPayload):
     logger.info(f"Sending DM to {payload.sender_name} at {payload.conversation_url}")
-    result = send_linkedin_dm(payload.conversation_url, payload.message)
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(
+        _executor, send_linkedin_dm, payload.conversation_url, payload.message
+    )
     if result["success"]:
         logger.info(f"DM sent successfully to {payload.sender_name}")
     else:

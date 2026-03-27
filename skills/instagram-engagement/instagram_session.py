@@ -104,8 +104,19 @@ class InstagramSession:
     # ------------------------------------------------------------------
 
     def _login(self):
-        self.page.goto(f"{IG_BASE}/accounts/login/", wait_until="networkidle", timeout=30000)
-        _scroll_delay()
+        self.page.goto(f"{IG_BASE}/accounts/login/", wait_until="domcontentloaded", timeout=45000)
+        time.sleep(3)  # let JS render
+
+        # Dismiss cookie consent banner if present (EU/regional popup)
+        for cookie_text in ["Allow all cookies", "Allow essential and optional cookies", "Accept All"]:
+            try:
+                btn = self.page.get_by_role("button", name=cookie_text)
+                if btn.is_visible(timeout=2000):
+                    btn.click()
+                    time.sleep(2)
+                    break
+            except Exception:
+                pass
 
         # Already logged in (redirected away from login page)
         if "/accounts/login/" not in self.page.url:
@@ -113,12 +124,16 @@ class InstagramSession:
             return
 
         try:
-            self.page.fill('input[name="username"]', self.username, timeout=10000)
+            # Wait for the username field to actually appear
+            self.page.wait_for_selector('input[name="username"]', timeout=20000)
+            time.sleep(1)
+            self.page.fill('input[name="username"]', self.username, timeout=15000)
             _scroll_delay()
-            self.page.fill('input[name="password"]', self.password, timeout=10000)
+            self.page.fill('input[name="password"]', self.password, timeout=15000)
             _scroll_delay()
-            self.page.click('button[type="submit"]', timeout=10000)
-            self.page.wait_for_load_state("networkidle", timeout=20000)
+            self.page.click('button[type="submit"]', timeout=15000)
+            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
+            time.sleep(3)
         except PWTimeout:
             raise LoginChallengeError(f"[{self.account_name}] Login form timed out — possible challenge or page change")
 
@@ -166,43 +181,69 @@ class InstagramSession:
     # Target Discovery
     # ------------------------------------------------------------------
 
+    # Reserved Instagram path segments that are NOT usernames
+    _RESERVED_PATHS = {
+        "explore", "accounts", "direct", "stories", "reels", "p", "tv",
+        "reel", "shop", "about", "press", "blog", "jobs", "developers",
+        "privacy", "safety", "terms", "graphql", "data", "static", "api",
+        "challenge", "inbox", "activity", "notifications", "search",
+    }
+
     def get_hashtag_targets(self, hashtag: str, max_accounts: int = 60) -> list[str]:
-        """Collect unique usernames from recent posts under a hashtag."""
+        """Collect unique usernames from the hashtag explore page."""
+        import re
         tag = hashtag.lstrip("#")
         url = f"{IG_BASE}/explore/tags/{tag}/"
         logger.info(f"[{self.account_name}] Searching hashtag #{tag}")
-        self.page.goto(url, wait_until="networkidle", timeout=30000)
-        _scroll_delay()
+        self.page.goto(url, wait_until="domcontentloaded", timeout=45000)
+        time.sleep(5)
 
-        usernames = set()
-        # Collect post links from the grid
-        post_links = self.page.query_selector_all('a[href*="/p/"]')
-        for link in post_links[:max_accounts * 2]:
+        # Scroll to load more posts
+        for _ in range(3):
+            self.page.evaluate("window.scrollBy(0, 800)")
+            time.sleep(1.5)
+
+        html = self.page.content()
+
+        # Extract profile hrefs already on page (fast path)
+        candidates = re.findall(r'href="/([\w.]+)/"', html)
+        usernames = []
+        seen = set()
+        for c in candidates:
+            if c not in self._RESERVED_PATHS and c not in seen and len(c) >= 2:
+                seen.add(c)
+                usernames.append(c)
+
+        # Extract post hrefs to visit individually for more authors
+        post_hrefs = list(dict.fromkeys(re.findall(r'href="(/p/[^"]+)"', html)))
+        logger.info(f"[{self.account_name}] {len(post_hrefs)} posts on page, {len(usernames)} profiles found directly")
+
+        for href in post_hrefs:
+            if len(usernames) >= max_accounts:
+                break
             try:
-                href = link.get_attribute("href")
-                if href:
-                    self.page.goto(f"{IG_BASE}{href}", wait_until="networkidle", timeout=20000)
-                    _scroll_delay()
-                    username = self._get_post_author()
-                    if username:
-                        usernames.add(username)
-                    self.page.go_back(wait_until="networkidle", timeout=15000)
-                    _scroll_delay()
-                    if len(usernames) >= max_accounts:
-                        break
+                self.page.goto(f"{IG_BASE}{href}", wait_until="domcontentloaded", timeout=30000)
+                time.sleep(2)
+                post_html = self.page.content()
+                profile_matches = re.findall(r'href="/([\w.]+)/"', post_html)
+                for c in profile_matches:
+                    if c not in self._RESERVED_PATHS and c not in seen and len(c) >= 2:
+                        seen.add(c)
+                        usernames.append(c)
+                        break  # first profile link on the post page = author
             except Exception as e:
-                logger.warning(f"Error collecting hashtag target: {e}")
+                logger.debug(f"Could not get author from post {href}: {e}")
                 continue
 
         logger.info(f"[{self.account_name}] Found {len(usernames)} targets from #{tag}")
-        return list(usernames)
+        return usernames[:max_accounts]
 
     def get_competitor_followers(self, competitor_username: str, max_accounts: int = 40) -> list[str]:
         """Collect follower usernames from a competitor account."""
         url = f"{IG_BASE}/{competitor_username}/followers/"
         logger.info(f"[{self.account_name}] Scraping followers of @{competitor_username}")
         try:
-            self.page.goto(f"{IG_BASE}/{competitor_username}/", wait_until="networkidle", timeout=20000)
+            self.page.goto(f"{IG_BASE}/{competitor_username}/", wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             # Click followers link
             followers_link = self.page.query_selector('a[href$="/followers/"]')
@@ -239,7 +280,7 @@ class InstagramSession:
         Returns None if profile is unavailable or private.
         """
         try:
-            self.page.goto(f"{IG_BASE}/{username}/", wait_until="networkidle", timeout=20000)
+            self.page.goto(f"{IG_BASE}/{username}/", wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
 
             # Check for private account or "Page not found"
@@ -247,7 +288,7 @@ class InstagramSession:
             if "Sorry, this page" in content or "isn't available" in content:
                 return None
 
-            is_private = "This account is private" in content or "private" in content.lower()
+            is_private = "This account is private" in content
 
             # Parse follower/following counts from meta description or visible spans
             counts = self._parse_counts()
@@ -268,31 +309,37 @@ class InstagramSession:
             return None
 
     def _parse_counts(self) -> dict:
-        """Extract follower/following counts from profile page."""
+        """Extract follower/following counts from profile page meta description."""
         counts = {}
         try:
-            # Instagram renders counts in <span> elements within the stats section
+            import re
             meta = self.page.query_selector('meta[name="description"]')
             if meta:
                 desc = meta.get_attribute("content") or ""
-                # Format: "X Followers, Y Following, Z Posts"
-                import re
-                m = re.findall(r"([\d,]+\.?\d*[KMkm]?)\s+(Followers?|Following|Posts?)", desc, re.IGNORECASE)
+                # Format: "472K Followers, 141 Following, 319 Posts - Username..."
+                m = re.findall(r"([\d,.]+[KMkm]?)\s+(Followers?|Following|Posts?)", desc, re.IGNORECASE)
                 for val_str, label in m:
                     val = _parse_count_value(val_str)
-                    key = label.lower().rstrip("s")
+                    key = label.lower()  # keep full label: "followers", "following", "posts"
                     counts[key] = val
         except Exception:
             pass
         return counts
 
     def _parse_bio(self) -> str:
+        """Extract bio from profile meta description (most reliable source)."""
         try:
-            # Bio lives in a <span> inside the profile header
-            bio_el = self.page.query_selector('span[class*="x1lliihq"]:not([class*="xlyipyv"])')
-            return bio_el.inner_text().strip() if bio_el else ""
+            import re
+            meta = self.page.query_selector('meta[name="description"]')
+            if meta:
+                desc = meta.get_attribute("content") or ""
+                # Format: "... on Instagram: "bio text here""
+                m = re.search(r'on Instagram:\s*["\u201c](.+)', desc, re.DOTALL)
+                if m:
+                    return m.group(1).strip().strip('"').strip('\u201d')
         except Exception:
-            return ""
+            pass
+        return ""
 
     def _get_most_recent_post_date(self) -> datetime | None:
         """Navigate into the most recent post and extract its timestamp."""
@@ -301,26 +348,52 @@ class InstagramSession:
             if not first_post:
                 return None
             href = first_post.get_attribute("href")
-            self.page.goto(f"{IG_BASE}{href}", wait_until="networkidle", timeout=20000)
+            self.page.goto(f"{IG_BASE}{href}", wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             time_el = self.page.query_selector("time[datetime]")
             if time_el:
                 dt_str = time_el.get_attribute("datetime")
                 return datetime.fromisoformat(dt_str.replace("Z", "+00:00")).replace(tzinfo=None)
-            self.page.go_back(wait_until="networkidle", timeout=15000)
+            self.page.go_back(wait_until="domcontentloaded", timeout=15000)
         except Exception as e:
             logger.debug(f"Could not get post date: {e}")
         return None
 
     def _get_post_author(self) -> str | None:
+        import re
         try:
-            # Author link appears as /username/ in post header
-            author_link = self.page.query_selector('header a[href^="/"]')
-            if author_link:
-                href = author_link.get_attribute("href") or ""
-                username = href.strip("/")
-                if username and "/" not in username:
-                    return username
+            # Strategy 1: page title — "username on Instagram: ..." or "Photo by username on Instagram"
+            title = self.page.title()
+            m = re.search(r'(?:Photo by |Video by |Reel by )?(@?[\w.]+) on Instagram', title)
+            if m:
+                candidate = m.group(1).lstrip("@")
+                if candidate and candidate.lower() not in ("instagram",):
+                    return candidate
+
+            # Strategy 2: try various DOM selectors for the author profile link
+            for selector in [
+                'header a[href^="/"]',
+                'article header a[href^="/"]',
+                'a[role="link"][href^="/"][tabindex="0"]',
+            ]:
+                try:
+                    el = self.page.query_selector(selector)
+                    if el:
+                        href = el.get_attribute("href") or ""
+                        username = href.strip("/")
+                        if username and "/" not in username and username not in ("explore", "accounts"):
+                            return username
+                except Exception:
+                    continue
+
+            # Strategy 3: meta og:description often starts with "username on Instagram"
+            meta = self.page.query_selector('meta[name="description"]')
+            if meta:
+                desc = meta.get_attribute("content") or ""
+                m = re.match(r'(@?[\w.]+) on Instagram', desc)
+                if m:
+                    return m.group(1).lstrip("@")
+
         except Exception:
             pass
         return None
@@ -336,7 +409,7 @@ class InstagramSession:
         """Return up to `count` recent post hrefs from a profile."""
         links = []
         try:
-            self.page.goto(profile_url, wait_until="networkidle", timeout=20000)
+            self.page.goto(profile_url, wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             post_els = self.page.query_selector_all('a[href*="/p/"]')
             for el in post_els[:count]:
@@ -411,16 +484,16 @@ class InstagramSession:
             logger.info(f"[DRY RUN] Would like: {post_url}")
             return True
         try:
-            self.page.goto(post_url, wait_until="networkidle", timeout=20000)
+            self.page.goto(post_url, wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
-            # Like button: aria-label contains "Like"
-            like_btn = self.page.get_by_role("button", name="Like")
+            # Like button: use .first to avoid strict mode violation from related posts below
+            like_btn = self.page.get_by_role("button", name="Like").first
             if like_btn.is_visible(timeout=5000):
                 like_btn.click()
                 logger.info(f"Liked: {post_url}")
                 return True
             # Already liked check
-            unlike_btn = self.page.get_by_role("button", name="Unlike")
+            unlike_btn = self.page.get_by_role("button", name="Unlike").first
             if unlike_btn.is_visible(timeout=2000):
                 logger.debug(f"Already liked: {post_url}")
                 return True
@@ -435,7 +508,7 @@ class InstagramSession:
             logger.info(f"[DRY RUN] Would comment on {post_url}: {comment_text}")
             return True
         try:
-            self.page.goto(post_url, wait_until="networkidle", timeout=20000)
+            self.page.goto(post_url, wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             comment_box = self.page.get_by_placeholder("Add a comment…")
             comment_box.click(timeout=5000)
@@ -458,7 +531,7 @@ class InstagramSession:
             logger.info(f"[DRY RUN] Would follow: @{username}")
             return True
         try:
-            self.page.goto(f"{IG_BASE}/{username}/", wait_until="networkidle", timeout=20000)
+            self.page.goto(f"{IG_BASE}/{username}/", wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             follow_btn = self.page.get_by_role("button", name="Follow")
             if follow_btn.is_visible(timeout=5000):
@@ -481,7 +554,7 @@ class InstagramSession:
             logger.info(f"[DRY RUN] Would unfollow: @{username}")
             return True
         try:
-            self.page.goto(f"{IG_BASE}/{username}/", wait_until="networkidle", timeout=20000)
+            self.page.goto(f"{IG_BASE}/{username}/", wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             following_btn = self.page.get_by_role("button", name="Following")
             if following_btn.is_visible(timeout=5000):
@@ -500,7 +573,7 @@ class InstagramSession:
     def check_follows_back(self, username: str) -> bool:
         """Check if a user follows us back by looking at their follower list."""
         try:
-            self.page.goto(f"{IG_BASE}/{username}/followers/", wait_until="networkidle", timeout=20000)
+            self.page.goto(f"{IG_BASE}/{username}/followers/", wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             # Search for our username in the followers list (limited heuristic)
             content = self.page.content()
@@ -533,14 +606,14 @@ class InstagramSession:
         Returns ("", "") if unavailable.
         """
         try:
-            self.page.goto(f"{IG_BASE}/{username}/", wait_until="networkidle", timeout=20000)
+            self.page.goto(f"{IG_BASE}/{username}/", wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             first_post = self.page.query_selector('a[href*="/p/"]')
             if not first_post:
                 return "", ""
             href = first_post.get_attribute("href")
             post_url = f"{IG_BASE}{href}"
-            self.page.goto(post_url, wait_until="networkidle", timeout=20000)
+            self.page.goto(post_url, wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             caption = self._get_post_caption()
             return post_url, caption

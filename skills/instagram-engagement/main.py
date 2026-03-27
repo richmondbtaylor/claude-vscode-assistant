@@ -15,6 +15,8 @@ import sys
 import time
 from datetime import datetime
 
+sys.stdout.reconfigure(encoding="utf-8")
+
 import engagement_tracker as tracker
 from comment_generator import generate_comment
 from config import (
