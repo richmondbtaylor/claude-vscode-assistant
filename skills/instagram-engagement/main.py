@@ -1,11 +1,16 @@
 """
-Instagram Engagement Automation — Main Orchestrator
+Instagram Engagement Automation -- Main Orchestrator (RISEN Framework)
 
 Usage:
-  python main.py --account main_account --focus "#AIautomation" --duration 60
+  python main.py --account main_account --focus "#AIautomation" --duration 120
   python main.py --account main_account --unfollow-only
   python main.py --account main_account --stats
-  python main.py --account main_account --focus "#AIeducation" --duration 30 --dry-run
+  python main.py --account main_account --focus "#AIeducation" --duration 60 --dry-run
+
+Session model (RISEN):
+  --duration is the total wall-clock time budget (minutes).
+  The bot runs 20-25 min active blocks separated by 30-90 min inter-session
+  breaks, cycling until the budget is exhausted.
 """
 
 import argparse
@@ -13,7 +18,7 @@ import logging
 import random
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -21,14 +26,19 @@ import engagement_tracker as tracker
 from comment_generator import generate_comment
 from config import (
     get_credentials,
+    get_ramp_up_limits,
     ACTION_DELAY_RANGE,
-    HOURLY_BREAK_RANGE,
+    INTER_SESSION_DELAY_RANGE,
+    SESSION_ACTIVE_DURATION_RANGE,
+    BLACKOUT_START,
+    BLACKOUT_END,
     COMMENT_COOLDOWN_DAYS,
     POSTS_TO_LIKE,
     RATE_LIMITS_DAILY,
-    RATE_LIMITS_HOURLY,
     COMPETITOR_ACCOUNTS,
+    AUTHORITY_ACCOUNTS,
     LIKE_PROBABILITY,
+    AUTHORITY_LIKE_PROBABILITY,
     COMMENT_PROBABILITY,
     FOLLOW_PROBABILITY,
     LIKES_PER_TARGET_RANGE,
@@ -41,6 +51,27 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(sys.stdout)],
 )
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# RISEN: Alert system
+# ---------------------------------------------------------------------------
+
+def send_alert(account: str, trigger: str, daily_stats: dict, recommended_action: str):
+    """High-priority alert to human operator. Extend to add email/Slack as needed."""
+    border = "=" * 60
+    print(f"\n{border}")
+    print("  [!] RISEN ALERT -- HUMAN OPERATOR ACTION REQUIRED")
+    print(border)
+    print(f"  Account    : {account}")
+    print(f"  Trigger    : {trigger}")
+    print(f"  Timestamp  : {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    print(f"  Daily stats: follows={daily_stats.get('follows',0)} | "
+          f"comments={daily_stats.get('comments',0)} | "
+          f"likes={daily_stats.get('likes',0)}")
+    print(f"  Action     : {recommended_action}")
+    print(f"{border}\n")
+    logger.error(f"[{account}] RISEN ALERT -- {trigger}")
 
 
 # ---------------------------------------------------------------------------
@@ -62,10 +93,44 @@ class SessionStats:
 
 
 # ---------------------------------------------------------------------------
-# Rate limit check wrapper
+# RISEN: Blackout check
 # ---------------------------------------------------------------------------
 
-def can_act(account: str, action: str) -> bool:
+def is_blackout_time() -> bool:
+    """Return True if current local time falls within the daily blackout window."""
+    now = datetime.now()
+    current_mins = now.hour * 60 + now.minute
+    start_mins = BLACKOUT_START[0] * 60 + BLACKOUT_START[1]
+    end_mins = BLACKOUT_END[0] * 60 + BLACKOUT_END[1]
+    if start_mins <= end_mins:
+        return start_mins <= current_mins < end_mins
+    else:  # wraps midnight
+        return current_mins >= start_mins or current_mins < end_mins
+
+
+def wait_for_blackout_end():
+    end_h, end_m = BLACKOUT_END
+    now = datetime.now()
+    wake = now.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
+    if wake <= now:
+        wake += timedelta(days=1)
+    wait_secs = (wake - now).total_seconds()
+    logger.info(f"RISEN BLACKOUT: sleeping {wait_secs/60:.0f}min until {wake.strftime('%H:%M')}")
+    time.sleep(wait_secs)
+
+
+# ---------------------------------------------------------------------------
+# Rate limit helpers (ramp-up aware)
+# ---------------------------------------------------------------------------
+
+def can_act(account: str, action: str, ramp_limits: dict) -> bool:
+    multiplier = tracker.get_limit_multiplier(account)
+    ramp_daily = int(ramp_limits.get(action, 9999) * multiplier)
+    daily = tracker.get_daily_stats(account)
+    if daily.get(action, 0) >= ramp_daily:
+        day = ramp_limits.get("_day", "?")
+        logger.info(f"[{account}] Daily {action} limit reached ({ramp_daily}, ramp day {day})")
+        return False
     return tracker.check_rate_limit(account, action)
 
 
@@ -73,16 +138,20 @@ def do_action(account: str, action: str):
     tracker.record_action(account, action)
 
 
+def _human_delay():
+    time.sleep(random.uniform(*ACTION_DELAY_RANGE))
+
+
 # ---------------------------------------------------------------------------
 # Unfollow pass
 # ---------------------------------------------------------------------------
 
-def run_unfollow_pass(session: InstagramSession, account: str, stats: SessionStats, dry_run: bool):
+def run_unfollow_pass(session: InstagramSession, account: str, stats: SessionStats,
+                      dry_run: bool, ramp_limits: dict):
     candidates = tracker.get_unfollow_candidates(account)
     logger.info(f"[{account}] Unfollow candidates: {len(candidates)}")
     for username in candidates:
-        if not can_act(account, "follows"):
-            logger.info(f"[{account}] Daily unfollow limit reached — stopping")
+        if not can_act(account, "follows", ramp_limits):
             break
         try:
             success = session.unfollow_user(username)
@@ -97,12 +166,8 @@ def run_unfollow_pass(session: InstagramSession, account: str, stats: SessionSta
             stats.errors += 1
 
 
-def _human_delay():
-    time.sleep(random.uniform(*ACTION_DELAY_RANGE))
-
-
 # ---------------------------------------------------------------------------
-# Engagement loop
+# RISEN: Engagement sequence for one target
 # ---------------------------------------------------------------------------
 
 def engage_with_target(
@@ -111,22 +176,24 @@ def engage_with_target(
     username: str,
     stats: SessionStats,
     dry_run: bool,
+    ramp_limits: dict,
+    is_authority: bool = False,
 ):
     """Run the full engagement sequence for a single target account."""
-    logger.info(f"[{account}] Engaging with @{username}")
+    logger.info(f"[{account}] Engaging @{username} (authority={is_authority})")
 
     profile = session.get_profile_info(username)
     if not session.passes_filter(profile):
         stats.skipped += 1
         return
 
-    # Already following → skip follow (but still process likes/comments normally)
     already_following = tracker.already_following(account, username)
     recently_commented = tracker.commented_recently(account, username, COMMENT_COOLDOWN_DAYS)
     recent_enough = session.is_recent_enough_for_comment(profile)
 
-    # Decide what actions to take — randomized so the pattern isn't robotic
-    should_like = random.random() < LIKE_PROBABILITY
+    # Authority targets: only like 60% of posts (RISEN rule)
+    like_prob = AUTHORITY_LIKE_PROBABILITY if is_authority else LIKE_PROBABILITY
+    should_like = random.random() < like_prob
     should_comment = (
         not recently_commented
         and recent_enough
@@ -138,17 +205,16 @@ def engage_with_target(
         and random.random() < FOLLOW_PROBABILITY
     )
 
-    # --- Like 1–3 recent posts (count randomized per target) ---
     num_to_like = random.randint(*LIKES_PER_TARGET_RANGE)
-    post_links = session._get_recent_post_links(f"https://www.instagram.com/{username}/", count=num_to_like + 1)
-
-    liked_any = False
+    post_links = session._get_recent_post_links(
+        f"https://www.instagram.com/{username}/", count=num_to_like + 1
+    )
     most_recent_post_url = post_links[0] if post_links else ""
-    most_recent_caption = ""
 
+    # --- Like recent posts ---
     if should_like:
         for post_url in post_links[:num_to_like]:
-            if not can_act(account, "likes"):
+            if not can_act(account, "likes", ramp_limits):
                 logger.info(f"[{account}] Like limit reached")
                 break
             success = session.like_post(post_url)
@@ -157,24 +223,25 @@ def engage_with_target(
                     tracker.record_like(account, username, post_url)
                     do_action(account, "likes")
                 stats.liked += 1
-                liked_any = True
             _human_delay()
 
-    # --- Comment on most recent post ---
-    if should_comment and most_recent_post_url and can_act(account, "comments"):
-        # Get caption for the most recent post
+    # --- Comment (with RISEN content filter) ---
+    if should_comment and most_recent_post_url and can_act(account, "comments", ramp_limits):
         _, most_recent_caption = session.get_recent_post_with_caption(username)
-        comment_text = generate_comment(username, most_recent_caption)
-        success = session.comment_on_post(most_recent_post_url, comment_text)
-        if success:
-            if not dry_run:
-                tracker.record_comment(account, username, most_recent_post_url, comment_text)
-                do_action(account, "comments")
-            stats.commented += 1
+        if not session.passes_content_filter(most_recent_caption):
+            logger.info(f"[{account}] @{username}: content filter blocked comment")
+        else:
+            comment_text = generate_comment(username, most_recent_caption)
+            success = session.comment_on_post(most_recent_post_url, comment_text)
+            if success:
+                if not dry_run:
+                    tracker.record_comment(account, username, most_recent_post_url, comment_text)
+                    do_action(account, "comments")
+                stats.commented += 1
         _human_delay()
 
     # --- Follow ---
-    if should_follow and can_act(account, "follows"):
+    if should_follow and can_act(account, "follows", ramp_limits):
         success = session.follow_user(username)
         if success:
             if not dry_run:
@@ -185,152 +252,295 @@ def engage_with_target(
 
 
 # ---------------------------------------------------------------------------
-# Main
+# RISEN: One active block (20-25 min of engagement)
 # ---------------------------------------------------------------------------
 
-def run_session(account: str, focus: str, duration_minutes: int, dry_run: bool):
-    creds = get_credentials(account)
-    stats = SessionStats()
-    session = InstagramSession(account, creds["username"], creds["password"], dry_run=dry_run)
+def _daily_limits_exhausted(account: str, ramp_limits: dict) -> bool:
+    daily = tracker.get_daily_stats(account)
+    multiplier = tracker.get_limit_multiplier(account)
+    return (
+        daily.get("follows", 0)   >= int(ramp_limits["follows"]   * multiplier) and
+        daily.get("comments", 0)  >= int(ramp_limits["comments"]  * multiplier) and
+        daily.get("likes", 0)     >= int(ramp_limits["likes"]     * multiplier)
+    )
 
-    logger.info(f"Starting session — account: {account}, focus: {focus}, duration: {duration_minutes}min")
-    if dry_run:
-        logger.info("DRY RUN — no actions will be taken")
 
-    try:
-        session.start()
-    except LoginChallengeError as e:
-        logger.error(str(e))
-        print(f"\n⚠️  LOGIN CHALLENGE DETECTED for @{creds['username']}")
-        print("Please open Instagram in your browser and complete the verification,")
-        print("then run the session again.")
-        return
+def run_active_block(
+    session: InstagramSession,
+    account: str,
+    focus: str,
+    stats: SessionStats,
+    dry_run: bool,
+    ramp_limits: dict,
+    block_duration_minutes: float,
+):
+    """One active engagement block: Authority targets first, then hashtag/community."""
+    block_start = time.time()
 
-    last_break_time = time.time()
+    def time_up() -> bool:
+        return (time.time() - block_start) / 60 >= block_duration_minutes
 
-    try:
-        # Collect targets
-        targets = []
+    # Pre-flight simulation (RISEN anti-detection: browse feed before acting)
+    session.preflight_simulation()
+
+    # --- Category A: Authority targets (highest priority) ---
+    if AUTHORITY_ACCOUNTS:
+        logger.info(f"[{account}] Category A -- {len(AUTHORITY_ACCOUNTS)} authority targets")
+        for username in AUTHORITY_ACCOUNTS:
+            if time_up() or _daily_limits_exhausted(account, ramp_limits):
+                break
+            try:
+                engage_with_target(session, account, username, stats, dry_run,
+                                   ramp_limits, is_authority=True)
+            except RateLimitError as e:
+                _handle_rate_limit(account, e, stats)
+                return
+            except Exception as e:
+                logger.error(f"Error on authority @{username}: {e}")
+                stats.errors += 1
+
+    # --- Category B + C: Hashtag targets and community ---
+    targets = []
+    if focus:
         try:
             targets = session.get_hashtag_targets(focus, max_accounts=80)
         except Exception as e:
             logger.error(f"Hashtag search failed: {e}")
             stats.errors += 1
 
-        # Optionally add competitor followers
-        for competitor in COMPETITOR_ACCOUNTS:
-            try:
-                extra = session.get_competitor_followers(competitor, max_accounts=30)
-                targets.extend(extra)
-            except Exception as e:
-                logger.warning(f"Competitor follower scrape failed (@{competitor}): {e}")
+    for competitor in COMPETITOR_ACCOUNTS:
+        try:
+            targets.extend(session.get_competitor_followers(competitor, max_accounts=30))
+        except Exception as e:
+            logger.warning(f"Competitor follower scrape failed (@{competitor}): {e}")
 
-        # Deduplicate
-        seen = set()
-        unique_targets = []
-        for t in targets:
-            if t and t.lower() not in seen:
-                seen.add(t.lower())
-                unique_targets.append(t)
+    # Deduplicate, exclude authority accounts already processed
+    seen = set(a.lower() for a in AUTHORITY_ACCOUNTS)
+    unique_targets = []
+    for t in targets:
+        if t and t.lower() not in seen:
+            seen.add(t.lower())
+            unique_targets.append(t)
+    random.shuffle(unique_targets)
+    logger.info(f"[{account}] Category B/C -- {len(unique_targets)} targets this block")
 
-        random.shuffle(unique_targets)
-        logger.info(f"[{account}] Total unique targets: {len(unique_targets)}")
+    for username in unique_targets:
+        if time_up():
+            logger.info(f"[{account}] Block time limit reached")
+            break
+        if _daily_limits_exhausted(account, ramp_limits):
+            logger.info(f"[{account}] All daily limits reached")
+            break
+        try:
+            engage_with_target(session, account, username, stats, dry_run, ramp_limits)
+        except RateLimitError as e:
+            _handle_rate_limit(account, e, stats)
+            return
+        except Exception as e:
+            logger.error(f"Unexpected error for @{username}: {e}")
+            stats.errors += 1
 
-        for username in unique_targets:
-            # Check session time limit
-            if stats.elapsed_minutes() >= duration_minutes:
-                logger.info(f"[{account}] Duration limit reached ({duration_minutes}min)")
-                break
 
-            # Check daily limits — stop if all daily limits are maxed out
-            daily = tracker.get_daily_stats(account)
-            if (daily["follows"] >= RATE_LIMITS_DAILY["follows"] and
-                    daily["comments"] >= RATE_LIMITS_DAILY["comments"] and
-                    daily["likes"] >= RATE_LIMITS_DAILY["likes"]):
-                logger.info(f"[{account}] All daily limits reached — stopping")
-                break
+def _handle_rate_limit(account: str, error: RateLimitError, stats: SessionStats):
+    """RISEN hard-stop protocol on rate limit signals."""
+    daily = tracker.get_daily_stats(account)
+    error_str = str(error).lower()
+    if "try again later" in error_str:
+        tracker.set_limit_multiplier(account, 0.5)
+        send_alert(
+            account,
+            trigger="Try again later detected -- permanent 50% limit reduction applied",
+            daily_stats=daily,
+            recommended_action="Limits permanently halved. Review account health before next session."
+        )
+    else:
+        send_alert(
+            account,
+            trigger=f"Rate limit / action block: {error}",
+            daily_stats=daily,
+            recommended_action="Pausing 10 minutes then stopping this session block."
+        )
+    stats.errors += 1
+    logger.info("Pausing 10 minutes after rate limit signal...")
+    time.sleep(600)
 
-            # Hourly break
-            if time.time() - last_break_time >= 3600:
-                break_secs = random.randint(*HOURLY_BREAK_RANGE)
-                logger.info(f"[{account}] Taking hourly break ({break_secs // 60}min)")
-                time.sleep(break_secs)
-                last_break_time = time.time()
 
-            try:
-                engage_with_target(session, account, username, stats, dry_run)
-            except RateLimitError as e:
-                logger.warning(str(e))
-                stats.errors += 1
-                logger.info("Pausing 10 minutes after rate limit signal...")
-                time.sleep(600)
-            except Exception as e:
-                logger.error(f"Unexpected error for @{username}: {e}")
-                stats.errors += 1
+# ---------------------------------------------------------------------------
+# Main session runner (multi-block RISEN architecture)
+# ---------------------------------------------------------------------------
 
-        # Unfollow pass at end of session
-        run_unfollow_pass(session, account, stats, dry_run)
+def run_session(account: str, focus: str, duration_minutes: int, dry_run: bool):
+    """
+    Outer runner. Fits as many 20-25 min active blocks as possible within
+    duration_minutes, with 30-90 min inter-session breaks between blocks.
+    """
+    creds = get_credentials(account)
+    stats = SessionStats()
 
+    tracker.init_db()
+    day_number = tracker.get_account_day_number(account)
+    ramp_limits = get_ramp_up_limits(day_number)
+    ramp_limits["_day"] = day_number
+
+    logger.info(
+        f"RISEN Session -- account={account}, focus={focus}, budget={duration_minutes}min, "
+        f"ramp_day={day_number}, limits=follows:{ramp_limits['follows']} "
+        f"comments:{ramp_limits['comments']} likes:{ramp_limits['likes']}"
+    )
+    if dry_run:
+        logger.info("DRY RUN -- no actions will be taken")
+
+    session = InstagramSession(account, creds["username"], creds["password"], dry_run=dry_run)
+    try:
+        session.start()
     except LoginChallengeError as e:
-        logger.error(str(e))
-        print(f"\n⚠️  LOGIN CHALLENGE mid-session for @{creds['username']}. Stopping.")
+        send_alert(
+            account,
+            trigger=f"Login challenge at session start: {e}",
+            daily_stats=tracker.get_daily_stats(account),
+            recommended_action="Complete verification manually in a real browser, then retry."
+        )
+        return
+
+    wall_start = time.time()
+
+    try:
+        block_num = 0
+        while True:
+            elapsed_total = (time.time() - wall_start) / 60
+            if elapsed_total >= duration_minutes:
+                logger.info(f"[{account}] Duration budget exhausted ({duration_minutes}min)")
+                break
+
+            if is_blackout_time():
+                wait_for_blackout_end()
+                continue
+
+            block_num += 1
+            block_duration = random.uniform(*SESSION_ACTIVE_DURATION_RANGE)
+            logger.info(
+                f"[{account}] Block #{block_num} starting "
+                f"({block_duration:.0f}min active, {elapsed_total:.0f}min elapsed)"
+            )
+
+            try:
+                run_active_block(session, account, focus, stats, dry_run, ramp_limits, block_duration)
+            except LoginChallengeError as e:
+                send_alert(
+                    account,
+                    trigger=f"Login challenge mid-session (block #{block_num}): {e}",
+                    daily_stats=tracker.get_daily_stats(account),
+                    recommended_action="HARD STOP. Complete verification manually, then retry."
+                )
+                break
+
+            elapsed_total = (time.time() - wall_start) / 60
+            if elapsed_total >= duration_minutes:
+                break
+
+            # Inter-session break (30-90 min) -- only if budget remains
+            break_secs = random.uniform(*INTER_SESSION_DELAY_RANGE)
+            break_mins = break_secs / 60
+            if elapsed_total + break_mins >= duration_minutes:
+                logger.info(f"[{account}] Not enough budget for another block -- stopping")
+                break
+            logger.info(f"[{account}] Inter-session break: {break_mins:.0f}min")
+            time.sleep(break_secs)
+
     finally:
-        session.stop()
+        try:
+            run_unfollow_pass(session, account, stats, dry_run, ramp_limits)
+        except Exception as e:
+            logger.warning(f"Unfollow pass error: {e}")
+        try:
+            session.stop()
+        except Exception as e:
+            logger.warning(f"Session cleanup error (browser may have crashed): {e}")
 
-    _print_report(account, focus, duration_minutes, stats)
+    _print_report(account, focus, duration_minutes, stats, day_number, ramp_limits)
 
+
+# ---------------------------------------------------------------------------
+# Unfollow-only mode
+# ---------------------------------------------------------------------------
 
 def run_unfollow_only(account: str, dry_run: bool):
     creds = get_credentials(account)
     stats = SessionStats()
+    tracker.init_db()
+    day_number = tracker.get_account_day_number(account)
+    ramp_limits = get_ramp_up_limits(day_number)
     session = InstagramSession(account, creds["username"], creds["password"], dry_run=dry_run)
     try:
         session.start()
-        run_unfollow_pass(session, account, stats, dry_run)
+        run_unfollow_pass(session, account, stats, dry_run, ramp_limits)
     except LoginChallengeError as e:
         logger.error(str(e))
     finally:
-        session.stop()
+        try:
+            session.stop()
+        except Exception:
+            pass
     logger.info(f"Unfollow pass complete. Unfollowed: {stats.unfollowed}")
 
 
+# ---------------------------------------------------------------------------
+# Stats
+# ---------------------------------------------------------------------------
+
 def show_stats(account: str):
+    tracker.init_db()
+    day_number = tracker.get_account_day_number(account)
+    ramp_limits = get_ramp_up_limits(day_number)
+    multiplier = tracker.get_limit_multiplier(account)
     daily = tracker.get_daily_stats(account)
-    print(f"\nToday's stats for {account}:")
-    print(f"  Follows   : {daily['follows']}/{RATE_LIMITS_DAILY['follows']}")
-    print(f"  Comments  : {daily['comments']}/{RATE_LIMITS_DAILY['comments']}")
-    print(f"  Likes     : {daily['liked']}/{RATE_LIMITS_DAILY['likes']}")
+    print(f"\nToday's stats for {account} (ramp day {day_number}, multiplier {multiplier:.1f}x):")
+    print(f"  Follows   : {daily['follows']}/{int(ramp_limits['follows'] * multiplier)}")
+    print(f"  Comments  : {daily['comments']}/{int(ramp_limits['comments'] * multiplier)}")
+    print(f"  Likes     : {daily.get('likes', 0)}/{int(ramp_limits['likes'] * multiplier)}")
 
 
-def _print_report(account: str, focus: str, duration_minutes: int, stats: SessionStats):
+# ---------------------------------------------------------------------------
+# Report
+# ---------------------------------------------------------------------------
+
+def _print_report(account: str, focus: str, duration_minutes: int, stats: SessionStats,
+                  day_number: int, ramp_limits: dict):
     daily = tracker.get_daily_stats(account)
+    multiplier = tracker.get_limit_multiplier(account)
     elapsed = int(stats.elapsed_minutes())
-    print("\n" + "=" * 40)
-    print("  Instagram Engagement Session Report")
-    print("=" * 40)
+    print("\n" + "=" * 45)
+    print("  Instagram Engagement Report (RISEN)")
+    print("=" * 45)
     print(f"Account      : {account}")
     print(f"Focus        : {focus}")
     print(f"Duration     : {elapsed} minutes")
-    print("-" * 40)
+    print(f"Ramp day     : {day_number}")
+    print("-" * 45)
     print(f"Followed     : {stats.followed} accounts")
     print(f"Commented    : {stats.commented} posts")
     print(f"Liked        : {stats.liked} posts")
     print(f"Unfollowed   : {stats.unfollowed} accounts")
-    print(f"Skipped      : {stats.skipped} accounts (filtered out)")
+    print(f"Skipped      : {stats.skipped} accounts (filtered)")
     print(f"Errors       : {stats.errors}")
-    print("-" * 40)
-    print(f"Daily totals : {daily['follows']}/{RATE_LIMITS_DAILY['follows']} follows | "
-          f"{daily['comments']}/{RATE_LIMITS_DAILY['comments']} comments | "
-          f"{daily['likes']}/{RATE_LIMITS_DAILY['likes']} likes")
-    print("=" * 40)
+    print("-" * 45)
+    print(f"Daily totals : {daily['follows']}/{int(ramp_limits['follows']*multiplier)} follows | "
+          f"{daily['comments']}/{int(ramp_limits['comments']*multiplier)} comments | "
+          f"{daily.get('likes',0)}/{int(ramp_limits['likes']*multiplier)} likes")
+    print("=" * 45)
 
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Instagram Engagement Automation")
+    parser = argparse.ArgumentParser(description="Instagram Engagement Automation (RISEN)")
     parser.add_argument("--account", required=True, help="Account key from .env (e.g. main_account)")
     parser.add_argument("--focus", default=None, help="Hashtag to target (e.g. '#AIautomation')")
-    parser.add_argument("--duration", type=int, default=60, help="Session duration in minutes")
-    parser.add_argument("--dry-run", action="store_true", help="Preview only — no actions taken")
+    parser.add_argument("--duration", type=int, default=120,
+                        help="Total time budget in minutes (includes inter-session breaks)")
+    parser.add_argument("--dry-run", action="store_true", help="Preview only -- no actions taken")
     parser.add_argument("--unfollow-only", action="store_true", help="Only run unfollow pass")
     parser.add_argument("--stats", action="store_true", help="Show today's usage stats and exit")
     args = parser.parse_args()

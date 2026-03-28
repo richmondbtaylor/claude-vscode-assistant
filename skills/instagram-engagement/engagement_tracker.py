@@ -62,6 +62,12 @@ def init_db():
                 count       INTEGER DEFAULT 0,
                 UNIQUE(account, action, window, window_start)
             );
+
+            CREATE TABLE IF NOT EXISTS account_meta (
+                account         TEXT PRIMARY KEY,
+                start_date      TEXT NOT NULL,
+                limit_multiplier REAL DEFAULT 1.0
+            );
         """)
 
 
@@ -209,6 +215,53 @@ def record_action(account: str, action: str):
 # ---------------------------------------------------------------------------
 # Stats / reporting
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Account metadata — ramp-up day tracking and limit multiplier
+# ---------------------------------------------------------------------------
+
+def get_or_set_account_start_date(account: str) -> datetime:
+    """Return first-use date for the account. Creates the record on first call."""
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT start_date FROM account_meta WHERE account=?", (account,)
+        ).fetchone()
+        if row:
+            return datetime.fromisoformat(row["start_date"])
+        today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        conn.execute(
+            "INSERT OR IGNORE INTO account_meta (account, start_date) VALUES (?,?)",
+            (account, today.isoformat())
+        )
+        return today
+
+
+def get_account_day_number(account: str) -> int:
+    """Return the 1-based ramp-up day number for this account."""
+    start = get_or_set_account_start_date(account)
+    return (datetime.utcnow() - start).days + 1
+
+
+def get_limit_multiplier(account: str) -> float:
+    """Return the current limit multiplier (reduced to 0.5 after a hard 'try again later')."""
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT limit_multiplier FROM account_meta WHERE account=?", (account,)
+        ).fetchone()
+    return row["limit_multiplier"] if row else 1.0
+
+
+def set_limit_multiplier(account: str, multiplier: float):
+    """Permanently reduce daily limits for this account (RISEN hard-stop protocol)."""
+    # Ensure the record exists
+    get_or_set_account_start_date(account)
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE account_meta SET limit_multiplier=? WHERE account=?",
+            (multiplier, account)
+        )
+    logger.warning(f"[{account}] Limit multiplier permanently set to {multiplier:.1f}x")
+
 
 def get_daily_stats(account: str) -> dict:
     """Return today's action counts for the given account."""

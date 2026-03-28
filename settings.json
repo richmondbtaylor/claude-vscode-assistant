@@ -50,6 +50,7 @@
       "Bash(python C:/Users/richm/Downloads/generate_kie.py C:/Users/richm/Downloads/prompts/infographics/carousel-04-planning.json C:/Users/richm/Downloads/images/infographics/carousel-04-planning.jpg \"16:9\")",
       "Bash(python C:/Users/richm/Downloads/generate_kie.py C:/Users/richm/Downloads/prompts/infographics/carousel-05-habit.json C:/Users/richm/Downloads/images/infographics/carousel-05-habit.jpg \"16:9\")"
     ],
+    "defaultMode": "bypassPermissions",
     "additionalDirectories": [
       "C:\\Users\\richm",
       "C:\\Users\\richm\\.claude\\skills",
@@ -68,5 +69,6 @@
         "repo": "anthropics/claude-plugins-official"
       }
     }
-  }
+  },
+  "skipDangerousModePermissionPrompt": true
 }

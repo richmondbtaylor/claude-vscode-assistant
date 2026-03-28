@@ -27,6 +27,7 @@ from config import (
     POSTS_TO_LIKE,
     COMMENT_FOLLOW_MAX_POST_AGE_DAYS,
     COMPETITOR_ACCOUNTS,
+    CONTENT_ABORT_KEYWORDS,
 )
 
 logger = logging.getLogger(__name__)
@@ -475,6 +476,43 @@ class InstagramSession:
         return age_days <= COMMENT_FOLLOW_MAX_POST_AGE_DAYS
 
     # ------------------------------------------------------------------
+    # RISEN: Pre-flight simulation + content filtering
+    # ------------------------------------------------------------------
+
+    def preflight_simulation(self):
+        """
+        RISEN pre-flight: browse the feed/explore briefly before acting.
+        Simulates natural human navigation — reduces detection risk.
+        Called at the start of each session block and before high-risk actions.
+        """
+        try:
+            dest = random.choice([f"{IG_BASE}/", f"{IG_BASE}/explore/"])
+            self.page.goto(dest, wait_until="domcontentloaded", timeout=20000)
+            # Scroll and dwell on 3-4 posts for 5-12 seconds each
+            dwell_count = random.randint(3, 4)
+            for _ in range(dwell_count):
+                scroll_amount = random.randint(300, 700)
+                self.page.evaluate(f"window.scrollBy(0, {scroll_amount})")
+                time.sleep(random.uniform(5, 12))
+            logger.debug(f"[{self.account_name}] Pre-flight simulation complete")
+        except Exception as e:
+            logger.debug(f"Pre-flight simulation skipped (non-critical): {e}")
+
+    def passes_content_filter(self, caption: str) -> bool:
+        """
+        RISEN context check: return False if the post caption contains abort keywords.
+        Prevents engagement with sad, personal, political, or hiring content.
+        """
+        if not caption:
+            return True
+        caption_lower = caption.lower()
+        for kw in CONTENT_ABORT_KEYWORDS:
+            if kw in caption_lower:
+                logger.debug(f"Content filter abort: '{kw}' in caption")
+                return False
+        return True
+
+    # ------------------------------------------------------------------
     # Actions
     # ------------------------------------------------------------------
 
@@ -486,17 +524,23 @@ class InstagramSession:
         try:
             self.page.goto(post_url, wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
-            # Like button: use .first to avoid strict mode violation from related posts below
-            like_btn = self.page.get_by_role("button", name="Like").first
-            if like_btn.is_visible(timeout=5000):
-                like_btn.click()
-                logger.info(f"Liked: {post_url}")
-                return True
-            # Already liked check
+            # Already liked — skip
             unlike_btn = self.page.get_by_role("button", name="Unlike").first
             if unlike_btn.is_visible(timeout=2000):
                 logger.debug(f"Already liked: {post_url}")
                 return True
+            # Like button: use .first to avoid strict mode violation from related posts below
+            like_btn = self.page.get_by_role("button", name="Like").first
+            if like_btn.is_visible(timeout=5000):
+                like_btn.click()
+                time.sleep(1.5)
+                # Confirm the like registered by checking the button flipped to Unlike
+                if self.page.get_by_role("button", name="Unlike").first.is_visible(timeout=3000):
+                    logger.info(f"Liked (confirmed): {post_url}")
+                    return True
+                else:
+                    logger.warning(f"Like click sent but not confirmed (possible block): {post_url}")
+                    return False
         except Exception as e:
             logger.warning(f"Like failed ({post_url}): {e}")
             self._check_action_block()
@@ -515,9 +559,16 @@ class InstagramSession:
             _scroll_delay()
             comment_box.type(comment_text, delay=random.uniform(30, 80))  # human-like typing
             _scroll_delay()
-            # Submit with Enter
-            comment_box.press("Enter")
-            self.page.wait_for_timeout(2000)
+            # Try clicking the Post button first (appears after typing); fall back to Enter
+            try:
+                post_btn = self.page.get_by_role("button", name="Post")
+                if post_btn.is_visible(timeout=3000):
+                    post_btn.click()
+                else:
+                    comment_box.press("Enter")
+            except Exception:
+                comment_box.press("Enter")
+            self.page.wait_for_timeout(3000)
             logger.info(f"Commented on {post_url}: {comment_text[:60]}...")
             return True
         except Exception as e:
@@ -533,16 +584,23 @@ class InstagramSession:
         try:
             self.page.goto(f"{IG_BASE}/{username}/", wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
-            follow_btn = self.page.get_by_role("button", name="Follow")
-            if follow_btn.is_visible(timeout=5000):
-                follow_btn.click()
-                logger.info(f"Followed: @{username}")
-                return True
             # Already following
             following_btn = self.page.get_by_role("button", name="Following")
             if following_btn.is_visible(timeout=2000):
                 logger.debug(f"Already following: @{username}")
                 return True
+            follow_btn = self.page.get_by_role("button", name="Follow")
+            if follow_btn.is_visible(timeout=5000):
+                follow_btn.click()
+                time.sleep(2)
+                # Confirm button changed to Following/Requested
+                content = self.page.content()
+                if "Following" in content or "Requested" in content:
+                    logger.info(f"Followed (confirmed): @{username}")
+                    return True
+                else:
+                    logger.warning(f"Follow click sent but not confirmed (possible block): @{username}")
+                    return False
         except Exception as e:
             logger.warning(f"Follow failed (@{username}): {e}")
             self._check_action_block()

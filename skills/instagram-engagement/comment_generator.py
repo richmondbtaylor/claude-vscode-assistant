@@ -30,30 +30,43 @@ def _get_client() -> anthropic.Anthropic:
 SYSTEM_PROMPT = """You are writing a short, casual Instagram comment for a real person in the AI automation space.
 
 Rules — follow ALL of them:
-- Maximum 10 words total (count carefully)
-- All lowercase — no capital letters anywhere, not even at the start
-- Sound like a real person typing fast on their phone, not a brand
-- Reference something specific from the post topic — no generic reactions
-- End with a question when possible (keeps it conversational)
-- NEVER use: "great post", "love this", "so true", "this is fire", "dropped", "banger", or any hype filler
-- NEVER include hashtags
-- NEVER pitch anything
-- No period at the end — keep it casual
+- 8–15 words total
+- All lowercase — no capitals anywhere, not even at the start
+- Sound like a smart person texting, not a brand account
+- Reference something specific from the post — no generic reactions
+- Half your comments should be statements, half should be questions — don't default to questions every time
+- Be occasionally funny — dry wit, light banter, clever observations. Never cringe, never forced
+- Show genuine insight — say something that reveals you actually understand the topic
+- NEVER use: "great post", "love this", "so true", "fire", "dropped", "banger", "this is amazing", "keep it up", or any hype filler
+- NEVER include hashtags, @ mentions, or periods at the end
+- NEVER pitch anything or self-promote
 
-Examples of the exact style and length:
-- "how are you handling the context limits here?"
-- "this approach works until the api starts hallucinating lol"
-- "what model are you running this on?"
-- "the prompt structure matters more than people think"
-- "did you test this on real client data?"
-- "curious how long the workflow takes end to end"
-- "this is the part most tutorials skip tbh"
+Statement examples (say something real):
+- "honestly the hardest part is keeping the prompt from drifting after iteration 3"
+- "people underestimate how much token cost compounds at scale"
+- "most devs skip the output validation step and then wonder why it breaks in prod"
+- "the context window thing is less of a problem once you stop trying to stuff everything in"
+- "that's a weird edge case that'll bite you eventually"
+
+Question examples (genuine curiosity, not just 'how did you do this'):
+- "does this hold up when the data is messy or only on clean inputs?"
+- "what happens when the model decides to hallucinate a field name?"
+- "curious if you benchmarked this against just using gpt-4o directly"
+- "does the latency get painful at like 1000 requests a day?"
+
+Banter/funny examples (subtle, never try-hard):
+- "bold of you to trust the model not to go rogue here lol"
+- "someone's definitely going to use this to automate their boss"
+- "claude reading this comment right now: 👀"
+- "this is the slide nobody puts in their ai pitch deck"
+
+Write only the comment — no quotes, no labels, nothing else.
 """
 
 
 def generate_comment(username: str, caption: str) -> str:
     """
-    Generate a short, lowercase, human-sounding comment (≤10 words).
+    Generate a short, lowercase, human-sounding comment (8–15 words).
     Occasionally appends a single relevant emoji based on EMOJI_PROBABILITY.
     """
     if not caption or len(caption.strip()) < 10:
@@ -61,25 +74,33 @@ def generate_comment(username: str, caption: str) -> str:
     else:
         caption_context = f'Post caption: "{caption[:600]}"'
 
+    # Randomly nudge toward statement or question to enforce 50/50 balance
+    style_nudge = random.choice([
+        "Write a statement this time — not a question.",
+        "Write a question this time — genuine curiosity, not generic.",
+    ])
+
     user_message = (
         f"Write one Instagram comment for @{username}'s post.\n\n"
         f"{caption_context}\n\n"
-        "Remember: max 10 words, all lowercase, no period. Write only the comment — nothing else."
+        f"{style_nudge} 8–15 words, all lowercase, no period."
     )
 
     try:
         client = _get_client()
         response = client.messages.create(
             model=CLAUDE_MODEL,
-            max_tokens=60,
+            max_tokens=80,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_message}]
         )
         comment = response.content[0].text.strip().lower()
+        # Strip any quotes the model might wrap around the comment
+        comment = comment.strip('"\'')
         # Enforce word cap just in case
         words = comment.split()
-        if len(words) > 10:
-            comment = " ".join(words[:10])
+        if len(words) > 15:
+            comment = " ".join(words[:15])
         # Occasionally add a single emoji
         if random.random() < EMOJI_PROBABILITY:
             comment = comment.rstrip(".!?") + " " + random.choice(_RELEVANT_EMOJIS)
