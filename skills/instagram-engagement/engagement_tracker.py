@@ -23,7 +23,7 @@ def get_conn() -> sqlite3.Connection:
 
 
 def init_db():
-    """Create all tables if they don't exist."""
+    """Create all tables if they don't exist, and run any needed migrations."""
     with get_conn() as conn:
         conn.executescript("""
             CREATE TABLE IF NOT EXISTS comments (
@@ -42,7 +42,8 @@ def init_db():
                 followed_at     TEXT NOT NULL,
                 followed_back   INTEGER DEFAULT 0,
                 checked_at      TEXT,
-                unfollowed_at   TEXT
+                unfollowed_at   TEXT,
+                last_engaged_at TEXT
             );
 
             CREATE TABLE IF NOT EXISTS likes (
@@ -69,6 +70,11 @@ def init_db():
                 limit_multiplier REAL DEFAULT 1.0
             );
         """)
+        # Migration: add last_engaged_at to existing follows tables
+        try:
+            conn.execute("ALTER TABLE follows ADD COLUMN last_engaged_at TEXT")
+        except Exception:
+            pass  # column already exists
 
 
 # ---------------------------------------------------------------------------
@@ -143,6 +149,33 @@ def already_following(account: str, target_user: str) -> bool:
             (account, target_user)
         ).fetchone()
     return row is not None
+
+
+def update_last_engaged(account: str, target_user: str):
+    """Update last_engaged_at timestamp for a currently-followed account."""
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE follows SET last_engaged_at=? WHERE account=? AND target_user=? AND unfollowed_at IS NULL",
+            (datetime.utcnow().isoformat(), account, target_user)
+        )
+
+
+def get_reengage_candidates(account: str, cadence_days: int = 3) -> list[str]:
+    """Return usernames of followed accounts due for re-engagement.
+
+    An account is due if last_engaged_at is NULL (never engaged since follow)
+    or last_engaged_at < (now - cadence_days).
+    """
+    cutoff = (datetime.utcnow() - timedelta(days=cadence_days)).isoformat()
+    with get_conn() as conn:
+        rows = conn.execute(
+            """SELECT target_user FROM follows
+               WHERE account=? AND unfollowed_at IS NULL
+               AND (last_engaged_at IS NULL OR last_engaged_at <= ?)
+               ORDER BY last_engaged_at ASC""",
+            (account, cutoff)
+        ).fetchall()
+    return [r["target_user"] for r in rows]
 
 
 # ---------------------------------------------------------------------------

@@ -145,6 +145,15 @@ def run_session(account: str, focus: str):
         logger.error(f"Failed to launch session: {e}")
 
 
+def _is_in_blackout(dt: datetime) -> bool:
+    """Return True if the given datetime falls within the daily blackout window."""
+    current_mins = dt.hour * 60 + dt.minute
+    start_mins = WINDOW_END[0] * 60 + WINDOW_END[1]    # blackout starts at window end
+    end_mins   = WINDOW_START[0] * 60 + WINDOW_START[1] # blackout ends at window start
+    # Window wraps midnight (e.g. 22:10 → 07:35)
+    return current_mins >= start_mins or current_mins < end_mins
+
+
 def main():
     parser = argparse.ArgumentParser(description="Daily Instagram Engagement Scheduler")
     parser.add_argument("--account", required=True, help="Account key (e.g. main_account)")
@@ -168,6 +177,27 @@ def main():
                 f"{scheduled_time.strftime('%I:%M %p')}"
             )
             time.sleep(wait_secs)
+
+        # After sleeping (or if already past), re-check time in case PC was asleep
+        now = datetime.now()
+
+        # If scheduled time passed by more than the session duration, the window is gone — skip
+        overdue_mins = (now - scheduled_time).total_seconds() / 60
+        if overdue_mins > SESSION_DURATION_MINUTES:
+            logger.warning(
+                f"Session {i}/{n}: skipping — overdue by {overdue_mins:.0f}min "
+                f"(scheduled {scheduled_time.strftime('%I:%M %p')}, now {now.strftime('%I:%M %p')})"
+            )
+            continue
+
+        # If we're in the blackout window, skip rather than launching a process that sleeps overnight
+        if _is_in_blackout(now):
+            logger.warning(
+                f"Session {i}/{n}: skipping — current time {now.strftime('%I:%M %p')} "
+                f"is in blackout window ({WINDOW_END[0]:02d}:{WINDOW_END[1]:02d}–"
+                f"{WINDOW_START[0]:02d}:{WINDOW_START[1]:02d})"
+            )
+            continue
 
         logger.info(f"Starting session {i}/{n}")
         run_session(args.account, args.focus)

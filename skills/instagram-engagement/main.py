@@ -24,6 +24,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 import engagement_tracker as tracker
 from comment_generator import generate_comment
+import sheets_reporter
 from config import (
     get_credentials,
     get_ramp_up_limits,
@@ -42,6 +43,7 @@ from config import (
     COMMENT_PROBABILITY,
     FOLLOW_PROBABILITY,
     LIKES_PER_TARGET_RANGE,
+    REENGAGE_CADENCE_DAYS,
 )
 from instagram_session import InstagramSession, LoginChallengeError, RateLimitError
 
@@ -178,12 +180,13 @@ def engage_with_target(
     dry_run: bool,
     ramp_limits: dict,
     is_authority: bool = False,
+    skip_filter: bool = False,
 ):
     """Run the full engagement sequence for a single target account."""
-    logger.info(f"[{account}] Engaging @{username} (authority={is_authority})")
+    logger.info(f"[{account}] Engaging @{username} (authority={is_authority}, reengage={skip_filter})")
 
     profile = session.get_profile_info(username)
-    if not session.passes_filter(profile):
+    if not skip_filter and not session.passes_filter(profile):
         stats.skipped += 1
         return
 
@@ -250,6 +253,10 @@ def engage_with_target(
             stats.followed += 1
         _human_delay()
 
+    # Update re-engagement timestamp for accounts we're already following
+    if skip_filter and not dry_run:
+        tracker.update_last_engaged(account, username)
+
 
 # ---------------------------------------------------------------------------
 # RISEN: One active block (20-25 min of engagement)
@@ -298,6 +305,26 @@ def run_active_block(
             except Exception as e:
                 logger.error(f"Error on authority @{username}: {e}")
                 stats.errors += 1
+
+    # --- Category R: Re-engagement pass (followed accounts due for cadence check) ---
+    reengage_targets = tracker.get_reengage_candidates(account, REENGAGE_CADENCE_DAYS)
+    # Exclude authority accounts (already handled above)
+    authority_set = set(a.lower() for a in AUTHORITY_ACCOUNTS)
+    reengage_targets = [u for u in reengage_targets if u.lower() not in authority_set]
+    if reengage_targets:
+        logger.info(f"[{account}] Category R (re-engage) -- {len(reengage_targets)} accounts due")
+    for username in reengage_targets:
+        if time_up() or _daily_limits_exhausted(account, ramp_limits):
+            break
+        try:
+            engage_with_target(session, account, username, stats, dry_run,
+                               ramp_limits, skip_filter=True)
+        except RateLimitError as e:
+            _handle_rate_limit(account, e, stats)
+            return
+        except Exception as e:
+            logger.error(f"Re-engage error for @{username}: {e}")
+            stats.errors += 1
 
     # --- Category B + C: Hashtag targets and community ---
     targets = []
@@ -457,7 +484,7 @@ def run_session(account: str, focus: str, duration_minutes: int, dry_run: bool):
         except Exception as e:
             logger.warning(f"Session cleanup error (browser may have crashed): {e}")
 
-    _print_report(account, focus, duration_minutes, stats, day_number, ramp_limits)
+    _print_report(account, focus, duration_minutes, stats, day_number, ramp_limits, dry_run=dry_run)
 
 
 # ---------------------------------------------------------------------------
@@ -505,7 +532,7 @@ def show_stats(account: str):
 # ---------------------------------------------------------------------------
 
 def _print_report(account: str, focus: str, duration_minutes: int, stats: SessionStats,
-                  day_number: int, ramp_limits: dict):
+                  day_number: int, ramp_limits: dict, dry_run: bool = False):
     daily = tracker.get_daily_stats(account)
     multiplier = tracker.get_limit_multiplier(account)
     elapsed = int(stats.elapsed_minutes())
@@ -528,6 +555,31 @@ def _print_report(account: str, focus: str, duration_minutes: int, stats: Sessio
           f"{daily['comments']}/{int(ramp_limits['comments']*multiplier)} comments | "
           f"{daily.get('likes',0)}/{int(ramp_limits['likes']*multiplier)} likes")
     print("=" * 45)
+
+    spreadsheet_id = os.environ.get("SHEETS_SPREADSHEET_ID")
+    tab_name = os.environ.get("SHEETS_TAB_NAME", "Instagram Engagement")
+    if spreadsheet_id:
+        sheets_reporter.log_session(
+            account=account,
+            focus=focus or "",
+            duration_minutes=elapsed,
+            day_number=day_number,
+            dry_run=dry_run,
+            followed=stats.followed,
+            commented=stats.commented,
+            liked=stats.liked,
+            unfollowed=stats.unfollowed,
+            skipped=stats.skipped,
+            errors=stats.errors,
+            daily_follows=daily["follows"],
+            daily_follows_limit=int(ramp_limits["follows"] * multiplier),
+            daily_comments=daily["comments"],
+            daily_comments_limit=int(ramp_limits["comments"] * multiplier),
+            daily_likes=daily.get("likes", 0),
+            daily_likes_limit=int(ramp_limits["likes"] * multiplier),
+            spreadsheet_id=spreadsheet_id,
+            tab_name=tab_name,
+        )
 
 
 # ---------------------------------------------------------------------------

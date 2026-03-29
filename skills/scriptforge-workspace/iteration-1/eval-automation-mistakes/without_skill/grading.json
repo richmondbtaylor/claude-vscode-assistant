@@ -1,0 +1,44 @@
+{
+  "expectations": [
+    {
+      "text": "has_dual_format_structure",
+      "passed": false,
+      "evidence": "Shorts section found: False. Long-form markers found: True."
+    },
+    {
+      "text": "has_timestamps",
+      "passed": false,
+      "evidence": "Found 0 MM:SS.ms timestamps. Sample: []"
+    },
+    {
+      "text": "has_visual_cues",
+      "passed": false,
+      "evidence": "Found 0 distinct cue types: []"
+    },
+    {
+      "text": "has_richmond_ai_dialogue",
+      "passed": false,
+      "evidence": "RICHMOND: found: False. AI co-host label found: False."
+    },
+    {
+      "text": "has_shorts_reframe",
+      "passed": false,
+      "evidence": "Long-form version label: False. Short version label: False."
+    },
+    {
+      "text": "has_shorts_cta",
+      "passed": false,
+      "evidence": "CTA language found: False. Pattern: '(full video|link below|full tutorial|watch the full|linked below|in the description)'"
+    },
+    {
+      "text": "has_script_notes",
+      "passed": true,
+      "evidence": "Script Notes section found: True."
+    },
+    {
+      "text": "no_fabricated_urls",
+      "passed": true,
+      "evidence": "Found 0 potentially fabricated URLs: []"
+    }
+  ]
+}

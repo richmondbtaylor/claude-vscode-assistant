@@ -1,0 +1,23 @@
+{
+  "skill_name": "scriptforge",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Script this video: How does a RAG (Retrieval-Augmented Generation) system actually work, and why do most businesses build them wrong?",
+      "expected_output": "A complete dual-format script with: long-form dialogue for Richmond and the AI co-host, precise MM:SS.ms timestamps on all visual cues, 2-5 Short extraction points each with reframed self-contained versions, YouTube chapter markers, and a Script Notes section with citation placeholders.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I need a script for my channel — topic is: The 5 AI automation mistakes that kill ROI in the first 90 days",
+      "expected_output": "A complete dual-format script structured around 5 clear mistakes, with Richmond handling the narrative and the AI co-host providing supporting data/research at relevant moments. Includes Short extractions (one per mistake or best 2-3), timestamps, visual cues, and CTAs driving Shorts viewers to the full video.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "script: What is an AI agent and how is it different from a chatbot?",
+      "expected_output": "A complete dual-format script covering the conceptual distinction between agents and chatbots, with practical examples relevant to business decision-makers. Includes proper Richmond/AI co-host dynamic, timestamped cues, Short extractions, and a topic suitability assessment.",
+      "files": []
+    }
+  ]
+}

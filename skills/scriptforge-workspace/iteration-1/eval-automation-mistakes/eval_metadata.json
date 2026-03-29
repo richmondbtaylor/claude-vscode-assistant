@@ -1,0 +1,39 @@
+{
+  "eval_id": 2,
+  "eval_name": "eval-automation-mistakes",
+  "prompt": "I need a script for my channel — topic is: The 5 AI automation mistakes that kill ROI in the first 90 days",
+  "assertions": [
+    {
+      "name": "has_dual_format_structure",
+      "description": "Output contains both a long-form script section and a SHORTS EXTRACTION POINT(S) section"
+    },
+    {
+      "name": "has_timestamps",
+      "description": "Timestamps in MM:SS.ms format appear (e.g. 00:00.000, 02:34.500)"
+    },
+    {
+      "name": "has_visual_cues",
+      "description": "At least 3 distinct bracketed cue types are present: [VISUAL:, [B-ROLL:, [GRAPHIC:, [CAMERA:, [TEXT ON-SCREEN:"
+    },
+    {
+      "name": "has_richmond_ai_dialogue",
+      "description": "Both RICHMOND: and an AI co-host speaker label (AI: or AI CO-HOST:) appear in the script"
+    },
+    {
+      "name": "has_shorts_reframe",
+      "description": "Each Short extraction includes both a long-form version AND a reframed Short version"
+    },
+    {
+      "name": "has_shorts_cta",
+      "description": "At least one Short contains a call-to-action driving viewers back to the full video"
+    },
+    {
+      "name": "has_script_notes",
+      "description": "A SCRIPT NOTES section is present with citation placeholders or source notes"
+    },
+    {
+      "name": "no_fabricated_urls",
+      "description": "No raw https:// URLs appear in the script body (fabricated sources)"
+    }
+  ]
+}

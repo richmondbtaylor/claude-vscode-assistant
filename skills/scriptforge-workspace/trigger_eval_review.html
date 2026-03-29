@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Set Review - scriptforge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Lora', Georgia, serif; background: #faf9f5; padding: 2rem; color: #141413; }
+    h1 { font-family: 'Poppins', sans-serif; margin-bottom: 0.5rem; font-size: 1.5rem; }
+    .description { color: #b0aea5; margin-bottom: 1.5rem; font-style: italic; max-width: 900px; }
+    .controls { margin-bottom: 1rem; display: flex; gap: 0.5rem; }
+    .btn { font-family: 'Poppins', sans-serif; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 500; }
+    .btn-add { background: #6a9bcc; color: white; }
+    .btn-add:hover { background: #5889b8; }
+    .btn-export { background: #d97757; color: white; }
+    .btn-export:hover { background: #c4613f; }
+    table { width: 100%; max-width: 1100px; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    th { font-family: 'Poppins', sans-serif; background: #141413; color: #faf9f5; padding: 0.75rem 1rem; text-align: left; font-size: 0.875rem; }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid #e8e6dc; vertical-align: top; }
+    tr:nth-child(even) td { background: #faf9f5; }
+    tr:hover td { background: #f3f1ea; }
+    .section-header td { background: #e8e6dc; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 0.8rem; color: #141413; text-transform: uppercase; letter-spacing: 0.05em; }
+    .query-input { width: 100%; padding: 0.4rem; border: 1px solid #e8e6dc; border-radius: 4px; font-size: 0.875rem; font-family: 'Lora', Georgia, serif; resize: vertical; min-height: 60px; }
+    .query-input:focus { outline: none; border-color: #d97757; box-shadow: 0 0 0 2px rgba(217,119,87,0.15); }
+    .toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle .slider { position: absolute; inset: 0; background: #b0aea5; border-radius: 24px; cursor: pointer; transition: 0.2s; }
+    .toggle .slider::before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+    .toggle input:checked + .slider { background: #d97757; }
+    .toggle input:checked + .slider::before { transform: translateX(20px); }
+    .btn-delete { background: #c44; color: white; padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-family: 'Poppins', sans-serif; }
+    .btn-delete:hover { background: #a33; }
+    .summary { margin-top: 1rem; color: #b0aea5; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <h1>Eval Set Review: <span id="skill-name">scriptforge</span></h1>
+  <p class="description">Current description: <span id="skill-desc">Generates production-ready dual-format YouTube scripts for Richmond Taylor's AI-focused channel using the SCRIPTFORGE Framework. Creates a complete long-form video script with timestamped visual cues, B-roll directions, camera angle changes, and an AI co-host dialogue — plus 2-5 extracted Shorts with reframed hooks and traffic-driving CTAs. Use this skill whenever the user provides a YouTube video topic or core question and wants a script, mentions "write a script for", "create a YouTube script", "script this video", "SCRIPTFORGE", "make a script about", "generate a video script", "I need a script for my channel", or asks for any combination of long-form + Shorts content. Always trigger when Richmond asks for a YouTube script — even if he just says "script: [topic]" or pastes a topic with no other context.</span></p>
+
+  <div class="controls">
+    <button class="btn btn-add" onclick="addRow()">+ Add Query</button>
+    <button class="btn btn-export" onclick="exportEvalSet()">Export Eval Set</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:65%">Query</th>
+        <th style="width:18%">Should Trigger</th>
+        <th style="width:10%">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="eval-body"></tbody>
+  </table>
+
+  <p class="summary" id="summary"></p>
+
+  <script>
+    const EVAL_DATA = [
+  {
+    "query": "script: How to use AI agents to automate client onboarding",
+    "should_trigger": true
+  },
+  {
+    "query": "write a script for my next YouTube video, topic is: why most AI chatbots fail for small business",
+    "should_trigger": true
+  },
+  {
+    "query": "I need a YouTube script about prompt engineering for non-technical teams — something my audience of ops managers can actually use",
+    "should_trigger": true
+  },
+  {
+    "query": "can you generate a video script on how n8n compares to Make for automation workflows? want it ready for filming friday",
+    "should_trigger": true
+  },
+  {
+    "query": "scriptforge: What is vector search and why does it matter for AI apps",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to make a video about AI hallucinations — write me a full script please, something that would work as both a long video and have clips I can turn into shorts",
+    "should_trigger": true
+  },
+  {
+    "query": "ok filming tomorrow morning and I still don't have a script. topic: the hidden cost of DIY AI automation. can u write it",
+    "should_trigger": true
+  },
+  {
+    "query": "need a script for richmond's channel — topic: 5 things to do before automating anything in your business",
+    "should_trigger": true
+  },
+  {
+    "query": "video idea: 'why ai projects fail in year 1' — write me the full script",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm doing a video on Claude vs ChatGPT vs Gemini for business users — can you write the script? needs a strong hook and at least a couple shorts I can pull out",
+    "should_trigger": true
+  },
+  {
+    "query": "can you summarize this YouTube video transcript for me and pull out the key takeaways as bullet points",
+    "should_trigger": false
+  },
+  {
+    "query": "write me an Instagram caption about our new AI automation service launch — something punchy for reels",
+    "should_trigger": false
+  },
+  {
+    "query": "I need a 1500-word blog post about RAG systems that I can post on our company website and LinkedIn",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the best AI tool for automatically transcribing and editing podcast episodes right now?",
+    "should_trigger": false
+  },
+  {
+    "query": "can you help me tighten this script intro? it's too slow — here's what I have: [pasted draft]",
+    "should_trigger": false
+  },
+  {
+    "query": "draft an email sequence for a 5-day AI automation challenge i'm running next month — 5 emails, one per day",
+    "should_trigger": false
+  },
+  {
+    "query": "I need a 45-minute webinar script for a live product demo — not for YouTube, this is for a Zoom call with enterprise prospects",
+    "should_trigger": false
+  },
+  {
+    "query": "write a voiceover script for a 30-second paid ad we're running on YouTube — product is our AI SOPs tool",
+    "should_trigger": false
+  },
+  {
+    "query": "can you review my YouTube channel analytics from the last 90 days and tell me which video topics are getting the most watch time",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to repurpose this YouTube video into a LinkedIn carousel and a Twitter thread — here's the transcript",
+    "should_trigger": false
+  }
+];
+
+    let evalItems = [...EVAL_DATA];
+
+    function render() {
+      const tbody = document.getElementById('eval-body');
+      tbody.innerHTML = '';
+
+      const sorted = evalItems
+        .map((item, origIdx) => ({ ...item, origIdx }))
+        .sort((a, b) => (b.should_trigger ? 1 : 0) - (a.should_trigger ? 1 : 0));
+
+      let lastGroup = null;
+      sorted.forEach(item => {
+        const group = item.should_trigger ? 'trigger' : 'no-trigger';
+        if (group !== lastGroup) {
+          const headerRow = document.createElement('tr');
+          headerRow.className = 'section-header';
+          headerRow.innerHTML = `<td colspan="3">${item.should_trigger ? 'Should Trigger' : 'Should NOT Trigger'}</td>`;
+          tbody.appendChild(headerRow);
+          lastGroup = group;
+        }
+
+        const idx = item.origIdx;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><textarea class="query-input" onchange="updateQuery(${idx}, this.value)">${escapeHtml(item.query)}</textarea></td>
+          <td>
+            <label class="toggle">
+              <input type="checkbox" ${item.should_trigger ? 'checked' : ''} onchange="updateTrigger(${idx}, this.checked)">
+              <span class="slider"></span>
+            </label>
+            <span style="margin-left:8px;font-size:0.8rem;color:#b0aea5">${item.should_trigger ? 'Yes' : 'No'}</span>
+          </td>
+          <td><button class="btn-delete" onclick="deleteRow(${idx})">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      updateSummary();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function updateQuery(idx, value) { evalItems[idx].query = value; updateSummary(); }
+    function updateTrigger(idx, value) { evalItems[idx].should_trigger = value; render(); }
+    function deleteRow(idx) { evalItems.splice(idx, 1); render(); }
+
+    function addRow() {
+      evalItems.push({ query: '', should_trigger: true });
+      render();
+      const inputs = document.querySelectorAll('.query-input');
+      inputs[inputs.length - 1].focus();
+    }
+
+    function updateSummary() {
+      const trigger = evalItems.filter(i => i.should_trigger).length;
+      const noTrigger = evalItems.filter(i => !i.should_trigger).length;
+      document.getElementById('summary').textContent =
+        `${evalItems.length} queries total: ${trigger} should trigger, ${noTrigger} should not trigger`;
+    }
+
+    function exportEvalSet() {
+      const valid = evalItems.filter(i => i.query.trim() !== '');
+      const data = valid.map(i => ({ query: i.query.trim(), should_trigger: i.should_trigger }));
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'eval_set.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    render();
+  </script>
+</body>
+</html>

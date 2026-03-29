@@ -106,10 +106,22 @@ LIKES_PER_TARGET_RANGE = (1, 3)
 # Target account filtering criteria
 # ---------------------------------------------------------------------------
 
-MIN_FOLLOWERS = 500
-MAX_POST_AGE_DAYS = 7          # Account must have posted within this window to engage
-MIN_FOLLOW_RATIO = 0.5         # followers / following must be >= this value
-BIO_KEYWORDS = ["AI", "automation", "consulting", "artificial intelligence"]
+MIN_FOLLOWERS = 300
+MAX_POST_AGE_DAYS = 14         # Account must have posted within this window to engage
+MIN_FOLLOW_RATIO = 0.3         # followers / following must be >= this value
+BIO_KEYWORDS = [
+    # Core AI/automation terms
+    "AI", "artificial intelligence", "automation", "machine learning", "ML",
+    "LLM", "ChatGPT", "GPT", "Claude", "prompt engineering",
+    # Tools/platforms
+    "n8n", "make.com", "zapier", "airtable", "notion",
+    # Business/creator identity
+    "consulting", "agency", "founder", "entrepreneur", "coach",
+    "solopreneur", "business owner", "online business",
+    # Broader creator/tech terms
+    "no-code", "low-code", "workflow", "productivity", "digital marketing",
+    "content creator", "tech", "saas", "builder",
+]
 POSTS_TO_LIKE = (2, 3)
 
 # Post recency for comment + follow gating (days)
@@ -121,6 +133,7 @@ COMMENT_FOLLOW_MAX_POST_AGE_DAYS = 14
 
 COMMENT_COOLDOWN_DAYS = 30
 FOLLOW_BACK_WAIT_DAYS = 7
+REENGAGE_CADENCE_DAYS = 3      # Re-engage followed accounts every N days
 
 # ---------------------------------------------------------------------------
 # RISEN: Content abort keywords
