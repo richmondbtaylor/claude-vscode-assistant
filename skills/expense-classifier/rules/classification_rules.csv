@@ -1,0 +1,111 @@
+keyword,category,match_type,notes
+adobe,business,contains,Adobe Creative Cloud and other Adobe subscriptions
+canva,business,contains,Canva design subscription
+notion,business,contains,Notion workspace subscription
+figma,business,contains,Figma design tool
+aws,business,contains,Amazon Web Services hosting and compute
+amazon web services,business,contains,Amazon Web Services
+zoom,business,contains,Zoom video conferencing
+slack,business,contains,Slack team messaging
+github,business,contains,GitHub code hosting
+anthropic,business,contains,Anthropic API and Claude services
+openai,business,contains,OpenAI API services
+stripe,business,contains,Stripe payment processing fees
+godaddy,business,contains,GoDaddy domain and hosting
+namecheap,business,contains,Namecheap domain registration
+shopify,business,contains,Shopify ecommerce platform
+fiverr,business,contains,Fiverr freelance marketplace
+upwork,business,contains,Upwork freelance platform
+wix,business,contains,Wix website builder
+squarespace,business,contains,Squarespace website builder
+mailchimp,business,contains,Mailchimp email marketing
+convertkit,business,contains,ConvertKit email marketing
+beehiiv,business,contains,Beehiiv newsletter platform
+calendly,business,contains,Calendly scheduling tool
+loom,business,contains,Loom video messaging
+airtable,business,contains,Airtable database
+zapier,business,contains,Zapier automation
+make.com,business,contains,Make (formerly Integromat) automation
+n8n,business,contains,n8n workflow automation
+webflow,business,contains,Webflow website builder
+hubspot,business,contains,HubSpot CRM and marketing
+linkedin,business,contains,LinkedIn premium or ads
+meta ads,business,contains,Meta (Facebook/Instagram) advertising
+google ads,business,contains,Google Ads advertising
+twitter ads,business,contains,Twitter/X advertising
+namehero,business,contains,NameHero hosting
+cloudflare,business,contains,Cloudflare DNS and CDN
+dropbox,business,contains,Dropbox cloud storage
+docusign,business,contains,DocuSign e-signature
+freshbooks,business,contains,FreshBooks accounting
+quickbooks,business,contains,QuickBooks accounting
+xero,business,contains,Xero accounting
+typeform,business,contains,Typeform surveys
+hotjar,business,contains,Hotjar analytics
+semrush,business,contains,SEMrush SEO tool
+ahref,business,contains,Ahrefs SEO tool
+buffer,business,contains,Buffer social scheduling
+hootsuite,business,contains,Hootsuite social scheduling
+intercom,business,contains,Intercom customer messaging
+sendgrid,business,contains,SendGrid email delivery
+twilio,business,contains,Twilio communications API
+vercel,business,contains,Vercel hosting platform
+netlify,business,contains,Netlify hosting platform
+heroku,business,contains,Heroku cloud platform
+digitalocean,business,contains,DigitalOcean cloud hosting
+postage,business,contains,Postage and shipping costs
+courier,business,contains,Courier and delivery services
+fedex,business,contains,FedEx shipping
+dhl,business,contains,DHL shipping
+ups store,business,contains,UPS shipping
+office supplies,business,contains,Office supplies
+microsoft 365,business,contains,Microsoft 365 business subscription
+google workspace,business,contains,Google Workspace
+apple developer,business,contains,Apple Developer Program
+netflix,personal,contains,Netflix streaming
+spotify,personal,contains,Spotify music streaming
+apple music,personal,contains,Apple Music streaming
+disney+,personal,contains,Disney+ streaming
+hbo max,personal,contains,HBO Max streaming
+hulu,personal,contains,Hulu streaming
+amazon prime,personal,contains,Amazon Prime membership
+youtube premium,personal,contains,YouTube Premium
+tidal,personal,contains,Tidal music streaming
+grocery,personal,contains,Grocery shopping
+supermarket,personal,contains,Supermarket shopping
+woolworths,personal,contains,Woolworths supermarket
+coles,personal,contains,Coles supermarket
+aldi,personal,contains,Aldi supermarket
+tesco,personal,contains,Tesco supermarket
+restaurant,personal,contains,Restaurant dining
+cafe,personal,contains,Cafe and coffee shops
+starbucks,personal,contains,Starbucks coffee
+mcdonald,personal,contains,McDonald's fast food
+kfc,personal,contains,KFC fast food
+subway,personal,contains,Subway fast food
+pizza,personal,contains,Pizza delivery or restaurant
+uber eats,personal,contains,Uber Eats food delivery
+doordash,personal,contains,DoorDash food delivery
+pharmacy,personal,contains,Pharmacy purchases
+chemist,personal,contains,Chemist or drugstore
+gym,personal,contains,Gym membership
+fitness,personal,contains,Fitness and sports
+haircut,personal,contains,Haircut and personal grooming
+salon,personal,contains,Hair salon
+barber,personal,contains,Barber
+dentist,personal,contains,Dental care
+doctor,personal,contains,Medical appointments
+hospital,personal,contains,Hospital charges
+clothing,personal,contains,Clothing and apparel
+clothing store,personal,contains,Clothing retail
+fuel,personal,contains,Fuel and petrol
+petrol,personal,contains,Petrol and gas
+bp,personal,contains,BP fuel station
+shell,personal,contains,Shell fuel station
+cinema,personal,contains,Cinema and movies
+cinema tickets,personal,contains,Movie tickets
+entertainment,personal,contains,General entertainment
+uber,personal,contains,Uber ride hailing
+lyft,personal,contains,Lyft ride hailing
+airbnb,personal,contains,Airbnb accommodation
+hotel,personal,contains,Hotel accommodation

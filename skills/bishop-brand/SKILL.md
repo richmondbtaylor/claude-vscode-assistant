@@ -117,6 +117,28 @@ BLUE        = RGBColor(24, 148, 201)
 
 ---
 
+## Logos
+
+### Bishop AI Logo Assets
+
+Logo files location: `~/.claude/assets/logos/bishop-ai/`
+
+Files will be stored here when uploaded. Expected variants:
+- Dark background version (Gold or White wordmark on Deep Navy)
+- Light background version (Deep Navy wordmark on White/Off-White)
+- Icon-only / mark (no wordmark)
+- Full wordmark (icon + "Bishop AI" text)
+
+### Usage Rules
+
+- **On dark backgrounds** → use White or Gold wordmark
+- **On light backgrounds** → use Deep Navy wordmark
+- Never stretch, skew, or recolor the logo outside the brand palette
+- Minimum clear space: equal to the height of the icon mark on all sides
+- Preferred context: Deep Navy background + Gold wordmark = primary brand expression
+
+---
+
 ## Language & Copy Standards
 
 All copy in or accompanying any Bishop AI visual must avoid overused AI, corporate, and salesy language.
