@@ -1,0 +1,45 @@
+{
+  "run_id": "eval-1-without_skill",
+  "assertions": [
+    {
+      "text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count",
+      "passed": false,
+      "evidence": "No '### CAROUSEL OVERVIEW' section. Metadata is inline in the header: '**Angle:** Myth-busting | **Goal:** Shares | **Audience:** ...' — platform, topic, and slide count not presented in a structured overview block"
+    },
+    {
+      "text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)",
+      "passed": false,
+      "evidence": "No hook options section. Output goes directly to Slide 1 content with a single chosen headline"
+    },
+    {
+      "text": "Myth-busting format is used with Myth/Reality or similar contrast structure in value slides",
+      "passed": true,
+      "evidence": "Slide 2 is labeled '— The Myth' and Slide 3 is labeled '— The Reality Check', providing clear Myth/Reality contrast structure"
+    },
+    {
+      "text": "A dedicated CTA final slide is present",
+      "passed": true,
+      "evidence": "Lines 89-96: '## SLIDE 9 — CTA' with save, share, and comment prompts"
+    },
+    {
+      "text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)",
+      "passed": true,
+      "evidence": "No banned words detected in any slide copy. Language is direct and plain throughout."
+    },
+    {
+      "text": "CTA is oriented toward shares (e.g. 'share with', 'tag a friend', 'send this to')",
+      "passed": true,
+      "evidence": "Slide 9 body: 'Share it with a creator friend who's been waiting.' and caption: 'tag a creator friend who needs to see this today'"
+    },
+    {
+      "text": "Instagram platform constraints are acknowledged (text placement in upper 2/3, visual breathing room)",
+      "passed": false,
+      "evidence": "No mention of text placement in upper 2/3 of frame or visual breathing room. Slide 1 has a 'Visual Direction' note about dark background, but no Instagram-specific constraints are addressed anywhere"
+    },
+    {
+      "text": "An ENGAGEMENT STRATEGY section is present",
+      "passed": false,
+      "evidence": "No ENGAGEMENT STRATEGY section in the output. File ends after a CAPTION section with hashtags"
+    }
+  ]
+}

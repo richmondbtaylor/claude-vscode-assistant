@@ -1,0 +1,47 @@
+{
+  "eval_id": 0,
+  "eval_name": "ai-mistakes-linkedin-saves",
+  "prompt": "Make me a LinkedIn carousel about the 5 biggest mistakes people make when using AI tools for the first time. Goal is saves. My audience is entrepreneurs and small business owners who are curious about AI but haven't gone deep yet.",
+  "assertions": [
+    {
+      "text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "Slide-by-slide content section is present with individually labeled slides",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "A dedicated CTA final slide is present",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "An ENGAGEMENT STRATEGY section is present",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "CTA is oriented toward saves (e.g. 'save this', 'bookmark', 'come back to')",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "At least one visual direction cue is present (e.g. [BACKGROUND:], [ICON:], [TEXT:], [HIGHLIGHT:])",
+      "passed": null,
+      "evidence": ""
+    }
+  ]
+}

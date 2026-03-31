@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESAF Go-To-Market Strategy — Wendy Creative Works</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --deep-navy:  #000813;
+    --dark-navy:  #1D2333;
+    --off-white:  #E6E2DE;
+    --white:      #FAFBFA;
+    --gold:       #E0B848;
+    --blue:       #1894C9;
+    --red:        #E05252;
+  }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: #111;
+    color: var(--white);
+  }
+
+  .page {
+    width: 1100px;
+    
+    background: var(--deep-navy);
+    margin: 0 auto 2px;
+    padding: 56px 64px 48px;
+    position: relative;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(224,184,72,0.25);
+    padding-bottom: 14px;
+    margin-bottom: 40px;
+  }
+  .brand-wordmark {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+  .page-meta {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 10px;
+    color: var(--off-white);
+    opacity: 0.55;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .page-footer {
+    border-top: 1px solid rgba(224,184,72,0.15);
+    padding-top: 12px;
+    margin-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .page-footer span {
+    font-size: 9.5px;
+    color: var(--off-white);
+    opacity: 0.4;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .section-label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--off-white);
+    line-height: 1.75;
+    margin-bottom: 14px;
+  }
+  ul { padding-left: 18px; margin-bottom: 16px; }
+  li {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    color: var(--off-white);
+    line-height: 1.7;
+    margin-bottom: 5px;
+  }
+
+  .pull-quote {
+    background: var(--dark-navy);
+    border-left: 3px solid var(--gold);
+    padding: 18px 24px;
+    margin: 20px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .pull-quote p { font-style: italic; font-size: 14px; color: var(--white); margin: 0; line-height: 1.7; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  thead th {
+    background: var(--gold);
+    color: var(--deep-navy);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 12px 16px;
+    text-align: left;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.07); }
+  tbody tr:nth-child(odd)  { background: rgba(29,35,51,0.6); }
+  tbody tr:nth-child(even) { background: rgba(29,35,51,0.3); }
+  td {
+    padding: 13px 16px;
+    font-size: 12.5px;
+    color: var(--off-white);
+    line-height: 1.55;
+    vertical-align: top;
+  }
+  td strong { color: var(--white); font-family: 'Poppins', sans-serif; font-weight: 600; display: block; margin-bottom: 2px; }
+  td em { color: var(--blue); font-style: normal; font-weight: 600; font-family: 'Poppins', sans-serif; }
+
+  .channel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .channel-card {
+    background: var(--dark-navy);
+    border-radius: 8px;
+    padding: 18px 20px;
+    border-top: 2px solid var(--gold);
+  }
+  .channel-card h4 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .channel-card p { font-size: 12px; margin: 0; line-height: 1.6; }
+
+  .pricing-card { background: var(--dark-navy); border-radius: 10px; margin-bottom: 18px; overflow: hidden; }
+  .pricing-header {
+    background: #1e2d48;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--gold);
+  }
+  .pricing-name { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 16px; color: var(--white); }
+  .pricing-name span { font-size: 11px; color: var(--off-white); font-weight: 400; margin-left: 8px; opacity: 0.7; }
+  .pricing-price { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 20px; color: var(--gold); }
+  .pricing-price small { font-size: 11px; color: var(--off-white); font-weight: 400; margin-left: 4px; opacity: 0.7; }
+  .pricing-body { padding: 16px 24px; }
+  .pricing-body li { font-size: 12px; margin-bottom: 4px; }
+  .pricing-fit {
+    font-size: 11.5px; color: var(--off-white); opacity: 0.75; font-style: italic;
+    margin-top: 8px; margin-bottom: 0; padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .roadmap-row { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
+  .roadmap-badge {
+    background: var(--gold); color: var(--deep-navy);
+    font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 11px;
+    padding: 6px 14px; border-radius: 4px; white-space: nowrap; min-width: 90px; text-align: center;
+  }
+  .roadmap-text { font-size: 12.5px; color: var(--off-white); line-height: 1.65; padding-top: 4px; flex: 1; }
+
+  .highlight-box {
+    background: var(--dark-navy);
+    border: 1px solid rgba(224,184,72,0.3);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+
+  .entry-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 18px 0; }
+  .entry-card { background: var(--dark-navy); border-radius: 8px; padding: 18px; border-top: 3px solid var(--blue); }
+  .entry-card.primary { border-top-color: var(--gold); }
+  .entry-card h4 { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px; color: var(--white); margin-bottom: 8px; line-height: 1.3; }
+  .entry-card p { font-size: 11.5px; margin: 0; line-height: 1.6; }
+  .badge {
+    display: inline-block; font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600;
+    padding: 3px 8px; border-radius: 3px; margin-bottom: 8px; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .badge-gold { background: rgba(224,184,72,0.15); color: var(--gold); }
+  .badge-blue { background: rgba(24,148,201,0.15); color: var(--blue); }
+
+  /* COVER */
+  .cover-page { padding: 0; overflow: hidden; }
+  .cover-top-bar {
+    background: var(--gold); padding: 14px 64px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cover-top-bar .brand { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 14px; color: var(--deep-navy); }
+  .cover-top-bar .tag { font-family: 'Open Sans', sans-serif; font-size: 10px; color: var(--deep-navy); opacity: 0.7; letter-spacing: 0.1em; text-transform: uppercase; }
+  .cover-hero { padding: 72px 64px 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .cover-eyebrow { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 11px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 18px; }
+  .cover-title { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 54px; color: var(--white); line-height: 1.05; margin-bottom: 8px; }
+  .cover-title span { color: var(--gold); }
+  .cover-subtitle { font-family: 'Open Sans', sans-serif; font-size: 18px; color: var(--off-white); margin-top: 18px; opacity: 0.8; }
+  .cover-divider { width: 60px; height: 3px; background: var(--gold); margin: 28px 0; }
+  .cover-meta { display: flex; gap: 48px; }
+  .cover-meta-item label { display: block; font-family: 'Poppins', sans-serif; font-size: 9.5px; color: var(--gold); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
+  .cover-meta-item span { font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--white); }
+  .cover-bottom-bar {
+    background: var(--dark-navy); padding: 18px 64px; margin-top: 40px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cover-bottom-bar span { font-size: 10px; color: var(--off-white); opacity: 0.5; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .letter-signature { margin-top: 24px; }
+  .letter-signature strong { display: block; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 15px; color: var(--gold); margin-bottom: 2px; }
+  .letter-signature span { font-size: 12px; color: var(--off-white); opacity: 0.7; }
+
+  .pilot-box { background: var(--dark-navy); border: 1px solid rgba(24,148,201,0.4); border-radius: 10px; padding: 24px 28px; margin: 18px 0; }
+  .pilot-box h3 { color: var(--blue); font-size: 15px; margin-bottom: 12px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  .rec-box {
+    background: rgba(224,184,72,0.08); border: 1px solid rgba(224,184,72,0.4);
+    border-radius: 10px; padding: 26px 30px; margin: 20px 0;
+  }
+  .rec-box p { font-style: italic; font-size: 14.5px; color: var(--white); line-height: 1.75; margin: 0; }
+
+  .next-step { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+  .step-num {
+    background: var(--gold); color: var(--deep-navy);
+    font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 14px;
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step-text { font-size: 13px; color: var(--off-white); padding-top: 5px; line-height: 1.6; }
+
+  .contact-block {
+    background: var(--dark-navy); border-radius: 10px; padding: 24px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 24px; border: 1px solid rgba(255,255,255,0.07);
+  }
+  .contact-block .name { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 17px; color: var(--white); margin-bottom: 3px; }
+  .contact-block .title { font-size: 12px; color: var(--off-white); opacity: 0.7; margin-bottom: 8px; }
+  .contact-block a { font-size: 12.5px; color: var(--blue); text-decoration: none; }
+  .contact-block .logo-tag { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 18px; color: var(--gold); text-align: right; }
+  .contact-block .logo-tag small { display: block; font-size: 9px; font-weight: 400; color: var(--off-white); opacity: 0.5; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+
+  @media print {
+    body { background: none; }
+    .page { margin: 0; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 — COVER -->
+<div class="page cover-page" style="">
+  <div class="cover-top-bar">
+    <div class="brand">Bishop AI</div>
+    <div class="tag">Consulting Proposal · Confidential</div>
+  </div>
+  <div class="cover-hero">
+    <div class="cover-eyebrow">Go-To-Market Strategy</div>
+    <div class="cover-title">ESAF<br><span>Market Launch</span></div>
+    <div class="cover-subtitle">Closing the gap between a strong framework<br>and a sales strategy buyers immediately understand.</div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><label>Prepared for</label><span>Wendy Creative Works</span></div>
+      <div class="cover-meta-item"><label>Prepared by</label><span>Richmond Bishop · Bishop AI</span></div>
+      <div class="cover-meta-item"><label>Classification</label><span>Confidential</span></div>
+    </div>
+  </div>
+  <div class="cover-bottom-bar">
+    <span>Richmond Bishop · Bishop AI</span>
+    <span>richmond@bishopai.io</span>
+    <span>Bishop AI</span>
+  </div>
+</div>
+
+
+<!-- PAGE 2 — OPENING LETTER -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Consulting Proposal · Wendy Creative Works</div>
+  </div>
+  <h2>A direct read on where things stand.</h2>
+  <p>After reviewing all of the ESAF materials you shared, I want to give you my honest read on where things stand and exactly how I believe we should move forward.</p>
+  <p>The framework you have built is genuinely strong. The problem it solves is real, the regulatory moment is right, and the IP structure is smart.</p>
+  <p>What I see right now is a gap between having a great product and having a sales strategy that puts it in front of buyers in a way they immediately understand.</p>
+  <div class="pull-quote"><p>That is the gap this proposal is designed to close.</p></div>
+  <p>This document outlines how I see the ESAF opportunity, who the right buyers are, how to approach them, and how I would support you in making it happen. My goal is for you to walk away from this with a clear picture of the path forward — and confidence that there is one.</p>
+  <div class="letter-signature">
+    <strong>Richmond Bishop</strong>
+    <span>CEO &amp; Founder, Bishop AI</span>
+  </div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 3 — WHAT ESAF IS -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 1 · Market Position</div>
+  </div>
+  <div class="section-label">Section 01</div>
+  <h2>What ESAF is — and where it sits in the market</h2>
+  <p>Other groups are moving into emotional AI safety. Most are approaching it from modeling, UX, or ethics. ESAF is in a different lane: <strong style="color:var(--white)">governance and liability at the system level.</strong></p>
+  <p>The market shift is straightforward. Companies can no longer rely on "the AI did it" as a defense. If their system influences human behavior — decisions, emotions, actions — they own the outcome. ESAF sits in that gap.</p>
+  <div class="pull-quote">
+    <p>The closest parallel is PCI-DSS — the compliance standard every company must follow to handle credit card data. PCI-DSS is not software. Organizations adopt it, embed it into their processes, and depend on it ongoing. ESAF works the same way, for a liability problem that is growing faster than most legal teams realize.</p>
+  </div>
+  <div class="pull-quote" style="border-left-color:var(--blue); margin-top:8px;">
+    <p>AI liability is no longer theoretical. If your system influences behavior, you own the outcome. ESAF is what proves you had enforceable boundaries in place before anything went wrong.</p>
+  </div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 4 — THREE PILLARS -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 1 · The Three Pillars</div>
+  </div>
+  <div class="section-label">Section 01 — continued</div>
+  <h3 style="font-size:18px; color:var(--white); margin-bottom:6px;">The Three Pillars</h3>
+  <p style="margin-bottom:18px;">ESAF is built on three operational pillars that together form a complete governance layer at the interaction level — the exact point where liability is either created or prevented.</p>
+  <table>
+    <thead>
+      <tr><th style="width:26%">Pillar</th><th>What it does — and why it matters legally</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Identity &amp; Authority Signaling</strong></td>
+        <td>Prevents AI from being interpreted as a licensed professional or absolute authority. Closes one of the clearest liability exposure points in enterprise AI — when a user acts on AI advice believing it came from a credentialed source. Before a claim is filed, this pillar removes the foundation of it.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Emotional Trigger Thresholds</strong></td>
+        <td>Detects escalation patterns in real time — distress, dependency, emotional volatility — and triggers required interventions before harm occurs. This makes ESAF proactive rather than reactive. The system catches risk before it becomes an incident.</td>
+      </tr>
+      <tr>
+        <td><strong>3. Redirection &amp; Oversight Engine</strong></td>
+        <td>Establishes a structured handoff to human oversight when risk thresholds are crossed. When the system flags an issue, there is a defined, documented process for what happens next. That documentation is exactly what a legal team or regulator will ask for.</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pull-quote" style="margin-top:18px;">
+    <p>Pillar 1 prevents misrepresentation. Pillar 2 catches escalation. Pillar 3 enforces the response and documents it. That end-to-end chain is what makes ESAF a governance standard rather than a feature — and what no existing framework provides at this level.</p>
+  </div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 5 — WHY NOW -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 2 · Market Timing</div>
+  </div>
+  <div class="section-label">Section 02</div>
+  <h2>Why right now is the right time to sell this</h2>
+  <p>The regulatory environment has shifted significantly in the past 18 months. Your buyers are not waiting for a future problem — they are dealing with active pressure today:</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0;">
+    <div class="highlight-box" style="margin:0;">
+      <div class="section-label" style="color:var(--red); margin-bottom:6px;">EU AI Act</div>
+      <p style="font-size:12.5px; margin:0;">Now in enforcement. Companies deploying AI in high-risk environments are legally required to have risk management systems in place. <strong style="color:var(--white)">ESAF is exactly that system.</strong></p>
+    </div>
+    <div class="highlight-box" style="margin:0;">
+      <div class="section-label" style="color:var(--red); margin-bottom:6px;">US Legislation</div>
+      <p style="font-size:12.5px; margin:0;">AI executive orders and state legislation are creating compliance requirements that most companies have no answer for yet.</p>
+    </div>
+    <div class="highlight-box" style="margin:0;">
+      <div class="section-label" style="color:var(--red); margin-bottom:6px;">Insurance Premiums</div>
+      <p style="font-size:12.5px; margin:0;">Enterprise AI insurance premiums are rising sharply. Carriers cannot underwrite behavioral AI risk without a standard to measure against. <strong style="color:var(--white)">ESAF fills that gap.</strong></p>
+    </div>
+    <div class="highlight-box" style="margin:0;">
+      <div class="section-label" style="color:var(--red); margin-bottom:6px;">Mainstream Awareness</div>
+      <p style="font-size:12.5px; margin:0;">High-profile AI emotional dependency incidents are now in mainstream news. C-suite executives are aware and looking for solutions.</p>
+    </div>
+  </div>
+  <div class="pull-quote">
+    <p>The window to establish ESAF as the recognized standard — before a competitor does — is open right now. Most governance categories are built by the first credible player to claim them.</p>
+  </div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 6 — BUYER MAP -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 2 · Buyer Mapping</div>
+  </div>
+  <div class="section-label">Section 02 — continued</div>
+  <h3 style="font-size:18px; color:var(--white); margin-bottom:6px;">Who your buyers are — and which pillar lands first</h3>
+  <p style="margin-bottom:16px;">The three-pillar structure opens three distinct entry conversations depending on who you are talking to.</p>
+  <table>
+    <thead>
+      <tr><th style="width:24%">Who they are</th><th style="width:28%">Lead with this pillar</th><th>Why it lands</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Chief Compliance Officers &amp; General Counsel</strong></td>
+        <td><em>Pillar 3 — Redirection &amp; Oversight Engine</em></td>
+        <td>Their primary fear is documentation. When a regulator asks "what happened and what did your system do about it," Pillar 3 is the answer. Lead with the audit trail and structured handoff process.</td>
+      </tr>
+      <tr>
+        <td><strong>Healthcare AI companies with patient-facing tools</strong></td>
+        <td><em>Pillar 2 — Emotional Trigger Thresholds</em></td>
+        <td>Vulnerable users, HIPAA exposure, one dependency incident away from catastrophe. They need proof the system catches risk before it becomes harm.</td>
+      </tr>
+      <tr>
+        <td><strong>EdTech companies with AI tools for students</strong></td>
+        <td><em>Pillar 1 — Identity &amp; Authority Signaling</em></td>
+        <td>Biggest exposure is an AI a student treats as a trusted authority figure. Pillar 1 prevents that misrepresentation from forming. Politically immediate and easy to understand.</td>
+      </tr>
+      <tr>
+        <td><strong>AI compliance platforms &amp; potential partners</strong></td>
+        <td><em>All three pillars — as a capability gap</em></td>
+        <td>They have distribution. They do not have this. Position the full three-pillar system as the capability layer they cannot build as fast. Partnership or OEM conversation, not a sales conversation.</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 7 — PITCH SHIFT -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 3 · GTM Strategy</div>
+  </div>
+  <div class="section-label">Section 03</div>
+  <h2>The go-to-market strategy</h2>
+  <h3>One thing to change immediately</h3>
+  <p>Right now ESAF's pitch leads with the product: "a governance standard that operates as an overlay on existing AI systems." That is accurate — but it is not how buyers think. Nobody is searching for that phrase.</p>
+  <p>The pitch needs to lead with the fear buyers already feel, not the solution you have built. These three opening lines open doors:</p>
+  <div style="display:flex; flex-direction:column; gap:10px; margin:20px 0;">
+    <div class="pull-quote" style="border-left-color:var(--red);">
+      <p>"Your AI is creating liability you cannot see — emotional dependency, authority overreach, identity fraud. Most companies have no way to detect it, let alone stop it."</p>
+    </div>
+    <div class="pull-quote">
+      <p>"When a regulator asks you to prove your AI behaved safely, what do you show them? ESAF is that proof."</p>
+    </div>
+    <div class="pull-quote" style="border-left-color:var(--blue);">
+      <p>"The EU AI Act is already in enforcement. Your competitors are not ready. This is your window to be the company that is."</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 8 — CHANNELS -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 3 · GTM Channels</div>
+  </div>
+  <div class="section-label">Section 03 — continued</div>
+  <h3 style="font-size:18px; color:var(--white); margin-bottom:16px;">How to reach buyers — in order of priority</h3>
+  <div class="channel-grid">
+    <div class="channel-card">
+      <h4>01 — LinkedIn Content</h4>
+      <p>Post 2–3 times per week about AI safety, regulatory liability, and the risks of unguarded AI. Goal: own the phrase "AI interaction safety" before anyone else does. Builds inbound over time and warms up every outbound target before you reach out.</p>
+    </div>
+    <div class="channel-card">
+      <h4>02 — Direct Outreach</h4>
+      <p>Cold email and LinkedIn outreach to Chief Compliance Officers and General Counsel at companies actively deploying AI tools. Lead with the fear, not the product. Offer a 15-minute call — not a full demo. Short, urgent, specific.</p>
+    </div>
+    <div class="channel-card">
+      <h4>03 — Conference Speaking</h4>
+      <p>Apply to 5 AI governance and compliance conferences now. One 30-minute talk puts you in front of 300+ qualified buyers in a single session. The fastest way to build category authority.</p>
+    </div>
+    <div class="channel-card">
+      <h4>04 — Analyst Briefings</h4>
+      <p>Request a briefing with Gartner and Forrester analysts covering AI governance. One mention in a Gartner report is worth more than 100 cold emails. The briefing itself is free and takes one email to request.</p>
+    </div>
+    <div class="channel-card" style="grid-column: 1 / -1; border-top-color:var(--blue);">
+      <h4>05 — Partnership Outreach</h4>
+      <p>Reach out to AI compliance platforms that already have enterprise distribution. They have the clients. You have a capability they cannot build as fast. A referral or OEM arrangement creates revenue without a long sales cycle.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 9 — PILOTS + ROADMAP -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 3 · Pilots &amp; 90-Day Roadmap</div>
+  </div>
+  <div class="section-label">Section 03 — continued</div>
+  <div class="pilot-box">
+    <h3>Start with pilots — not enterprise licenses</h3>
+    <p style="margin-bottom:10px;">Asking for a large licensing commitment before any organization has experienced ESAF in a real environment is a hard sell. The faster path is a <strong style="color:var(--white)">paid pilot at $15,000 – $25,000 for a 90-day engagement.</strong></p>
+    <div class="two-col">
+      <div>
+        <p style="font-size:12px; color:var(--blue); font-weight:600; margin-bottom:6px;">The client gets:</p>
+        <ul>
+          <li>Full assessment of their AI interaction risk</li>
+          <li>Mapped ESAF governance framework for their environment</li>
+          <li>Regulatory alignment report for their legal team</li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-size:12px; color:var(--gold); font-weight:600; margin-bottom:6px;">You get:</p>
+        <ul>
+          <li>Real-world case study</li>
+          <li>Paying client relationship</li>
+          <li>Proof of concept that unlocks enterprise licensing</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pull-quote" style="margin-top:14px; margin-bottom:0; border-left-color:var(--blue);">
+      <p>"I am not asking you to adopt a full governance standard today. I am asking you to find out exactly how exposed you are — and what it would take to close that gap."</p>
+    </div>
+  </div>
+  <h3 style="margin-top:22px;">The 90-Day Roadmap</h3>
+  <div class="roadmap-row"><div class="roadmap-badge">Days 1–30</div><div class="roadmap-text">Lock the positioning. Rewrite the one-page ESAF pitch around buyer fears. Build the regulatory alignment brief mapping ESAF to EU AI Act, HIPAA, and FERPA. Develop the pilot offer package. Launch LinkedIn content calendar.</div></div>
+  <div class="roadmap-row"><div class="roadmap-badge">Days 30–60</div><div class="roadmap-text">Start outreach. 20 direct outreach sequences to CCO and legal contacts. Submit speaker applications to 5 conferences. Send analyst briefing requests to Gartner and Forrester. Begin partnership conversations.</div></div>
+  <div class="roadmap-row"><div class="roadmap-badge">Days 60–90</div><div class="roadmap-text">Close the first pilot. Use the pilot process to generate the first case study. That case study becomes the anchor for every enterprise conversation that follows.</div></div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 10 — ENGAGEMENT OPTIONS -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 4 · How We Work Together</div>
+  </div>
+  <div class="section-label">Section 04</div>
+  <h2>How we work together</h2>
+  <p style="margin-bottom:20px;">You handle the execution. I bring the strategy, the outside perspective, and the accountability at every stage. Rate: $150/hour across all options. Choose the level of involvement that fits — you can always adjust as things progress.</p>
+  <div class="two-col">
+    <div class="pricing-card">
+      <div class="pricing-header">
+        <div><div class="pricing-name">The Compass <span>Monthly Strategy Call</span></div><div style="font-size:11px;color:var(--off-white);opacity:0.6;margin-top:2px;">2 hours / month</div></div>
+        <div class="pricing-price">$300<small>/mo</small></div>
+      </div>
+      <div class="pricing-body">
+        <ul>
+          <li>One 60-minute strategy call per month</li>
+          <li>30 minutes prep — I review your progress &amp; materials before each call</li>
+          <li>Up to 2 async responses between calls</li>
+          <li>Feedback on pitch decks, outreach emails, sales materials</li>
+        </ul>
+        <p class="pricing-fit">Right for you if: you have a clear direction and want a sharp outside perspective once a month to stay on track.</p>
+      </div>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-header">
+        <div><div class="pricing-name">The Co-Pilot <span>Biweekly Calls</span></div><div style="font-size:11px;color:var(--off-white);opacity:0.6;margin-top:2px;">4 hours / month</div></div>
+        <div class="pricing-price">$600<small>/mo</small></div>
+      </div>
+      <div class="pricing-body">
+        <ul>
+          <li>Two 60-minute strategy calls per month</li>
+          <li>One hour prep + written recap with action items after each call</li>
+          <li>Up to 4 async responses between calls</li>
+          <li>Review outreach sequences, partnership decks, positioning copy</li>
+          <li>Running GTM tracker I maintain each session</li>
+        </ul>
+        <p class="pricing-fit">Right for you if: you are actively building and want regular momentum to keep execution on track.</p>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 11 — ENGAGEMENT OPTIONS (cont.) -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 4 · Engagement Options</div>
+  </div>
+  <div class="section-label">Section 04 — continued</div>
+  <div class="pricing-card" style="margin-bottom:18px;">
+    <div class="pricing-header" style="background:#0d1a2e;">
+      <div><div class="pricing-name">The War Room <span>Weekly Strategic Partner</span></div><div style="font-size:11px;color:var(--off-white);opacity:0.6;margin-top:2px;">10 hours / month</div></div>
+      <div class="pricing-price">$1,500<small>/mo</small></div>
+    </div>
+    <div class="pricing-body">
+      <div class="two-col">
+        <ul>
+          <li>Four 60-minute calls per month — one every week</li>
+          <li>Month one: 3 dedicated hours to build your full GTM plan — buyer personas, positioning narrative, channel strategy, 90-day action plan, 10–15 prioritized partnership targets</li>
+        </ul>
+        <ul>
+          <li>Two hours of async work per month — pitch feedback, outreach review, strategic questions</li>
+          <li>Pre-call prep and written recap every week</li>
+          <li>Access to my network: AI Builders Miami, Automation Nation, warm introductions where relevant</li>
+        </ul>
+      </div>
+      <p class="pricing-fit">Right for you if: you want to move fast and need a true strategic partner actively driving the strategy forward with you every week.</p>
+    </div>
+  </div>
+  <div class="pricing-card" style="border:2px solid var(--gold);">
+    <div class="pricing-header" style="background:rgba(224,184,72,0.1); border-bottom-color:var(--gold);">
+      <div><div class="pricing-name" style="color:var(--gold);">The GTM Sprint <span style="color:var(--off-white);">One-Time Intensive · Recommended</span></div><div style="font-size:11px;color:var(--gold);opacity:0.7;margin-top:2px;">5 hours total</div></div>
+      <div class="pricing-price">$750<small>flat</small></div>
+    </div>
+    <div class="pricing-body">
+      <ul>
+        <li>Two 90-minute deep-dive sessions (or one 3-hour block — your choice)</li>
+        <li>After sessions: two hours producing a written GTM Strategy Document you can execute independently</li>
+        <li>Document covers: priority buyer personas, repositioned pitch narrative, channel recommendations with rationale, 90-day action plan</li>
+      </ul>
+      <p class="pricing-fit">Right for you if: you want a clear, structured roadmap to run with before committing to a monthly engagement. Most clients who start here move into a monthly package within 30–60 days.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 12 — WHERE IT LANDS STRONGEST -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 5 · Entry Points</div>
+  </div>
+  <div class="section-label">Section 05</div>
+  <h2>Where this lands strongest</h2>
+  <p style="margin-bottom:18px;">Here is my honest read after reviewing the full framework.</p>
+  <div class="entry-grid">
+    <div class="entry-card primary">
+      <div class="badge badge-gold">Strongest Entry Point</div>
+      <h4>Healthcare AI</h4>
+      <p>All three pillars are immediately relevant and buyer urgency is highest. HIPAA already creates a compliance mindset — ESAF slots in as the behavioral layer that HIPAA does not cover. Paid pilots close fastest here. The risk is visible, one incident makes national news.</p>
+    </div>
+    <div class="entry-card">
+      <div class="badge badge-blue">Highest Leverage</div>
+      <h4>Legal &amp; Compliance Teams</h4>
+      <p>Regardless of vertical, leading with Pillar 3 opens the most doors quickest. Legal teams are already asking "who is liable when our AI does something wrong." They have no good answer. Pillar 3 gives them one — documented, structured, enforceable.</p>
+    </div>
+    <div class="entry-card">
+      <div class="badge badge-gold">Category Move</div>
+      <h4>Own "AI Liability Governance"</h4>
+      <p>Nobody has planted a flag on this category yet. The groups circling emotional AI safety from modeling and ethics will not get there. Every LinkedIn post, every conference talk, every analyst briefing should use those exact words consistently.</p>
+    </div>
+  </div>
+  <div class="pull-quote" style="margin-top:18px;">
+    <p>"When something goes wrong with your AI, what is your documented response? ESAF makes sure you have one." — That is not a technology pitch. It is a liability pitch. Liability skips the IT department and lands directly in the room where budget decisions are made.</p>
+  </div>
+  <div class="page-footer">
+    <span>Richmond Bishop · Bishop AI · Bishop AI</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+
+<!-- PAGE 13 — RECOMMENDATION + NEXT STEPS -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand-wordmark">Bishop AI</div>
+    <div class="page-meta">Section 6 · Recommendation</div>
+  </div>
+  <div class="section-label">Section 06</div>
+  <h2>My recommendation</h2>
+  <p>If I were in your position, I would start with the <strong style="color:var(--gold);">GTM Sprint</strong>.</p>
+  <p>At $750 for five focused hours, you get a complete, written roadmap you can act on immediately — without any long-term commitment. It gives us the chance to work together in a low-risk way, and it gives me enough depth to give you real, specific advice rather than generic strategy.</p>
+  <div class="rec-box">
+    <p>"The framework is strong and the timing is right. But right now ESAF is positioned to explain the product, not to speak to the fear buyers already feel. My job is to help you get in front of the right people in language that makes them lean forward. Before we chase enterprise licensing, we need three things: a repositioned pitch, a clear buyer profile, and one pilot win. Once those are in place, the licensing conversations happen on your terms."</p>
+  </div>
+  <h3 style="margin-top:20px; margin-bottom:12px;">Next Steps</h3>
+  <div class="next-step"><div class="step-num">1</div><div class="step-text">Reply with the option you would like to move forward with and a time to connect.</div></div>
+  <div class="next-step"><div class="step-num">2</div><div class="step-text">I will send a one-page service agreement and we will schedule the first session.</div></div>
+  <div class="next-step"><div class="step-num">3</div><div class="step-text">We start with a repositioned pitch, a clear buyer profile, and a path to the first pilot win.</div></div>
+  <div class="contact-block">
+    <div>
+      <div class="name">Richmond Bishop</div>
+      <div class="title">CEO &amp; Founder · Bishop AI · Automation Nation</div>
+      <a href="mailto:richmond@bishopai.io">richmond@bishopai.io</a>
+    </div>
+    <div class="logo-tag">
+      Bishop AI
+      <small>Consulting Proposal · Confidential</small>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span>This proposal is confidential and prepared exclusively for Wendy Creative Works.</span>
+    <span>Richmond Bishop · Bishop AI</span>
+  </div>
+</div>
+
+</body>
+</html>

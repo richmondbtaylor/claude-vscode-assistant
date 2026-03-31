@@ -1,0 +1,23 @@
+{
+  "skill_name": "carousel",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Make me a LinkedIn carousel about the 5 biggest mistakes people make when using AI tools for the first time. Goal is saves. My audience is entrepreneurs and small business owners who are curious about AI but haven't gone deep yet.",
+      "expected_output": "A complete carousel with CAROUSEL OVERVIEW, 3 hook options, slide-by-slide content (5-7 slides), platform notes, and engagement strategy. All slides respect text limits (max 3 lines, 8 words per line). CTA is oriented toward saves.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "i need a carousel for instagram. myth-busting angle. topic: you don't need thousands of followers to make money online. goal is shares. audience is side hustlers and early-stage creators.",
+      "expected_output": "A myth-busting format carousel with 3 hook options, contrarian/myth-vs-reality slide structure, Instagram-appropriate text placement notes, and a shares-optimized CTA.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Turn this into a carousel. Platform: both Instagram and LinkedIn. Goal: comments.\n\nHere are my raw notes from a talk I gave:\n- Most people plan their week on Sunday night and then abandon the plan by Tuesday\n- The problem isn't motivation, it's that the plan doesn't account for real life\n- I now use a 3-block system: Deep work (morning), Admin (midday), Creative (afternoon)\n- The key is protecting the first block — no meetings before 11am\n- Energy matters more than time — same 2 hours at different times = different output\n- Saying no to a meeting IS a productivity strategy\n- Your calendar should reflect your values, not other people's urgencies",
+      "expected_output": "A carousel repurposed from the raw notes with a fresh scroll-stopping hook (not from the original), appropriate format selection, text limits respected throughout, and a comments-optimized CTA. Platform variations for Instagram and LinkedIn included.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "run_id": "eval-2-with_skill",
+  "assertions": [
+    {
+      "text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count",
+      "passed": true,
+      "evidence": "Lines 1-6: '### CAROUSEL OVERVIEW' with Topic, Platform (Both Instagram and LinkedIn), Goal (Comments), Format (Myth-busting + numbered list hybrid), Slide Count (8)"
+    },
+    {
+      "text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)",
+      "passed": true,
+      "evidence": "Lines 10-13: '### HOOK OPTIONS' lists exactly 3 options labeled Curiosity, Contrarian, and Direct Benefit"
+    },
+    {
+      "text": "A dedicated CTA final slide is present",
+      "passed": true,
+      "evidence": "Lines 83-88: '**Slide 8 -- CTA**' with comment-oriented headline 'Does your calendar reflect your values?' and 'Drop a comment -- I read every one'"
+    },
+    {
+      "text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)",
+      "passed": true,
+      "evidence": "Slide copy (lines 19-88) contains none of the banned words. Plain, direct language throughout."
+    },
+    {
+      "text": "Both Instagram and LinkedIn platform variation notes are included",
+      "passed": true,
+      "evidence": "Lines 92-96: '### PLATFORM VARIATIONS' section with dedicated '**Instagram**' and '**LinkedIn**' subsections providing specific guidance for each platform"
+    },
+    {
+      "text": "CTA is oriented toward comments (e.g. 'comment', 'drop a reply', 'let me know below')",
+      "passed": true,
+      "evidence": "Slide 8 subtext: 'Drop a comment -- I read every one.' and ENGAGEMENT STRATEGY: 'Open-ended reflective question...paired with \"I read every one\"'"
+    },
+    {
+      "text": "Hook is fresh and was not directly lifted from the original raw notes",
+      "passed": true,
+      "evidence": "Hooks are creatively reframed: 'Your Sunday plan is dead by Tuesday. Here's why.' and 'Motivation isn't your problem. Your calendar is.' — these are polished editorial angles, not raw note transcriptions"
+    },
+    {
+      "text": "An ENGAGEMENT STRATEGY section is present",
+      "passed": true,
+      "evidence": "Lines 100-104: '### ENGAGEMENT STRATEGY' section with hook angle, mid-carousel hooks, CTA type, and save-worthiness notes"
+    }
+  ]
+}

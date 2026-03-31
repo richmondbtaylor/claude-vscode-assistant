@@ -1,0 +1,8 @@
+{
+  "prompt": "YouTube thumbnail, 16:9, ultra high CTR design. Semi-realistic portrait of a man in his mid-30s: medium-length wavy brown hair with natural volume swept back, short brown beard/stubble, light blue-green eyes, athletic broad-shouldered build, strong jaw and defined cheekbones, fair skin with warm undertones. Dramatic side or three-quarter lighting emphasizing jaw structure. Sharp focus on face. Intense Focus / Thinking expression: furrowed brow, hand near chin, eyes slightly narrowed, looking slightly downward as if working through a complex problem. Subject positioned right two-thirds of frame. Background: solid #1A1A1A dark gray, minimal and clean. Bold sans-serif text overlaid in left third: primary text 'BUILD ANY' in large white bold font stacked top-left, then 'AI AGENT' below it, accent color #00FFFF electric blue on keyword 'ANY'. Small secondary text below in white: '15-MIN SETUP'. Dramatic side lighting, high contrast, deep shadows on face. Professional thumbnail composition. Text has shadow and outline for legibility at small sizes. Ultra sharp, no blur, clean edges, print quality. Negative: blurry text, random background, stock photo aesthetic, generic face, cluttered layout, multiple fonts, illegible small text.",
+  "api_parameters": {
+    "aspect_ratio": "16:9",
+    "resolution": "2K",
+    "output_format": "png"
+  }
+}

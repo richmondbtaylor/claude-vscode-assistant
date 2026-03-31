@@ -1,0 +1,47 @@
+{
+  "eval_id": 2,
+  "eval_name": "productivity-repurpose-both-platforms-comments",
+  "prompt": "Turn this into a carousel. Platform: both Instagram and LinkedIn. Goal: comments.\n\nRaw notes from a talk about productivity and time-blocking.",
+  "assertions": [
+    {
+      "text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "A dedicated CTA final slide is present",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "Both Instagram and LinkedIn platform variation notes are included",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "CTA is oriented toward comments (e.g. 'comment', 'drop a reply', 'let me know below')",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "Hook is fresh and was not directly lifted from the original raw notes",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "An ENGAGEMENT STRATEGY section is present",
+      "passed": null,
+      "evidence": ""
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "run_id": "eval-0-without_skill",
+  "assertions": [
+    {
+      "text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count",
+      "passed": false,
+      "evidence": "No '### CAROUSEL OVERVIEW' section. Metadata is embedded inline in the header: '**Goal:** Saves | **Audience:** ... | **Platform:** LinkedIn | **Slides:** 7' — format and topic are not explicitly labeled in a dedicated overview block"
+    },
+    {
+      "text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)",
+      "passed": false,
+      "evidence": "No hook options section. The output jumps directly to slide content starting with Slide 1 — Cover with a single headline"
+    },
+    {
+      "text": "Slide-by-slide content section is present with individually labeled slides",
+      "passed": true,
+      "evidence": "Slides are individually labeled: 'SLIDE 1 — COVER', 'SLIDE 2 — MISTAKE #1', through 'SLIDE 7 — CTA'"
+    },
+    {
+      "text": "A dedicated CTA final slide is present",
+      "passed": true,
+      "evidence": "Lines 55-62: '## SLIDE 7 — CTA' with 'Save this before you forget it.' as the headline and follow/save prompts"
+    },
+    {
+      "text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)",
+      "passed": false,
+      "evidence": "Slide 6 body text contains: 'That's wasted leverage.' — 'leverage' is a banned word appearing directly in slide copy"
+    },
+    {
+      "text": "An ENGAGEMENT STRATEGY section is present",
+      "passed": false,
+      "evidence": "No ENGAGEMENT STRATEGY section exists in the output. The file ends after a CAPTION section with hashtags"
+    },
+    {
+      "text": "CTA is oriented toward saves (e.g. 'save this', 'bookmark', 'come back to')",
+      "passed": true,
+      "evidence": "Slide 7: 'Save this before you forget it.' and caption: 'Swipe through. Save it. Come back to it when you're ready'"
+    },
+    {
+      "text": "At least one visual direction cue is present (e.g. [BACKGROUND:], [ICON:], [TEXT:], [HIGHLIGHT:])",
+      "passed": true,
+      "evidence": "Slide 1 includes '**Visual Direction:** Bold text on dark background. Red/orange accent on \"broke.\" Minimalist.' — only one slide has visual direction and it uses prose rather than bracketed tags"
+    }
+  ]
+}

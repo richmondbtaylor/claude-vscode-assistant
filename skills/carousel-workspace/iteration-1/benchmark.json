@@ -1,0 +1,167 @@
+{
+  "metadata": {
+    "skill_name": "carousel",
+    "skill_path": "C:\\Users\\richm\\.claude\\skills\\carousel",
+    "executor_model": "claude-sonnet-4-6",
+    "analyzer_model": "claude-sonnet-4-6",
+    "timestamp": "2026-03-30T00:00:00Z",
+    "evals_run": [
+      "ai-mistakes-linkedin-saves",
+      "followers-myth-instagram-shares",
+      "productivity-repurpose-both-platforms-comments"
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "run_id": "eval-0-ai-mistakes-with_skill",
+      "eval_id": 0,
+      "eval_name": "ai-mistakes-linkedin-saves",
+      "configuration": "with_skill",
+      "pass_rate": 1.0,
+      "assertions_passed": 8,
+      "assertions_total": 8,
+      "time_seconds": 36.4,
+      "total_tokens": 31674,
+      "assertion_results": [
+        {"text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count", "passed": true, "evidence": "CAROUSEL OVERVIEW section present with all 5 fields"},
+        {"text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)", "passed": true, "evidence": "3 labeled hook options present"},
+        {"text": "Slide-by-slide content section is present with individually labeled slides", "passed": true, "evidence": "Slides 1-8 individually labeled"},
+        {"text": "A dedicated CTA final slide is present", "passed": true, "evidence": "Slide 8 — CTA present"},
+        {"text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)", "passed": true, "evidence": "No banned words found"},
+        {"text": "An ENGAGEMENT STRATEGY section is present", "passed": true, "evidence": "ENGAGEMENT STRATEGY section present"},
+        {"text": "CTA is oriented toward saves (e.g. 'save this', 'bookmark', 'come back to')", "passed": true, "evidence": "'Save this before your next AI session'"},
+        {"text": "At least one visual direction cue is present (e.g. [BACKGROUND:], [ICON:], [TEXT:], [HIGHLIGHT:])", "passed": true, "evidence": "Multiple [BACKGROUND:], [ICON:], [TEXT:], [HIGHLIGHT:] cues present"}
+      ]
+    },
+    {
+      "run_id": "eval-0-ai-mistakes-without_skill",
+      "eval_id": 0,
+      "eval_name": "ai-mistakes-linkedin-saves",
+      "configuration": "without_skill",
+      "pass_rate": 0.5,
+      "assertions_passed": 4,
+      "assertions_total": 8,
+      "time_seconds": 42.8,
+      "total_tokens": 29333,
+      "assertion_results": [
+        {"text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count", "passed": false, "evidence": "No structured CAROUSEL OVERVIEW block; metadata inlined in header"},
+        {"text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)", "passed": false, "evidence": "Single hook chosen, no 3-option comparison"},
+        {"text": "Slide-by-slide content section is present with individually labeled slides", "passed": true, "evidence": "Slides labeled as SLIDE 1–7"},
+        {"text": "A dedicated CTA final slide is present", "passed": true, "evidence": "SLIDE 7 — CTA present"},
+        {"text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)", "passed": false, "evidence": "'wasted leverage' appears in Slide 6"},
+        {"text": "An ENGAGEMENT STRATEGY section is present", "passed": false, "evidence": "No ENGAGEMENT STRATEGY section; ends after caption"},
+        {"text": "CTA is oriented toward saves (e.g. 'save this', 'bookmark', 'come back to')", "passed": true, "evidence": "'Save this before you forget it'"},
+        {"text": "At least one visual direction cue is present (e.g. [BACKGROUND:], [ICON:], [TEXT:], [HIGHLIGHT:])", "passed": true, "evidence": "Visual Direction notes present, though not in bracketed format"}
+      ]
+    },
+    {
+      "run_id": "eval-1-followers-myth-with_skill",
+      "eval_id": 1,
+      "eval_name": "followers-myth-instagram-shares",
+      "configuration": "with_skill",
+      "pass_rate": 1.0,
+      "assertions_passed": 8,
+      "assertions_total": 8,
+      "time_seconds": 37.0,
+      "total_tokens": 31554,
+      "assertion_results": [
+        {"text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count", "passed": true, "evidence": "CAROUSEL OVERVIEW section present with all fields"},
+        {"text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)", "passed": true, "evidence": "3 labeled hook options with angles"},
+        {"text": "Myth-busting format is used with Myth/Reality or similar contrast structure in value slides", "passed": true, "evidence": "Slides 2-3 use Myth/Reality structure explicitly"},
+        {"text": "A dedicated CTA final slide is present", "passed": true, "evidence": "Slide 8 — CTA present"},
+        {"text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)", "passed": true, "evidence": "No banned words found"},
+        {"text": "CTA is oriented toward shares (e.g. 'share with', 'tag a friend', 'send this to')", "passed": true, "evidence": "'Share this. It might change their path.'"},
+        {"text": "Instagram platform constraints are acknowledged (text placement in upper 2/3, visual breathing room)", "passed": true, "evidence": "Multiple [TEXT: upper third] cues present throughout slides"},
+        {"text": "An ENGAGEMENT STRATEGY section is present", "passed": true, "evidence": "ENGAGEMENT STRATEGY section present"}
+      ]
+    },
+    {
+      "run_id": "eval-1-followers-myth-without_skill",
+      "eval_id": 1,
+      "eval_name": "followers-myth-instagram-shares",
+      "configuration": "without_skill",
+      "pass_rate": 0.5,
+      "assertions_passed": 4,
+      "assertions_total": 8,
+      "time_seconds": 55.5,
+      "total_tokens": 29746,
+      "assertion_results": [
+        {"text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count", "passed": false, "evidence": "No structured CAROUSEL OVERVIEW block"},
+        {"text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)", "passed": false, "evidence": "Single hook used, no 3-option comparison"},
+        {"text": "Myth-busting format is used with Myth/Reality or similar contrast structure in value slides", "passed": true, "evidence": "MYTH label used on Slide 2, reality addressed in Slide 3+"},
+        {"text": "A dedicated CTA final slide is present", "passed": true, "evidence": "Slide 9 — CTA present"},
+        {"text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)", "passed": true, "evidence": "No banned words found"},
+        {"text": "CTA is oriented toward shares (e.g. 'share with', 'tag a friend', 'send this to')", "passed": true, "evidence": "'Share it with a creator friend who's been waiting'"},
+        {"text": "Instagram platform constraints are acknowledged (text placement in upper 2/3, visual breathing room)", "passed": false, "evidence": "No Instagram-specific placement constraints mentioned"},
+        {"text": "An ENGAGEMENT STRATEGY section is present", "passed": false, "evidence": "No ENGAGEMENT STRATEGY section; ends after hashtags"}
+      ]
+    },
+    {
+      "run_id": "eval-2-productivity-repurpose-with_skill",
+      "eval_id": 2,
+      "eval_name": "productivity-repurpose-both-platforms-comments",
+      "configuration": "with_skill",
+      "pass_rate": 1.0,
+      "assertions_passed": 8,
+      "assertions_total": 8,
+      "time_seconds": 43.9,
+      "total_tokens": 31850,
+      "assertion_results": [
+        {"text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count", "passed": true, "evidence": "CAROUSEL OVERVIEW present with all fields"},
+        {"text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)", "passed": true, "evidence": "3 labeled hook options present"},
+        {"text": "A dedicated CTA final slide is present", "passed": true, "evidence": "Slide 8 — CTA present"},
+        {"text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)", "passed": true, "evidence": "No banned words found"},
+        {"text": "Both Instagram and LinkedIn platform variation notes are included", "passed": true, "evidence": "PLATFORM VARIATIONS section with both Instagram and LinkedIn notes"},
+        {"text": "CTA is oriented toward comments (e.g. 'comment', 'drop a reply', 'let me know below')", "passed": true, "evidence": "'Drop a comment -- I read every one'"},
+        {"text": "Hook is fresh and was not directly lifted from the original raw notes", "passed": true, "evidence": "Hook 'Your Sunday plan dies by Tuesday' not in raw notes"},
+        {"text": "An ENGAGEMENT STRATEGY section is present", "passed": true, "evidence": "ENGAGEMENT STRATEGY section present"}
+      ]
+    },
+    {
+      "run_id": "eval-2-productivity-repurpose-without_skill",
+      "eval_id": 2,
+      "eval_name": "productivity-repurpose-both-platforms-comments",
+      "configuration": "without_skill",
+      "pass_rate": 0.5,
+      "assertions_passed": 4,
+      "assertions_total": 8,
+      "time_seconds": 83.2,
+      "total_tokens": 32174,
+      "assertion_results": [
+        {"text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count", "passed": false, "evidence": "No structured CAROUSEL OVERVIEW block"},
+        {"text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)", "passed": false, "evidence": "Single hook chosen, no 3-option comparison"},
+        {"text": "A dedicated CTA final slide is present", "passed": true, "evidence": "Slide 10 — CTA present"},
+        {"text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)", "passed": false, "evidence": "'highest-leverage tasks' in Slide 4"},
+        {"text": "Both Instagram and LinkedIn platform variation notes are included", "passed": true, "evidence": "Separate Instagram and LinkedIn captions included"},
+        {"text": "CTA is oriented toward comments (e.g. 'comment', 'drop a reply', 'let me know below')", "passed": true, "evidence": "'Drop it in the comments'"},
+        {"text": "Hook is fresh and was not directly lifted from the original raw notes", "passed": true, "evidence": "Hook 'You don't have a motivation problem. You have a planning problem.' is fresh"},
+        {"text": "An ENGAGEMENT STRATEGY section is present", "passed": false, "evidence": "No ENGAGEMENT STRATEGY section; ends after design notes"}
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": 1.0,
+      "mean_time_seconds": 39.1,
+      "mean_tokens": 31693
+    },
+    "without_skill": {
+      "pass_rate": 0.5,
+      "mean_time_seconds": 60.5,
+      "mean_tokens": 30418
+    },
+    "delta": {
+      "pass_rate": "+0.50",
+      "time_seconds": "-21.4",
+      "tokens": "+1275"
+    }
+  },
+  "notes": [
+    "With-skill outputs consistently produced all required sections: CAROUSEL OVERVIEW, 3 hook options, ENGAGEMENT STRATEGY, and proper visual direction cues.",
+    "Without-skill outputs consistently failed on: CAROUSEL OVERVIEW (0/3), 3 hook options (0/3), ENGAGEMENT STRATEGY section (0/3).",
+    "Banned word 'leverage' appeared in 2 of 3 without-skill outputs.",
+    "With-skill outputs were faster on average (39s vs 61s) despite producing more structured content.",
+    "The myth-busting and CTA orientation assertions passed in both configurations — these are less discriminating."
+  ]
+}

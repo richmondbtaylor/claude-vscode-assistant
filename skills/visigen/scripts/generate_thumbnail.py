@@ -28,14 +28,25 @@ def load_api_key():
 
 
 def encode_image_base64(image_path):
-    """Encode a local image to base64 data URI for KIE API image_input."""
+    """Encode a local image to base64 PNG data URI for KIE API image_input.
+    Converts JPEG/HEIC to PNG since KIE API only accepts PNG."""
     if not os.path.exists(image_path):
         return None
-    ext = os.path.splitext(image_path)[1].lower().lstrip('.')
-    mime = 'jpeg' if ext in ('jpg', 'jpeg') else ext
-    with open(image_path, 'rb') as f:
-        b64 = base64.b64encode(f.read()).decode('utf-8')
-    return f"data:image/{mime};base64,{b64}"
+    try:
+        from PIL import Image
+        import io
+        img = Image.open(image_path).convert("RGB")
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+        return f"data:image/png;base64,{b64}"
+    except ImportError:
+        # Fallback: send as-is if Pillow not available
+        ext = os.path.splitext(image_path)[1].lower().lstrip('.')
+        mime = 'jpeg' if ext in ('jpg', 'jpeg') else ext
+        with open(image_path, 'rb') as f:
+            b64 = base64.b64encode(f.read()).decode('utf-8')
+        return f"data:image/{mime};base64,{b64}"
 
 
 def run():
@@ -87,20 +98,30 @@ def run():
         payload["input"]["image_input"] = image_input
 
     print("Creating thumbnail task via KIE API...")
-    try:
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
+    response = requests.post(url, headers=headers, json=payload, timeout=60)
+    response.raise_for_status()
+    result = response.json()
+
+    # If face reference was rejected, retry without it
+    if isinstance(result, dict) and result.get("code") != 200 and image_input:
+        print(f"WARNING: Face reference rejected by API ({result.get('msg')}). Retrying without face reference...")
+        payload["input"].pop("image_input", None)
+        response = requests.post(url, headers=headers, json=payload, timeout=60)
         response.raise_for_status()
         result = response.json()
-    except Exception as e:
-        print(f"ERROR creating task: {e}")
-        if 'response' in locals() and response is not None:
-            print(response.text)
+
+    if not result or not isinstance(result, dict):
+        print(f"ERROR: Unexpected API response: {result}")
         sys.exit(1)
 
-    task_id = result.get("data", {}).get("taskId")
+    if result.get("code") != 200:
+        print(f"ERROR: API error {result.get('code')}: {result.get('msg')}")
+        sys.exit(1)
+
+    task_id = (result.get("data") or {}).get("taskId")
     if not task_id:
         print("ERROR: No taskId returned")
-        print(result)
+        print(json.dumps(result, indent=2))
         sys.exit(1)
 
     print(f"Task ID: {task_id}. Polling for result...")

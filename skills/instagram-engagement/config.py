@@ -32,9 +32,9 @@ RATE_LIMITS_DAILY = {
 # ---------------------------------------------------------------------------
 
 RAMP_UP_MATRIX = [
-    {"days": (1,  3),    "follows": 2,   "comments": 0,   "likes": 12,  "sessions": 2},
-    {"days": (4,  7),    "follows": 8,   "comments": 5,   "likes": 35,  "sessions": 3},
-    {"days": (8,  14),   "follows": 15,  "comments": 15,  "likes": 85,  "sessions": 4},
+    {"days": (1,  3),    "follows": 2,   "comments": 0,   "likes": 12,  "sessions": 3},
+    {"days": (4,  7),    "follows": 8,   "comments": 5,   "likes": 35,  "sessions": 4},
+    {"days": (8,  14),   "follows": 15,  "comments": 15,  "likes": 85,  "sessions": 5},
     {"days": (15, 21),   "follows": 30,  "comments": 45,  "likes": 180, "sessions": 5},
     {"days": (22, 9999), "follows": 100, "comments": 120, "likes": 200, "sessions": 5},
 ]

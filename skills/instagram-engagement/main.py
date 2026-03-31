@@ -15,6 +15,7 @@ Session model (RISEN):
 
 import argparse
 import logging
+import os
 import random
 import sys
 import time
@@ -441,6 +442,7 @@ def run_session(account: str, focus: str, duration_minutes: int, dry_run: bool):
 
             if is_blackout_time():
                 wait_for_blackout_end()
+                wall_start = time.time()  # reset budget — don't count blackout sleep
                 continue
 
             block_num += 1
@@ -483,8 +485,10 @@ def run_session(account: str, focus: str, duration_minutes: int, dry_run: bool):
             session.stop()
         except Exception as e:
             logger.warning(f"Session cleanup error (browser may have crashed): {e}")
-
-    _print_report(account, focus, duration_minutes, stats, day_number, ramp_limits, dry_run=dry_run)
+        try:
+            _print_report(account, focus, duration_minutes, stats, day_number, ramp_limits, dry_run=dry_run)
+        except Exception as e:
+            logger.error(f"Report generation failed (non-fatal): {e}")
 
 
 # ---------------------------------------------------------------------------

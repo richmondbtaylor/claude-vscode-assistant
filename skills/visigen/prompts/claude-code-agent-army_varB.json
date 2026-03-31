@@ -1,0 +1,8 @@
+{
+  "prompt": "YouTube thumbnail, 16:9, ultra high CTR design. Semi-realistic portrait of a man in his mid-30s: medium-length wavy brown hair with natural volume swept back, short brown beard/stubble, light blue-green eyes, athletic broad-shouldered build, strong jaw and defined cheekbones, fair skin with warm undertones. Dramatic side lighting emphasizing jaw structure. Sharp focus on face. Shock / Surprise expression: wide eyes, mouth slightly open, eyebrows raised high, leaning back slightly as if genuinely caught off guard. Subject positioned right side of frame, leaning back. Background: solid #1A1A1A dark gray, clean. Bold sans-serif text top-left: large bold white text '50+ AI AGENTS' dominant headline, below it in #00FFFF electric blue accent: '1 SENTENCE EACH', then smaller white text below: 'Claude Code Tutorial'. Large dramatic text treatment with heavy shadow for legibility. Dramatic lighting, high contrast, deep shadows on face. Professional thumbnail composition. Text has strong drop shadow. Ultra sharp, no blur, clean edges, print quality. Negative: blurry text, random background, stock photo aesthetic, generic face, cluttered layout, illegible small text.",
+  "api_parameters": {
+    "aspect_ratio": "16:9",
+    "resolution": "2K",
+    "output_format": "png"
+  }
+}

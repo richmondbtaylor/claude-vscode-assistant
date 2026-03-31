@@ -28,7 +28,7 @@ WINDOW_START = (7, 35)    # 7:35 AM
 WINDOW_END   = (22, 10)   # 10:10 PM
 
 SESSION_DURATION_MINUTES = 60
-MIN_GAP_MINUTES = 90       # minimum minutes between session start times
+MIN_GAP_MINUTES = 60       # minimum minutes between session start times
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -134,13 +134,21 @@ def run_session(account: str, focus: str):
         "--focus", focus,
         "--duration", str(SESSION_DURATION_MINUTES),
     ]
+    # Hard timeout: session duration + 10 min buffer. Prevents hangs if the
+    # Playwright driver crashes and leaves the Python process blocked on a pipe.
+    hard_timeout = (SESSION_DURATION_MINUTES + 10) * 60
     logger.info(f"Launching: {' '.join(cmd)}")
     try:
-        result = subprocess.run(cmd, cwd=str(SCRIPT_DIR))
+        result = subprocess.run(cmd, cwd=str(SCRIPT_DIR), timeout=hard_timeout)
         if result.returncode != 0:
             logger.error(f"Session exited with code {result.returncode}")
         else:
             logger.info("Session completed successfully")
+    except subprocess.TimeoutExpired:
+        logger.error(
+            f"Session hard-timeout after {hard_timeout//60}min — process hung "
+            f"(likely Playwright driver crash). Killing."
+        )
     except Exception as e:
         logger.error(f"Failed to launch session: {e}")
 

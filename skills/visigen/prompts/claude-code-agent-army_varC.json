@@ -1,0 +1,8 @@
+{
+  "prompt": "YouTube thumbnail, 16:9, ultra high CTR design. Semi-realistic portrait of a man in his mid-30s: medium-length wavy brown hair with natural volume swept back, short brown beard/stubble, light blue-green eyes, athletic broad-shouldered build, strong jaw and defined cheekbones, fair skin with warm undertones. Dramatic side lighting emphasizing jaw structure. Sharp focus on face. Confident Knowing Smile expression: slight smirk, direct eye contact with camera, relaxed posture, expression of someone sharing insider knowledge. Subject positioned centered, occupying 50% of the frame, direct gaze to camera. Background: solid #1A1A1A dark gray, minimal and clean. Semi-transparent dark box in bottom third overlaid with text: primary text 'YOUR AI AGENT ARMY' in large white bold sans-serif, keyword 'ARMY' in #00FFFF electric blue accent color. Small text above box in white: 'Claude Code — Full Setup'. Dramatic lighting, high contrast. Professional thumbnail composition. Text has shadow for legibility at small sizes. Ultra sharp, no blur, clean edges, print quality. Negative: blurry text, random background, stock photo aesthetic, generic face, cluttered layout, illegible small text.",
+  "api_parameters": {
+    "aspect_ratio": "16:9",
+    "resolution": "2K",
+    "output_format": "png"
+  }
+}

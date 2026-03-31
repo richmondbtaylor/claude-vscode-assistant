@@ -1,0 +1,45 @@
+{
+  "run_id": "eval-2-without_skill",
+  "assertions": [
+    {
+      "text": "Output contains a CAROUSEL OVERVIEW section with topic, platform, goal, format, and slide count",
+      "passed": false,
+      "evidence": "No '### CAROUSEL OVERVIEW' section. Metadata is inline in the header: '**Platform:** Instagram + LinkedIn' and '**Goal:** Comments' — topic, format, and slide count not in a structured overview block"
+    },
+    {
+      "text": "Exactly 3 hook options are provided (curiosity, contrarian, direct benefit)",
+      "passed": false,
+      "evidence": "No hook options section. Output goes directly to Slide 1 with a single chosen headline"
+    },
+    {
+      "text": "A dedicated CTA final slide is present",
+      "passed": true,
+      "evidence": "Lines 99-105: '## SLIDE 10 — CTA' with comment-oriented prompt 'Which block do you struggle with most? Drop it in the comments'"
+    },
+    {
+      "text": "No banned words appear in slide copy (leverage, synergy, game-changer, optimize, utilize, basically, literally, etc.)",
+      "passed": false,
+      "evidence": "Slide 4 body: 'Reserve it for your hardest, highest-leverage tasks.' — 'leverage' is a banned word appearing directly in slide copy"
+    },
+    {
+      "text": "Both Instagram and LinkedIn platform variation notes are included",
+      "passed": true,
+      "evidence": "Lines 109-149: Separate '## INSTAGRAM CAPTION' and '## LINKEDIN CAPTION' sections are included, providing platform-specific content variations"
+    },
+    {
+      "text": "CTA is oriented toward comments (e.g. 'comment', 'drop a reply', 'let me know below')",
+      "passed": true,
+      "evidence": "Slide 10: 'Drop it in the comments -- I'll tell you exactly how I'd fix it.' LinkedIn caption: 'Comment below -- I'll share what's worked for me.'"
+    },
+    {
+      "text": "Hook is fresh and was not directly lifted from the original raw notes",
+      "passed": true,
+      "evidence": "Hook 'You don't have a motivation problem. You have a planning problem.' is a clean editorial reframe rather than a raw note transcription"
+    },
+    {
+      "text": "An ENGAGEMENT STRATEGY section is present",
+      "passed": false,
+      "evidence": "No ENGAGEMENT STRATEGY section in the output. File ends after the LinkedIn caption block"
+    }
+  ]
+}
