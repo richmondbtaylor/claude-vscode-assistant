@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Bishop AI brand design. Background: clean white (#FAFBFA). Gold (#E0B848) segmented progress bar at very top showing position 8 of 9. Slide number \"8/9\" in muted gray top-right corner. Gold (#E0B848) feature label \"WHAT YOU CAN BUILD\" in small caps above the headline. Large bold headline in Poppins ExtraBold 48pt Deep Navy (#000813): \"Start With These Six\" on one line. Below the headline, a clean list of six items arranged as two columns of three rows. Each item has a small gold (#E0B848) checkmark icon on the left and the skill name in Open Sans SemiBold 22pt Dark Navy (#1D2333) on the right. Left column top to bottom: \"Caption Writer\", \"Email Responder\", \"Proposal Writer\". Right column top to bottom: \"Receipt Filer\", \"Script Writer\", \"Lead Scorer\". Clean card-style rows with subtle light gray dividers between items. Layout: headline upper-center, list centered below with generous spacing. \"@bishopai\" small in bottom-right corner in muted gray. Clean, minimal. Quality: pixel-perfect text rendering, ultra-sharp, perfectly legible at phone screen size. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, dark backgrounds, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Bishop AI brand design. Background: clean white (#FAFBFA). This is SLIDE 1 of 9 -- the hook slide. Large, bold headline text centered on the slide: \"Build Your Own\" on line one, \"AI Assistant\" on line two, both in Poppins ExtraBold 72pt Deep Navy (#000813). Below the headline, a thin gold (#E0B848) horizontal divider line. Below the divider, subtext in Open Sans Regular 24pt Dark Navy (#1D2333): \"3 free tools. 15 minutes. Zero code.\" A small gold (#E0B848) sparkle icon above the headline as a visual anchor. Layout: all text vertically centered on the slide with generous whitespace. No progress bar on this hook slide. \"@bishopai\" small in bottom-right corner in muted gray. Clean, minimal, no decorative clutter. Quality: pixel-perfect text rendering, ultra-sharp, perfectly legible at phone screen size. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, dark backgrounds, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

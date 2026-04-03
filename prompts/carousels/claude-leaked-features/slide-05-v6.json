@@ -1,0 +1,7 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Bold editorial design. Background: white #FAFBFA. At the very top, a thin gold #E0B848 progress bar showing 3 of 5 filled segments. Below that, small gold label text: 'FEATURE 03'. Below that, massive deep navy #000813 ultra-bold headline: 'BUDDY SYSTEM'. Below the headline, a gold pixelated creature icon like a tiny tamagotchi, then three short dark navy #1D2333 lines: 'A virtual pet that lives inside your code editor' then '18 species, some legendary with just 1% odds' then 'The more you build, the more you unlock'. Clean, bold, lots of white space. Slide counter '5/9' top-right gray. Quality: pixel-perfect text, ultra-sharp. Negative: blurry text, garbled typography, faces, bokeh, dark background, gold circles.",
+  "api_parameters": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpg" }
+}

@@ -23,7 +23,7 @@ class LinkedInCommenter:
 
         self._owns_playwright = playwright is None
         self.playwright = playwright
-        self.browser = None
+        self.context = None
         self.page = None
         self.logged_in = False
 
@@ -34,40 +34,142 @@ class LinkedInCommenter:
         if self.playwright is None:
             self.playwright = sync_playwright().start()
             self._owns_playwright = True
-        self.browser = self.playwright.chromium.launch(
-            headless=False,  # Set to True for headless mode
-            args=['--start-maximized']
-        )
 
-        context = self.browser.new_context(
+        profile_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'linkedin_profile')
+        self.context = self.playwright.chromium.launch_persistent_context(
+            user_data_dir=profile_dir,
+            headless=False,
+            args=['--start-maximized', '--disable-blink-features=AutomationControlled'],
             viewport={'width': 1920, 'height': 1080},
-            user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         )
 
-        self.page = context.new_page()
+        self.page = self.context.pages[0] if self.context.pages else self.context.new_page()
         self._login()
 
     def _prompt_for_code(self):
-        """Show a GUI dialog to collect the LinkedIn verification code."""
+        """Wait for Claude Code to supply the verification code via file handshake."""
+        import time
+        SIGNAL_FILE = r'C:\tmp\wa_pod_needs_input.txt'
+        RESPONSE_FILE = r'C:\tmp\wa_pod_input_response.txt'
+
+        # Clear any old response
+        if os.path.exists(RESPONSE_FILE):
+            os.remove(RESPONSE_FILE)
+
+        # Signal that we need a code
+        with open(SIGNAL_FILE, 'w') as f:
+            f.write('>>> Enter verification code:')
+
+        print('[WAITING] Waiting for verification code from Claude Code...')
+
+        # Poll for the response (up to 5 minutes)
+        for _ in range(300):
+            if os.path.exists(RESPONSE_FILE):
+                with open(RESPONSE_FILE) as f:
+                    code = f.read().strip()
+                os.remove(RESPONSE_FILE)
+                if os.path.exists(SIGNAL_FILE):
+                    os.remove(SIGNAL_FILE)
+                return code
+            time.sleep(1)
+
+        print('[X] Timed out waiting for verification code.')
+        return ''
+
+    def _handle_checkpoint(self):
+        """Handle LinkedIn checkpoint: CAPTCHA, verification code, or error page."""
+        self.page.screenshot(path=r'C:\tmp\linkedin_checkpoint.png')
+
+        # Check page content to determine what type of checkpoint
+        page_text = self.page.inner_text('body').lower()
+
+        # Case 1: CAPTCHA / security check
+        if 'security check' in page_text or 'captcha' in page_text:
+            print("\n[!] LinkedIn is showing a CAPTCHA / security check.")
+            print("    Please solve it in the browser window.")
+            print("    Waiting up to 3 minutes for you to complete it...")
+            # Wait for the URL to change (user solved the CAPTCHA)
+            for i in range(180):
+                time.sleep(1)
+                current = self.page.url
+                if 'feed' in current or 'mynetwork' in current or 'linkedin.com/in/' in current:
+                    print("[OK] CAPTCHA solved! Logged in successfully.")
+                    self.logged_in = True
+                    return
+                # Check if moved to a verification code page
+                page_text_now = self.page.inner_text('body').lower()
+                if 'enter' in page_text_now and ('code' in page_text_now or 'pin' in page_text_now):
+                    print("[OK] CAPTCHA solved, now on verification code page.")
+                    break
+            # If we broke out, check for code field
+            if not self.logged_in:
+                self._handle_verification_code()
+            return
+
+        # Case 2: Verification code page (has a pin/code input)
+        pin_field = None
         try:
-            import tkinter as tk
-            from tkinter import simpledialog
-            root = tk.Tk()
-            root.withdraw()
-            root.attributes('-topmost', True)
-            code = simpledialog.askstring(
-                "LinkedIn Verification",
-                "LinkedIn is asking for a verification code.\nCheck your email/phone and enter it here:",
-                parent=root
+            pin_field = self.page.wait_for_selector(
+                'input[name="pin"], input[id*="pin" i], input[id*="code" i], input[type="text"], input[type="number"]',
+                timeout=8000
             )
-            root.destroy()
-            return (code or '').strip()
-        except Exception as e:
-            print(f"[X] GUI dialog failed: {e}. Trying terminal input...")
+        except Exception:
+            pass
+
+        if pin_field:
+            self._handle_verification_code()
+            return
+
+        # Case 3: Error page - no CAPTCHA, no code field
+        print("[!] Checkpoint page with no code input and no CAPTCHA.")
+        print("    Check the browser window and resolve manually.")
+        print("    Waiting up to 3 minutes...")
+        for i in range(180):
+            time.sleep(1)
+            current = self.page.url
+            if 'feed' in current or 'mynetwork' in current or 'linkedin.com/in/' in current:
+                print("[OK] Logged in successfully.")
+                self.logged_in = True
+                return
+        print("[X] Could not resolve checkpoint.")
+
+    def _handle_verification_code(self):
+        """Handle the verification code input page."""
+        pin_field = None
+        try:
+            pin_field = self.page.wait_for_selector(
+                'input[name="pin"], input[id*="pin" i], input[id*="code" i], input[type="text"], input[type="number"]',
+                timeout=10000
+            )
+        except Exception:
+            print("[X] Could not find code input field.")
+            return
+
+        if not pin_field:
+            return
+
+        print("\n[!] LinkedIn is asking for a verification code.")
+        passcode = self._prompt_for_code()
+        if passcode:
             try:
-                return input(">>> Enter verification code: ").strip()
-            except Exception:
-                return ''
+                pin_field.click()
+                time.sleep(0.3)
+                pin_field.fill(passcode)
+                time.sleep(0.5)
+                submit = self.page.query_selector('button[type="submit"], button:has-text("Submit"), button:has-text("Verify")')
+                if submit:
+                    submit.click()
+                else:
+                    self.page.keyboard.press('Enter')
+                time.sleep(5)
+                current = self.page.url
+                print(f"[OK] Code submitted. URL: {current}")
+                if 'feed' in current or 'mynetwork' in current or 'linkedin.com/in/' in current:
+                    self.logged_in = True
+            except Exception as e:
+                print(f"[X] Could not enter code: {e}")
+        else:
+            print("[!] No code entered.")
 
     def _login(self):
         """Login to LinkedIn"""
@@ -92,25 +194,31 @@ class LinkedInCommenter:
             # Fill email
             email_field.click()
             time.sleep(0.3)
-            email_field.fill('')
-            self.page.keyboard.type(self.email, delay=50)
+            email_field.fill(self.email)
             time.sleep(0.5)
+            print(f"[DEBUG] Email filled: {self.email[:3]}***")
+
+            # Screenshot after filling email
+            self.page.screenshot(path=r'C:\tmp\linkedin_email_filled.png')
 
             # Wait for and fill password
             password_field = self.page.wait_for_selector('input[name="session_password"]', timeout=10000)
             password_field.click()
             time.sleep(0.3)
-            password_field.fill('')
-            self.page.keyboard.type(self.password, delay=50)
+            password_field.fill(self.password)
             time.sleep(0.5)
+            print("[DEBUG] Password filled")
+
+            # Screenshot after filling both fields
+            self.page.screenshot(path=r'C:\tmp\linkedin_creds_filled.png')
 
             # Click login button
             submit_btn = self.page.wait_for_selector('button[type="submit"]', timeout=10000)
             submit_btn.click()
+            print("[DEBUG] Sign in clicked, waiting for redirect...")
 
             # Wait for redirect after login
-            print("Waiting for login to complete...")
-            time.sleep(6)
+            time.sleep(8)
 
             current_url = self.page.url
             print(f"Post-login URL: {current_url}")
@@ -119,31 +227,7 @@ class LinkedInCommenter:
                 print("Successfully logged in to LinkedIn!")
                 self.logged_in = True
             elif 'checkpoint' in current_url or 'challenge' in current_url or 'verification' in current_url:
-                print("\n[!] LinkedIn is asking for a verification code.")
-                print("    A popup dialog will appear — enter your code there.")
-                passcode = self._prompt_for_code()
-                print(f"[OK] Code received from dialog: {'(entered)' if passcode else '(empty)'}")
-                if passcode:
-                    try:
-                        pin_field = self.page.wait_for_selector(
-                            'input[name="pin"], input[id*="pin" i], input[id*="code" i], input[type="text"], input[type="number"]',
-                            timeout=8000
-                        )
-                        if pin_field:
-                            pin_field.click()
-                            time.sleep(0.3)
-                            pin_field.fill('')
-                            self.page.keyboard.type(passcode, delay=50)
-                            time.sleep(0.5)
-                            self.page.keyboard.press('Enter')
-                            time.sleep(5)
-                            print(f"[OK] Code submitted. URL: {self.page.url}")
-                        else:
-                            print("[X] Could not find the code input field on screen")
-                    except Exception as e:
-                        print(f"[X] Could not enter code: {e}")
-                else:
-                    print("[!] No code entered — you may need to complete verification manually in the browser")
+                self._handle_checkpoint()
                 self.logged_in = True
             else:
                 print(f"[OK] Post-login URL looks fine: {current_url}")
@@ -733,8 +817,8 @@ class LinkedInCommenter:
 
     def close(self):
         """Close browser and cleanup"""
-        if self.browser:
-            self.browser.close()
+        if self.context:
+            self.context.close()
         if self._owns_playwright and self.playwright:
             self.playwright.stop()
         print("LinkedIn automation closed")

@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Bishop AI brand design. Background: clean white (#FAFBFA). Gold (#E0B848) segmented progress bar at very top showing position 2 of 9. Slide number \"2/9\" in muted gray top-right corner. Gold (#E0B848) feature label \"WHAT YOU'RE BUILDING\" in small caps above the headline. Large bold headline in Poppins ExtraBold 56pt Deep Navy (#000813): \"One Setup.\" on line one, \"Unlimited Skills.\" on line two. A gold (#E0B848) brain icon centered below the headline as a visual anchor. Below the icon, subtext in Open Sans Regular 22pt Dark Navy (#1D2333): \"Claude reads your files,\" on line one, \"runs tasks, and remembers\" on line two, \"everything between sessions.\" on line three. Layout: text upper-center with generous whitespace below. \"@bishopai\" small in bottom-right corner in muted gray. Clean, minimal. Quality: pixel-perfect text rendering, ultra-sharp, perfectly legible at phone screen size. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, dark backgrounds, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

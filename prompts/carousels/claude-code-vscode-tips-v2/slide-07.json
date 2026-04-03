@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '7/8' in muted gray. Top section has a large coral-red circled number '6' as a decorative element. Below it, bold black sans-serif headline text reading 'Bug? Screenshot It Back' at 56pt, centered. The word 'Screenshot' has a soft golden-amber #D4A853 brush-stroke highlight behind it. Below, two minimal thin-line illustrations of browser windows side by side. The left browser has messy broken-looking content with a red X mark below it. An arrow points from left to right. The right browser has clean proper content with a green checkmark below it. Simple black outlines only. Below the illustrations, medium-weight black text reading 'When something looks off, screenshot it.' on one line and 'Paste it back into Claude Code. Say Fix it.' on the next line. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

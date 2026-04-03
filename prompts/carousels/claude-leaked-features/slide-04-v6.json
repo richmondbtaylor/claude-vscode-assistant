@@ -1,0 +1,7 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Bold editorial design. Background: white #FAFBFA. At the very top, a thin gold #E0B848 progress bar showing 2 of 5 filled segments. Below that, small gold label text: 'FEATURE 02'. Below that, massive deep navy #000813 ultra-bold headline: 'ULTRAPLAN'. Below the headline, a gold cloud icon, then three short dark navy #1D2333 lines: 'Give it a hard problem and walk away' then 'It thinks in the cloud for 30 minutes straight' then 'You come back to a finished blueprint'. Clean, bold, lots of white space. Slide counter '4/9' top-right gray. Quality: pixel-perfect text, ultra-sharp. Negative: blurry text, garbled typography, faces, bokeh, dark background, gold circles.",
+  "api_parameters": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpg" }
+}

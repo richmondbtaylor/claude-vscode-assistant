@@ -1,0 +1,8 @@
+{
+  "prompt": "YouTube thumbnail, 16:9, ultra high CTR design. Semi-realistic portrait of a man in his mid-30s: medium-length wavy brown hair with natural volume swept back, short brown beard/stubble, light blue-green eyes, athletic broad-shouldered build, strong jaw and defined cheekbones, fair skin with warm undertones. Dramatic side lighting emphasizing jaw structure. Sharp focus on face. Confident knowing smile, slight smirk, direct eye contact with viewer, relaxed shoulders, radiating insider knowledge. Subject positioned centered in frame, occupying roughly 50% of the image. Background: solid #1A1A1A dark gray, minimal and clean. Semi-transparent dark box in the bottom third with bold sans-serif text: primary text \"I BUILT THIS\" in large white bold font, accent color #00FFFF electric blue on secondary text \"IN 30 MINUTES\" below. Subtle AI waveform audio visualization graphic behind subject in faint #00FFFF glow. Dramatic three-quarter lighting, high contrast, deep shadows on face. Professional thumbnail composition. Text has shadow or outline for legibility at small sizes. Ultra sharp, no blur, clean edges, print quality. Negative: blurry text, random background, stock photo aesthetic, generic face, cluttered layout, multiple fonts, illegible small text.",
+  "api_parameters": {
+    "aspect_ratio": "16:9",
+    "resolution": "2K",
+    "output_format": "png"
+  }
+}

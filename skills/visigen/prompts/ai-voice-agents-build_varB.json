@@ -1,0 +1,8 @@
+{
+  "prompt": "YouTube thumbnail, 16:9, ultra high CTR design. Semi-realistic portrait of a man in his mid-30s: medium-length wavy brown hair with natural volume swept back, short brown beard/stubble, light blue-green eyes, athletic broad-shouldered build, strong jaw and defined cheekbones, fair skin with warm undertones. Dramatic side lighting emphasizing jaw structure. Sharp focus on face. Shocked surprised expression, wide eyes, mouth slightly open, leaning back as if reacting to something unbelievable. Subject positioned in the right third of frame, leaning back slightly. Background: solid #1A1A1A dark gray, minimal and clean. Bold sans-serif text overlaid: primary headline \"YOUR COMPETITORS\" in massive white bold font at top left, with second line \"USE AI CALLS\" below it equally large. Accent color #00FFFF electric blue on keyword \"AI CALLS\" for emphasis. A subtle ringing phone graphic with AI circuit pattern glows faintly behind subject. Dramatic side lighting, high contrast, deep shadows on face. Professional thumbnail composition. Text has heavy shadow or outline for legibility at small sizes. Ultra sharp, no blur, clean edges, print quality. Negative: blurry text, random background, stock photo aesthetic, generic face, cluttered layout, multiple fonts, illegible small text.",
+  "api_parameters": {
+    "aspect_ratio": "16:9",
+    "resolution": "2K",
+    "output_format": "png"
+  }
+}

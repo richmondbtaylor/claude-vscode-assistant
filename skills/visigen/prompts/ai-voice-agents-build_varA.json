@@ -1,0 +1,8 @@
+{
+  "prompt": "YouTube thumbnail, 16:9, ultra high CTR design. Semi-realistic portrait of a man in his mid-30s: medium-length wavy brown hair with natural volume swept back, short brown beard/stubble, light blue-green eyes, athletic broad-shouldered build, strong jaw and defined cheekbones, fair skin with warm undertones. Dramatic side lighting emphasizing jaw structure. Sharp focus on face. Intense focused expression, furrowed brow, hand near chin in thinking pose, looking slightly to the side as if analyzing something complex. Subject positioned in the right two-thirds of frame. Background: solid #1A1A1A dark gray, minimal and clean. Bold sans-serif text overlaid: primary text \"AI VOICE AGENTS\" in large white bold font positioned in the left third. Accent color #00FFFF electric blue on keyword \"VOICE\". Secondary text \"Build One in 30 Min\" smaller below in #00FFFF electric blue. A subtle glowing phone icon with sound waves emanating from it floats near the left side behind the text. Dramatic side lighting, high contrast, deep shadows on face. Professional thumbnail composition. Text has shadow or outline for legibility at small sizes. Ultra sharp, no blur, clean edges, print quality. Negative: blurry text, random background, stock photo aesthetic, generic face, cluttered layout, multiple fonts, illegible small text, dark background competing with subject.",
+  "api_parameters": {
+    "aspect_ratio": "16:9",
+    "resolution": "2K",
+    "output_format": "png"
+  }
+}

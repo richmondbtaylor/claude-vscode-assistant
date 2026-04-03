@@ -1,0 +1,7 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: off-white #E6E2DE to create contrast from the previous white slide. At the top, a small gold #E0B848 question mark icon. Below it, bold deep navy #000813 headline: 'WAIT, WHAT HAPPENED?'. Below that, four numbered items in a clean vertical stack, each with a large gold number (1, 2, 3, 4) on the left and dark navy #1D2333 text on the right: '1 Claude Code is the AI tool 500K+ developers use every day' then '2 Someone published its entire source code on GitHub' then '3 Hidden inside: 5 features not released yet' then '4 Here is what they are'. Clean card-style layout with subtle spacing between each item. Slide counter '2/9' top-right gray. Quality: pixel-perfect text, ultra-sharp. Negative: blurry text, garbled typography, faces, bokeh, dark background.",
+  "api_parameters": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpg" }
+}

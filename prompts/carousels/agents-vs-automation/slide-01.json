@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '1/8' in muted gray. Centered layout with generous whitespace. Large ultra-bold black sans-serif headline text reading 'Stop Calling Everything' on the first line and 'an \"AI Agent\"' on the second line, at 60pt size, perfectly centered horizontally in the upper-middle area. The words 'AI Agent' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, a thin horizontal divider. Below the divider, medium-weight black text reading 'One follows a script. The other writes its own.' at 26pt. Below the text, a minimal thin-line illustration of a gear icon on the left with an X through it transforming into a brain icon on the right with a checkmark, connected by an arrow, drawn in thin black outlines only. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal, no clutter. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

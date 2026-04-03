@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '5/8' in muted gray. Top section has a large coral-red circled number '3' as a decorative element. Below it, bold black sans-serif headline text reading 'Merge + Prune' at 56pt, centered. The word 'Prune' has a soft golden-amber #D4A853 brush-stroke highlight behind it, like a hand-painted marker swipe. Below the headline, two side-by-side comparison columns. Left column labeled 'BEFORE' in small coral-red text, with three items each preceded by a coral-red X icon: 'Contradicted facts', 'Relative dates (last Thursday)', 'Duplicate entries'. Right column labeled 'AFTER' in small green text, with three items each preceded by a green checkmark icon: 'Single source of truth', 'Absolute dates (2026-03-28)', 'One clean entry each'. A thin vertical divider line separates the two columns. Below both columns, smaller muted text reading 'New info merges in. Old info gets cut.' Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, editorial. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '1/9' in muted gray. Centered layout with generous whitespace. Large ultra-bold black sans-serif headline text reading 'Build Your Own' on the first line and 'AI Assistant' on the second line, at 64pt size, perfectly centered horizontally in the upper-middle area. The words 'AI Assistant' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below, a thin horizontal divider line. Below the divider, elegant medium-weight black text reading '3 free tools. 15 minutes. Zero code.' at 28pt. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal, no clutter. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

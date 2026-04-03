@@ -99,39 +99,117 @@ class WhatsAppMonitor:
         try:
             print(f"Searching for group: {target_group}")
 
-            # Click on search box — try multiple selectors
-            search_box = None
-            search_selectors = [
-                '[data-testid="search-bar-input"]',
-                '[aria-label="Search input textbox"]',
-                '[aria-label="Search or start new chat"]',
-                '[data-testid="chat-list-search"]',
-                'div[contenteditable="true"][data-tab="3"]',
-                'div[role="textbox"][title="Search input textbox"]',
-                '#side div[contenteditable="true"]',
-                'div[title="Search or start new chat"]',
-                'div[role="textbox"]',
+            # Save diagnostic screenshot
+            self.page.screenshot(path=r'C:\tmp\whatsapp_before_search.png')
+
+            # Step 0: Try clicking the group directly from the visible chat list
+            try:
+                visible_group = self.page.query_selector(f'span[title="{target_group}"]')
+                if visible_group and visible_group.is_visible():
+                    visible_group.click()
+                    time.sleep(2)
+                    print(f"Selected group directly from chat list: {target_group}")
+                    return True
+            except Exception:
+                pass
+
+            # Step 1: Try clicking the search icon/button first (WhatsApp may need this)
+            search_button_selectors = [
+                '[data-testid="search-btn"]',
+                'button[aria-label="Search"]',
+                'span[data-icon="search"]',
+                'span[data-icon="search-alt"]',
             ]
-            for sel in search_selectors:
+            for sel in search_button_selectors:
                 try:
-                    search_box = self.page.wait_for_selector(sel, timeout=5000)
-                    if search_box:
+                    btn = self.page.query_selector(sel)
+                    if btn and btn.is_visible():
+                        btn.click()
+                        time.sleep(1)
+                        print(f"[DEBUG] Clicked search button: {sel}")
                         break
                 except Exception:
                     continue
 
+            # Step 2: Find the search input
+            search_box = None
+            search_selectors = [
+                '[data-testid="search-bar-input"]',
+                'div[contenteditable="true"][data-tab="3"]',
+                'p.selectable-text[data-tab="3"]',
+                '[aria-label="Search input textbox"]',
+                '[aria-label="Search or start new chat"]',
+                '[data-testid="chat-list-search"]',
+                'div[role="textbox"][title="Search input textbox"]',
+                '#side div[contenteditable="true"]',
+                'div[title="Search or start new chat"]',
+                '#side div[role="textbox"]',
+                'div[data-tab="3"]',
+            ]
+            for sel in search_selectors:
+                try:
+                    search_box = self.page.wait_for_selector(sel, timeout=3000)
+                    if search_box and search_box.is_visible():
+                        print(f"[DEBUG] Found search box: {sel}")
+                        break
+                    search_box = None
+                except Exception:
+                    continue
+
+            # Step 3: If still no search box, try Ctrl+F or clicking top area
             if not search_box:
+                print("[DEBUG] No search box found via selectors, trying keyboard shortcut...")
+                # Try clicking on the search area at top of chat list
+                try:
+                    self.page.click('#side header', timeout=3000)
+                    time.sleep(1)
+                except Exception:
+                    pass
+                # Try finding any editable div in the side panel
+                try:
+                    search_box = self.page.wait_for_selector('#side div[contenteditable="true"]', timeout=5000)
+                except Exception:
+                    pass
+
+            if not search_box:
+                # Last resort: dump what we can see for debugging
+                self.page.screenshot(path=r'C:\tmp\whatsapp_no_search.png')
                 print("Could not find search box")
-                return False
+                print("[DEBUG] Screenshot saved to C:\\tmp\\whatsapp_no_search.png")
+                # Try to find the group by scrolling through visible chats instead
+                return self._find_group_by_scrolling(target_group)
 
             search_box.click()
-            time.sleep(1)
+            time.sleep(0.5)
             self.page.keyboard.type(target_group, delay=50)
-            time.sleep(2)
+            time.sleep(3)
 
-            # Click on the group from search results
-            group_selector = f'span[title="{target_group}"]'
-            group = self.page.query_selector(group_selector)
+            # Click on the group from search results - try multiple approaches
+            group = None
+            group_selectors = [
+                f'span[title="{target_group}"]',
+                f'span:has-text("{target_group}")',
+            ]
+            for sel in group_selectors:
+                try:
+                    group = self.page.query_selector(sel)
+                    if group and group.is_visible():
+                        break
+                    group = None
+                except Exception:
+                    continue
+
+            # Also try matching by text content in chat list items
+            if not group:
+                try:
+                    items = self.page.query_selector_all('[data-testid="cell-frame-container"], [data-testid="chat-list"] > div')
+                    for item in items:
+                        text = item.inner_text()
+                        if target_group.lower() in text.lower():
+                            group = item
+                            break
+                except Exception:
+                    pass
 
             if group:
                 group.click()
@@ -139,11 +217,34 @@ class WhatsAppMonitor:
                 print(f"Selected group: {target_group}")
                 return True
             else:
+                self.page.screenshot(path=r'C:\tmp\whatsapp_group_not_found.png')
                 print(f"Could not find group: {target_group}")
+                print("[DEBUG] Screenshot saved to C:\\tmp\\whatsapp_group_not_found.png")
                 return False
 
         except Exception as e:
             print(f"Error selecting group: {e}")
+            return False
+
+    def _find_group_by_scrolling(self, target_group):
+        """Fallback: find group by scrolling through visible chat list."""
+        try:
+            print(f"[DEBUG] Trying to find '{target_group}' by scanning visible chats...")
+            chats = self.page.query_selector_all('div[role="listitem"], div[role="row"], #pane-side > div > div > div > div')
+            for chat in chats:
+                try:
+                    text = chat.inner_text()
+                    if target_group.lower() in text.lower():
+                        chat.click()
+                        time.sleep(2)
+                        print(f"Selected group by scrolling: {target_group}")
+                        return True
+                except Exception:
+                    continue
+            print(f"Could not find group by scrolling either.")
+            return False
+        except Exception as e:
+            print(f"Error scrolling for group: {e}")
             return False
 
     def extract_linkedin_urls(self, text):

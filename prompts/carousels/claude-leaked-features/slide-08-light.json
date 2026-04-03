@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean premium minimal design. Background: light warm beige #D9D6CF solid matte. Slide indicator '8/8' small in top-right corner in muted gray. Large ultra-bold deep navy #000813 Poppins ExtraBold headline centered in upper third: 'SAVE THIS FOR LATER'. Below it, gold #E0B848 Montserrat Bold accent text centered: 'Share with someone building with AI'. Below that, smaller navy #1F2A3A Open Sans text centered: 'Follow @promptanything.io' then 'for more AI breakdowns'. A thin gold accent line near the bottom. Small '@promptanything.io' in bottom-right corner in muted gray. Minimal, clean layout. Quality: pixel-perfect text rendering, ultra-sharp, perfectly legible at phone screen size. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, dark background.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

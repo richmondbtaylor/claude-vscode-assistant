@@ -1,0 +1,7 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. High-impact editorial design. Background: off-white #E6E2DE for visual contrast shift. A large bold gold #E0B848 right-pointing arrow icon at the top. Below it, deep navy #000813 ultra-bold Poppins headline: 'THE TAKEAWAY'. Below that a thin gold line. Then three large gold #E0B848 Montserrat Bold words stacked vertically with very generous spacing between each: 'PROACTIVE.' then 'ALWAYS-ON.' then 'AUTONOMOUS.' Below those three words, smaller dark navy text: 'AI agents that work while you sleep.' Slide counter '8/9' top-right gray. Punchy, powerful summary slide. Quality: pixel-perfect text, ultra-sharp. Negative: blurry text, garbled typography, faces, bokeh, dark background, duplicate text.",
+  "api_parameters": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpg" }
+}

@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Premium editorial design. Background: clean white #FAFBFA. Top section has a large gold #E0B848 circle with bold white '03' inside it. Below the circle, ultra-bold deep navy #000813 Poppins ExtraBold headline: 'BUDDY SYSTEM'. Below that, a gold underline accent. Then three lines in dark navy #1D2333 Open Sans with small gold arrow icons as bullets: 'Tamagotchi-style AI pet in your terminal' then '18 species with legendary 1% rarity' then 'Stats: debugging, patience, chaos, snark'. Slide counter '4/8' top-right muted gray. Clean, editorial, spacious layout. Quality: pixel-perfect text rendering, ultra-sharp. Negative: blurry text, garbled typography, stock photos, faces, bokeh, gradients, drop shadows, dark background.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

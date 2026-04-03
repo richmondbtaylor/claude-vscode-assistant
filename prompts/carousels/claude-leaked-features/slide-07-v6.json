@@ -1,0 +1,7 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Bold editorial design. Background: white #FAFBFA. At the very top, a thin gold #E0B848 progress bar showing 5 of 5 filled segments, fully complete. Below that, small gold label text: 'FEATURE 05'. Below that, massive deep navy #000813 ultra-bold headline: 'UNDERCOVER'. Below the headline, a gold mask or detective icon, then three short dark navy #1D2333 lines: 'Hides the fact that AI wrote the code' then 'Every edit looks completely human-made' then 'The irony: this secret feature got leaked'. Clean, bold, lots of white space. Slide counter '7/9' top-right gray. Quality: pixel-perfect text, ultra-sharp. Negative: blurry text, garbled typography, faces, bokeh, dark background, gold circles.",
+  "api_parameters": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpg" }
+}

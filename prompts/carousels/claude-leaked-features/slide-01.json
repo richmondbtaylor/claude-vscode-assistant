@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean Dark Professional design. Background: near-black #0A0A0A solid. Text in white #FFFFFF. Large ultra-bold sans-serif headline text reading: 'CLAUDE'S SOURCE CODE JUST LEAKED' centered in the upper third. Below it, slightly smaller bold text: '5 FEATURES NOBODY WAS SUPPOSED TO SEE' in orange accent #FF6B35. At the bottom center, small subtle text: '500,000+ lines of code | 2,000 files' in gray #888888. Slide indicator '1/8' small in top-right corner in gray. Small '@promptanything.io' text in bottom-right corner in gray. Minimal visual elements: a thin orange horizontal accent line between the headline and subtext. No decorative clutter. Quality: pixel-perfect text rendering, ultra-sharp, perfectly legible at phone screen size. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

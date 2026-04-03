@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Bishop AI brand design. Background: clean white (#FAFBFA). Gold (#E0B848) segmented progress bar at very top showing position 9 of 9 (fully filled). Slide number \"9/9\" in muted gray top-right corner. This is the final CTA slide. Large bold headline centered on the slide in Poppins ExtraBold 64pt Deep Navy (#000813): \"Save This.\" on line one, \"Build Today.\" on line two. A gold (#E0B848) bookmark icon centered above the headline as a visual anchor. Below the headline, a thin gold (#E0B848) horizontal divider. Below the divider, subtext in Open Sans Regular 22pt Dark Navy (#1D2333): \"Full setup guide at bishopai.com\" on one line. Layout: all text vertically centered with generous whitespace. \"@bishopai\" small in bottom-right corner in muted gray. Clean, minimal, strong visual hierarchy. Quality: pixel-perfect text rendering, ultra-sharp, perfectly legible at phone screen size. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, dark backgrounds, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

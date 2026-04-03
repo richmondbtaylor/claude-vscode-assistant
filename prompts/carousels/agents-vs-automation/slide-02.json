@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '2/8' in muted gray. Top section has a large coral-red circled number '1' as a decorative element. Below it, bold black sans-serif headline text reading 'Automation Follows Rules' at 56pt, centered. The words 'Follows Rules' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below, medium-weight black text at 24pt reading 'If this, then that. Every time.' on one line. Below the text, a minimal thin-line illustration of a conveyor belt with gears, showing a linear flow from input to output with arrows, drawn in thin black outlines only. The illustration conveys mechanical, predictable, step-by-step processing. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

@@ -1,15 +1,13 @@
 """
 Claude AI Comment Generator
-Generates professional LinkedIn comments using Anthropic's Claude API
+Generates professional LinkedIn comments using Claude Code CLI (Max subscription)
 """
 
 import os
 import re
 import random
-from anthropic import Anthropic
-from dotenv import load_dotenv
-
-load_dotenv()
+import subprocess
+import json
 
 
 SYSTEM_PROMPT = """You are Richmond Taylor (goes by Rich), Founder at AI Builders, based in Miami, Florida. You have a background in European soccer, studied at East Tennessee State University, and now work in AI automation and community building. You have 13,000+ LinkedIn followers and organize AI hackathons and meetups in Miami.
@@ -130,12 +128,23 @@ def _parse_comments(response_text):
 
 class ClaudeCommentGenerator:
     def __init__(self):
-        api_key = os.getenv('ANTHROPIC_API_KEY')
-        if not api_key:
-            raise ValueError("ANTHROPIC_API_KEY not found in environment variables")
+        # Uses claude CLI (Max subscription) - no API key needed
+        pass
 
-        self.client = Anthropic(api_key=api_key)
-        self.model = "claude-sonnet-4-5-20250929"
+    def _call_claude(self, prompt):
+        """Call claude CLI with a prompt and return the response text."""
+        full_prompt = SYSTEM_PROMPT + "\n\n" + prompt
+        result = subprocess.run(
+            ['claude', '-p', full_prompt, '--no-input'],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            encoding='utf-8',
+            errors='replace'
+        )
+        if result.returncode != 0:
+            raise RuntimeError(f"claude CLI failed (exit {result.returncode}): {result.stderr[:200]}")
+        return result.stdout.strip()
 
     def generate_comment(self, post_content, post_author=None, additional_context=None):
         """
@@ -152,15 +161,7 @@ class ClaudeCommentGenerator:
         prompt = COMMENT_PROMPT_TEMPLATE.format(post_content=post_content)
 
         try:
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=1024,
-                temperature=0.8,
-                system=SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": prompt}]
-            )
-
-            response_text = message.content[0].text
+            response_text = self._call_claude(prompt)
             comments = _parse_comments(response_text)
 
             if not comments:
@@ -184,14 +185,8 @@ class ClaudeCommentGenerator:
         prompt = COMMENT_PROMPT_TEMPLATE.format(post_content=post_content)
 
         try:
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=1024,
-                temperature=0.8,
-                system=SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            return _parse_comments(message.content[0].text)
+            response_text = self._call_claude(prompt)
+            return _parse_comments(response_text)
         except Exception as e:
             print(f"Error generating comments with Claude: {e}")
             return []

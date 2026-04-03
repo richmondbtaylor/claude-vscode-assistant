@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Premium editorial design. Background: clean white #FAFBFA. A large bold gold #E0B848 lock icon cracked open in the center-top area, with small code fragments spilling out of it. Below the icon, ultra-bold deep navy #000813 Poppins ExtraBold text: 'CLAUDE'S CODE JUST LEAKED'. Below that, a thin gold line, then smaller Montserrat Bold gold text: '5 UNRELEASED FEATURES EXPOSED'. At the very bottom, subtle dark navy text: '500K+ lines | 2,000 files | GitHub'. Slide counter '1/9' in top-right in muted gray. Minimal, premium, no clutter. Quality: pixel-perfect text rendering, ultra-sharp. Negative: blurry text, garbled typography, stock photos, faces, bokeh, gradients, drop shadows, dark background.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

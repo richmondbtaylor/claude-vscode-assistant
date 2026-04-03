@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean premium minimal design. Background: solid white #FAFBFA. Slide indicator '4/8' small in top-right corner in muted gray. Large bold gold #E0B848 Poppins ExtraBold text reading '03' in the upper-left area. Next to it, large ultra-bold deep navy #000813 Poppins ExtraBold headline: 'BUDDY SYSTEM'. Below the headline, three short lines of dark navy #1D2333 Open Sans text, each on its own line with a small gold bullet: 'Tamagotchi-style AI companion' then '18 species with rarity tiers' then '5 stats: debug, patience, snark'. A thin gold accent line near the bottom. Small '@bishopai.io' in bottom-right corner in muted gray. Minimal, clean layout. Quality: pixel-perfect text rendering, ultra-sharp, perfectly legible at phone screen size. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, dark background.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

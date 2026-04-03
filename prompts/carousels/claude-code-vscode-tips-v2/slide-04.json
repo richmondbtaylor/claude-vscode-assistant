@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '4/8' in muted gray. Top section has a large coral-red circled number '3' as a decorative element. Below it, bold black sans-serif headline text reading 'Point Claude to Your Files' at 56pt, centered. The word 'Your Files' has a soft golden-amber #D4A853 brush-stroke highlight behind it. Below, a dark card-style box with cream border containing the text 'Read the files in my project folder. Use my tone and style for the website copy.' in small clean white monospace text, styled like a code prompt. Below the card, two small bullet points with coral-red dot markers: 'Brand guidelines or style docs' and 'Existing code files for reference'. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

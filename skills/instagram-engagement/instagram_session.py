@@ -400,11 +400,49 @@ class InstagramSession:
         return None
 
     def _get_post_caption(self) -> str:
+        import re
+        # Strategy 1: meta og:description — "username on Instagram: "caption""
         try:
-            cap_el = self.page.query_selector('div[class*="x5yr21d"] span')
-            return cap_el.inner_text().strip() if cap_el else ""
+            for selector in ['meta[property="og:description"]', 'meta[name="description"]']:
+                meta = self.page.query_selector(selector)
+                if meta:
+                    desc = meta.get_attribute("content") or ""
+                    m = re.search(r'on Instagram:\s*["\u201c\u2018](.+)', desc, re.DOTALL)
+                    if m:
+                        caption = m.group(1).strip().rstrip('"\u201d\u2019')
+                        if len(caption) > 10:
+                            return caption
         except Exception:
-            return ""
+            pass
+        # Strategy 2: JSON-LD structured data
+        try:
+            scripts = self.page.query_selector_all('script[type="application/ld+json"]')
+            for script in scripts:
+                import json
+                data = json.loads(script.inner_text())
+                caption = data.get("caption") or data.get("description") or ""
+                if len(caption) > 10:
+                    return caption.strip()
+        except Exception:
+            pass
+        # Strategy 3: DOM selectors (class names change — try several patterns)
+        dom_selectors = [
+            'article div[class*="_a9zs"] span',
+            'div[class*="x5yr21d"] span',
+            'div[class*="_a9zs"] span',
+            'h1',
+            'article h1',
+        ]
+        for selector in dom_selectors:
+            try:
+                el = self.page.query_selector(selector)
+                if el:
+                    text = el.inner_text().strip()
+                    if len(text) > 10:
+                        return text
+            except Exception:
+                continue
+        return ""
 
     def _get_recent_post_links(self, profile_url: str, count: int = 3) -> list[str]:
         """Return up to `count` recent post hrefs from a profile."""

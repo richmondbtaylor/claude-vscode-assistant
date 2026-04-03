@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '6/9' in muted gray. Top section has a large coral-red circled number '5' as a decorative element. Below it, bold black sans-serif headline text reading 'Design First, Then Build' at 56pt, centered. The word 'First' has a soft golden-amber #D4A853 brush-stroke highlight behind it. Below, three checklist items each with a coral-red checkmark icon: 'Describe what you want in plain language' then 'Prompt Anything structures it for you' then 'Hand it to Claude Code to build'. Smaller muted text at bottom: 'Skip this step and you will waste twice the revision rounds.' Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

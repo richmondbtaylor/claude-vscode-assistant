@@ -66,66 +66,65 @@ REDDIT_POST_LIMIT = 25
 REDDIT_POLL_INTERVAL_MINUTES = 15
 
 # ── LinkedIn ───────────────────────────────────────────────────────────────────
+# These are phrased to surface PERSONAL posts, not thought-leadership articles.
+# "can anyone recommend", "has anyone used", "any suggestions" only appear in
+# real posts — not in blog posts or agency marketing content.
 
 LINKEDIN_KEYWORDS = [
-    # Direct buying intent
-    "AI automation help",
-    "looking for AI consultant",
-    "need AI automation",
-    "hire AI developer",
-    "AI workflow help",
-    "automate my business",
-    "AI agency recommendation",
-    "AI implementation help",
-    "need someone to build AI",
-    "AI expert for hire",
-    # Pain points Bishop AI solves
-    "drowning in manual tasks",
-    "AI for my team",
-    "AI chatbot for business",
-    "automate repetitive tasks",
-    "n8n help",
-    "zapier automation help",
-    "AI for my business",
-    "AI strategy help",
-    # Prompt Anything — people struggling with prompting
-    "ChatGPT giving bad results",
-    "better prompts",
-    "prompt engineering help",
-    "AI not giving good results",
-    "how to write better prompts",
-    "AI outputs are generic",
+    # Personal help requests — automation/AI
+    "can anyone recommend AI automation",
+    "can anyone recommend n8n OR zapier OR make.com",
+    "looking for recommendations AI workflow",
+    "any suggestions for automating",
+    "has anyone used n8n for",
+    "has anyone tried automating",
+    "anyone know a good AI consultant",
+    "anyone else struggling with automation",
+    "need help automating",
+    "what do you recommend for AI automation",
+    # Personal help requests — AI tools/prompting
+    "can anyone recommend a prompt",
+    "ChatGPT keeps giving me",
+    "AI keeps giving me wrong",
+    "why does ChatGPT keep",
+    "how do I get better results from ChatGPT",
+    "my prompts aren't working",
+    "anyone else frustrated with ChatGPT",
+    "AI outputs are terrible",
+    "how to get ChatGPT to",
+    # Hiring / looking for help
+    "looking to hire someone to build",
+    "looking for a freelancer AI",
+    "need someone who knows n8n",
+    "need someone who knows zapier",
+    "anyone available to help build",
 ]
 
 LINKEDIN_RESULTS_PER_KEYWORD = 5
 
 # ── Facebook / Facebook Groups ─────────────────────────────────────────────────
+# Public groups scraped via Playwright — DDG cannot index private group content.
 
-FACEBOOK_KEYWORDS = [
-    # Direct buying intent
-    "AI automation help",
-    "need AI consultant",
-    "automate my business",
-    "AI workflow",
-    "AI chatbot for business",
-    "n8n help",
-    "ChatGPT automation",
-    "AI for my business",
-    "hire AI developer",
-    "AI tools recommendation",
-    "automate with AI",
-    "AI agency",
-    "need someone to build automation",
-    "looking for AI expert",
-    # Prompt Anything
-    "prompt engineering",
-    "better prompts ChatGPT",
-    "AI giving bad results",
-    "how to use ChatGPT better",
-    "ChatGPT not working",
+FACEBOOK_GROUPS = [
+    "https://www.facebook.com/groups/aiautomationagency",
+    "https://www.facebook.com/groups/n8ncommunity",
+    "https://www.facebook.com/groups/makecommunity",
+    "https://www.facebook.com/groups/chatgptusers",
+    "https://www.facebook.com/groups/artificialintelligenceai",
+    "https://www.facebook.com/groups/automationrockstars",
+    "https://www.facebook.com/groups/zapierautomation",
+    "https://www.facebook.com/groups/aiforsmallbusiness",
+    "https://www.facebook.com/groups/promptengineering",
+    "https://www.facebook.com/groups/gohighlevelcommunity",
 ]
 
-FACEBOOK_RESULTS_PER_KEYWORD = 5
+FACEBOOK_POSTS_PER_GROUP = 20   # How many recent posts to scan per group
+
+FACEBOOK_KEYWORDS = [
+    "help", "need", "recommend", "looking for", "struggling",
+    "automate", "AI", "ChatGPT", "n8n", "zapier", "make",
+    "workflow", "automation", "prompt", "consultant", "hire",
+]
 
 # ── Twitter / X ────────────────────────────────────────────────────────────────
 

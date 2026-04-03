@@ -1,26 +1,32 @@
 """
-Claude Sonnet 4.6 intent analyzer.
+Claude lead intent analyzer — uses the `claude` CLI (Max subscription).
 Takes a raw post and returns structured lead intelligence for Bishop AI.
 """
 
 import json
-import os
-from dataclasses import dataclass, field
+import subprocess
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-import anthropic
 from pydantic import BaseModel, Field
 
 from config import BISHOP_AI_CONTEXT
 
-client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+# Full path to claude CLI — npm installs to AppData on Windows.
+# subprocess needs the .cmd wrapper on Windows, not the bash script.
+import os as _os
+import platform as _platform
+if _platform.system() == "Windows":
+    _CLAUDE_CMD = _os.path.expanduser("~/AppData/Roaming/npm/claude.cmd")
+else:
+    _CLAUDE_CMD = "claude"
 
 SYSTEM_PROMPT = f"""You are a lead intelligence analyst for Bishop AI, an AI automation and education agency.
 
 Your job is to evaluate social media posts (Reddit, LinkedIn, Quora, forums) and determine:
 1. How relevant this post is as a potential lead for Bishop AI
-2. What SPECIFIC type of help the author needs (be precise — don't default to generic categories)
+2. What SPECIFIC type of help the author needs (be precise -- don't default to generic categories)
 3. Whether the problem is CURRENTLY UNSOLVED (they still need help right now)
 4. Whether Bishop AI should reach out
 
@@ -29,14 +35,14 @@ Your job is to evaluate social media posts (Reddit, LinkedIn, Quora, forums) and
 SCORING GUIDE for relevance_score (0-100):
 - 90-100: Real person explicitly asking for AI automation help, mentions budget, or actively seeking an agency RIGHT NOW
 - 70-89:  Real person struggling with a problem Bishop AI solves, or asking for a tool/service recommendation
-- 50-69:  Real person tangentially related — discussing AI automation but not clearly looking for help yet
+- 50-69:  Real person tangentially related -- discussing AI automation but not clearly looking for help yet
 - 30-49:  Real person with curious or educational interest, not a near-term buyer
 - 0-15:   Marketing article, blog post, tutorial, directory page, aggregator, competitor post, news piece,
            promotional content, already-solved problem, or ANY content NOT written by a real person seeking help
 
 When in doubt, score LOW. Only score 50+ if you are CONFIDENT this is a real human with an active need.
 
-INTENT TYPES — be specific, choose the most accurate one:
+INTENT TYPES -- be specific, choose the most accurate one:
 - "ai_automation_help":  Needs help BUILDING, SETTING UP, or MANAGING AI workflows, automations,
                          or integrations (n8n, Zapier, Make, custom GPT pipelines, API connections).
                          Use this when they want someone to do it FOR them or need technical help.
@@ -46,8 +52,8 @@ INTENT TYPES — be specific, choose the most accurate one:
                          or understanding how to talk to AI tools effectively.
                          These are VALID leads for the Prompt Anything product ($15.99/mo).
                          Score 70+ if they're clearly frustrated with AI outputs or asking for prompt help.
-                         Can be individuals — doesn't need to be a business owner.
-- "purchase_intent":     Showing CLEAR buying signals — mentions budget, wants to hire an agency,
+                         Can be individuals -- doesn't need to be a business owner.
+- "purchase_intent":     Showing CLEAR buying signals -- mentions budget, wants to hire an agency,
                          asking for quotes or proposals, comparing vendors.
 - "pain_expressing":     Venting about a workflow or AI problem Bishop AI solves, but NOT yet
                          asking for help. They're frustrated but haven't asked for solutions.
@@ -59,14 +65,14 @@ URGENCY LEVELS:
 - "medium": No explicit urgency but the problem is currently active
 - "low":    Exploratory, future-tense, or just curious
 
-DISQUALIFYING CONTENT — CRITICAL:
+DISQUALIFYING CONTENT -- CRITICAL:
 Set "already_solved" to true AND score 0-10 AND should_contact to false for ANY of the following:
 - MARKETING ARTICLES or BLOG POSTS: content clearly written to attract readers, not a person seeking help
   (listicles like "Top 10 AI tools", "How to use AI for X", "Best practices for Y")
 - PROMOTIONAL content from a company or product ("Introducing our new AI feature", brand announcements)
 - TUTORIALS or HOW-TO guides written to teach others (the author is sharing knowledge, not asking for help)
 - SUCCESS ANNOUNCEMENTS: "I figured it out", "here's what I did", "launched", "shipped", "solved it"
-- PAST TENSE problems: "I had this issue", "I used to struggle with" — problem is no longer active
+- PAST TENSE problems: "I had this issue", "I used to struggle with" -- problem is no longer active
 - FOLLOW-UP questions about a system that already works fine
 - AGGREGATOR or DIRECTORY pages: Product Hunt listings, job boards, freelancer marketplace pages (Fiverr, Upwork, Toptal listings), "hire a consultant" directory pages
 - NEWS articles or industry commentary about AI trends (not someone with a personal need)
@@ -78,7 +84,7 @@ REAL LEAD SIGNALS (what you ARE looking for):
 - Clear "I need", "looking for", "can anyone help", "how do I" language from someone with the problem RIGHT NOW
 - Hiring posts from a business owner or decision maker (not a job board aggregate page)
 
-If you cannot confirm this is a real person with a current, active, unsolved need — score it 0-15 and do NOT contact.
+If you cannot confirm this is a real person with a current, active, unsolved need -- score it 0-15 and do NOT contact.
 
 DECISION MAKER DETECTION:
 Set "is_decision_maker" to true if the author appears to have real buying authority:
@@ -87,7 +93,7 @@ Set "is_decision_maker" to true if the author appears to have real buying author
 - Asking on behalf of a business they clearly control
 - Set to false if they're clearly just an employee with no purchasing authority
   ("my boss asked me to find...", "our IT team will decide", no ownership signals at all)
-- Default to true if uncertain — most people posting about business problems have some authority
+- Default to true if uncertain -- most people posting about business problems have some authority
 
 AFFORDABILITY ASSESSMENT:
 Set "budget_tier" based on all available signals:
@@ -104,14 +110,14 @@ ANALYSIS_SCHEMA = {
     "relevance_score": "integer 0-100",
     "intent_type": "one of: ai_automation_help | ai_education | ai_prompting_help | purchase_intent | pain_expressing | competitor | not_relevant",
     "urgency": "one of: high | medium | low",
-    "already_solved": "boolean — true if the author already solved their problem and is NOT currently seeking help",
-    "is_decision_maker": "boolean — true if the author appears to have buying authority (owner, founder, manager, etc.)",
+    "already_solved": "boolean -- true if the author already solved their problem and is NOT currently seeking help",
+    "is_decision_maker": "boolean -- true if the author appears to have buying authority (owner, founder, manager, etc.)",
     "budget_tier": "one of: can_afford | uncertain | budget_limited",
     "pain_points": "array of short strings describing the author's specific problems (empty array if already_solved)",
     "budget_signals": "array of specific phrases or signals that informed your budget_tier assessment (can be empty)",
-    "intent_score": "integer 0-100 measuring BUYING intent only — how likely this person is to hire or pay for help in the next 30 days. 90-100=actively seeking to hire/buy right now with budget signals, 70-89=strong buying signals but no explicit budget, 50-69=moderate intent (pain is real, solution-seeking), 30-49=mild interest, 0-29=no buying signals at all",
-    "suggested_reply": "A direct, helpful reply Bishop AI could leave on the post. 2-3 sentences max. Acknowledge the SPECIFIC problem they described, then explain concisely how Bishop AI solves exactly that problem (e.g. 'We build n8n workflows that automate exactly this' or 'That's a prompting issue — Prompt Anything walks you through fixing it'). End with the booking link on its own line: https://cal.com/bishopai.io/15min — No generic phrases like 'we can help', 'great question', or 'I understand your frustration'. Be specific to THEIR situation. Empty string '' if already_solved is true.",
-    "should_contact": "boolean — true if this is worth a DM or outreach (must be false if already_solved is true)",
+    "intent_score": "integer 0-100 measuring BUYING intent only -- how likely this person is to hire or pay for help in the next 30 days. 90-100=actively seeking to hire/buy right now with budget signals, 70-89=strong buying signals but no explicit budget, 50-69=moderate intent (pain is real, solution-seeking), 30-49=mild interest, 0-29=no buying signals at all",
+    "suggested_reply": "A direct, helpful reply Bishop AI could leave on the post. 2-3 sentences max. Acknowledge the SPECIFIC problem they described, then explain concisely how Bishop AI solves exactly that problem (e.g. 'We build n8n workflows that automate exactly this' or 'That's a prompting issue -- Prompt Anything walks you through fixing it'). End with the booking link on its own line: https://cal.com/bishopai.io/15min -- No generic phrases like 'we can help', 'great question', or 'I understand your frustration'. Be specific to THEIR situation. Empty string '' if already_solved is true.",
+    "should_contact": "boolean -- true if this is worth a DM or outreach (must be false if already_solved is true)",
     "reasoning": "1-2 sentences explaining your score, decision maker status, and budget assessment",
 }
 
@@ -145,8 +151,9 @@ class RawPost:
 
 def analyze(post: RawPost) -> Optional[PostAnalysis]:
     """
-    Send a post to Claude Opus 4.6 for lead intelligence analysis.
-    Returns None if the API call fails after retries.
+    Send a post to Claude CLI for lead intelligence analysis.
+    Uses the claude CLI which runs on the user's Max subscription.
+    Returns None if the call fails.
     """
     context_parts = [
         f"Platform: {post.platform.upper()}",
@@ -163,26 +170,36 @@ def analyze(post: RawPost) -> Optional[PostAnalysis]:
 
     user_message = "\n".join(context_parts)
 
-    try:
-        # Sonnet 4.6 — 3x cheaper than Opus, no thinking overhead needed for classification
-        with client.messages.stream(
-            model="claude-sonnet-4-6",
-            max_tokens=1024,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_message}],
-        ) as stream:
-            response = stream.get_final_message()
+    # Combine system prompt + user message into a single prompt for the CLI
+    full_prompt = f"{SYSTEM_PROMPT}\n\n---\n\n{user_message}"
 
-        text = next(
-            (block.text for block in response.content if block.type == "text"),
-            None,
+    try:
+        result = subprocess.run(
+            [
+                _CLAUDE_CMD,
+                "--print",           # Output response text only (no interactive UI)
+                "--model", "sonnet",
+                "--max-turns", "1",
+            ],
+            input=full_prompt,
+            capture_output=True,
+            text=True,
+            timeout=60,
+            encoding="utf-8",
+            errors="replace",
         )
+
+        if result.returncode != 0:
+            stderr = result.stderr.strip()[:200] if result.stderr else "no stderr"
+            print(f"[analyzer] CLI error for post {post.id}: exit {result.returncode} - {stderr}")
+            return None
+
+        text = result.stdout.strip()
         if not text:
-            print(f"[analyzer] No text block in response for post {post.id}")
+            print(f"[analyzer] Empty response for post {post.id}")
             return None
 
         # Strip any accidental markdown code fences
-        text = text.strip()
         if text.startswith("```"):
             text = text.split("```")[1]
             if text.startswith("json"):
@@ -192,11 +209,11 @@ def analyze(post: RawPost) -> Optional[PostAnalysis]:
         data = json.loads(text)
         return PostAnalysis(**data)
 
+    except subprocess.TimeoutExpired:
+        print(f"[analyzer] Timeout for post {post.id}")
+        return None
     except json.JSONDecodeError as e:
         print(f"[analyzer] JSON parse error for post {post.id}: {e}")
-        return None
-    except anthropic.APIError as e:
-        print(f"[analyzer] Anthropic API error for post {post.id}: {e}")
         return None
     except Exception as e:
         print(f"[analyzer] Unexpected error for post {post.id}: {e}")

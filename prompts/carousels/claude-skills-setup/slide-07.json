@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Bishop AI brand design. Background: clean white (#FAFBFA). Gold (#E0B848) segmented progress bar at very top showing position 7 of 9. Slide number \"7/9\" in muted gray top-right corner. Gold (#E0B848) feature label \"STEP 05\" in small caps above the headline. Large bold headline in Poppins ExtraBold 56pt Deep Navy (#000813): \"Design Skills First\" on one line. A gold (#E0B848) pencil/edit icon centered below the headline as a visual anchor. Below the icon, subtext in Open Sans Regular 22pt Dark Navy (#1D2333): \"Use Prompt Anything to structure\" on line one, \"your logic before building.\" on line two. Layout: text upper-center with generous whitespace. \"@bishopai\" small in bottom-right corner in muted gray. Clean, minimal. Quality: pixel-perfect text rendering, ultra-sharp, perfectly legible at phone screen size. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, dark backgrounds, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

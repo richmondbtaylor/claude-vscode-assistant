@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '7/8' in muted gray. Top section has a large coral-red circled number '5' as a decorative element. Below it, bold black sans-serif headline text reading 'Where It Stands Now' at 56pt, centered. The words 'Stands Now' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, a minimal thin-line illustration of a toggle switch in the OFF position, drawn in thin black outlines with a small lock icon next to it. Below the illustration, three bullet points with coral-red dot markers in medium-weight black text: 'Found in Claude Code source code.', 'Toggle spotted inside /memory.', 'Cannot be turned on yet.' Below the bullets, a dark card-style box with golden-amber border containing medium-weight white text reading 'It is coming. Worth understanding before it drops.' Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, editorial, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

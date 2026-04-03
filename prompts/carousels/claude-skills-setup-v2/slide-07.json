@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '7/9' in muted gray. Top section has a large coral-red circled number '6' as a decorative element. Below it, bold black sans-serif headline text reading 'Build the Orchestrator' at 56pt, centered. The word 'Orchestrator' has a soft golden-amber #D4A853 brush-stroke highlight behind it. Below, a minimal thin-line illustration showing three small boxes on the left labeled with tiny text representing different skills, with arrows all pointing to one central box in the middle representing the orchestrator, which has an arrow pointing to a single output on the right. Simple black outlines only. Below the illustration, medium-weight black text reading 'One entry point for all your skills.' on one line and 'Talk naturally. It routes the rest.' on the next line. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

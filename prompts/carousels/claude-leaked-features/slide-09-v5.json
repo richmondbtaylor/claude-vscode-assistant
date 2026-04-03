@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Premium editorial design. Background: clean white #FAFBFA. A large gold #E0B848 bookmark icon centered in the upper third. Below it, ultra-bold deep navy #000813 Poppins ExtraBold centered text: 'SAVE THIS'. Below that, dark navy #1D2333 Montserrat Bold text: 'Tag someone building with AI'. Slide counter '9/9' top-right muted gray. Clean, bold, minimal CTA slide. No website URLs, no handles, no social media references. Quality: pixel-perfect text rendering, ultra-sharp. Negative: blurry text, garbled typography, stock photos, faces, bokeh, gradients, drop shadows, dark background.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

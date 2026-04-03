@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean premium minimal design. Background: light warm beige #D9D6CF solid matte. Large ultra-bold Poppins ExtraBold headline in deep navy #000813 reading: 'CLAUDE'S SOURCE CODE JUST LEAKED' centered in the upper third. Below it, a thin gold #E0B848 horizontal accent line. Below the line, bold Montserrat subheadline in gold #E0B848: '5 FEATURES NOBODY WAS SUPPOSED TO SEE'. At the bottom center, small subtle text in navy #1F2A3A: '500,000+ lines of code | 2,000 files'. Slide indicator '1/8' small in top-right corner in muted gray #8A8A8A. Small '@promptanything.io' text in bottom-right corner in muted gray. No photos, no icons, no decoration. Quality: pixel-perfect text rendering, ultra-sharp, perfectly legible at phone screen size. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, dark background.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

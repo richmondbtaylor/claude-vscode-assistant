@@ -1,0 +1,7 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Dramatic editorial design. Background: white #FAFBFA with a large cracked gold #E0B848 padlock illustration taking up the top 40% of the slide, code snippets visibly leaking from the crack. Below the padlock, bold deep navy #000813 ultra-bold text: 'CLAUDE'S CODE JUST LEAKED'. Below that a gold horizontal rule, then gold #E0B848 text: '5 unreleased features. Here is what they found.' A small navy pill badge in the bottom reading '500K+ lines | 2,000 files'. Slide counter '1/9' top-right gray. Dramatic, cinematic feel. Quality: pixel-perfect text, ultra-sharp. Negative: blurry text, garbled typography, faces, bokeh, gradients, dark background.",
+  "api_parameters": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpg" }
+}

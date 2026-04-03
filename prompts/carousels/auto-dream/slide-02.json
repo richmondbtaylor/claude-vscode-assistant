@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '2/8' in muted gray. Top section has bold black sans-serif headline text reading 'After 20+ Sessions,' on one line and 'Memory Breaks Down.' on the next, at 56pt, centered. The words '20+ Sessions' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, three dark card-style boxes stacked vertically with cream borders, each containing a problem in small clean white monospace text: first card reads 'Contradictions pile up.', second card reads 'Dates go stale.', third card reads 'Old notes reference deleted files.' Each card has a small coral-red X icon on the left side. Below the cards, smaller muted black text reading 'The notebook meant to help Claude remember starts confusing it instead.' Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, editorial, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

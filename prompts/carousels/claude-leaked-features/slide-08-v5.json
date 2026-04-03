@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Premium editorial design. Background: clean white #FAFBFA. A large bold gold #E0B848 right-pointing arrow icon in the upper section. Below it, ultra-bold deep navy #000813 Poppins ExtraBold centered headline: 'WHERE THIS IS HEADING'. Below that, three gold #E0B848 Montserrat Bold words stacked vertically with generous spacing: 'PROACTIVE.' then 'ALWAYS-ON.' then 'AUTONOMOUS.'. Slide counter '8/9' top-right muted gray. Bold, punchy, editorial feel. Quality: pixel-perfect text rendering, ultra-sharp. Negative: blurry text, garbled typography, stock photos, faces, bokeh, gradients, drop shadows, dark background, duplicate text.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

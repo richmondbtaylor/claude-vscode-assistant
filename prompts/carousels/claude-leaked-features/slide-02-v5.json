@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Premium editorial design. Background: clean white #FAFBFA. At the top, a bold deep navy #000813 Poppins ExtraBold headline: 'WHAT DOES THIS MEAN?'. Below that, a thin gold #E0B848 horizontal line. Below the line, four short lines of dark navy #1D2333 Open Sans text with generous line spacing, each preceded by a small gold arrow icon: 'Claude Code is the AI tool 500K+ devs use daily' then 'Someone published its entire source code online' then 'Inside were 5 features not yet released to the public' then 'Here is what they are and why they matter'. Slide counter '2/9' top-right muted gray. Clean, spacious, easy to read. Quality: pixel-perfect text rendering, ultra-sharp. Negative: blurry text, garbled typography, stock photos, faces, bokeh, gradients, drop shadows, dark background.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

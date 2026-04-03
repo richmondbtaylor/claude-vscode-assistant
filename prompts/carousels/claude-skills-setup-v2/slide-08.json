@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '8/9' in muted gray. Bold black sans-serif headline text reading 'What You Can Build' at 48pt, centered at the top. The word 'Build' has a soft golden-amber #D4A853 brush-stroke highlight behind it. Below the headline, a grid of six small card-style items arranged in two rows of three. Each card has a small coral-red square icon and bold black text for the name, with one line of smaller gray text below. Row 1: 'Caption Writer' with 'Video to social posts', 'Email Responder' with 'Client replies in your tone', 'Proposal Writer' with 'Formatted outlines fast'. Row 2: 'Receipt Filer' with 'Extract and organize bills', 'Script Writer' with 'Full video scripts on demand', 'Lead Scorer' with 'Score any prospect instantly'. The cards have subtle thin borders. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, editorial. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

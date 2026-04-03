@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '3/8' in muted gray. Top section has a large coral-red circled number '2' as a decorative element. Below it, bold black sans-serif headline text reading 'Describe the End Result' at 56pt, centered. The words 'End Result' have a soft golden-amber #D4A853 brush-stroke highlight behind them. Below the headline, two small card-style boxes side by side. Left card labeled 'BAD PROMPT' in small red text with dark background card containing the text 'Create an HTML file, add CSS, use flexbox for layout, make it responsive...' in small white text. Right card labeled 'GOOD PROMPT' in small green text with dark background card containing 'I want a clean landing page. Big headline, 4 services, footer with my socials.' in small white text. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, editorial. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

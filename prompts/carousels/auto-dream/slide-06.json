@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '6/8' in muted gray. Top section has a large coral-red circled number '4' as a decorative element. Below it, bold black sans-serif headline text reading 'Phase 4: Rebuild' at 56pt, centered. The word 'Rebuild' has a soft golden-amber #D4A853 brush-stroke highlight behind it, like a hand-painted marker swipe. Below the headline, a dark card-style box with cream border containing white monospace text reading 'MEMORY.md' with a small document icon, and below it a progress-bar-style element showing '< 200 lines' with a coral-red accent bar. Below the card, three checklist items with coral-red checkmark icons: 'Index rebuilt from scratch.', 'Stays under 200-line threshold.', 'Every session begins sharp.' Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

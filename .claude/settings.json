@@ -81,7 +81,24 @@
       "Bash(/tmp/render_carousel.py:*)",
       "Bash(python /tmp/render_carousel.py)",
       "Bash(explorer \"C:\\\\Users\\\\richm\\\\Desktop\\\\claude-vscode-carousel-canva\")",
-      "Bash(start \"\" \"C:\\\\Users\\\\richm\\\\Desktop\\\\claude-vscode-carousel-canva\")"
+      "Bash(start \"\" \"C:\\\\Users\\\\richm\\\\Desktop\\\\claude-vscode-carousel-canva\")",
+      "Bash(claude logout:*)",
+      "Bash(powershell.exe -Command \"Get-WmiObject Win32_Process -Filter \"\"name=''python.exe''\"\" | Where-Object { $_.CommandLine -like ''*wa_runner*'' -or $_.CommandLine -like ''*whatsapp-linkedin-pod*'' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }\")",
+      "Bash(rm /c/tmp/wa_pod_needs_input.txt)",
+      "Bash(rm /c/tmp/wa_pod_input_response.txt)",
+      "Bash(rm /c/tmp/wa_pod_output.txt)",
+      "Bash(powershell.exe -Command \"Start-Process python -ArgumentList ''C:\\\\tmp\\\\wa_runner.py'' -WindowStyle Hidden; Write-Host ''Started''\")",
+      "Edit(~/.claude/skills/bishop-research-agent/**)",
+      "Bash(source venv/Scripts/activate)",
+      "Bash(python main.py --once --web-only)",
+      "Bash(echo \"EXIT: $?\")",
+      "mcp__claude_ai_Canva__list-brand-kits",
+      "Bash(python -:*)",
+      "Bash(python render_workshop_pdf.py)",
+      "Bash(powershell.exe -Command \"Get-WmiObject Win32_Process -Filter \"\"name=''python.exe''\"\" | Where-Object { $_.CommandLine -like ''*whatsapp-linkedin-pod*main*'' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }\")",
+      "Bash(ls /c/tmp/whatsapp*.png)",
+      "Bash(powershell.exe -Command \"Start-Process python -ArgumentList ''main.py'' -WorkingDirectory ''C:\\\\Users\\\\richm\\\\.claude\\\\skills\\\\clawdbot-feed'' -RedirectStandardOutput ''C:\\\\tmp\\\\clawdbot_feed.log'' -RedirectStandardError ''C:\\\\tmp\\\\clawdbot_feed_err.log'' -WindowStyle Hidden; Write-Host ''Started''\")",
+      "Edit(~/.claude/skills/daily-carousel/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\richm\\.claude\\skills\\clawdbot-feed",
@@ -90,7 +107,9 @@
       "c:\\Users\\richm\\.claude\\skills\\clawdbot-linkedin",
       "C:\\Users\\richm\\.claude\\skills",
       "C:\\Users\\richm\\.claude\\skills\\carousel",
-      "\\tmp"
+      "\\tmp",
+      "C:\\Users\\richm\\.claude\\skills\\carousel\\prompts\\carousels",
+      "C:\\Users\\richm\\.claude\\skills\\daily-carousel"
     ]
   }
 }

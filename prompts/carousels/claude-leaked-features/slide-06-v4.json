@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Premium editorial design. Background: clean white #FAFBFA. Top section has a large gold #E0B848 circle with bold white '05' inside it. Below the circle, ultra-bold deep navy #000813 Poppins ExtraBold headline: 'UNDERCOVER'. Below that, a gold underline accent. Then three lines in dark navy #1D2333 Open Sans with small gold arrow icons as bullets: 'Hides AI fingerprints from code' then 'Edits look completely human-written' then 'Yes, the anti-leak system leaked'. Slide counter '6/8' top-right muted gray. Clean, editorial, spacious layout. Quality: pixel-perfect text rendering, ultra-sharp. Negative: blurry text, garbled typography, stock photos, faces, bokeh, gradients, drop shadows, dark background.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}
