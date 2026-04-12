@@ -156,47 +156,49 @@ def _parse_comments(response_text):
     return comments
 
 
+def _call_claude_cli(full_prompt):
+    """Call Claude CLI (authenticated via Max account) and return response text."""
+    claude_path = os.path.expanduser("~/AppData/Roaming/npm/claude.cmd")
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    result = subprocess.run(
+        [claude_path, "-p", "--model", "sonnet", "--output-format", "text"],
+        input=full_prompt,
+        capture_output=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+        timeout=60
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"Claude CLI error: {result.stderr.strip()}")
+    return result.stdout.strip()
+
+
 class ClaudeCommentGenerator:
     def __init__(self):
-        # Uses claude CLI (Max subscription) - no API key needed
-        pass
-
-    def _call_claude(self, prompt):
-        """Call claude CLI with a prompt and return the response text."""
-        full_prompt = SYSTEM_PROMPT + "\n\n" + prompt
-        result = subprocess.run(
-            ['claude', '-p', full_prompt, '--no-input'],
-            capture_output=True,
-            text=True,
-            timeout=120,
-            encoding='utf-8',
-            errors='replace'
-        )
-        if result.returncode != 0:
-            raise RuntimeError(f"claude CLI failed (exit {result.returncode}): {result.stderr[:200]}")
-        return result.stdout.strip()
+        # No API key needed -- uses Claude CLI authenticated with Max account
+        print("[OK] Using Claude CLI (Max account) for comment generation")
 
     def generate_comment(self, post_content, post_author=None, additional_context=None):
         """
         Generate a LinkedIn comment by producing 3 variations and picking one at random.
         """
         prompt = COMMENT_PROMPT_TEMPLATE.format(post_content=post_content)
+        full_prompt = f"INSTRUCTIONS (follow exactly, do not role-play or greet):\n\n{SYSTEM_PROMPT}\n\nTASK:\n{prompt}\n\nRespond ONLY with the scratchpad and comment tags. No other text."
 
         try:
-            response_text = self._call_claude(prompt)
+            response_text = _call_claude_cli(full_prompt)
             comments = _parse_comments(response_text)
 
             if not comments:
                 print("Warning: Could not parse any comments from Claude response")
+                print(f"  Raw response: {response_text[:300]}")
                 return None
 
             # Log all options then pick one
             for idx, c in enumerate(comments, 1):
-                try:
-                    print(f"  Option {idx}: {c}")
-                except UnicodeEncodeError:
-                    safe = c.encode('ascii', errors='replace').decode('ascii')
-                    print(f"  Option {idx}: {safe}")
+                print(f"  Option {idx}: {c}")
 
             chosen = random.choice(comments)
             print(f"  -> Selected: {chosen}")
@@ -209,9 +211,10 @@ class ClaudeCommentGenerator:
     def generate_multiple_options(self, post_content, count=3):
         """Generate multiple comment options from a single API call."""
         prompt = COMMENT_PROMPT_TEMPLATE.format(post_content=post_content)
+        full_prompt = f"INSTRUCTIONS (follow exactly, do not role-play or greet):\n\n{SYSTEM_PROMPT}\n\nTASK:\n{prompt}\n\nRespond ONLY with the scratchpad and comment tags. No other text."
 
         try:
-            response_text = self._call_claude(prompt)
+            response_text = _call_claude_cli(full_prompt)
             return _parse_comments(response_text)
         except Exception as e:
             print(f"Error generating comments with Claude: {e}")

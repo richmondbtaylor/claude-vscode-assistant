@@ -1,0 +1,27 @@
+Loaded 1099 previously processed URLs from processed_urls.json
+
+Welcome to Clawd Bot!
+
+This bot will:
+1. Monitor a WhatsApp group for LinkedIn post URLs
+2. Use Claude AI to generate relevant comments
+3. Automatically post comments to LinkedIn
+
+[!] WARNING: Use responsibly! This may violate LinkedIn ToS.
+
+Using WhatsApp group: LinkedIn B2B Creators
+
+============================================================
+CLAWD BOT - LinkedIn Auto Commenter
+============================================================
+
+Initializing browser engine...
+[OK] Browser engine ready
+
+Initializing Claude AI...
+[OK] Claude AI ready
+
+Initializing LinkedIn...
+Starting LinkedIn automation...
+Logging in to LinkedIn...
+[!] WAITING_FOR_MANUAL_LOGIN: Log in to LinkedIn in the browser window, then write 'done' to linkedin_code.txt

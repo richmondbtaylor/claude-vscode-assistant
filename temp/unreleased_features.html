@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: #fff;
+  }
+
+  .page {
+    width: 1100px;
+    min-height: 620px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+
+  /* ── TITLE SLIDE ── */
+  .slide-title {
+    background: linear-gradient(135deg, #F5F3F0 0%, #EBE8E4 40%, #E2DED8 100%);
+    padding: 80px 80px 60px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .slide-title .accent-bar {
+    width: 80px; height: 5px;
+    background: linear-gradient(90deg, #0A4C84, #5E97D1);
+    border-radius: 3px;
+    margin-bottom: 32px;
+  }
+  .slide-title h1 {
+    font-size: 48px; font-weight: 800; color: #1A1A1A;
+    line-height: 1.15; letter-spacing: -1.5px;
+    margin-bottom: 16px;
+  }
+  .slide-title .subtitle {
+    font-size: 20px; font-weight: 400; color: #555;
+    line-height: 1.5; max-width: 700px; margin-bottom: 40px;
+  }
+  .slide-title .meta {
+    font-size: 13px; font-weight: 500; color: #0A4C84;
+    text-transform: uppercase; letter-spacing: 2px;
+  }
+  /* geometric accent */
+  .slide-title .geo {
+    position: absolute; right: -40px; top: -40px;
+    width: 400px; height: 400px;
+    border: 40px solid rgba(10,76,132,0.06);
+    border-radius: 50%;
+  }
+  .slide-title .geo2 {
+    position: absolute; right: 60px; bottom: 40px;
+    width: 180px; height: 180px;
+    border: 3px solid rgba(94,151,209,0.15);
+    border-radius: 50%;
+  }
+  .slide-title .geo3 {
+    position: absolute; right: 130px; bottom: 100px;
+    width: 12px; height: 12px;
+    background: #0A4C84;
+    border-radius: 50%;
+    opacity: 0.3;
+  }
+
+  /* ── FEATURE SLIDES ── */
+  .slide-feature {
+    background: #FAFAF8;
+    padding: 0;
+  }
+  .slide-feature .top-strip {
+    height: 6px;
+    background: linear-gradient(90deg, #0A4C84 0%, #5E97D1 50%, #9CBEE6 100%);
+  }
+  .slide-feature .content {
+    display: flex; flex: 1; padding: 48px 64px 40px;
+  }
+  .slide-feature .left {
+    flex: 1; padding-right: 48px;
+  }
+  .slide-feature .right {
+    width: 340px; display: flex; align-items: center; justify-content: center;
+  }
+  .slide-feature .feature-num {
+    font-size: 12px; font-weight: 700; color: #5E97D1;
+    text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px;
+  }
+  .slide-feature h2 {
+    font-size: 34px; font-weight: 800; color: #1A1A1A;
+    line-height: 1.15; letter-spacing: -0.8px; margin-bottom: 10px;
+  }
+  .slide-feature .tagline {
+    font-size: 15px; font-weight: 400; color: #777; margin-bottom: 28px;
+    line-height: 1.4;
+  }
+
+  .info-block { margin-bottom: 18px; }
+  .info-block .label {
+    font-size: 10px; font-weight: 700; color: #0A4C84;
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px;
+  }
+  .info-block p {
+    font-size: 14px; font-weight: 400; color: #333;
+    line-height: 1.55;
+  }
+
+  .action-box {
+    background: linear-gradient(135deg, #0A4C84, #1A6BB5);
+    border-radius: 10px; padding: 16px 20px;
+    margin-top: 8px;
+  }
+  .action-box .label {
+    font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.7);
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px;
+  }
+  .action-box p {
+    font-size: 13px; font-weight: 500; color: #fff; line-height: 1.5;
+  }
+
+  /* ── GRAPHIC PANELS ── */
+  .graphic-panel {
+    width: 280px; height: 320px;
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  /* Panel: Pulse (KAIROS) */
+  .gfx-pulse {
+    background: linear-gradient(160deg, #F0F4F8, #E4EBF3);
+  }
+  .gfx-pulse .ring {
+    position: absolute;
+    border: 2px solid rgba(10,76,132,0.12);
+    border-radius: 50%;
+  }
+  .gfx-pulse .ring-1 { width: 220px; height: 220px; top: 50px; left: 30px; }
+  .gfx-pulse .ring-2 { width: 160px; height: 160px; top: 80px; left: 60px; }
+  .gfx-pulse .ring-3 { width: 100px; height: 100px; top: 110px; left: 90px; }
+  .gfx-pulse .core {
+    position: absolute; top: 135px; left: 115px;
+    width: 50px; height: 50px;
+    background: linear-gradient(135deg, #0A4C84, #5E97D1);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(10,76,132,0.3);
+  }
+  .gfx-pulse .dot {
+    position: absolute; width: 8px; height: 8px;
+    background: #5E97D1; border-radius: 50%;
+  }
+  .gfx-pulse .dot-1 { top: 55px; left: 140px; }
+  .gfx-pulse .dot-2 { top: 170px; left: 40px; }
+  .gfx-pulse .dot-3 { top: 230px; left: 200px; }
+  .gfx-pulse .line {
+    position: absolute; height: 1px;
+    background: rgba(10,76,132,0.15);
+    transform-origin: left center;
+  }
+  .gfx-pulse .line-1 { top: 160px; left: 48px; width: 67px; transform: rotate(-10deg); }
+  .gfx-pulse .line-2 { top: 158px; left: 165px; width: 60px; transform: rotate(55deg); }
+
+  /* Panel: Brain (AutoDream) */
+  .gfx-brain {
+    background: linear-gradient(160deg, #F3F0F8, #EBE4F3);
+  }
+  .gfx-brain .neuron {
+    position: absolute; border-radius: 50%;
+    background: rgba(94,80,160,0.08);
+    border: 1px solid rgba(94,80,160,0.12);
+  }
+  .gfx-brain .n1 { width: 120px; height: 120px; top: 40px; left: 20px; }
+  .gfx-brain .n2 { width: 100px; height: 100px; top: 60px; left: 150px; }
+  .gfx-brain .n3 { width: 80px; height: 80px; top: 180px; left: 80px; }
+  .gfx-brain .n4 { width: 60px; height: 60px; top: 200px; left: 190px; }
+  .gfx-brain .spark {
+    position: absolute; width: 6px; height: 6px; border-radius: 50%;
+    background: #7C5EC4;
+  }
+  .gfx-brain .s1 { top: 95px; left: 75px; }
+  .gfx-brain .s2 { top: 105px; left: 195px; }
+  .gfx-brain .s3 { top: 215px; left: 115px; }
+  .gfx-brain .conn {
+    position: absolute; height: 1px; background: rgba(124,94,196,0.2);
+    transform-origin: left center;
+  }
+  .gfx-brain .c1 { top: 97px; left: 81px; width: 114px; transform: rotate(4deg); }
+  .gfx-brain .c2 { top: 107px; left: 197px; width: 90px; transform: rotate(65deg); }
+  .gfx-brain .zz {
+    position: absolute; font-size: 28px; color: rgba(124,94,196,0.2); font-weight: 800;
+  }
+  .gfx-brain .zz1 { top: 15px; right: 30px; }
+  .gfx-brain .zz2 { top: 35px; right: 55px; font-size: 20px; }
+
+  /* Panel: Cloud (ULTRAPLAN) */
+  .gfx-cloud {
+    background: linear-gradient(160deg, #F0F6F8, #E4EFF3);
+  }
+  .gfx-cloud .cloud-shape {
+    position: absolute; top: 60px; left: 40px;
+    width: 200px; height: 120px;
+    background: rgba(10,76,132,0.06);
+    border-radius: 60px;
+    border: 2px solid rgba(10,76,132,0.1);
+  }
+  .gfx-cloud .cloud-bump1 {
+    position: absolute; top: 20px; left: 70px;
+    width: 100px; height: 80px;
+    background: rgba(10,76,132,0.06);
+    border-radius: 50%;
+    border: 2px solid rgba(10,76,132,0.1);
+  }
+  .gfx-cloud .cloud-bump2 {
+    position: absolute; top: 35px; left: 130px;
+    width: 70px; height: 60px;
+    background: rgba(10,76,132,0.06);
+    border-radius: 50%;
+    border: 2px solid rgba(10,76,132,0.1);
+  }
+  .gfx-cloud .arrow-down {
+    position: absolute; top: 190px; left: 130px;
+    width: 2px; height: 50px;
+    background: rgba(10,76,132,0.2);
+  }
+  .gfx-cloud .arrow-head {
+    position: absolute; top: 236px; left: 123px;
+    width: 0; height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid rgba(10,76,132,0.25);
+  }
+  .gfx-cloud .terminal {
+    position: absolute; top: 250px; left: 70px;
+    width: 140px; height: 50px;
+    background: #1A1A1A;
+    border-radius: 8px;
+    display: flex; align-items: center; padding-left: 12px;
+  }
+  .gfx-cloud .terminal span {
+    font-family: 'Courier New', monospace;
+    font-size: 11px; color: #5E97D1;
+  }
+  .gfx-cloud .think-icon {
+    position: absolute; top: 80px; left: 110px;
+    font-size: 36px; color: rgba(10,76,132,0.25);
+    font-weight: 800;
+  }
+
+  /* Panel: Nodes (Coordinator) */
+  .gfx-nodes {
+    background: linear-gradient(160deg, #F0F8F2, #E4F3E8);
+  }
+  .gfx-nodes .hub {
+    position: absolute; top: 130px; left: 110px;
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, #2D7A4F, #4CAF6E);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(45,122,79,0.25);
+  }
+  .gfx-nodes .worker {
+    position: absolute; width: 36px; height: 36px;
+    background: rgba(45,122,79,0.1);
+    border: 2px solid rgba(45,122,79,0.25);
+    border-radius: 8px;
+  }
+  .gfx-nodes .w1 { top: 50px; left: 50px; }
+  .gfx-nodes .w2 { top: 40px; left: 190px; }
+  .gfx-nodes .w3 { top: 230px; left: 40px; }
+  .gfx-nodes .w4 { top: 240px; left: 180px; }
+  .gfx-nodes .spoke {
+    position: absolute; height: 1px; background: rgba(45,122,79,0.2);
+    transform-origin: left center;
+  }
+  .gfx-nodes .sp1 { top: 148px; left: 86px; width: 40px; transform: rotate(-55deg); }
+  .gfx-nodes .sp2 { top: 148px; left: 170px; width: 45px; transform: rotate(-65deg); }
+  .gfx-nodes .sp3 { top: 172px; left: 80px; width: 52px; transform: rotate(55deg); }
+  .gfx-nodes .sp4 { top: 175px; left: 170px; width: 35px; transform: rotate(62deg); }
+
+  /* Panel: Shield (Auto Mode) */
+  .gfx-shield {
+    background: linear-gradient(160deg, #FFF8F0, #F8EFE4);
+  }
+  .gfx-shield .shield-body {
+    position: absolute; top: 60px; left: 75px;
+    width: 130px; height: 160px;
+    border: 3px solid rgba(204,120,20,0.2);
+    border-radius: 10px 10px 65px 65px;
+    background: rgba(204,120,20,0.04);
+  }
+  .gfx-shield .check {
+    position: absolute; top: 110px; left: 110px;
+    font-size: 48px; color: rgba(204,120,20,0.3);
+    font-weight: 800;
+  }
+  .gfx-shield .auto-txt {
+    position: absolute; top: 240px; left: 90px;
+    font-size: 14px; font-weight: 700; color: rgba(204,120,20,0.3);
+    letter-spacing: 4px; text-transform: uppercase;
+  }
+
+  /* Panel: Rocket (Mythos) */
+  .gfx-rocket {
+    background: linear-gradient(160deg, #F8F0F8, #F3E4F3);
+  }
+  .gfx-rocket .orbit {
+    position: absolute; border: 2px solid rgba(160,80,160,0.1);
+    border-radius: 50%;
+  }
+  .gfx-rocket .o1 { width: 240px; height: 240px; top: 40px; left: 20px; }
+  .gfx-rocket .o2 { width: 180px; height: 180px; top: 70px; left: 50px; }
+  .gfx-rocket .o3 { width: 100px; height: 100px; top: 110px; left: 90px; }
+  .gfx-rocket .star {
+    position: absolute; font-size: 14px; color: rgba(160,80,160,0.25);
+  }
+  .gfx-rocket .st1 { top: 50px; left: 200px; }
+  .gfx-rocket .st2 { top: 100px; left: 30px; }
+  .gfx-rocket .st3 { top: 250px; left: 170px; }
+  .gfx-rocket .st4 { top: 200px; left: 50px; }
+  .gfx-rocket .core-m {
+    position: absolute; top: 130px; left: 108px;
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #8B4C8B, #C47EC4);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(160,80,160,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 900; color: #fff;
+  }
+
+  /* Panel: Voice (Voice Mode) */
+  .gfx-voice {
+    background: linear-gradient(160deg, #F0F5F8, #E4ECF3);
+  }
+  .gfx-voice .wave-bar {
+    position: absolute; background: rgba(10,76,132,0.15);
+    border-radius: 4px; left: 50%;
+    transform: translateX(-50%);
+  }
+  .gfx-voice .wb1 { width: 4px; height: 40px; top: 130px; margin-left: -60px; }
+  .gfx-voice .wb2 { width: 4px; height: 70px; top: 115px; margin-left: -45px; }
+  .gfx-voice .wb3 { width: 4px; height: 100px; top: 100px; margin-left: -30px; }
+  .gfx-voice .wb4 { width: 4px; height: 60px; top: 120px; margin-left: -15px; }
+  .gfx-voice .wb5 { width: 4px; height: 120px; top: 90px; margin-left: 0px; }
+  .gfx-voice .wb6 { width: 4px; height: 50px; top: 125px; margin-left: 15px; }
+  .gfx-voice .wb7 { width: 4px; height: 90px; top: 105px; margin-left: 30px; }
+  .gfx-voice .wb8 { width: 4px; height: 65px; top: 118px; margin-left: 45px; }
+  .gfx-voice .wb9 { width: 4px; height: 35px; top: 133px; margin-left: 60px; }
+  .gfx-voice .mic {
+    position: absolute; top: 225px; left: 50%;
+    transform: translateX(-50%);
+    width: 40px; height: 40px;
+    border: 3px solid rgba(10,76,132,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .gfx-voice .mic-inner {
+    width: 14px; height: 20px;
+    background: rgba(10,76,132,0.2);
+    border-radius: 7px 7px 7px 7px;
+  }
+  .gfx-voice .lang-tag {
+    position: absolute; font-size: 10px; font-weight: 600;
+    color: rgba(10,76,132,0.25); letter-spacing: 1px;
+  }
+  .gfx-voice .lt1 { top: 60px; left: 30px; }
+  .gfx-voice .lt2 { top: 70px; right: 25px; }
+  .gfx-voice .lt3 { bottom: 40px; left: 40px; }
+  .gfx-voice .lt4 { bottom: 50px; right: 35px; }
+
+  /* Panel: Grid (Agent Teams) */
+  .gfx-grid {
+    background: linear-gradient(160deg, #F0F4F8, #E4EBF3);
+  }
+  .gfx-grid .cell {
+    position: absolute; width: 56px; height: 56px;
+    border-radius: 10px;
+    border: 2px solid rgba(10,76,132,0.12);
+    background: rgba(10,76,132,0.03);
+  }
+  .gfx-grid .cell-lead {
+    background: linear-gradient(135deg, #0A4C84, #5E97D1);
+    border: none;
+    box-shadow: 0 4px 16px rgba(10,76,132,0.25);
+  }
+  .gfx-grid .c1 { top: 60px; left: 50px; }
+  .gfx-grid .c2 { top: 60px; left: 120px; }
+  .gfx-grid .c3 { top: 60px; left: 190px; }
+  .gfx-grid .c4 { top: 130px; left: 50px; }
+  .gfx-grid .c5 { top: 130px; left: 120px; }
+  .gfx-grid .c6 { top: 130px; left: 190px; }
+  .gfx-grid .c7 { top: 200px; left: 50px; }
+  .gfx-grid .c8 { top: 200px; left: 120px; }
+  .gfx-grid .c9 { top: 200px; left: 190px; }
+  .gfx-grid .link {
+    position: absolute; height: 1px; background: rgba(10,76,132,0.15);
+  }
+  .gfx-grid .lk1 { top: 88px; left: 78px; width: 42px; }
+  .gfx-grid .lk2 { top: 88px; left: 148px; width: 42px; }
+  .gfx-grid .lk3 { top: 116px; left: 78px; height: 14px; width: 1px; }
+  .gfx-grid .lk4 { top: 116px; left: 148px; height: 14px; width: 1px; }
+  .gfx-grid .lk5 { top: 116px; left: 218px; height: 14px; width: 1px; }
+
+  /* ── SUMMARY SLIDE ── */
+  .slide-summary {
+    background: linear-gradient(135deg, #0A4C84 0%, #1A6BB5 50%, #2E80C8 100%);
+    padding: 60px 80px;
+    color: #fff;
+    justify-content: center;
+  }
+  .slide-summary h2 {
+    font-size: 38px; font-weight: 800; margin-bottom: 36px;
+    letter-spacing: -0.5px;
+  }
+  .slide-summary .steps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 40px;
+  }
+  .slide-summary .step {
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .slide-summary .step-num {
+    min-width: 32px; height: 32px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .slide-summary .step-text {
+    font-size: 14px; font-weight: 400; line-height: 1.5;
+    opacity: 0.92;
+  }
+  .slide-summary .step-text strong {
+    font-weight: 600; display: block; margin-bottom: 2px;
+  }
+  .slide-summary .footer {
+    margin-top: 40px; padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 13px; opacity: 0.6; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<div class="page slide-title">
+  <div class="geo"></div>
+  <div class="geo2"></div>
+  <div class="geo3"></div>
+  <div class="accent-bar"></div>
+  <h1>Claude Code:<br>What's Coming Next</h1>
+  <p class="subtitle">8 unreleased and rolling-out features that will change how you build. What each one does, why it matters, and exactly what to do before they go live.</p>
+  <p class="meta">April 2026 &nbsp;/&nbsp; Bishop AI Intelligence Brief</p>
+</div>
+
+<!-- ============ SLIDE 2: KAIROS ============ -->
+<div class="page slide-feature">
+  <div class="top-strip"></div>
+  <div class="content">
+    <div class="left">
+      <p class="feature-num">Feature 01</p>
+      <h2>KAIROS</h2>
+      <p class="tagline">An always-on background daemon that watches your repos 24/7 and acts before you ask.</p>
+      <div class="info-block">
+        <p class="label">Why This Matters</p>
+        <p>Claude stops being a tool you invoke and becomes a persistent teammate. It subscribes to GitHub webhooks, triages issues, monitors PRs, and prepares context before you sit down. Found 150+ references in leaked source code with a May 2026 target.</p>
+      </div>
+      <div class="info-block">
+        <p class="label">Prepare Now</p>
+        <p>Ensure your repos have webhook access configured. Document every recurring manual task you do weekly: PR reviews, dependency checks, log monitoring, status updates. These become KAIROS handoffs on day one.</p>
+      </div>
+      <div class="action-box">
+        <p class="label">Action Path</p>
+        <p>1. Audit your weekly manual tasks &rarr; 2. Set up GitHub webhook access &rarr; 3. Write CLAUDE.md instructions for each task &rarr; 4. Enable KAIROS on launch day</p>
+      </div>
+    </div>
+    <div class="right">
+      <div class="graphic-panel gfx-pulse">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="core"></div>
+        <div class="dot dot-1"></div>
+        <div class="dot dot-2"></div>
+        <div class="dot dot-3"></div>
+        <div class="line line-1"></div>
+        <div class="line line-2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLIDE 3: AUTODREAM ============ -->
+<div class="page slide-feature">
+  <div class="top-strip"></div>
+  <div class="content">
+    <div class="left">
+      <p class="feature-num">Feature 02</p>
+      <h2>AutoDream</h2>
+      <p class="tagline">Memory consolidation that runs while you sleep. Wake up to a sharper, cleaner agent.</p>
+      <div class="info-block">
+        <p class="label">Why This Matters</p>
+        <p>A forked subagent activates during idle periods, merging observations, removing contradictions, and converting vague insights into verified facts. It gets read-only bash access to confirm things against real code. Your next session starts with pristine context instead of cluttered reasoning.</p>
+      </div>
+      <div class="info-block">
+        <p class="label">Prepare Now</p>
+        <p>Start using Claude Code's memory system heavily. The more raw material AutoDream has, the better it consolidates. Write detailed CLAUDE.md files. Leave sessions idle instead of killing them.</p>
+      </div>
+      <div class="action-box">
+        <p class="label">Action Path</p>
+        <p>1. Populate your memory directory with project context &rarr; 2. Write thorough CLAUDE.md &rarr; 3. Let sessions idle instead of force-closing &rarr; 4. Review consolidated memories on launch</p>
+      </div>
+    </div>
+    <div class="right">
+      <div class="graphic-panel gfx-brain">
+        <div class="neuron n1"></div>
+        <div class="neuron n2"></div>
+        <div class="neuron n3"></div>
+        <div class="neuron n4"></div>
+        <div class="spark s1"></div>
+        <div class="spark s2"></div>
+        <div class="spark s3"></div>
+        <div class="conn c1"></div>
+        <div class="conn c2"></div>
+        <div class="zz zz1">Z</div>
+        <div class="zz zz2">z</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLIDE 4: ULTRAPLAN ============ -->
+<div class="page slide-feature">
+  <div class="top-strip"></div>
+  <div class="content">
+    <div class="left">
+      <p class="feature-num">Feature 03</p>
+      <h2>ULTRAPLAN</h2>
+      <p class="tagline">Offload complex architectural decisions to a remote cloud session with 30 minutes of dedicated think time.</p>
+      <div class="info-block">
+        <p class="label">Why This Matters</p>
+        <p>Migration plans, system redesigns, and complex refactoring strategies get dedicated Opus 4.6 deep-thinking time in a cloud container. Includes a browser-based approval workflow so you don't accidentally trigger massive compute bills. Your local session stays unblocked.</p>
+      </div>
+      <div class="info-block">
+        <p class="label">Prepare Now</p>
+        <p>Document your hardest architectural problems in structured markdown. The clearer your input, the better the 30-minute deep-think produces. Budget for a new cost tier since extended Opus thinking will be premium.</p>
+      </div>
+      <div class="action-box">
+        <p class="label">Action Path</p>
+        <p>1. Write up your top 3 architectural decisions &rarr; 2. Structure them as problem + constraints + options &rarr; 3. Set a compute budget &rarr; 4. Submit via ULTRAPLAN on launch</p>
+      </div>
+    </div>
+    <div class="right">
+      <div class="graphic-panel gfx-cloud">
+        <div class="cloud-bump1"></div>
+        <div class="cloud-bump2"></div>
+        <div class="cloud-shape"></div>
+        <div class="think-icon">?</div>
+        <div class="arrow-down"></div>
+        <div class="arrow-head"></div>
+        <div class="terminal"><span>$ plan --deep</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLIDE 5: COORDINATOR MODE ============ -->
+<div class="page slide-feature">
+  <div class="top-strip"></div>
+  <div class="content">
+    <div class="left">
+      <p class="feature-num">Feature 04</p>
+      <h2>Coordinator Mode</h2>
+      <p class="tagline">A structured orchestrator managing parallel worker agents with defined roles and formal handoffs.</p>
+      <div class="info-block">
+        <p class="label">Why This Matters</p>
+        <p>Agent Teams is experimental and free-form. Coordinator Mode adds structure: named roles, defined handoff protocols, progress tracking, and conflict resolution. Think of it as the difference between a group chat and a managed sprint. Multi-agent workflows become reliable enough for production.</p>
+      </div>
+      <div class="info-block">
+        <p class="label">Prepare Now</p>
+        <p>If you use Agent Teams today, document which patterns work. Identify tasks that need parallel execution with coordination: full-stack features, multi-repo changes, large refactors. Design your ideal agent team structure now.</p>
+      </div>
+      <div class="action-box">
+        <p class="label">Action Path</p>
+        <p>1. Map your multi-agent workflows &rarr; 2. Define roles (frontend, backend, tests, review) &rarr; 3. Write handoff criteria for each role &rarr; 4. Migrate from Agent Teams on launch</p>
+      </div>
+    </div>
+    <div class="right">
+      <div class="graphic-panel gfx-nodes">
+        <div class="hub"></div>
+        <div class="worker w1"></div>
+        <div class="worker w2"></div>
+        <div class="worker w3"></div>
+        <div class="worker w4"></div>
+        <div class="spoke sp1"></div>
+        <div class="spoke sp2"></div>
+        <div class="spoke sp3"></div>
+        <div class="spoke sp4"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLIDE 6: AUTO MODE ============ -->
+<div class="page slide-feature">
+  <div class="top-strip"></div>
+  <div class="content">
+    <div class="left">
+      <p class="feature-num">Feature 05</p>
+      <h2>Auto Mode</h2>
+      <p class="tagline">An AI classifier silently approves tool permissions. Zero confirmation prompts. Full autonomy.</p>
+      <div class="info-block">
+        <p class="label">Why This Matters</p>
+        <p>Today, permission prompts interrupt flow. Sandbox mode reduced them by 84%, but they still appear for network access, file writes outside CWD, and destructive commands. Auto Mode uses a classifier to evaluate each request and approve or deny without human intervention. Claude becomes fully autonomous.</p>
+      </div>
+      <div class="info-block">
+        <p class="label">Prepare Now</p>
+        <p>Get comfortable with sandbox mode first since Auto Mode builds on it. Audit your CLAUDE.md for safety boundaries. Only plan to use Auto Mode in isolated environments until you trust the classifier's judgment.</p>
+      </div>
+      <div class="action-box">
+        <p class="label">Action Path</p>
+        <p>1. Enable and test sandbox mode today &rarr; 2. Tighten your CLAUDE.md safety rules &rarr; 3. Set up isolated dev environments &rarr; 4. Enable Auto Mode in sandboxed repos first</p>
+      </div>
+    </div>
+    <div class="right">
+      <div class="graphic-panel gfx-shield">
+        <div class="shield-body"></div>
+        <div class="check">&#10003;</div>
+        <div class="auto-txt">AUTO</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLIDE 7: VOICE MODE ============ -->
+<div class="page slide-feature">
+  <div class="top-strip"></div>
+  <div class="content">
+    <div class="left">
+      <p class="feature-num">Feature 06</p>
+      <h2>Voice Mode</h2>
+      <p class="tagline">Hold spacebar to talk. Mix typed and spoken input in a single prompt. 20 languages.</p>
+      <div class="info-block">
+        <p class="label">Why This Matters</p>
+        <p>Describing complex architectural changes is 3x faster by voice than typing. Voice Mode started rolling out to ~5% of users in March 2026 with broader availability ongoing. You can mix voice and typed input in the same prompt, making it natural to narrate intent while pointing at specific code.</p>
+      </div>
+      <div class="info-block">
+        <p class="label">Prepare Now</p>
+        <p>Make sure you're on Pro or Max plan. Practice describing code changes verbally. Think about which workflows are bottlenecked by typing speed: code reviews, architectural explanations, rapid prototyping instructions.</p>
+      </div>
+      <div class="action-box">
+        <p class="label">Action Path</p>
+        <p>1. Update to latest Claude Code version &rarr; 2. Check if voice mode is available in your account &rarr; 3. Start with code review narration &rarr; 4. Expand to architectural design sessions</p>
+      </div>
+    </div>
+    <div class="right">
+      <div class="graphic-panel gfx-voice">
+        <div class="wave-bar wb1"></div>
+        <div class="wave-bar wb2"></div>
+        <div class="wave-bar wb3"></div>
+        <div class="wave-bar wb4"></div>
+        <div class="wave-bar wb5"></div>
+        <div class="wave-bar wb6"></div>
+        <div class="wave-bar wb7"></div>
+        <div class="wave-bar wb8"></div>
+        <div class="wave-bar wb9"></div>
+        <div class="mic"><div class="mic-inner"></div></div>
+        <div class="lang-tag lt1">EN</div>
+        <div class="lang-tag lt2">ES</div>
+        <div class="lang-tag lt3">FR</div>
+        <div class="lang-tag lt4">DE</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLIDE 8: AGENT TEAMS ============ -->
+<div class="page slide-feature">
+  <div class="top-strip"></div>
+  <div class="content">
+    <div class="left">
+      <p class="feature-num">Feature 07</p>
+      <h2>Agent Teams</h2>
+      <p class="tagline">2 to 16 Claude sessions working your codebase in parallel. One leads, the rest execute.</p>
+      <div class="info-block">
+        <p class="label">Why This Matters</p>
+        <p>Currently experimental behind a feature flag. Teammates share findings directly via mailbox, not through a central agent. A full-stack feature that takes sequential hours can run frontend, backend, and tests simultaneously. Expect 3-4x token usage but massive time compression.</p>
+      </div>
+      <div class="info-block">
+        <p class="label">Prepare Now</p>
+        <p>Set <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> and test today. Structure your repos for parallel work: clear module boundaries, independent test suites, well-defined interfaces between components.</p>
+      </div>
+      <div class="action-box">
+        <p class="label">Action Path</p>
+        <p>1. Enable the feature flag now &rarr; 2. Identify a multi-file feature to test with &rarr; 3. Define team roles in your prompt &rarr; 4. Scale to larger teams as patterns stabilize</p>
+      </div>
+    </div>
+    <div class="right">
+      <div class="graphic-panel gfx-grid">
+        <div class="cell cell-lead c1"></div>
+        <div class="cell c2"></div>
+        <div class="cell c3"></div>
+        <div class="cell c4"></div>
+        <div class="cell c5"></div>
+        <div class="cell c6"></div>
+        <div class="cell c7"></div>
+        <div class="cell c8"></div>
+        <div class="cell c9"></div>
+        <div class="link lk1"></div>
+        <div class="link lk2"></div>
+        <div class="link lk3"></div>
+        <div class="link lk4"></div>
+        <div class="link lk5"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLIDE 9: CLAUDE MYTHOS ============ -->
+<div class="page slide-feature">
+  <div class="top-strip"></div>
+  <div class="content">
+    <div class="left">
+      <p class="feature-num">Feature 08</p>
+      <h2>Claude Mythos</h2>
+      <p class="tagline">Codename "Capybara." The next model family, reportedly dramatically better at programming.</p>
+      <div class="info-block">
+        <p class="label">Why This Matters</p>
+        <p>Internal testing shows Mythos outperforms Opus 4.6 significantly on programming benchmarks. Comes with a rumored "Dev Team" mode that auto-generates sub-agents for collaborative development. Every skill, prompt, and workflow you've built will get an instant quality boost the day you switch models.</p>
+      </div>
+      <div class="info-block">
+        <p class="label">Prepare Now</p>
+        <p>Invest in your CLAUDE.md files, skill library, and memory system now. These are model-agnostic infrastructure. When Mythos drops, better prompts + better model = compounding returns. Don't wait for the upgrade to build your tooling.</p>
+      </div>
+      <div class="action-box">
+        <p class="label">Action Path</p>
+        <p>1. Perfect your CLAUDE.md and skills today &rarr; 2. Build reusable prompt templates &rarr; 3. Set up evaluation benchmarks for your workflows &rarr; 4. Swap model ID on launch day and measure the lift</p>
+      </div>
+    </div>
+    <div class="right">
+      <div class="graphic-panel gfx-rocket">
+        <div class="orbit o1"></div>
+        <div class="orbit o2"></div>
+        <div class="orbit o3"></div>
+        <div class="star st1">&#10022;</div>
+        <div class="star st2">&#10022;</div>
+        <div class="star st3">&#10022;</div>
+        <div class="star st4">&#10022;</div>
+        <div class="core-m">M</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLIDE 10: SUMMARY ============ -->
+<div class="page slide-summary">
+  <h2>Your Action Plan: Do This Now</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text"><strong>Update Claude Code to v2.1.91+</strong>Everything downstream depends on being current. Run npm update -g @anthropic-ai/claude-code today.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text"><strong>Document your recurring manual tasks</strong>PR reviews, dependency checks, log monitoring, status reports. These become KAIROS handoffs on launch day.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text"><strong>Enable Agent Teams flag now</strong>Set CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 and start testing parallel workflows before Coordinator Mode ships.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text"><strong>Invest in your memory + CLAUDE.md</strong>AutoDream and Mythos both amplify what you've already built. Better inputs = compounding returns.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-text"><strong>Enable sandbox mode</strong>Foundation for Auto Mode. Test it in your dev environment so you're ready when full autonomy ships.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-text"><strong>Structure architectural problems</strong>Write them as problem + constraints + options. Ready for ULTRAPLAN's 30-minute deep-think sessions.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-text"><strong>Set up evaluation benchmarks</strong>Measure your current workflow speed and quality. When Mythos drops, you'll know exactly how much it improved.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">8</div>
+      <div class="step-text"><strong>Watch May 2026</strong>KAIROS, AutoDream, ULTRAPLAN, and Coordinator Mode are all targeting launch. Be ready, not scrambling.</div>
+    </div>
+  </div>
+  <div class="footer">Bishop AI Intelligence Brief &nbsp;/&nbsp; April 2026 &nbsp;/&nbsp; claude.ai/code</div>
+</div>
+
+</body>
+</html>

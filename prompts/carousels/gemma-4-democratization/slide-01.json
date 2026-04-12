@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '1/8' in muted gray. Centered layout with generous whitespace. Large ultra-bold black sans-serif headline text reading 'Google Just Gave Away' on the first line and 'One of the Best AIs on Earth' on the second line, perfectly centered horizontally in the upper-middle area. The words 'Gave Away' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, medium-weight black text reading 'And you can run it on your laptop.' at 28pt. Below the text, a minimal thin-line illustration of a laptop with a small brain/circuit icon glowing above it in black outlines. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal, no clutter. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

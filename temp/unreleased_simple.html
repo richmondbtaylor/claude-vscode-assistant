@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@800&family=Montserrat:wght@500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #fff; }
+
+  .page {
+    width: 1080px;
+    height: 1080px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+    background: #FAFBFA;
+    padding: 80px;
+    page-break-after: always;
+  }
+
+  .corner-tl {
+    position: absolute; top: 40px; left: 40px;
+    width: 48px; height: 48px;
+    border-top: 3px solid #E0B848;
+    border-left: 3px solid #E0B848;
+  }
+  .corner-br {
+    position: absolute; bottom: 40px; right: 40px;
+    width: 48px; height: 48px;
+    border-bottom: 3px solid #E0B848;
+    border-right: 3px solid #E0B848;
+  }
+
+  h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 68px;
+    color: #000813;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 16px;
+  }
+
+  .tagline {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 22px;
+    color: #1D2333;
+    position: relative;
+    z-index: 2;
+    line-height: 1.4;
+  }
+
+  .gold-line {
+    width: 60px; height: 4px;
+    background: #E0B848;
+    border-radius: 2px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ═══════════════════════════════════════
+     KAIROS - Radar / Always Watching
+     ═══════════════════════════════════════ */
+  .gfx-kairos {
+    position: absolute;
+    top: 60px; right: 60px;
+    width: 560px; height: 560px;
+  }
+  /* outer ring */
+  .gfx-kairos .ring {
+    position: absolute; border-radius: 50%;
+    border: 2px solid rgba(0,8,19,0.06);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .gfx-kairos .r1 { width: 520px; height: 520px; }
+  .gfx-kairos .r2 { width: 380px; height: 380px; }
+  .gfx-kairos .r3 { width: 240px; height: 240px; }
+  .gfx-kairos .r4 { width: 100px; height: 100px; border-color: rgba(224,184,72,0.15); }
+  /* center pulse */
+  .gfx-kairos .core {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px; height: 28px;
+    background: #E0B848;
+    border-radius: 50%;
+    box-shadow: 0 0 0 12px rgba(224,184,72,0.12), 0 0 0 28px rgba(224,184,72,0.06);
+  }
+  /* sweep line */
+  .gfx-kairos .sweep {
+    position: absolute; top: 50%; left: 50%;
+    width: 260px; height: 2px;
+    background: linear-gradient(90deg, #E0B848, transparent);
+    transform-origin: left center;
+    transform: rotate(-35deg);
+    opacity: 0.4;
+  }
+  /* blips */
+  .gfx-kairos .blip {
+    position: absolute; border-radius: 50%;
+    background: #1894C9;
+  }
+  .gfx-kairos .bp1 { width: 10px; height: 10px; top: 95px; left: 310px; opacity: 0.6; }
+  .gfx-kairos .bp2 { width: 8px; height: 8px; top: 210px; left: 430px; opacity: 0.4; }
+  .gfx-kairos .bp3 { width: 12px; height: 12px; top: 350px; left: 120px; opacity: 0.5; }
+  .gfx-kairos .bp4 { width: 7px; height: 7px; top: 160px; left: 170px; opacity: 0.35; }
+  .gfx-kairos .bp5 { width: 9px; height: 9px; top: 400px; left: 370px; opacity: 0.45; }
+  /* tick marks on outer ring */
+  .gfx-kairos .tick {
+    position: absolute; background: rgba(0,8,19,0.08);
+    width: 2px; height: 14px;
+    top: 50%; left: 50%;
+    transform-origin: center 260px;
+  }
+  .gfx-kairos .t0 { transform: translate(-50%, -260px) rotate(0deg); }
+  .gfx-kairos .t1 { transform: translate(-50%, -260px) rotate(30deg); }
+  .gfx-kairos .t2 { transform: translate(-50%, -260px) rotate(60deg); }
+  .gfx-kairos .t3 { transform: translate(-50%, -260px) rotate(90deg); }
+  .gfx-kairos .t4 { transform: translate(-50%, -260px) rotate(120deg); }
+  .gfx-kairos .t5 { transform: translate(-50%, -260px) rotate(150deg); }
+  .gfx-kairos .t6 { transform: translate(-50%, -260px) rotate(180deg); }
+  .gfx-kairos .t7 { transform: translate(-50%, -260px) rotate(210deg); }
+  .gfx-kairos .t8 { transform: translate(-50%, -260px) rotate(240deg); }
+  .gfx-kairos .t9 { transform: translate(-50%, -260px) rotate(270deg); }
+  .gfx-kairos .t10 { transform: translate(-50%, -260px) rotate(300deg); }
+  .gfx-kairos .t11 { transform: translate(-50%, -260px) rotate(330deg); }
+
+  /* ═══════════════════════════════════════
+     AUTODREAM - Moon / Night consolidation
+     ═══════════════════════════════════════ */
+  .gfx-dream {
+    position: absolute;
+    top: 40px; right: 40px;
+    width: 620px; height: 620px;
+  }
+  /* crescent moon shape via two circles */
+  .gfx-dream .moon-outer {
+    position: absolute; top: 80px; left: 120px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: rgba(224,184,72,0.08);
+  }
+  .gfx-dream .moon-cut {
+    position: absolute; top: 50px; left: 180px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: #FAFBFA;
+  }
+  /* floating memory fragments */
+  .gfx-dream .frag {
+    position: absolute;
+    border-radius: 6px;
+    background: rgba(24,148,201,0.06);
+    border: 1.5px solid rgba(24,148,201,0.12);
+  }
+  .gfx-dream .f1 { width: 80px; height: 12px; top: 200px; left: 60px; }
+  .gfx-dream .f2 { width: 110px; height: 12px; top: 230px; left: 40px; }
+  .gfx-dream .f3 { width: 65px; height: 12px; top: 260px; left: 75px; }
+  .gfx-dream .f4 { width: 90px; height: 12px; top: 320px; left: 50px; }
+  .gfx-dream .f5 { width: 50px; height: 12px; top: 350px; left: 80px; }
+  /* arrows converging toward center */
+  .gfx-dream .arrow {
+    position: absolute; width: 40px; height: 2px;
+    background: rgba(224,184,72,0.2);
+  }
+  .gfx-dream .a1 { top: 206px; left: 150px; }
+  .gfx-dream .a2 { top: 236px; left: 160px; }
+  .gfx-dream .a3 { top: 326px; left: 150px; }
+  /* consolidated dot */
+  .gfx-dream .consolidated {
+    position: absolute; top: 260px; left: 220px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #E0B848;
+    box-shadow: 0 0 0 8px rgba(224,184,72,0.1);
+  }
+  /* stars */
+  .gfx-dream .star {
+    position: absolute; width: 4px; height: 4px;
+    background: #E0B848; border-radius: 50%; opacity: 0.25;
+  }
+  .gfx-dream .s1 { top: 60px; left: 400px; }
+  .gfx-dream .s2 { top: 120px; left: 500px; width: 6px; height: 6px; opacity: 0.15; }
+  .gfx-dream .s3 { top: 40px; left: 300px; width: 3px; height: 3px; }
+  .gfx-dream .s4 { top: 160px; left: 460px; }
+  .gfx-dream .s5 { top: 100px; left: 350px; width: 5px; height: 5px; opacity: 0.18; }
+  .gfx-dream .s6 { top: 200px; left: 520px; width: 3px; height: 3px; }
+
+  /* ═══════════════════════════════════════
+     ULTRAPLAN - Cloud + Deep Think
+     ═══════════════════════════════════════ */
+  .gfx-ultra {
+    position: absolute;
+    top: 50px; right: 50px;
+    width: 580px; height: 540px;
+  }
+  /* cloud shape built from overlapping rounded rects */
+  .gfx-ultra .cloud-base {
+    position: absolute; top: 180px; left: 80px;
+    width: 400px; height: 140px;
+    background: rgba(0,8,19,0.03);
+    border-radius: 70px;
+    border: 2px solid rgba(0,8,19,0.06);
+  }
+  .gfx-ultra .cloud-top1 {
+    position: absolute; top: 100px; left: 140px;
+    width: 180px; height: 150px;
+    background: rgba(0,8,19,0.03);
+    border-radius: 50%;
+    border: 2px solid rgba(0,8,19,0.06);
+  }
+  .gfx-ultra .cloud-top2 {
+    position: absolute; top: 120px; left: 280px;
+    width: 130px; height: 120px;
+    background: rgba(0,8,19,0.03);
+    border-radius: 50%;
+    border: 2px solid rgba(0,8,19,0.06);
+  }
+  /* thinking gears inside cloud */
+  .gfx-ultra .gear {
+    position: absolute;
+    border: 3px solid rgba(224,184,72,0.2);
+    border-radius: 50%;
+  }
+  .gfx-ultra .g1 { width: 60px; height: 60px; top: 170px; left: 210px; }
+  .gfx-ultra .g2 { width: 44px; height: 44px; top: 195px; left: 280px; }
+  .gfx-ultra .g1-dot {
+    position: absolute; top: 192px; left: 232px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #E0B848;
+  }
+  .gfx-ultra .g2-dot {
+    position: absolute; top: 211px; left: 296px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #E0B848; opacity: 0.7;
+  }
+  /* connection down to terminal */
+  .gfx-ultra .pipe {
+    position: absolute; top: 320px; left: 278px;
+    width: 2px; height: 80px;
+    background: rgba(0,8,19,0.08);
+  }
+  .gfx-ultra .pipe-dot1 {
+    position: absolute; top: 345px; left: 275px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(24,148,201,0.3);
+  }
+  .gfx-ultra .pipe-dot2 {
+    position: absolute; top: 370px; left: 275px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(24,148,201,0.2);
+  }
+  /* terminal block */
+  .gfx-ultra .terminal {
+    position: absolute; top: 405px; left: 180px;
+    width: 200px; height: 64px;
+    background: #0B0F19;
+    border-radius: 10px;
+    display: flex; align-items: center;
+    padding: 0 18px;
+  }
+  .gfx-ultra .terminal .cursor {
+    width: 10px; height: 18px;
+    background: #E0B848;
+    border-radius: 1px;
+    opacity: 0.7;
+    margin-right: 8px;
+  }
+  .gfx-ultra .terminal .txt {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: rgba(250,251,250,0.5);
+  }
+  /* time indicator */
+  .gfx-ultra .timer {
+    position: absolute; top: 68px; left: 380px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600; font-size: 16px;
+    color: rgba(224,184,72,0.3);
+    letter-spacing: 2px;
+  }
+
+  /* ═══════════════════════════════════════
+     COORDINATOR - Network / Hub-Spoke
+     ═══════════════════════════════════════ */
+  .gfx-coord {
+    position: absolute;
+    top: 60px; right: 50px;
+    width: 580px; height: 560px;
+  }
+  /* central hub */
+  .gfx-coord .hub {
+    position: absolute; top: 230px; left: 240px;
+    width: 80px; height: 80px;
+    background: #E0B848;
+    border-radius: 16px;
+    box-shadow: 0 6px 30px rgba(224,184,72,0.25);
+  }
+  .gfx-coord .hub-inner {
+    position: absolute; top: 250px; left: 260px;
+    width: 40px; height: 40px;
+    border: 3px solid rgba(250,251,250,0.5);
+    border-radius: 8px;
+  }
+  /* worker nodes */
+  .gfx-coord .worker {
+    position: absolute;
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    background: rgba(0,8,19,0.04);
+    border: 2px solid rgba(0,8,19,0.1);
+  }
+  .gfx-coord .w1 { top: 60px; left: 100px; }
+  .gfx-coord .w2 { top: 40px; left: 340px; }
+  .gfx-coord .w3 { top: 180px; left: 480px; }
+  .gfx-coord .w4 { top: 400px; left: 450px; }
+  .gfx-coord .w5 { top: 440px; left: 220px; }
+  .gfx-coord .w6 { top: 350px; left: 50px; }
+  .gfx-coord .w7 { top: 140px; left: 20px; }
+  /* spokes connecting hub to workers */
+  .gfx-coord .spoke {
+    position: absolute; height: 2px;
+    background: rgba(0,8,19,0.06);
+    transform-origin: left center;
+  }
+  .gfx-coord .sp1 { top: 258px; left: 152px; width: 100px; transform: rotate(-52deg); }
+  .gfx-coord .sp2 { top: 254px; left: 320px; width: 90px; transform: rotate(-55deg); }
+  .gfx-coord .sp3 { top: 268px; left: 320px; width: 170px; transform: rotate(-15deg); }
+  .gfx-coord .sp4 { top: 290px; left: 310px; width: 160px; transform: rotate(25deg); }
+  .gfx-coord .sp5 { top: 300px; left: 266px; width: 140px; transform: rotate(75deg); }
+  .gfx-coord .sp6 { top: 285px; left: 102px; width: 145px; transform: rotate(160deg); }
+  .gfx-coord .sp7 { top: 260px; left: 72px; width: 174px; transform: rotate(-148deg); }
+  /* data flow dots on spokes */
+  .gfx-coord .flow {
+    position: absolute; width: 6px; height: 6px;
+    border-radius: 50%; background: #1894C9; opacity: 0.4;
+  }
+  .gfx-coord .fl1 { top: 220px; left: 185px; }
+  .gfx-coord .fl2 { top: 170px; left: 380px; }
+  .gfx-coord .fl3 { top: 260px; left: 420px; }
+  .gfx-coord .fl4 { top: 380px; left: 380px; }
+  .gfx-coord .fl5 { top: 380px; left: 240px; }
+  .gfx-coord .fl6 { top: 340px; left: 110px; }
+  .gfx-coord .fl7 { top: 190px; left: 80px; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: KAIROS -->
+<div class="page">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <div class="gfx-kairos">
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div class="ring r3"></div>
+    <div class="ring r4"></div>
+    <div class="tick t0"></div><div class="tick t1"></div><div class="tick t2"></div>
+    <div class="tick t3"></div><div class="tick t4"></div><div class="tick t5"></div>
+    <div class="tick t6"></div><div class="tick t7"></div><div class="tick t8"></div>
+    <div class="tick t9"></div><div class="tick t10"></div><div class="tick t11"></div>
+    <div class="sweep"></div>
+    <div class="core"></div>
+    <div class="blip bp1"></div>
+    <div class="blip bp2"></div>
+    <div class="blip bp3"></div>
+    <div class="blip bp4"></div>
+    <div class="blip bp5"></div>
+  </div>
+  <div class="gold-line"></div>
+  <h1>KAIROS</h1>
+  <p class="tagline">Your repos watched 24/7. Automatically.</p>
+</div>
+
+<!-- SLIDE 2: AUTODREAM -->
+<div class="page">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <div class="gfx-dream">
+    <div class="moon-outer"></div>
+    <div class="moon-cut"></div>
+    <div class="frag f1"></div>
+    <div class="frag f2"></div>
+    <div class="frag f3"></div>
+    <div class="frag f4"></div>
+    <div class="frag f5"></div>
+    <div class="arrow a1"></div>
+    <div class="arrow a2"></div>
+    <div class="arrow a3"></div>
+    <div class="consolidated"></div>
+    <div class="star s1"></div>
+    <div class="star s2"></div>
+    <div class="star s3"></div>
+    <div class="star s4"></div>
+    <div class="star s5"></div>
+    <div class="star s6"></div>
+  </div>
+  <div class="gold-line"></div>
+  <h1>AutoDream</h1>
+  <p class="tagline">Memory that cleans itself while you sleep.</p>
+</div>
+
+<!-- SLIDE 3: ULTRAPLAN -->
+<div class="page">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <div class="gfx-ultra">
+    <div class="cloud-base"></div>
+    <div class="cloud-top1"></div>
+    <div class="cloud-top2"></div>
+    <div class="gear g1"></div>
+    <div class="gear g2"></div>
+    <div class="g1-dot"></div>
+    <div class="g2-dot"></div>
+    <div class="pipe"></div>
+    <div class="pipe-dot1"></div>
+    <div class="pipe-dot2"></div>
+    <div class="terminal">
+      <div class="cursor"></div>
+      <div class="txt">plan --deep</div>
+    </div>
+    <div class="timer">30:00</div>
+  </div>
+  <div class="gold-line"></div>
+  <h1>ULTRAPLAN</h1>
+  <p class="tagline">30 minutes of deep thinking in the cloud.</p>
+</div>
+
+<!-- SLIDE 4: COORDINATOR -->
+<div class="page">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <div class="gfx-coord">
+    <div class="spoke sp1"></div>
+    <div class="spoke sp2"></div>
+    <div class="spoke sp3"></div>
+    <div class="spoke sp4"></div>
+    <div class="spoke sp5"></div>
+    <div class="spoke sp6"></div>
+    <div class="spoke sp7"></div>
+    <div class="hub"></div>
+    <div class="hub-inner"></div>
+    <div class="worker w1"></div>
+    <div class="worker w2"></div>
+    <div class="worker w3"></div>
+    <div class="worker w4"></div>
+    <div class="worker w5"></div>
+    <div class="worker w6"></div>
+    <div class="worker w7"></div>
+    <div class="flow fl1"></div>
+    <div class="flow fl2"></div>
+    <div class="flow fl3"></div>
+    <div class="flow fl4"></div>
+    <div class="flow fl5"></div>
+    <div class="flow fl6"></div>
+    <div class="flow fl7"></div>
+  </div>
+  <div class="gold-line"></div>
+  <h1>Coordinator<br>Mode</h1>
+  <p class="tagline">Parallel agents. Structured handoffs.</p>
+</div>
+
+</body>
+</html>

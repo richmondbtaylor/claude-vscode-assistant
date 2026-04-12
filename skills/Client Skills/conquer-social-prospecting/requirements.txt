@@ -1,0 +1,8 @@
+feedparser
+requests
+python-dotenv
+gspread
+schedule
+pydantic
+ddgs
+playwright

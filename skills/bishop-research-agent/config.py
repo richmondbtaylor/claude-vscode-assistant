@@ -106,25 +106,42 @@ LINKEDIN_RESULTS_PER_KEYWORD = 5
 # Public groups scraped via Playwright — DDG cannot index private group content.
 
 FACEBOOK_GROUPS = [
-    "https://www.facebook.com/groups/aiautomationagency",
-    "https://www.facebook.com/groups/n8ncommunity",
-    "https://www.facebook.com/groups/makecommunity",
-    "https://www.facebook.com/groups/chatgptusers",
-    "https://www.facebook.com/groups/artificialintelligenceai",
-    "https://www.facebook.com/groups/automationrockstars",
-    "https://www.facebook.com/groups/zapierautomation",
-    "https://www.facebook.com/groups/aiforsmallbusiness",
-    "https://www.facebook.com/groups/promptengineering",
-    "https://www.facebook.com/groups/gohighlevelcommunity",
+    "https://www.facebook.com/groups/artificialintelligence.group",
+    "https://www.facebook.com/groups/chatgptcommunity",
+    "https://www.facebook.com/groups/aientrepreneurs",
+    "https://www.facebook.com/groups/automationanywhere",
+    "https://www.facebook.com/groups/n8nusers",
+    "https://www.facebook.com/groups/makecommunitygroup",
+    "https://www.facebook.com/groups/aitools",
+    "https://www.facebook.com/groups/smallbusinessAI",
+    "https://www.facebook.com/groups/promptengineeringcommunity",
+    "https://www.facebook.com/groups/gohighlevelofficial",
 ]
 
-FACEBOOK_POSTS_PER_GROUP = 20   # How many recent posts to scan per group
+FACEBOOK_POSTS_PER_GROUP = 20   # (legacy — unused by new search-based monitor)
 
+# Intent-rich search queries for Facebook native search.
+# These are passed to facebook.com/search/posts/?q=... — same model as Twitter.
 FACEBOOK_KEYWORDS = [
-    "help", "need", "recommend", "looking for", "struggling",
-    "automate", "AI", "ChatGPT", "n8n", "zapier", "make",
-    "workflow", "automation", "prompt", "consultant", "hire",
+    "need AI automation help",
+    "looking for AI consultant",
+    "AI workflow help",
+    "automate my business",
+    "AI chatbot for business",
+    "hire AI developer",
+    "AI agency",
+    "AI for my business",
+    "AI implementation help",
+    "need someone to build AI",
+    "n8n help",
+    "zapier alternative",
+    "ChatGPT not working",
+    "better prompts",
+    "how to prompt ChatGPT",
+    "prompt engineering help",
 ]
+
+FACEBOOK_RESULTS_PER_KEYWORD = 15
 
 # ── Twitter / X ────────────────────────────────────────────────────────────────
 
@@ -152,6 +169,68 @@ TWITTER_KEYWORDS = [
 ]
 
 TWITTER_RESULTS_PER_KEYWORD = 5
+
+# ── Upwork ────────────────────────────────────────────────────────────────────
+# RSS feed queries — Upwork exposes public RSS at /ab/feed/jobs/rss?q=QUERY
+# These target job postings where clients need AI automation, workflows, or prompting help.
+
+UPWORK_SEARCH_QUERIES = [
+    # Direct AI automation services
+    "AI automation",
+    "AI workflow automation",
+    "n8n automation",
+    "n8n developer",
+    "n8n workflow",
+    "zapier automation expert",
+    "zapier developer",
+    "make.com automation",
+    "make.com developer",
+    "AI chatbot development",
+    "AI agent development",
+    "AI agent builder",
+    "ChatGPT integration",
+    "Claude AI integration",
+    "Claude Code",
+    "GPT API integration",
+    "OpenAI API",
+    "AI workflow builder",
+    "business process automation AI",
+    "AI automation agency",
+    # AI consulting / strategy
+    "AI consultant",
+    "AI strategy",
+    "AI implementation",
+    "AI training workshop",
+    "AI coach",
+    "AI advisor",
+    # Prompt engineering
+    "prompt engineering",
+    "prompt engineer",
+    "ChatGPT expert",
+    "AI prompt optimization",
+    "prompt writing",
+    "prompt template",
+    # Adjacent high-intent
+    "automate business processes",
+    "AI for customer service",
+    "AI for marketing automation",
+    "AI data pipeline",
+    "conversational AI",
+    "AI virtual assistant development",
+    "GoHighLevel automation",
+    "CRM automation AI",
+    "AI lead generation",
+    "AI sales automation",
+    "AI email automation",
+    "AI content creation",
+    "LLM integration",
+    "RAG development",
+    "AI API development",
+    "custom GPT",
+    "AI assistant development",
+]
+
+UPWORK_RESULTS_PER_QUERY = 10
 
 # ── Web Search (DuckDuckGo — covers LinkedIn, Quora, Twitter, forums, etc.) ───
 
@@ -265,9 +344,9 @@ WEB_POLL_INTERVAL_HOURS = 1
 
 # ── Analysis / Scoring ────────────────────────────────────────────────────────
 
-MIN_RELEVANCE_FOR_ALERT = 50  # Send to Slack for anything scoring 50+
+MIN_RELEVANCE_FOR_ALERT = 30  # Send to Slack for anything scoring 30+
 LOG_ALL_TO_SHEETS = False
-MIN_RELEVANCE_FOR_SHEETS = 50  # Only log confirmed leads to Sheets
+MIN_RELEVANCE_FOR_SHEETS = 30  # Log warm + hot leads to Sheets
 
 # ── Google Sheets ─────────────────────────────────────────────────────────────
 

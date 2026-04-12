@@ -506,10 +506,11 @@ class InstagramSession:
         return True
 
     def is_recent_enough_for_comment(self, profile: dict) -> bool:
-        """Post must be <= COMMENT_FOLLOW_MAX_POST_AGE_DAYS old to comment + follow."""
+        """Post must be <= COMMENT_FOLLOW_MAX_POST_AGE_DAYS old to comment."""
         recent_post_date = profile.get("recent_post_date")
         if not recent_post_date:
-            return False
+            # Could not scrape date -- default to allowing engagement rather than silently skipping
+            return True
         age_days = (datetime.utcnow() - recent_post_date).days
         return age_days <= COMMENT_FOLLOW_MAX_POST_AGE_DAYS
 
@@ -623,11 +624,11 @@ class InstagramSession:
             self.page.goto(f"{IG_BASE}/{username}/", wait_until="domcontentloaded", timeout=20000)
             _scroll_delay()
             # Already following
-            following_btn = self.page.get_by_role("button", name="Following")
+            following_btn = self.page.get_by_role("button", name="Following").first
             if following_btn.is_visible(timeout=2000):
                 logger.debug(f"Already following: @{username}")
                 return True
-            follow_btn = self.page.get_by_role("button", name="Follow")
+            follow_btn = self.page.get_by_role("button", name="Follow").first
             if follow_btn.is_visible(timeout=5000):
                 follow_btn.click()
                 time.sleep(2)

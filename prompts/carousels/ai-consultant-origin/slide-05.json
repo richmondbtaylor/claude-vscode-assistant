@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '5/7' in muted gray. Top section has a large coral-red circled number '4' as a decorative element. Below it, bold black sans-serif headline text reading 'Month 3: It Clicked.' at 52pt centered. The word 'Clicked' has a soft golden-amber #D4A853 brush-stroke highlight behind it, like a hand-painted marker swipe. Below, medium-weight black text at 26pt centered: 'I started seeing AI opportunities everywhere.' Below that, a thin horizontal divider line. Then two short bullet points with coral-red dot markers, each on its own line: first bullet: 'Friend complained about qualifying leads. I saw an automation.' second bullet: 'Accountant mentioned receipts. I saw an automation.' Below the bullets, smaller muted italic text: 'Not smarter. Just fluent.' A minimal thin-line black outline illustration of an eye with a lightbulb inside, centered below. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

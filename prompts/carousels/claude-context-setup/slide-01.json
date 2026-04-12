@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '1/5' in muted gray. Centered layout with generous whitespace. Large ultra-bold black sans-serif headline text reading 'Setting Up Claude With Your Context' at 60pt size, broken across three lines, perfectly centered horizontally in the upper-middle area. The words 'Your Context' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, a thin horizontal divider line. Below the divider, a single line of elegant medium-weight black text at 26pt reading 'Stop getting generic answers. Start getting answers built for your deals.' Below the text, a minimal thin-line black outline illustration of a brain icon connected to a document or settings gear, simple line art only. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, no clutter. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds, em dashes.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

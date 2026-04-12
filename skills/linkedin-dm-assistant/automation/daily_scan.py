@@ -7,6 +7,7 @@ import json
 import sys
 import requests
 import anthropic
+from datetime import datetime
 from dotenv import load_dotenv
 
 # Ensure correct working directory so cookies file resolves
@@ -92,6 +93,14 @@ def post_to_slack(thread, analysis):
     return resp.json().get('ok', False)
 
 
+DM_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dm_activity.jsonl")
+
+
+def append_dm_log(entry):
+    with open(DM_LOG_PATH, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry) + "\n")
+
+
 if __name__ == "__main__":
     print("=== Bishop AI Daily LinkedIn DM Scan ===")
     print("Fetching pending threads...")
@@ -102,22 +111,45 @@ if __name__ == "__main__":
         sys.exit(1)
 
     print(f"Found {len(threads)} threads needing a reply")
+    scan_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     if not threads:
+        append_dm_log({"timestamp": scan_time, "event": "scan", "threads_found": 0})
         sys.exit(0)
 
     posted = 0
     for thread in threads:
         name = thread['sender_name']
         print(f"Drafting for {name}...", end=" ", flush=True)
+        log_entry = {
+            "timestamp": scan_time,
+            "sender": name,
+            "thread_url": thread.get("thread_url", ""),
+            "fit": None,
+            "rec": None,
+            "draft_preview": None,
+            "posted_to_slack": False,
+            "error": None,
+        }
         try:
             analysis = draft_response(thread)
             ok = post_to_slack(thread, analysis)
             print(f"{'OK' if ok else 'SLACK FAIL'} | {analysis.get('rec')} | {analysis.get('fit')}")
+            log_entry.update({
+                "fit": analysis.get("fit"),
+                "rec": analysis.get("rec"),
+                "draft_preview": (analysis.get("draft") or "")[:120],
+                "posted_to_slack": ok,
+            })
             if ok:
                 posted += 1
         except json.JSONDecodeError as e:
             print(f"JSON parse error: {e}")
+            log_entry["error"] = f"JSON parse: {e}"
         except Exception as e:
             print(f"ERROR: {e}")
+            log_entry["error"] = str(e)
+        finally:
+            append_dm_log(log_entry)
 
     print(f"\nDone. {posted}/{len(threads)} posted to #human-in-the-loop.")

@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '2/5' in muted gray. Top section has a large coral-red circled number '1' as a decorative element, centered. Below it, bold black sans-serif headline text reading 'The Problem With Out-of-the-Box AI' at 48pt, centered, broken across two lines. The words 'Out-of-the-Box' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, a vertical bullet list of four items, each with a small coral-red dot marker, in medium-weight black text at 22pt: first item 'Most AEs open Claude or ChatGPT and type a vague prompt.' second item 'They get a generic answer that could apply to any company in any industry.' third item 'They edit it for 20 minutes and end up with something mediocre.' fourth item in slightly bolder weight 'The fix is not a better prompt. It is a smarter setup.' The phrase 'a smarter setup' inside the fourth bullet has a soft golden-amber #D4A853 brush-stroke highlight behind it. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds, em dashes.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

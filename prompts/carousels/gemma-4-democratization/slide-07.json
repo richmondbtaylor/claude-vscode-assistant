@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '7/8' in muted gray. Top section has a large coral-red circled number '6' as a decorative element. Below it, bold black sans-serif headline text reading 'Who This Is For' at 56pt, centered. The words 'Who This Is For' have a soft golden-amber #D4A853 brush-stroke highlight behind them. Below, four dark card-style rows with cream borders stacked vertically, each containing a small coral-red bullet marker and white text: 'Small business owners who want private AI' then 'Creators who need free content tools' then 'Developers building AI-powered apps' then 'Anyone tired of monthly AI subscriptions'. Generous spacing between each card row. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

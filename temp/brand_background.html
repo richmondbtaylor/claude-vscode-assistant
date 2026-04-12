@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin: 0; padding: 0; }
+body { width: 1920px; height: 1080px; overflow: hidden; }
+canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="bg" width="1920" height="1080"></canvas>
+<script>
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+const W = 1920, H = 1080;
+
+// Base
+let grad = ctx.createLinearGradient(0, 0, W, H);
+grad.addColorStop(0, '#F5F3EE');
+grad.addColorStop(0.5, '#EDEBE5');
+grad.addColorStop(1, '#E2DDD6');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, W, H);
+
+// === MASSIVE COLOR FIELDS ===
+
+// Gold sweep - entire upper right quadrant
+grad = ctx.createRadialGradient(1700, 0, 0, 1700, 0, 900);
+grad.addColorStop(0, 'rgba(224, 184, 72, 0.7)');
+grad.addColorStop(0.2, 'rgba(224, 184, 72, 0.45)');
+grad.addColorStop(0.5, 'rgba(224, 184, 72, 0.15)');
+grad.addColorStop(1, 'rgba(224, 184, 72, 0)');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, W, H);
+
+// Gold mid-right
+grad = ctx.createRadialGradient(1920, 540, 0, 1920, 540, 500);
+grad.addColorStop(0, 'rgba(224, 184, 72, 0.4)');
+grad.addColorStop(0.4, 'rgba(224, 184, 72, 0.15)');
+grad.addColorStop(1, 'rgba(224, 184, 72, 0)');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, W, H);
+
+// Blue sweep - entire lower left
+grad = ctx.createRadialGradient(0, 1080, 0, 0, 1080, 900);
+grad.addColorStop(0, 'rgba(24, 148, 201, 0.6)');
+grad.addColorStop(0.2, 'rgba(24, 148, 201, 0.35)');
+grad.addColorStop(0.5, 'rgba(24, 148, 201, 0.12)');
+grad.addColorStop(1, 'rgba(24, 148, 201, 0)');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, W, H);
+
+// Blue upper left accent
+grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 500);
+grad.addColorStop(0, 'rgba(24, 148, 201, 0.35)');
+grad.addColorStop(0.3, 'rgba(24, 148, 201, 0.15)');
+grad.addColorStop(1, 'rgba(24, 148, 201, 0)');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, W, H);
+
+// Light center breathing room
+grad = ctx.createRadialGradient(960, 500, 0, 960, 500, 450);
+grad.addColorStop(0, 'rgba(250, 251, 250, 0.5)');
+grad.addColorStop(1, 'rgba(250, 251, 250, 0)');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, W, H);
+
+// === BOLD FLOWING CURVES (Bezier paths) ===
+
+// Gold flowing curve 1 - sweeps across top
+ctx.strokeStyle = 'rgba(224,184,72,0.6)';
+ctx.lineWidth = 4;
+ctx.beginPath();
+ctx.moveTo(800, -20);
+ctx.bezierCurveTo(1100, 200, 1400, 100, 1920, 350);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgba(224,184,72,0.35)';
+ctx.lineWidth = 3;
+ctx.beginPath();
+ctx.moveTo(850, -20);
+ctx.bezierCurveTo(1130, 220, 1430, 120, 1920, 310);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgba(224,184,72,0.18)';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(900, -20);
+ctx.bezierCurveTo(1160, 240, 1460, 140, 1920, 270);
+ctx.stroke();
+
+// Blue flowing curve - sweeps across bottom
+ctx.strokeStyle = 'rgba(24,148,201,0.55)';
+ctx.lineWidth = 4;
+ctx.beginPath();
+ctx.moveTo(-20, 700);
+ctx.bezierCurveTo(300, 850, 600, 780, 1100, 1100);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgba(24,148,201,0.3)';
+ctx.lineWidth = 3;
+ctx.beginPath();
+ctx.moveTo(-20, 740);
+ctx.bezierCurveTo(300, 880, 620, 810, 1060, 1100);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgba(24,148,201,0.15)';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(-20, 780);
+ctx.bezierCurveTo(300, 910, 640, 840, 1020, 1100);
+ctx.stroke();
+
+// Cross-flow gold from bottom right
+ctx.strokeStyle = 'rgba(224,184,72,0.12)';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(1920, 800);
+ctx.bezierCurveTo(1600, 700, 1300, 750, 900, 1100);
+ctx.stroke();
+
+// Cross-flow blue from top left
+ctx.strokeStyle = 'rgba(24,148,201,0.1)';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(0, 250);
+ctx.bezierCurveTo(300, 150, 600, 200, 1000, -20);
+ctx.stroke();
+
+// === DIAGONAL LINES - bold ===
+const goldDiags = [
+  { x1: 1000, y1: 0, x2: 1920, y2: 620, w: 5, a: 0.5 },
+  { x1: 1100, y1: 0, x2: 1920, y2: 550, w: 3.5, a: 0.3 },
+  { x1: 1200, y1: 0, x2: 1920, y2: 480, w: 2.5, a: 0.18 },
+];
+goldDiags.forEach(s => {
+  ctx.strokeStyle = `rgba(224,184,72,${s.a})`;
+  ctx.lineWidth = s.w;
+  ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
+});
+
+const blueDiags = [
+  { x1: 0, y1: 450, x2: 900, y2: 1080, w: 5, a: 0.45 },
+  { x1: 0, y1: 540, x2: 810, y2: 1080, w: 3.5, a: 0.25 },
+  { x1: 0, y1: 630, x2: 720, y2: 1080, w: 2.5, a: 0.15 },
+];
+blueDiags.forEach(s => {
+  ctx.strokeStyle = `rgba(24,148,201,${s.a})`;
+  ctx.lineWidth = s.w;
+  ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
+});
+
+// === FILLED GEOMETRIC SHAPES ===
+
+// Gold filled triangles
+ctx.fillStyle = 'rgba(224,184,72,0.15)';
+ctx.beginPath();
+ctx.moveTo(1700, 100);
+ctx.lineTo(1800, 250);
+ctx.lineTo(1600, 250);
+ctx.closePath();
+ctx.fill();
+
+ctx.fillStyle = 'rgba(224,184,72,0.08)';
+ctx.beginPath();
+ctx.moveTo(1650, 180);
+ctx.lineTo(1720, 300);
+ctx.lineTo(1580, 300);
+ctx.closePath();
+ctx.fill();
+
+// Blue filled triangles
+ctx.fillStyle = 'rgba(24,148,201,0.12)';
+ctx.beginPath();
+ctx.moveTo(150, 750);
+ctx.lineTo(280, 900);
+ctx.lineTo(20, 900);
+ctx.closePath();
+ctx.fill();
+
+ctx.fillStyle = 'rgba(24,148,201,0.06)';
+ctx.beginPath();
+ctx.moveTo(200, 700);
+ctx.lineTo(310, 830);
+ctx.lineTo(90, 830);
+ctx.closePath();
+ctx.fill();
+
+// === CIRCLES - filled and stroked ===
+
+// Big gold filled circle
+ctx.fillStyle = 'rgba(224,184,72,0.12)';
+ctx.beginPath();
+ctx.arc(1600, 350, 80, 0, Math.PI * 2);
+ctx.fill();
+
+ctx.strokeStyle = 'rgba(224,184,72,0.4)';
+ctx.lineWidth = 3;
+ctx.beginPath();
+ctx.arc(1600, 350, 80, 0, Math.PI * 2);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgba(224,184,72,0.2)';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.arc(1600, 350, 120, 0, Math.PI * 2);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgba(224,184,72,0.1)';
+ctx.lineWidth = 1.5;
+ctx.beginPath();
+ctx.arc(1600, 350, 160, 0, Math.PI * 2);
+ctx.stroke();
+
+// Big blue filled circle
+ctx.fillStyle = 'rgba(24,148,201,0.1)';
+ctx.beginPath();
+ctx.arc(300, 680, 70, 0, Math.PI * 2);
+ctx.fill();
+
+ctx.strokeStyle = 'rgba(24,148,201,0.35)';
+ctx.lineWidth = 3;
+ctx.beginPath();
+ctx.arc(300, 680, 70, 0, Math.PI * 2);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgba(24,148,201,0.18)';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.arc(300, 680, 110, 0, Math.PI * 2);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgba(24,148,201,0.08)';
+ctx.lineWidth = 1.5;
+ctx.beginPath();
+ctx.arc(300, 680, 150, 0, Math.PI * 2);
+ctx.stroke();
+
+// Scattered accent circles
+ctx.strokeStyle = 'rgba(224,184,72,0.25)';
+ctx.lineWidth = 2;
+ctx.beginPath(); ctx.arc(800, 250, 40, 0, Math.PI * 2); ctx.stroke();
+
+ctx.strokeStyle = 'rgba(24,148,201,0.2)';
+ctx.lineWidth = 2;
+ctx.beginPath(); ctx.arc(1200, 800, 35, 0, Math.PI * 2); ctx.stroke();
+
+// Bold arcs
+ctx.strokeStyle = 'rgba(224,184,72,0.45)';
+ctx.lineWidth = 4;
+ctx.beginPath();
+ctx.arc(1500, 0, 300, 0.5, 1.8);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgba(24,148,201,0.4)';
+ctx.lineWidth = 4;
+ctx.beginPath();
+ctx.arc(350, 1080, 280, 4.0, 5.5);
+ctx.stroke();
+
+// === DIAMONDS ===
+function drawDiamond(cx, cy, size, color, alpha, lineW, fill) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(Math.PI / 4);
+  if (fill) {
+    ctx.fillStyle = `rgba(${color},${alpha * 0.4})`;
+    ctx.fillRect(-size/2, -size/2, size, size);
+  }
+  ctx.strokeStyle = `rgba(${color},${alpha})`;
+  ctx.lineWidth = lineW;
+  ctx.strokeRect(-size/2, -size/2, size, size);
+  ctx.restore();
+}
+
+drawDiamond(1480, 500, 130, '224,184,72', 0.4, 3, true);
+drawDiamond(1530, 460, 70, '224,184,72', 0.3, 2, true);
+drawDiamond(1440, 560, 50, '224,184,72', 0.25, 1.5, false);
+
+drawDiamond(380, 400, 110, '24,148,201', 0.35, 3, true);
+drawDiamond(330, 450, 60, '24,148,201', 0.25, 2, true);
+drawDiamond(430, 350, 40, '24,148,201', 0.2, 1.5, false);
+
+drawDiamond(950, 150, 35, '224,184,72', 0.18, 1.5, false);
+drawDiamond(1100, 900, 30, '24,148,201', 0.15, 1.5, false);
+drawDiamond(700, 700, 25, '224,184,72', 0.1, 1, false);
+
+// === BOLD DOT PATTERNS ===
+
+// Gold dot constellation - upper right
+for (let i = 0; i < 40; i++) {
+  const t = i / 39;
+  const x = 1050 + t * 800;
+  const y = 100 + Math.sin(t * Math.PI * 3.5) * 80;
+  const r = 3 + Math.sin(t * Math.PI) * 6;
+  const a = 0.25 + Math.sin(t * Math.PI) * 0.45;
+  ctx.fillStyle = `rgba(224,184,72,${a})`;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+}
+
+// Blue dot constellation - lower left
+for (let i = 0; i < 40; i++) {
+  const t = i / 39;
+  const x = 50 + t * 800;
+  const y = 950 + Math.sin(t * Math.PI * 3.5) * 70;
+  const r = 3 + Math.sin(t * Math.PI) * 5.5;
+  const a = 0.2 + Math.sin(t * Math.PI) * 0.4;
+  ctx.fillStyle = `rgba(24,148,201,${a})`;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+}
+
+// Secondary dot waves
+for (let i = 0; i < 25; i++) {
+  const t = i / 24;
+  const x = 1150 + t * 650;
+  const y = 220 + Math.sin(t * Math.PI * 2.5 + 1) * 50;
+  const r = 2 + Math.sin(t * Math.PI) * 3;
+  ctx.fillStyle = `rgba(224,184,72,${0.15 + Math.sin(t * Math.PI) * 0.2})`;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+}
+for (let i = 0; i < 25; i++) {
+  const t = i / 24;
+  const x = 100 + t * 650;
+  const y = 860 + Math.sin(t * Math.PI * 2.5 + 1) * 45;
+  const r = 2 + Math.sin(t * Math.PI) * 2.5;
+  ctx.fillStyle = `rgba(24,148,201,${0.12 + Math.sin(t * Math.PI) * 0.18})`;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+}
+
+// Big bold accent dots
+const bigDots = [
+  [1450, 150, 10, '224,184,72', 0.6],
+  [1500, 120, 7, '224,184,72', 0.5],
+  [1400, 200, 6, '224,184,72', 0.55],
+  [1550, 170, 8, '224,184,72', 0.4],
+  [1380, 240, 5, '224,184,72', 0.6],
+  [1600, 130, 9, '224,184,72', 0.3],
+  [300, 850, 9, '24,148,201', 0.55],
+  [260, 890, 7, '24,148,201', 0.45],
+  [350, 820, 6, '24,148,201', 0.5],
+  [230, 920, 8, '24,148,201', 0.35],
+  [400, 870, 5, '24,148,201', 0.55],
+  [190, 860, 7, '24,148,201', 0.25],
+];
+bigDots.forEach(([x, y, r, c, a]) => {
+  ctx.fillStyle = `rgba(${c},${a})`;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+});
+
+// === HORIZONTAL BARS with gradient fade ===
+grad = ctx.createLinearGradient(600, 0, 1300, 0);
+grad.addColorStop(0, 'rgba(224,184,72,0)');
+grad.addColorStop(0.15, 'rgba(224,184,72,0.45)');
+grad.addColorStop(0.85, 'rgba(224,184,72,0.45)');
+grad.addColorStop(1, 'rgba(224,184,72,0)');
+ctx.fillStyle = grad;
+ctx.fillRect(600, 340, 700, 3);
+
+grad = ctx.createLinearGradient(550, 0, 1250, 0);
+grad.addColorStop(0, 'rgba(24,148,201,0)');
+grad.addColorStop(0.15, 'rgba(24,148,201,0.4)');
+grad.addColorStop(0.85, 'rgba(24,148,201,0.4)');
+grad.addColorStop(1, 'rgba(24,148,201,0)');
+ctx.fillStyle = grad;
+ctx.fillRect(550, 720, 700, 3);
+
+// === SUBTLE GRID ===
+ctx.strokeStyle = 'rgba(29, 35, 51, 0.025)';
+ctx.lineWidth = 0.5;
+for (let x = 0; x < W; x += 80) {
+  ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+}
+for (let y = 0; y < H; y += 80) {
+  ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+}
+
+// === NOISE ===
+for (let i = 0; i < 15000; i++) {
+  ctx.fillStyle = `rgba(29,35,51,${Math.random() * 0.012})`;
+  ctx.fillRect(Math.random() * W, Math.random() * H, 1, 1);
+}
+
+// Vignette
+grad = ctx.createRadialGradient(W/2, H/2, 300, W/2, H/2, 1100);
+grad.addColorStop(0, 'rgba(0,0,0,0)');
+grad.addColorStop(1, 'rgba(0,8,19,0.09)');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, W, H);
+</script>
+</body>
+</html>

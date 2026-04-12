@@ -1,15 +1,16 @@
 """
 LinkedIn monitor using Playwright + saved session.
 
-Searches LinkedIn's content search (past week) for each keyword and yields
+Searches LinkedIn's content search (sorted by date) for each keyword and yields
 RawPost objects for Claude to score. Uses the existing LinkedIn session saved
-by reply_agent.py at .browser_sessions/linkedin_session.json.
+at .browser_sessions/linkedin_session.json.
 
 If the session doesn't exist or is expired, prints a message and skips.
 """
 
 import time
 import random
+import urllib.parse
 from pathlib import Path
 from typing import Generator
 
@@ -20,87 +21,107 @@ from config import LINKEDIN_KEYWORDS, LINKEDIN_RESULTS_PER_KEYWORD
 
 SESSION_FILE = Path(__file__).parent / ".browser_sessions" / "linkedin_session.json"
 
-# LinkedIn content search — filters to posts only, past week
+# LinkedIn content search -- sortBy=date_posted gets most recent first
 _SEARCH_URL = (
     "https://www.linkedin.com/search/results/content/"
-    "?keywords={query}&datePosted=past-week&sortBy=date"
+    "?keywords={query}&sortBy=date_posted"
 )
+
+# JavaScript to extract post containers from LinkedIn search results.
+# LinkedIn uses obfuscated CSS classes, so we walk the DOM from stable
+# anchor points (profile links) to find post containers.
+_EXTRACT_POSTS_JS = """() => {
+    const results = [];
+    const profileLinks = document.querySelectorAll('a[href*="/in/"]');
+    const seen = new Set();
+
+    // Helper: extract urn:li:activity:NNN from any string
+    const URN_RE = /urn:li:activity:(\\d+)/;
+    function findActivityUrn(el) {
+        // Walk up the tree looking for data-urn / data-id containing an activity URN
+        let cur = el;
+        for (let i = 0; i < 15 && cur; i++) {
+            for (const attr of ["data-urn", "data-id", "data-chameleon-result-urn"]) {
+                const v = cur.getAttribute && cur.getAttribute(attr);
+                if (v) {
+                    const m = v.match(URN_RE);
+                    if (m) return m[1];
+                }
+            }
+            cur = cur.parentElement;
+        }
+        return null;
+    }
+
+    for (const link of profileLinks) {
+        const authorText = link.innerText.trim();
+        if (!authorText || authorText.length < 3) continue;
+
+        const href = link.getAttribute("href");
+        if (seen.has(href)) continue;
+        seen.add(href);
+
+        // Walk up from the profile link to find the post container
+        let container = link;
+        for (let i = 0; i < 12; i++) {
+            if (!container.parentElement) break;
+            container = container.parentElement;
+            if (container.tagName === "MAIN" || container.tagName === "BODY") break;
+            const text = container.innerText || "";
+            // Post containers have Like/Comment buttons
+            if (text.length > 200 && text.includes("Like") && text.includes("Comment")) break;
+        }
+
+        const fullText = container.innerText || "";
+        if (fullText.length < 50) continue;
+
+        // 1. Try to find a direct anchor to the post
+        let postUrl = "";
+        const postLink = container.querySelector(
+            'a[href*="/feed/update/"], a[href*="/posts/"], a[href*="urn:li:activity"]'
+        );
+        if (postLink) postUrl = postLink.getAttribute("href") || "";
+
+        // 2. Fall back to scanning for an activity URN on container/ancestors
+        if (!postUrl) {
+            const activityId = findActivityUrn(container);
+            if (activityId) {
+                postUrl = "https://www.linkedin.com/feed/update/urn:li:activity:" + activityId + "/";
+            }
+        }
+
+        // 3. If we still have no real post URL, skip this result entirely --
+        //    we never want to log the profile URL as the lead "post link".
+        if (!postUrl) continue;
+
+        // Extract just the post body (skip the author header and action buttons)
+        const lines = fullText.split("\\n").filter(l => l.trim().length > 0);
+        const bodyLines = lines.slice(4, -4);
+        const body = bodyLines.join(" ").substring(0, 800);
+
+        results.push({
+            author: authorText.split("\\n")[0].trim(),
+            profileUrl: href,
+            postUrl: postUrl,
+            body: body,
+            fullText: fullText.substring(0, 120),
+        });
+    }
+    return results;
+}"""
 
 
 def _make_post_id(url: str, snippet: str) -> str:
     return f"linkedin_{abs(hash(url + snippet[:40]))}"
 
 
-def _scrape_keyword(page, keyword: str, limit: int) -> list[dict]:
-    """Search LinkedIn for a keyword and return raw post dicts."""
-    import urllib.parse
-    url = _SEARCH_URL.format(query=urllib.parse.quote(keyword))
-    posts = []
-    try:
-        page.goto(url, wait_until="domcontentloaded", timeout=20000)
-        time.sleep(random.uniform(2, 4))
-
-        # Scroll once to load more results
-        page.keyboard.press("End")
-        time.sleep(random.uniform(1.5, 2.5))
-
-        # LinkedIn search results use data-urn attributes on post containers
-        # Each result card has a class containing "search-result" or similar
-        cards = page.query_selector_all(
-            'div[data-chameleon-result-urn], '
-            'li.reusable-search__result-container, '
-            'div.search-results-container li'
-        )
-
-        for card in cards[:limit]:
-            try:
-                text = card.inner_text()
-                if not text or len(text) < 30:
-                    continue
-
-                # Try to get the post URL
-                link = card.query_selector('a[href*="/posts/"], a[href*="activity"], a[href*="ugcPost"]')
-                post_url = ""
-                if link:
-                    post_url = link.get_attribute("href") or ""
-                    if post_url.startswith("/"):
-                        post_url = "https://www.linkedin.com" + post_url
-                    # Strip tracking params
-                    post_url = post_url.split("?")[0]
-
-                if not post_url:
-                    post_url = url  # fallback to search URL
-
-                # Author name — usually in a span with actor's name
-                author = "unknown"
-                author_el = card.query_selector(
-                    'span.entity-result__title-text a, '
-                    'span[aria-hidden="true"] + span, '
-                    'a[data-field="actor_name"]'
-                )
-                if author_el:
-                    author = author_el.inner_text().strip().split("\n")[0]
-
-                posts.append({"url": post_url, "text": text, "author": author})
-
-            except Exception:
-                continue
-
-    except PlaywrightTimeout:
-        print(f"[linkedin] Timeout searching for '{keyword}'")
-    except Exception as e:
-        print(f"[linkedin] Error searching for '{keyword}': {e}")
-
-    return posts
-
-
 def poll() -> Generator[RawPost, None, None]:
-    """Main entry point — searches LinkedIn for each keyword."""
+    """Main entry point -- searches LinkedIn for each keyword."""
     print("[linkedin] Starting Playwright poll cycle...")
 
     if not SESSION_FILE.exists():
-        print(f"[linkedin] No session file at {SESSION_FILE} — skipping.")
-        print("[linkedin] Run reply_agent.py once to create a LinkedIn session.")
+        print(f"[linkedin] No session file at {SESSION_FILE} -- skipping.")
+        print("[linkedin] Run the login script to create a LinkedIn session.")
         return
 
     seen_in_this_cycle: set[str] = set()
@@ -123,34 +144,56 @@ def poll() -> Generator[RawPost, None, None]:
         page.goto("https://www.linkedin.com/feed/", wait_until="domcontentloaded", timeout=15000)
         time.sleep(2)
         if "authwall" in page.url or "login" in page.url.lower():
-            print("[linkedin] Session expired. Delete linkedin_session.json and re-run reply_agent.py.")
+            print("[linkedin] Session expired. Delete linkedin_session.json and re-login.")
             browser.close()
             return
 
         for keyword in LINKEDIN_KEYWORDS:
             print(f"[linkedin] Searching: {keyword}")
-            raw_posts = _scrape_keyword(page, keyword, LINKEDIN_RESULTS_PER_KEYWORD)
+            encoded = urllib.parse.quote(keyword)
+            url = _SEARCH_URL.format(query=encoded)
 
-            for raw in raw_posts:
-                post_id = _make_post_id(raw["url"], raw["text"])
-                if post_id in seen_in_this_cycle:
-                    continue
-                seen_in_this_cycle.add(post_id)
-                total += 1
+            try:
+                page.goto(url, wait_until="domcontentloaded", timeout=20000)
+                time.sleep(random.uniform(3, 5))
 
-                lines = [l.strip() for l in raw["text"].splitlines() if l.strip()]
-                title = lines[0][:120] if lines else raw["text"][:120]
+                # Scroll to load more results
+                page.keyboard.press("End")
+                time.sleep(random.uniform(1.5, 2.5))
 
-                yield RawPost(
-                    id=post_id,
-                    platform="linkedin",
-                    url=raw["url"],
-                    author=raw["author"],
-                    title=title,
-                    body=raw["text"][:800],
-                    subreddit=None,
-                    published_at=None,
-                )
+                # Extract posts using JS DOM walker
+                raw_posts = page.evaluate(_EXTRACT_POSTS_JS)
+
+                for raw in raw_posts[:LINKEDIN_RESULTS_PER_KEYWORD]:
+                    post_url = raw["postUrl"]
+                    if post_url.startswith("/"):
+                        post_url = "https://www.linkedin.com" + post_url
+                    post_url = post_url.split("?")[0]
+
+                    post_id = _make_post_id(post_url, raw["body"])
+                    if post_id in seen_in_this_cycle:
+                        continue
+                    seen_in_this_cycle.add(post_id)
+                    total += 1
+
+                    title = raw["fullText"][:120]
+                    print(f"[linkedin]   -> {post_url}")
+
+                    yield RawPost(
+                        id=post_id,
+                        platform="linkedin",
+                        url=post_url,
+                        author=raw["author"],
+                        title=title,
+                        body=raw["body"][:800],
+                        subreddit=None,
+                        published_at=None,
+                    )
+
+            except PlaywrightTimeout:
+                print(f"[linkedin] Timeout searching for '{keyword}'")
+            except Exception as e:
+                print(f"[linkedin] Error searching for '{keyword}': {e}")
 
             time.sleep(random.uniform(3, 6))
 
@@ -158,4 +201,4 @@ def poll() -> Generator[RawPost, None, None]:
         context.storage_state(path=str(SESSION_FILE))
         browser.close()
 
-    print(f"[linkedin] Poll complete — {total} candidate posts found")
+    print(f"[linkedin] Poll complete -- {total} candidate posts found")

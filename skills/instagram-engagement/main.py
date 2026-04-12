@@ -205,8 +205,13 @@ def engage_with_target(
     )
     should_follow = (
         not already_following
-        and recent_enough
         and random.random() < FOLLOW_PROBABILITY
+    )
+
+    logger.info(
+        f"[{account}] @{username} decisions: like={should_like} comment={should_comment} "
+        f"follow={should_follow} (already_following={already_following}, "
+        f"recently_commented={recently_commented}, recent_enough={recent_enough})"
     )
 
     num_to_like = random.randint(*LIKES_PER_TARGET_RANGE)

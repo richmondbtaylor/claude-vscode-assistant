@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '6/8' in muted gray. Top section has a large coral-red circled number '5' as a decorative element. Below it, bold black sans-serif headline text reading 'Not Just Text. Everything.' at 56pt, centered. The word 'Everything' has a soft golden-amber #D4A853 brush-stroke highlight behind it. Below, three rows of content, each with a small thin-line icon on the left and medium-weight black text on the right: first row has a document icon with 'Reads and writes text', second row has a camera icon with 'Understands images and photos', third row has a video play button icon with 'Analyzes video natively'. Below these rows, small muted text reading '140+ languages supported'. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

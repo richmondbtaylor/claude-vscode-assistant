@@ -1,0 +1,11 @@
+Navigating to LinkedIn login...
+URL: https://www.linkedin.com/login
+Finding visible form fields...
+Visible fields: [{'type': 'text', 'x': 631.6000061035156, 'y': 438.3500061035156, 'w': 400, 'h': 48}, {'type': 'password', 'x': 631.6000061035156, 'y': 519.8500061035156, 'w': 400, 'h': 48}]
+Clicking email at (631.6000061035156, 438.3500061035156)
+Clicking password at (631.6000061035156, 519.8500061035156)
+Submitted. Waiting for redirect...
+Post-login URL: https://www.linkedin.com/login/
+[!] Unexpected URL: https://www.linkedin.com/login/
+
+Login FAILED

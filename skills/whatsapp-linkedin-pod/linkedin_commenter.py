@@ -254,7 +254,15 @@ class LinkedInCommenter:
         try:
             print(f"Extracting post content from: {post_url}")
             self.page.goto(post_url, wait_until='domcontentloaded', timeout=60000)
-            time.sleep(8)  # Give LinkedIn's JS time to render content
+            # Wait for any post content selector to appear, then extra settle time
+            try:
+                self.page.wait_for_selector(
+                    '.update-components-text, .feed-shared-text, article span[dir="ltr"]',
+                    timeout=10000
+                )
+            except Exception:
+                pass
+            time.sleep(4)  # Extra settle for lazy-loaded content
 
             # Click "see more" / "...more" if present to expand truncated posts
             try:
@@ -270,11 +278,18 @@ class LinkedInCommenter:
 
             # Strategy 1: Try CSS selectors (multiple generations of LinkedIn DOM)
             content_selectors = [
+                # Current (2025-2026) selectors
+                '.update-components-text__text-view',
+                '.update-components-text',
+                '.feed-shared-update-v2__commentary',
+                '.attributed-text-segment-list__content',
+                # Older selectors still seen on some post types
                 '.feed-shared-update-v2__description',
                 '.feed-shared-text',
-                '.update-components-text',
                 '[data-test-id="main-feed-activity-card__commentary"]',
                 '.feed-shared-inline-show-more-text',
+                # Broad fallbacks
+                'article span[dir="ltr"]',
                 'div.break-words',
                 'article .break-words',
             ]

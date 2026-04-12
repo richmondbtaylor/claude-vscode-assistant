@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '4/9' in muted gray. Top section has a large coral-red circled number '3' as a decorative element. Below it, bold black sans-serif headline text reading 'This Is a Trust Problem.' at 56pt, centered. The words 'Trust Problem' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, two side-by-side card-style boxes. Left card has a dark background with a small coral-red label text 'BAD ADVICE' at the top, and white text inside reading 'Build your workflows on this $20 tool. It works great right now.' Right card has a dark background with a small green label text 'GOOD ADVICE' at the top, and white text inside reading 'That tool sits on a subscription not designed for this. Have a backup plan.' Both cards have thin cream borders. Below the cards, smaller medium-weight black text reading 'If your advisor recommended OpenClaw without a contingency, that tells you something.' Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, editorial. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

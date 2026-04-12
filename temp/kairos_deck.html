@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kairos — Bishop AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#000813;
+  --dark-navy:#1D2333;
+  --bg:#FAFBFA;
+  --off:#E6E2DE;
+  --gold:#E0B848;
+  --blue:#1894C9;
+  --coral:#E05252;
+  --green:#3FBF7F;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--navy);font-family:'Open Sans',sans-serif;overflow:hidden;}
+body{display:flex;align-items:center;justify-content:center;}
+
+/* === FRAME === */
+.stage{
+  position:relative;
+  width:min(96vw,1600px);
+  height:min(92vh,900px);
+  background:var(--bg);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,8,19,0.10);
+}
+.brand{
+  position:absolute;top:32px;left:48px;
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;
+  letter-spacing:3px;color:var(--gold);z-index:50;
+}
+.brand::before{content:"";display:inline-block;width:10px;height:10px;background:var(--gold);border-radius:50%;margin-right:10px;vertical-align:middle;}
+.scene-label{
+  position:absolute;top:32px;right:48px;
+  font-family:'Montserrat',sans-serif;font-weight:600;font-size:12px;
+  letter-spacing:2px;color:var(--dark-navy);opacity:0.45;z-index:50;
+}
+.dots{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;z-index:50;
+}
+.dots span{
+  width:8px;height:8px;border-radius:50%;background:var(--navy);opacity:0.18;
+  transition:all .35s ease;
+}
+.dots span.active{background:var(--gold);opacity:1;width:32px;border-radius:4px;}
+.nav-hint{
+  position:absolute;bottom:28px;right:48px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dark-navy);opacity:0.45;z-index:50;
+}
+
+/* === SCENES === */
+.scene{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:120px 100px 100px;
+  opacity:0;pointer-events:none;
+  transition:opacity .55s ease;
+}
+.scene.active{opacity:1;pointer-events:auto;}
+
+/* shared */
+h1.title{font-family:'Poppins',sans-serif;font-weight:800;font-size:96px;line-height:1;letter-spacing:-2px;color:var(--navy);}
+h2.title{font-family:'Poppins',sans-serif;font-weight:800;font-size:64px;line-height:1.05;letter-spacing:-1px;color:var(--navy);text-align:center;}
+.eyebrow{font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:18px;}
+.gold-bar{width:64px;height:5px;background:var(--gold);border-radius:3px;margin:24px 0;}
+.sub{font-family:'Open Sans',sans-serif;font-weight:400;font-size:22px;color:var(--dark-navy);opacity:0.75;line-height:1.5;max-width:780px;text-align:center;}
+
+/* === SCENE 1 — TITLE === */
+#s1{justify-content:center;align-items:center;}
+#s1 .ring{
+  position:absolute;border:2px solid var(--gold);border-radius:50%;
+  opacity:0.18;
+}
+#s1 .r1{width:520px;height:520px;animation:pulse 4s ease-in-out infinite;}
+#s1 .r2{width:720px;height:720px;opacity:0.10;animation:pulse 4s ease-in-out 1s infinite;}
+#s1 .r3{width:920px;height:920px;opacity:0.06;animation:pulse 4s ease-in-out 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.04);opacity:.28}}
+#s1 h1{font-size:140px;letter-spacing:-4px;background:linear-gradient(120deg,var(--navy) 0%,var(--dark-navy) 60%,var(--gold) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#s1 .tag{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--blue);margin-top:8px;letter-spacing:1px;}
+#s1 .badge{
+  margin-top:34px;display:inline-flex;align-items:center;gap:10px;
+  padding:10px 18px;background:rgba(224,184,72,0.12);
+  border:1px solid rgba(224,184,72,0.4);border-radius:30px;
+  font-family:'Montserrat',sans-serif;font-weight:600;font-size:13px;color:var(--dark-navy);letter-spacing:1.5px;
+}
+#s1 .badge .pulse-dot{
+  width:10px;height:10px;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 0 0 var(--gold);animation:dotpulse 1.6s infinite;
+}
+@keyframes dotpulse{0%{box-shadow:0 0 0 0 rgba(224,184,72,.7)}70%{box-shadow:0 0 0 14px rgba(224,184,72,0)}100%{box-shadow:0 0 0 0 rgba(224,184,72,0)}}
+
+/* === SCENE 2 — BEFORE / AFTER === */
+#s2{flex-direction:column;}
+#s2 .top{margin-bottom:48px;text-align:center;}
+#s2 .compare{display:flex;gap:60px;align-items:stretch;}
+#s2 .card{
+  width:440px;padding:38px 36px;border-radius:18px;
+  background:#fff;border:1px solid rgba(0,8,19,0.08);
+  box-shadow:0 12px 40px rgba(0,8,19,0.06);
+  position:relative;
+}
+#s2 .card .label{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;color:var(--dark-navy);opacity:0.5;}
+#s2 .card h3{font-family:'Poppins',sans-serif;font-weight:800;font-size:32px;margin-top:8px;color:var(--navy);}
+#s2 .card p{font-size:16px;line-height:1.55;color:var(--dark-navy);opacity:0.75;margin-top:14px;}
+#s2 .card.before .clock{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--coral);margin-top:18px;display:flex;align-items:center;gap:8px;}
+#s2 .card.after{border:1px solid rgba(224,184,72,0.5);background:linear-gradient(180deg,#fff 0%,#FFFBF0 100%);}
+#s2 .card.after .clock{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);margin-top:18px;display:flex;align-items:center;gap:8px;}
+#s2 .arrow{align-self:center;font-size:48px;color:var(--gold);}
+#s2 .blink{display:inline-block;width:8px;height:14px;background:currentColor;animation:blink 1s steps(2) infinite;vertical-align:middle;}
+@keyframes blink{50%{opacity:0}}
+
+/* === SCENE 3 — DAEMON DEFINITION === */
+#s3 .core-wrap{position:relative;width:560px;height:560px;display:flex;align-items:center;justify-content:center;}
+#s3 .orbit{position:absolute;border:1px dashed rgba(0,8,19,0.18);border-radius:50%;}
+#s3 .orbit.o1{width:340px;height:340px;animation:spin 22s linear infinite;}
+#s3 .orbit.o2{width:480px;height:480px;animation:spin 36s linear infinite reverse;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#s3 .core{
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff 0%,var(--gold) 60%,#b8902c 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-weight:800;font-size:24px;color:var(--navy);
+  box-shadow:0 0 60px rgba(224,184,72,0.45),0 0 120px rgba(224,184,72,0.2);
+  animation:float 4s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#s3 .satellite{
+  position:absolute;width:54px;height:54px;border-radius:50%;
+  background:#fff;border:2px solid var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 20px rgba(24,148,201,0.25);
+}
+#s3 .o1 .satellite{top:-27px;left:50%;margin-left:-27px;}
+#s3 .o2 .satellite.s1{top:-27px;left:50%;margin-left:-27px;}
+#s3 .o2 .satellite.s2{bottom:-27px;left:50%;margin-left:-27px;}
+#s3 .right{margin-left:60px;max-width:460px;}
+#s3 .right .eyebrow{margin-bottom:14px;}
+#s3 .right h2{text-align:left;font-size:54px;}
+#s3 .right p{font-size:20px;margin-top:18px;color:var(--dark-navy);opacity:0.78;line-height:1.6;}
+#s3 .row{display:flex;align-items:center;gap:20px;}
+#s3 .row{flex-direction:row;}
+#s3{flex-direction:row;justify-content:center;}
+
+/* === SCENE 4 — WHAT IT WATCHES === */
+#s4 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px;width:100%;max-width:1280px;}
+#s4 .tile{
+  background:#fff;border-radius:18px;padding:34px 28px;
+  border:1px solid rgba(0,8,19,0.08);
+  box-shadow:0 10px 30px rgba(0,8,19,0.05);
+  cursor:pointer;transition:all .3s ease;
+  position:relative;overflow:hidden;
+}
+#s4 .tile:hover{transform:translateY(-6px);box-shadow:0 18px 50px rgba(0,8,19,0.10);border-color:var(--gold);}
+#s4 .tile .icon{width:60px;height:60px;display:flex;align-items:center;justify-content:center;border-radius:14px;margin-bottom:18px;}
+#s4 .tile h4{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;color:var(--navy);}
+#s4 .tile p{font-size:14px;color:var(--dark-navy);opacity:0.65;margin-top:8px;line-height:1.5;}
+#s4 .tile.active{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,184,72,0.18),0 18px 50px rgba(0,8,19,0.10);}
+#s4 .scanline{
+  position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  top:0;animation:scan 2s linear infinite;opacity:0;
+}
+#s4 .tile.active .scanline{opacity:1;}
+@keyframes scan{0%{top:0}100%{top:100%}}
+#s4 .tile.bug .icon{background:rgba(224,82,82,0.10);}
+#s4 .tile.perf .icon{background:rgba(24,148,201,0.10);}
+#s4 .tile.deps .icon{background:rgba(224,184,72,0.12);}
+#s4 .tile.sec .icon{background:rgba(63,191,127,0.12);}
+
+/* === SCENE 5 — PR WHILE YOU SLEEP === */
+#s5{flex-direction:row;align-items:center;justify-content:center;gap:80px;}
+#s5 .left{max-width:480px;}
+#s5 .left h2{text-align:left;font-size:62px;}
+#s5 .left p{margin-top:20px;font-size:18px;color:var(--dark-navy);opacity:0.78;line-height:1.6;}
+#s5 .pr-stack{position:relative;width:480px;height:520px;}
+.pr-card{
+  position:absolute;width:440px;background:#fff;border:1px solid rgba(0,8,19,0.10);
+  border-radius:14px;padding:18px 22px;box-shadow:0 8px 30px rgba(0,8,19,0.08);
+  font-family:'JetBrains Mono',monospace;font-size:13px;
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateX(0);opacity:0;
+}
+.pr-card.show{animation:slideIn .6s forwards ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+.pr-card .head{display:flex;justify-content:space-between;align-items:center;}
+.pr-card .num{color:var(--gold);font-weight:600;}
+.pr-card .branch{font-size:11px;color:var(--blue);}
+.pr-card .title{font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;color:var(--navy);}
+.pr-card .meta{display:flex;gap:14px;font-size:11px;color:var(--dark-navy);opacity:0.6;}
+.pr-card .meta .ok{color:var(--green);}
+.pr-card.p1{top:0;}
+.pr-card.p2{top:130px;}
+.pr-card.p3{top:260px;}
+.pr-card.p4{top:390px;}
+#s5 .moon{
+  position:absolute;top:-20px;right:-20px;width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#fff 0%,#E6E2DE 70%,#9DA3B0 100%);
+  box-shadow:0 0 40px rgba(230,226,222,0.6);
+}
+
+/* === SCENE 6 — TEAM SCENARIO === */
+#s6 h2{margin-bottom:36px;}
+#s6 .timeline{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1200px;position:relative;}
+#s6 .timeline::before{content:"";position:absolute;left:60px;right:60px;top:80px;height:2px;background:linear-gradient(90deg,var(--coral),var(--gold) 50%,var(--green));}
+#s6 .step{display:flex;flex-direction:column;align-items:center;width:200px;text-align:center;position:relative;z-index:2;}
+#s6 .step .icon-circ{
+  width:90px;height:90px;border-radius:50%;background:#fff;
+  border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;box-shadow:0 8px 24px rgba(0,8,19,0.08);
+}
+#s6 .step.devs .icon-circ{border-color:var(--coral);}
+#s6 .step.kairos .icon-circ{border-color:var(--gold);animation:glow 2s ease-in-out infinite;}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(224,184,72,0.5)}50%{box-shadow:0 0 0 14px rgba(224,184,72,0)}}
+#s6 .step.monday .icon-circ{border-color:var(--green);}
+#s6 .step .time{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);font-weight:600;margin-top:4px;}
+#s6 .step h4{font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;color:var(--navy);margin-top:6px;}
+#s6 .step p{font-size:13px;color:var(--dark-navy);opacity:0.65;margin-top:6px;line-height:1.4;}
+#s6 .badge-num{
+  position:absolute;top:-10px;right:-10px;
+  background:var(--gold);color:var(--navy);
+  font-family:'Poppins',sans-serif;font-weight:800;font-size:14px;
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(224,184,72,0.5);
+}
+
+/* === SCENE 7 — ARCHITECTURE === */
+#s7 h2{margin-bottom:32px;}
+#s7 .arch{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;width:100%;max-width:1200px;}
+#s7 .block{
+  background:#fff;border:1px solid rgba(0,8,19,0.08);border-radius:16px;padding:30px 26px;
+  box-shadow:0 8px 26px rgba(0,8,19,0.05);position:relative;
+  cursor:pointer;transition:all .3s ease;
+}
+#s7 .block:hover{transform:translateY(-4px);border-color:var(--blue);}
+#s7 .block .pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(24,148,201,0.10);color:var(--blue);padding:4px 10px;border-radius:20px;letter-spacing:1px;}
+#s7 .block h4{font-family:'Poppins',sans-serif;font-weight:700;font-size:20px;margin-top:14px;color:var(--navy);}
+#s7 .block p{font-size:13px;color:var(--dark-navy);opacity:0.7;margin-top:10px;line-height:1.55;}
+#s7 .terminal{
+  margin-top:36px;background:var(--navy);border-radius:12px;padding:22px 28px;width:100%;max-width:1200px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;color:#9FE5BC;
+  box-shadow:0 16px 40px rgba(0,8,19,0.18);
+}
+#s7 .terminal .dots-t{display:flex;gap:6px;margin-bottom:14px;}
+#s7 .terminal .dots-t span{width:11px;height:11px;border-radius:50%;}
+#s7 .terminal .dots-t span:nth-child(1){background:#FF5F57;}
+#s7 .terminal .dots-t span:nth-child(2){background:#FEBC2E;}
+#s7 .terminal .dots-t span:nth-child(3){background:#28C840;}
+#s7 .terminal .line{opacity:0;animation:typeIn .4s forwards;}
+#s7 .terminal .line.l1{animation-delay:.2s;}
+#s7 .terminal .line.l2{animation-delay:.7s;}
+#s7 .terminal .line.l3{animation-delay:1.2s;color:var(--gold);}
+#s7 .terminal .line.l4{animation-delay:1.7s;}
+@keyframes typeIn{to{opacity:1;}}
+#s7 .terminal .prompt{color:var(--blue);}
+
+/* === SCENE 8 — MCP CONNECTION === */
+#s8{flex-direction:column;}
+#s8 h2{margin-bottom:18px;}
+#s8 .sub{margin-bottom:40px;}
+#s8 .hub{position:relative;width:780px;height:380px;}
+#s8 .center-node{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:140px;height:140px;border-radius:24px;
+  background:linear-gradient(135deg,var(--gold) 0%,#c69b35 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 20px 50px rgba(224,184,72,0.4),0 0 0 8px rgba(224,184,72,0.10);
+  z-index:5;
+}
+#s8 .center-node .name{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;color:var(--navy);}
+#s8 .center-node .tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--navy);opacity:0.7;margin-top:4px;}
+#s8 .tool{
+  position:absolute;width:130px;padding:14px 16px;background:#fff;border-radius:12px;
+  border:1px solid rgba(0,8,19,0.10);box-shadow:0 8px 22px rgba(0,8,19,0.08);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:pointer;transition:all .3s ease;z-index:10;
+}
+#s8 .tool:hover{transform:scale(1.06);border-color:var(--gold);}
+#s8 .tool .ic{width:36px;height:36px;display:flex;align-items:center;justify-content:center;}
+#s8 .tool .label{font-family:'Montserrat',sans-serif;font-weight:600;font-size:12px;color:var(--navy);text-align:center;}
+#s8 .tool.t1{top:0;left:0;}
+#s8 .tool.t2{top:0;right:0;}
+#s8 .tool.t3{bottom:0;left:0;}
+#s8 .tool.t4{bottom:0;right:0;}
+#s8 svg.lines{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;}
+#s8 svg.lines line{stroke:var(--gold);stroke-width:2;stroke-dasharray:6 6;opacity:0.5;animation:dash 1.5s linear infinite;}
+@keyframes dash{to{stroke-dashoffset:-24;}}
+
+/* === SCENE 9 — POWER + WARNING === */
+#s9{flex-direction:column;}
+#s9 .split{display:flex;gap:40px;margin-top:30px;width:100%;max-width:1200px;}
+#s9 .panel{
+  flex:1;padding:42px 38px;border-radius:18px;background:#fff;
+  border:1px solid rgba(0,8,19,0.08);box-shadow:0 12px 36px rgba(0,8,19,0.06);
+  position:relative;overflow:hidden;
+}
+#s9 .panel.power{border-top:5px solid var(--gold);}
+#s9 .panel.risk{border-top:5px solid var(--coral);background:linear-gradient(180deg,#fff 0%,#FFF5F5 100%);}
+#s9 .panel .icon-big{width:64px;height:64px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+#s9 .panel h3{font-family:'Poppins',sans-serif;font-weight:800;font-size:30px;color:var(--navy);}
+#s9 .panel ul{margin-top:18px;list-style:none;}
+#s9 .panel li{font-size:15px;color:var(--dark-navy);opacity:0.78;margin-top:10px;padding-left:20px;position:relative;line-height:1.5;}
+#s9 .panel.power li::before{content:"";position:absolute;left:0;top:8px;width:8px;height:8px;background:var(--gold);border-radius:50%;}
+#s9 .panel.risk li::before{content:"!";position:absolute;left:0;top:0;color:var(--coral);font-weight:800;}
+#s9 .footer-line{
+  margin-top:30px;font-family:'Montserrat',sans-serif;font-weight:600;font-size:14px;
+  letter-spacing:2px;color:var(--gold);text-transform:uppercase;
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="brand">BISHOP AI</div>
+  <div class="scene-label" id="sceneLabel">01 / 09 — INTRO</div>
+
+  <!-- ============ SCENE 1 ============ -->
+  <section class="scene active" id="s1">
+    <div class="ring r3"></div>
+    <div class="ring r2"></div>
+    <div class="ring r1"></div>
+    <div class="eyebrow">Hidden in the source</div>
+    <h1 class="title">KAIROS</h1>
+    <div class="tag">// daemon agent &middot; persistent &middot; autonomous</div>
+    <div class="badge"><span class="pulse-dot"></span> ALWAYS ON</div>
+  </section>
+
+  <!-- ============ SCENE 2 ============ -->
+  <section class="scene" id="s2">
+    <div class="top">
+      <div class="eyebrow">The shift</div>
+      <h2 class="title">Claude Code worked while you worked.<br>Kairos works while you sleep.</h2>
+    </div>
+    <div class="compare">
+      <div class="card before">
+        <span class="label">BEFORE</span>
+        <h3>Open. Task. Close.</h3>
+        <p>You launch Claude Code, hand it a task, watch it run, then shut it down. Nothing happens after you walk away.</p>
+        <div class="clock">[ idle ] <span class="blink"></span></div>
+      </div>
+      <div class="arrow">&rarr;</div>
+      <div class="card after">
+        <span class="label">WITH KAIROS</span>
+        <h3>Always running.</h3>
+        <p>A background process watches your repo around the clock. It keeps thinking, keeps fixing, keeps shipping.</p>
+        <div class="clock">[ scanning&hellip; ] <span class="blink"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 3 ============ -->
+  <section class="scene" id="s3">
+    <div class="core-wrap">
+      <div class="orbit o2">
+        <div class="satellite s1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20" stroke="#1894C9" stroke-width="2"/></svg></div>
+        <div class="satellite s2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#1894C9" stroke-width="2"/></svg></div>
+      </div>
+      <div class="orbit o1">
+        <div class="satellite"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#1894C9" stroke-width="2.5" fill="none"/></svg></div>
+      </div>
+      <div class="core">KAIROS</div>
+    </div>
+    <div class="right">
+      <div class="eyebrow">Definition</div>
+      <h2 class="title">A daemon agent.</h2>
+      <p>Plain English: a program that runs in the background <em>all the time</em>, even when your laptop is closed and you're nowhere near a keyboard.</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--blue);opacity:0.8;">$ ps aux | grep kairos &nbsp;<span style="color:var(--green)">&#10003; running</span></p>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 4 ============ -->
+  <section class="scene" id="s4">
+    <div style="text-align:center;">
+      <div class="eyebrow">What it watches for</div>
+      <h2 class="title">Continuous codebase monitoring.</h2>
+      <p class="sub" style="margin-top:18px;">Click an icon to see what Kairos hunts for in your repo.</p>
+    </div>
+    <div class="grid">
+      <div class="tile bug" data-info="Null refs, race conditions, broken edge cases">
+        <div class="scanline"></div>
+        <div class="icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="6" stroke="#E05252" stroke-width="2"/><path d="M12 6V3M12 21v-3M6 12H3M21 12h-3M7 7L5 5M19 19l-2-2M7 17l-2 2M19 5l-2 2" stroke="#E05252" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h4>Bugs</h4>
+        <p>Logic errors and broken paths.</p>
+      </div>
+      <div class="tile perf" data-info="Slow queries, inefficient loops, memory leaks">
+        <div class="scanline"></div>
+        <div class="icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M3 18l5-7 4 3 6-9" stroke="#1894C9" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 5h5v5" stroke="#1894C9" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h4>Performance</h4>
+        <p>Slow paths and bottlenecks.</p>
+      </div>
+      <div class="tile deps" data-info="Outdated packages and known CVE versions">
+        <div class="scanline"></div>
+        <div class="icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" stroke="#E0B848" stroke-width="2" fill="none"/><path d="M3 7l9 5 9-5M12 12v10" stroke="#E0B848" stroke-width="2"/></svg></div>
+        <h4>Dependencies</h4>
+        <p>Stale and risky packages.</p>
+      </div>
+      <div class="tile sec" data-info="Exposed secrets, injection paths, weak auth">
+        <div class="scanline"></div>
+        <div class="icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6l-8-4z" stroke="#3FBF7F" stroke-width="2" fill="none"/><path d="M9 12l2 2 4-4" stroke="#3FBF7F" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h4>Security</h4>
+        <p>Vulnerabilities and CVEs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 5 ============ -->
+  <section class="scene" id="s5">
+    <div class="left">
+      <div class="eyebrow">It doesn't just flag</div>
+      <h2 class="title">It opens the PR.</h2>
+      <p>When Kairos finds something, it doesn't drop a ticket. It writes the fix, opens a branch, and pushes a pull request straight to your queue. While you sleep.</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--blue);margin-top:24px;">// pull request: data flowing from another source, toward you</p>
+    </div>
+    <div class="pr-stack">
+      <div class="moon"></div>
+      <div class="pr-card p1 show" style="animation-delay:.1s;">
+        <div class="head"><span class="num">#412</span><span class="branch">kairos/fix-null-user</span></div>
+        <div class="title">Fix null reference in user lookup</div>
+        <div class="meta"><span class="ok">+24 -8</span><span>3 files</span><span class="ok">&#10003; tests pass</span></div>
+      </div>
+      <div class="pr-card p2 show" style="animation-delay:.4s;">
+        <div class="head"><span class="num">#413</span><span class="branch">kairos/perf-query</span></div>
+        <div class="title">Index missing on orders.created_at</div>
+        <div class="meta"><span class="ok">+12 -2</span><span>1 file</span><span class="ok">&#10003; tests pass</span></div>
+      </div>
+      <div class="pr-card p3 show" style="animation-delay:.7s;">
+        <div class="head"><span class="num">#414</span><span class="branch">kairos/bump-deps</span></div>
+        <div class="title">Bump lodash 4.17.20 -> 4.17.21 (CVE)</div>
+        <div class="meta"><span class="ok">+1 -1</span><span>1 file</span><span class="ok">&#10003; tests pass</span></div>
+      </div>
+      <div class="pr-card p4 show" style="animation-delay:1s;">
+        <div class="head"><span class="num">#415</span><span class="branch">kairos/sanitize-input</span></div>
+        <div class="title">Sanitize search params before SQL</div>
+        <div class="meta"><span class="ok">+18 -4</span><span>2 files</span><span class="ok">&#10003; tests pass</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 6 ============ -->
+  <section class="scene" id="s6">
+    <div style="text-align:center;">
+      <div class="eyebrow">A small team scenario</div>
+      <h2 class="title">Friday 6pm &rarr; Monday 9am.</h2>
+    </div>
+    <div class="timeline">
+      <div class="step devs">
+        <div class="icon-circ">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#E05252" stroke-width="2"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7" stroke="#E05252" stroke-width="2" fill="none"/></svg>
+        </div>
+        <div class="time">FRI 6:00 PM</div>
+        <h4>Devs go home</h4>
+        <p>Three developers shut their laptops.</p>
+      </div>
+      <div class="step kairos">
+        <div class="icon-circ">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#E0B848" stroke-width="2"/><path d="M12 6v6l4 2" stroke="#E0B848" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="time">ALL WEEKEND</div>
+        <h4>Kairos works</h4>
+        <p>Background scans, fixes, branches, PRs.</p>
+      </div>
+      <div class="step monday">
+        <div class="icon-circ" style="position:relative;">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M6 3v4M18 3v4M3 9h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" stroke="#3FBF7F" stroke-width="2" fill="none"/></svg>
+          <div class="badge-num">4</div>
+        </div>
+        <div class="time">MON 9:00 AM</div>
+        <h4>4 PRs waiting</h4>
+        <p>Clean fixes for issues nobody noticed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 7 ============ -->
+  <section class="scene" id="s7">
+    <div style="text-align:center;">
+      <div class="eyebrow">Inside the source code</div>
+      <h2 class="title">How Kairos is wired.</h2>
+    </div>
+    <div class="arch">
+      <div class="block">
+        <span class="pill">PROCESS</span>
+        <h4>Persistent daemon</h4>
+        <p>Long-running background process. Survives shell sessions and reboots.</p>
+      </div>
+      <div class="block">
+        <span class="pill">HOOKS</span>
+        <h4>FS watchers + Git</h4>
+        <p>File system events and git integration trigger scans on change.</p>
+      </div>
+      <div class="block">
+        <span class="pill">SCHEDULE</span>
+        <h4>Configurable cadence</h4>
+        <p>Runs on a schedule, scanning predefined issue patterns autonomously.</p>
+      </div>
+    </div>
+    <div class="terminal">
+      <div class="dots-t"><span></span><span></span><span></span></div>
+      <div class="line l1"><span class="prompt">kairos&gt;</span> watch /repo &mdash; mode=daemon</div>
+      <div class="line l2"><span class="prompt">kairos&gt;</span> scan: 4 patterns matched in 12 files</div>
+      <div class="line l3"><span class="prompt">kairos&gt;</span> &nbsp;&#10003; branch created: kairos/fix-null-user</div>
+      <div class="line l4"><span class="prompt">kairos&gt;</span> &nbsp;&#10003; pull request opened &middot; #412</div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 8 ============ -->
+  <section class="scene" id="s8">
+    <div style="text-align:center;">
+      <div class="eyebrow">The real unlock</div>
+      <h2 class="title">Kairos rides the MCP rails.</h2>
+      <p class="sub">It plugs into the same MCP server infrastructure Claude Code already uses for tool execution. Every tool you've connected becomes available.</p>
+    </div>
+    <div class="hub">
+      <svg class="lines" viewBox="0 0 780 380" preserveAspectRatio="none">
+        <line x1="65" y1="40" x2="390" y2="190"/>
+        <line x1="715" y1="40" x2="390" y2="190"/>
+        <line x1="65" y1="340" x2="390" y2="190"/>
+        <line x1="715" y1="340" x2="390" y2="190"/>
+      </svg>
+      <div class="center-node">
+        <div class="name">KAIROS</div>
+        <div class="tag">via MCP</div>
+      </div>
+      <div class="tool t1">
+        <div class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="8" ry="3" stroke="#1894C9" stroke-width="2"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5" stroke="#1894C9" stroke-width="2" fill="none"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" stroke="#1894C9" stroke-width="2" fill="none"/></svg></div>
+        <div class="label">DB Queries</div>
+      </div>
+      <div class="tool t2">
+        <div class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#1894C9" stroke-width="2"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18" stroke="#1894C9" stroke-width="2"/></svg></div>
+        <div class="label">API Calls</div>
+      </div>
+      <div class="tool t3">
+        <div class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M12 2l3 6 6 1-4.5 4 1 6-5.5-3-5.5 3 1-6L3 9l6-1 3-6z" stroke="#1894C9" stroke-width="2" fill="none"/></svg></div>
+        <div class="label">Deploy Scripts</div>
+      </div>
+      <div class="tool t4">
+        <div class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#1894C9" stroke-width="2" fill="none"/><path d="M3 9h18M7 14h4" stroke="#1894C9" stroke-width="2"/></svg></div>
+        <div class="label">+ Your tools</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 9 ============ -->
+  <section class="scene" id="s9">
+    <div style="text-align:center;">
+      <div class="eyebrow">The double edge</div>
+      <h2 class="title">Powerful. And worth thinking about.</h2>
+    </div>
+    <div class="split">
+      <div class="panel power">
+        <div class="icon-big">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" fill="#E0B848" stroke="#E0B848" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Why it's powerful</h3>
+        <ul>
+          <li>Always-on agent with full tool access</li>
+          <li>Fixes ship while the team sleeps</li>
+          <li>Every MCP integration becomes leverage</li>
+        </ul>
+      </div>
+      <div class="panel risk">
+        <div class="icon-big">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none"><path d="M12 3L2 21h20L12 3z" stroke="#E05252" stroke-width="2" fill="none" stroke-linejoin="round"/><line x1="12" y1="10" x2="12" y2="15" stroke="#E05252" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="18" r="1" fill="#E05252"/></svg>
+        </div>
+        <h3>Why it's worth thinking about</h3>
+        <ul>
+          <li>Unattended access to databases and deploys</li>
+          <li>Runs even when nobody is watching</li>
+          <li>Security model needs deliberate guardrails</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-line">&mdash; we'll get into that next &mdash;</div>
+  </section>
+
+  <div class="dots" id="dots"></div>
+  <div class="nav-hint">&larr; / &rarr; &middot; SPACE</div>
+</div>
+
+<script>
+const scenes = document.querySelectorAll('.scene');
+const labels = ['INTRO','THE SHIFT','DAEMON','MONITOR','PULL REQUESTS','TEAM','ARCHITECTURE','MCP','POWER + RISK'];
+const dotsEl = document.getElementById('dots');
+const sceneLabel = document.getElementById('sceneLabel');
+let idx = 0;
+
+scenes.forEach((_,i)=>{
+  const d = document.createElement('span');
+  if(i===0) d.classList.add('active');
+  d.addEventListener('click',()=>go(i));
+  dotsEl.appendChild(d);
+});
+
+function go(n){
+  if(n<0||n>=scenes.length) return;
+  scenes[idx].classList.remove('active');
+  dotsEl.children[idx].classList.remove('active');
+  idx = n;
+  scenes[idx].classList.add('active');
+  dotsEl.children[idx].classList.add('active');
+  const num = String(idx+1).padStart(2,'0');
+  const total = String(scenes.length).padStart(2,'0');
+  sceneLabel.textContent = `${num} / ${total} — ${labels[idx]}`;
+  // re-trigger animations on PR scene
+  if(scenes[idx].id==='s5'){
+    scenes[idx].querySelectorAll('.pr-card').forEach((el,i)=>{
+      el.style.animation='none';void el.offsetWidth;
+      el.style.animation=`slideIn .6s forwards ease`;
+      el.style.animationDelay = (0.1+i*0.3)+'s';
+    });
+  }
+  if(scenes[idx].id==='s7'){
+    scenes[idx].querySelectorAll('.terminal .line').forEach((el,i)=>{
+      el.style.animation='none';void el.offsetWidth;
+      el.style.animation=`typeIn .4s forwards`;
+      el.style.animationDelay=(0.2+i*0.5)+'s';
+    });
+  }
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') {e.preventDefault();go(idx+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp') {e.preventDefault();go(idx-1);}
+  else if(e.key==='Home') go(0);
+  else if(e.key==='End') go(scenes.length-1);
+});
+
+// Scene 4 — clickable monitoring tiles
+document.querySelectorAll('#s4 .tile').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('#s4 .tile').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+  });
+});
+// Scene 8 — tool hover already CSS; click bumps center
+document.querySelectorAll('#s8 .tool').forEach(t=>{
+  t.addEventListener('click',()=>{
+    const c = document.querySelector('#s8 .center-node');
+    c.style.transition='transform .3s';
+    c.style.transform='translate(-50%,-50%) scale(1.08)';
+    setTimeout(()=>c.style.transform='translate(-50%,-50%) scale(1)',280);
+  });
+});
+</script>
+</body>
+</html>

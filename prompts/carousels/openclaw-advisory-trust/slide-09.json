@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '9/9' in muted gray. Centered layout with generous whitespace. Large ultra-bold black sans-serif headline reading 'Choose Advisors Who Think Ahead.' at 56pt centered. The words 'Think Ahead' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below, medium-weight black text reading 'Not ones who chase what's trending.' at 28pt. A thin golden-amber horizontal divider line below. Below the divider, medium-weight black text reading 'Follow for AI strategy that survives.' with the word 'Follow' in coral-red bold text. Below that, small muted text reading '@bishopai' with a small right-pointing arrow icon. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, bold, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

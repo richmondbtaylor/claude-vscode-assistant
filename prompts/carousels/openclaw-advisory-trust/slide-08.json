@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '8/9' in muted gray. Top section has a large coral-red circled number '6' as a decorative element. Below it, bold black sans-serif headline text reading 'The AI Landscape Right Now.' at 52pt, centered. The words 'Right Now' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below, three bullet points with coral-red dot markers, each in medium-weight black text: first bullet 'Fast moving.' second bullet 'High stakes.' third bullet 'Completely unforgiving if you trusted the wrong person to build your foundation.' The third bullet is slightly larger and bolder than the first two for emphasis. Below the bullets, a thin-line illustration of a compass in black outlines, symbolizing navigation and direction. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

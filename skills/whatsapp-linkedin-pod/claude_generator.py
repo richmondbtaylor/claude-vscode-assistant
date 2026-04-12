@@ -134,13 +134,16 @@ class ClaudeCommentGenerator:
     def _call_claude(self, prompt):
         """Call claude CLI with a prompt and return the response text."""
         full_prompt = SYSTEM_PROMPT + "\n\n" + prompt
+        # Pass prompt via stdin to avoid shell interpreting < > chars in XML tags
         result = subprocess.run(
-            ['claude', '-p', full_prompt, '--no-input'],
+            'claude -p',
+            input=full_prompt,
             capture_output=True,
             text=True,
             timeout=120,
             encoding='utf-8',
-            errors='replace'
+            errors='replace',
+            shell=True
         )
         if result.returncode != 0:
             raise RuntimeError(f"claude CLI failed (exit {result.returncode}): {result.stderr[:200]}")

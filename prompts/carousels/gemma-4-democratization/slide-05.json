@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '5/8' in muted gray. Top section has a large coral-red circled number '4' as a decorative element. Below it, bold black sans-serif headline text reading 'Your Data Never Leaves' at 56pt, centered. The word 'Never' has a soft golden-amber #D4A853 brush-stroke highlight behind it. Below the headline, two small card-style boxes side by side. Left card labeled 'CLOUD AI' in small coral-red text with dark background card containing 'Your prompts go to external servers. Someone else stores your data.' in small white text. Right card labeled 'GEMMA 4 LOCAL' in small green text with dark background card containing 'Everything stays on your machine. Zero data leaves your house.' in small white text. A small red X icon above the left card and a green checkmark above the right card. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, editorial. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

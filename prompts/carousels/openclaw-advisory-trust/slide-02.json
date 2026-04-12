@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '2/9' in muted gray. Top section has a large coral-red circled number '1' as a decorative element. Below it, bold black sans-serif headline text reading 'Anthropic Pulled the Plug.' at 56pt, centered. The word 'Plug' has a soft golden-amber #D4A853 brush-stroke highlight behind it, like a hand-painted marker swipe. Below, a dark card-style box with cream border containing the text 'OpenClaw let users run autonomous AI agents 24/7 on a $20/month Claude subscription. Anthropic blocked it. No warning. No transition plan.' in small clean white monospace text. Below the card, smaller medium-weight black text reading 'People who built their workflows on it woke up scrambling.' A minimal thin-line illustration of a power switch being flipped off in black outlines to the right of the text. Small text '@bishopai' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

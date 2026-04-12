@@ -33,6 +33,7 @@ import notifier
 import reddit_monitor
 import storage
 import twitter_monitor
+import upwork_monitor
 import web_monitor
 from config import REDDIT_POLL_INTERVAL_MINUTES, WEB_POLL_INTERVAL_HOURS
 
@@ -142,6 +143,14 @@ def run_web_cycle() -> None:
             process_post(post)
     except Exception as e:
         print(f"[main] Twitter cycle error: {e}")
+
+    # Upwork — RSS feed scraper for job postings
+    print(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] UPWORK JOBS")
+    try:
+        for post in upwork_monitor.poll():
+            process_post(post)
+    except Exception as e:
+        print(f"[main] Upwork cycle error: {e}")
 
     # n8n Community Jobs board — dedicated Discourse API scraper
     print(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] n8n COMMUNITY JOBS")

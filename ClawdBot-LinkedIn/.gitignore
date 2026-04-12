@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.log
+chrome_data/
+session/
+*.json
+venv/
+.vscode/
+node_modules/

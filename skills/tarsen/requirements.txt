@@ -1,0 +1,6 @@
+anthropic>=0.86
+gspread>=6.0
+google-auth>=2.0
+playwright>=1.40
+python-dotenv>=1.0
+tzdata; sys_platform == "win32"

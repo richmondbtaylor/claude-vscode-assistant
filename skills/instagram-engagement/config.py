@@ -15,15 +15,15 @@ load_dotenv()
 # ---------------------------------------------------------------------------
 
 RATE_LIMITS_HOURLY = {
-    "follows": 20,
-    "comments": 30,
-    "likes": 50,
+    "follows": 30,
+    "comments": 40,
+    "likes": 70,
 }
 
 RATE_LIMITS_DAILY = {
-    "follows": 100,
-    "comments": 120,
-    "likes": 200,
+    "follows": 150,
+    "comments": 160,
+    "likes": 300,
 }
 
 # ---------------------------------------------------------------------------
@@ -32,11 +32,11 @@ RATE_LIMITS_DAILY = {
 # ---------------------------------------------------------------------------
 
 RAMP_UP_MATRIX = [
-    {"days": (1,  3),    "follows": 2,   "comments": 0,   "likes": 12,  "sessions": 3},
-    {"days": (4,  7),    "follows": 8,   "comments": 5,   "likes": 35,  "sessions": 4},
-    {"days": (8,  14),   "follows": 15,  "comments": 15,  "likes": 85,  "sessions": 5},
-    {"days": (15, 21),   "follows": 30,  "comments": 45,  "likes": 180, "sessions": 5},
-    {"days": (22, 9999), "follows": 100, "comments": 120, "likes": 200, "sessions": 5},
+    {"days": (1,  3),    "follows": 5,   "comments": 3,   "likes": 20,  "sessions": 3},
+    {"days": (4,  7),    "follows": 15,  "comments": 10,  "likes": 50,  "sessions": 4},
+    {"days": (8,  14),   "follows": 30,  "comments": 25,  "likes": 120, "sessions": 5},
+    {"days": (15, 21),   "follows": 60,  "comments": 70,  "likes": 250, "sessions": 6},
+    {"days": (22, 9999), "follows": 150, "comments": 160, "likes": 300, "sessions": 6},
 ]
 
 
@@ -59,13 +59,13 @@ def get_ramp_up_limits(day_number: int) -> dict:
 # ---------------------------------------------------------------------------
 
 # Random delay range (seconds) between every action
-ACTION_DELAY_RANGE = (45, 210)
+ACTION_DELAY_RANGE = (30, 150)
 
 # Break taken between sessions (inter-session delay)
-INTER_SESSION_DELAY_RANGE = (30 * 60, 90 * 60)  # 30–90 minutes in seconds
+INTER_SESSION_DELAY_RANGE = (20 * 60, 60 * 60)  # 20–60 minutes in seconds
 
 # How long each active session block runs (minutes)
-SESSION_ACTIVE_DURATION_RANGE = (20, 25)
+SESSION_ACTIVE_DURATION_RANGE = (25, 35)
 
 # Break taken every ~60 minutes within a session (seconds) — kept as fallback
 HOURLY_BREAK_RANGE = (300, 600)  # 5–10 minutes
@@ -91,10 +91,10 @@ LIKE_PROBABILITY = 0.92
 AUTHORITY_LIKE_PROBABILITY = 0.60
 
 # Chance of commenting (less frequent — more weight, more human)
-COMMENT_PROBABILITY = 0.55
+COMMENT_PROBABILITY = 0.65
 
 # Chance of following (selective — quality over quantity)
-FOLLOW_PROBABILITY = 0.65
+FOLLOW_PROBABILITY = 0.80
 
 # Chance any given comment includes a single emoji (~1 in 3)
 EMOJI_PROBABILITY = 0.30
@@ -106,7 +106,7 @@ LIKES_PER_TARGET_RANGE = (1, 3)
 # Target account filtering criteria
 # ---------------------------------------------------------------------------
 
-MIN_FOLLOWERS = 300
+MIN_FOLLOWERS = 150
 MAX_POST_AGE_DAYS = 14         # Account must have posted within this window to engage
 MIN_FOLLOW_RATIO = 0.3         # followers / following must be >= this value
 BIO_KEYWORDS = [

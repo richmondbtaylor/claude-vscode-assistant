@@ -1,0 +1,24 @@
+2026/02/19-10:50:16.933 1112c Reusing MANIFEST C:\Users\richm\ClawdBot-LinkedIn\whatsapp_session\Default\Local Storage\leveldb/MANIFEST-000001
+2026/02/19-10:50:16.938 1112c Recovering log #32
+2026/02/19-10:50:16.941 1112c Reusing old log C:\Users\richm\ClawdBot-LinkedIn\whatsapp_session\Default\Local Storage\leveldb/000032.log 
+2026/02/19-14:43:15.185 1112c Level-0 table #36: started
+2026/02/19-14:43:15.196 1112c Level-0 table #36: 13932 bytes OK
+2026/02/19-14:43:15.200 1112c Delete type=0 #32
+2026/02/19-22:59:52.605 1112c Level-0 table #38: started
+2026/02/19-22:59:52.621 1112c Level-0 table #38: 14311 bytes OK
+2026/02/19-22:59:52.628 1112c Delete type=0 #35
+2026/02/20-10:01:12.843 1112c Level-0 table #40: started
+2026/02/20-10:01:12.856 1112c Level-0 table #40: 14764 bytes OK
+2026/02/20-10:01:12.861 1112c Delete type=0 #37
+2026/02/20-10:01:12.864 1112c Compacting 4@0 + 1@1 files
+2026/02/20-10:01:12.877 1112c Generated table #41@0: 67 keys, 6201 bytes
+2026/02/20-10:01:12.877 1112c Compacted 4@0 + 1@1 files => 6201 bytes
+2026/02/20-10:01:12.878 1112c compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/02/20-10:01:12.879 1112c Delete type=2 #30
+2026/02/20-10:01:12.879 1112c Delete type=2 #33
+2026/02/20-10:01:12.880 1112c Delete type=2 #36
+2026/02/20-10:01:12.881 1112c Delete type=2 #38
+2026/02/20-10:01:12.881 1112c Delete type=2 #40
+2026/02/21-12:30:15.320 11bb4 Level-0 table #43: started
+2026/02/21-12:30:15.334 11bb4 Level-0 table #43: 13161 bytes OK
+2026/02/21-12:30:15.340 11bb4 Delete type=0 #39
