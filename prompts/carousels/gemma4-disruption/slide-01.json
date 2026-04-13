@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '1/8' in muted gray. Centered layout with generous whitespace. Large ultra-bold black sans-serif headline text reading 'Nobody Expected' at 58pt, perfectly centered horizontally near the top third. Below it on the next line, bold black sans-serif text reading 'Google To Do This.' at 58pt. Below that, a third line in elegant medium-weight black text reading 'With their AI model.' at 32pt. The words 'Google To Do This' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the text, a minimal thin-line black outline illustration of the Google 'G' logo outline dissolving into open hands, simple geometric strokes only. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, no clutter, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

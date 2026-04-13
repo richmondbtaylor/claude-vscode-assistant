@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '5/8' in muted gray. Top section has a large coral-red circled number '4' as a decorative element. Below it, bold black sans-serif headline text reading 'Test and debug in real time.' at 54pt, centered. The words 'real time' have a soft golden-amber #D4A853 brush-stroke highlight behind them. Below, three checklist items each with a coral-red checkmark icon: 'See every API call your agent makes.' then 'Filter by thinking, messages, or tools.' then 'Full interpretability. No black boxes.' Small muted text at the bottom of the content area: 'Slide 6 shows what happens when it runs...' Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

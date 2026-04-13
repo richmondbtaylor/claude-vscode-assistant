@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '7/8' in muted gray. Top section has a large coral-red circled number '6' as a decorative element centered near the top. Below it, bold black sans-serif headline text reading 'Own Your AI Stack' at 54pt, centered. The words 'Own Your' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below, three bullet point rows with coral-red square bullet markers: first row reads 'No API costs eating your margins', second row reads 'No rate limits killing your product', third row reads 'No vendor lock-in controlling your roadmap'. A smaller muted black line below: 'This is what real open source unlocks.' Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, editorial. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

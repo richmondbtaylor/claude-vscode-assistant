@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '8/8' in muted gray. Centered layout. Large ultra-bold black sans-serif headline reading 'Are You Running' at 58pt, centered in the upper middle area. Below it, ultra-bold black sans-serif text reading 'Local AI Yet?' at 58pt, centered. The words 'Local AI' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. A thin horizontal divider line below. Below the divider, medium-weight black text reading 'Drop a comment below.' in coral-red at 28pt. Below that, small muted gray text reading 'Follow @bishop_ai_ for weekly AI breakdowns.' A minimal thin-line illustration of a speech bubble with three dots inside, simple black outlines. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, bold, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

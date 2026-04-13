@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '7/8' in muted gray. Top section has a large coral-red circled number '6' as a decorative element. Below it, bold black sans-serif headline text reading 'Full app. 30 seconds.' at 58pt, centered. The words '30 seconds' have a soft golden-amber #D4A853 brush-stroke highlight behind them. Below the headline, a dark card-style box with cream border containing small white monospace text that reads: 'Give me a prompt I can paste into Claude Code to build this as a front-end app. Assume Netlify is ready.' Below the card, small medium-weight black text at 22pt: 'Claude builds it. You ship it. Done.' A minimal thin-line illustration of a browser window with a checkmark, rendered in black outlines only. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, editorial, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

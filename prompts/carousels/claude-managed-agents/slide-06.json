@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '6/8' in muted gray. Top section has a large coral-red circled number '5' as a decorative element. Below it, bold black sans-serif headline text reading '5 tasks. Created at once.' at 58pt, centered. The words 'at once' have a soft golden-amber #D4A853 brush-stroke highlight behind them. Below, two columns side by side. Left column header 'n8n' with a small red X icon, with text below: 'Sequential. Node by node. One thing at a time.' Right column header 'Managed Agents' with a small green checkmark icon, with text below: 'Parallel. All at once. Already done.' Both columns in dark card-style boxes with cream borders. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}
