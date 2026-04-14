@@ -82,12 +82,11 @@ def run_check(sheets_logger):
     print(f"Replied to {len(results)} comment(s).")
 
     if sheets_logger:
-        for entry in results:
-            try:
-                sheets_logger.log(entry)
-            except Exception as e:
-                print(f"Sheets log error: {e}")
-        print(f"Logged {len(results)} row(s) to Google Sheets.")
+        try:
+            sheets_logger.log_batch(results)
+            print(f"Logged {len(results)} row(s) to Google Sheets.")
+        except Exception as e:
+            print(f"Sheets log error: {e}")
 
 
 def main():

@@ -4,19 +4,25 @@ Navigates to Rich's recent posts, finds new comments, and replies.
 """
 
 import os
+import sys
 import json
 import time
 import random
 import datetime
-from pathlib import Path
 from playwright.sync_api import sync_playwright
+
+# Fix Windows console encoding for emoji
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 from claude_generator import generate_reply, score_comment
 
 # --- Config ---
-BOT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROFILE_DIR = os.path.join(BOT_DIR, "linkedin_profile")
-STATE_FILE = os.path.join(BOT_DIR, "replied_comments.json")
+BOT_DIR          = os.path.dirname(os.path.abspath(__file__))
+STORAGE_STATE    = os.path.join(BOT_DIR, "storage_state.json")   # portable session cookies
+STATE_FILE       = os.path.join(BOT_DIR, "replied_comments.json")
 
 LINKEDIN_PROFILE_URL = os.getenv("LINKEDIN_PROFILE_URL", "https://www.linkedin.com/in/richmond-taylor/")
 MY_NAME = os.getenv("MY_NAME", "Richmond").lower()
@@ -55,11 +61,16 @@ class LinkedInCommentBot:
     def __init__(self):
         self.replied_ids = self._load_state()
         self.playwright = sync_playwright().start()
-        os.makedirs(PROFILE_DIR, exist_ok=True)
-        self.context = self.playwright.chromium.launch_persistent_context(
-            user_data_dir=PROFILE_DIR,
+        if not os.path.exists(STORAGE_STATE):
+            raise FileNotFoundError(
+                "storage_state.json not found. Run login.py first to save your LinkedIn session."
+            )
+        browser = self.playwright.chromium.launch(
             headless=False,
             args=["--start-maximized", "--disable-blink-features=AutomationControlled"],
+        )
+        self.context = browser.new_context(
+            storage_state=STORAGE_STATE,
             viewport={"width": 1920, "height": 1080},
             user_agent=(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -108,7 +119,7 @@ class LinkedInCommentBot:
     # --- Post discovery ---
 
     def _get_recent_post_urls(self) -> list:
-        activity_url = LINKEDIN_PROFILE_URL.rstrip("/") + "/recent-activity/all/"
+        activity_url = LINKEDIN_PROFILE_URL.rstrip("/") + "/recent-activity/posts/"
         print(f"Navigating to activity page...")
         self.page.goto(activity_url, wait_until="domcontentloaded", timeout=30000)
         time.sleep(4)
@@ -121,14 +132,31 @@ class LinkedInCommentBot:
         urls = self.page.evaluate("""() => {
             const seen = new Set();
             const results = [];
-            const anchors = document.querySelectorAll('a[href*="/feed/update/"]');
-            for (const a of anchors) {
+
+            // Pattern 1: direct /feed/update/ links
+            document.querySelectorAll('a[href*="/feed/update/"]').forEach(a => {
                 const href = a.href.split('?')[0];
-                if (!seen.has(href)) {
-                    seen.add(href);
-                    results.push(href);
+                if (!seen.has(href)) { seen.add(href); results.push(href); }
+            });
+
+            // Pattern 2: /analytics/post-summary/urn:li:activity:XXXX — convert to feed URL
+            document.querySelectorAll('a[href*="/analytics/post-summary/urn:li:activity:"]').forEach(a => {
+                const m = a.href.match(/urn:li:activity:(\\d+)/);
+                if (m) {
+                    const feedUrl = 'https://www.linkedin.com/feed/update/urn:li:activity:' + m[1] + '/';
+                    if (!seen.has(feedUrl)) { seen.add(feedUrl); results.push(feedUrl); }
                 }
-            }
+            });
+
+            // Pattern 3: boost/campaigns links with ugcPost — convert to feed URL
+            document.querySelectorAll('a[href*="ugcPost"]').forEach(a => {
+                const m = a.href.match(/urn%3Ali%3AugcPost%3A(\\d+)/);
+                if (m) {
+                    const feedUrl = 'https://www.linkedin.com/feed/update/urn:li:ugcPost:' + m[1] + '/';
+                    if (!seen.has(feedUrl)) { seen.add(feedUrl); results.push(feedUrl); }
+                }
+            });
+
             return results;
         }""")
 

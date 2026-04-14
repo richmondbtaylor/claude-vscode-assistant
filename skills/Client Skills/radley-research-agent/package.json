@@ -1,0 +1,13 @@
+{
+  "name": "radley-lead-finder",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Social chatter lead finder for Radley (radley.tax)",
+  "main": "radley-lead-finder.js",
+  "scripts": {
+    "start": "node radley-lead-finder.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}

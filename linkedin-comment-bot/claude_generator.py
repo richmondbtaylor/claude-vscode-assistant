@@ -114,8 +114,7 @@ def is_spam(comment_text: str) -> bool:
 def _call_claude_cli(full_prompt: str) -> str | None:
     try:
         result = subprocess.run(
-            ["claude", "-p"],
-            input=full_prompt,
+            ["claude", "-p", full_prompt],
             capture_output=True,
             text=True,
             timeout=60,
@@ -126,8 +125,10 @@ def _call_claude_cli(full_prompt: str) -> str | None:
             out = result.stdout.strip().strip('"').strip("'")
             if out:
                 return out
+        else:
+            print(f"  Claude CLI exit {result.returncode}: {result.stderr.strip()[:120]}")
     except FileNotFoundError:
-        pass  # claude CLI not installed
+        print("  Claude CLI not found on PATH — using API fallback")
     except Exception as e:
         print(f"  Claude CLI error: {e}")
     return None

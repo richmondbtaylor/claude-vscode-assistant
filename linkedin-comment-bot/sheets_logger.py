@@ -53,9 +53,8 @@ class SheetsLogger:
             ws.append_row(HEADERS, value_input_option="USER_ENTERED")
             return ws
 
-    def log(self, entry: dict):
-        """Append one row. entry keys match the result dict from linkedin_bot.run()."""
-        row = [
+    def _entry_to_row(self, entry: dict) -> list:
+        return [
             entry.get("timestamp", datetime.datetime.now().isoformat()),
             entry.get("postUrl", ""),
             entry.get("postSnippet", ""),
@@ -66,4 +65,14 @@ class SheetsLogger:
             entry.get("reply", ""),
             entry.get("status", "Replied"),
         ]
-        self.ws.append_row(row, value_input_option="USER_ENTERED")
+
+    def log(self, entry: dict):
+        """Append one row."""
+        self.ws.append_row(self._entry_to_row(entry), value_input_option="USER_ENTERED")
+
+    def log_batch(self, entries: list):
+        """Append all rows in a single API call to avoid rate limits."""
+        if not entries:
+            return
+        rows = [self._entry_to_row(e) for e in entries]
+        self.ws.append_rows(rows, value_input_option="USER_ENTERED")

@@ -37,6 +37,10 @@ client_secret_*.json
 linkedin_cookies.json
 .browser_sessions/
 *.db
+storage_state.json
+linkedin_profile/
+linkedin_profile_fresh/
+linkedin_profile_login/
 
 # Python cache
 __pycache__/

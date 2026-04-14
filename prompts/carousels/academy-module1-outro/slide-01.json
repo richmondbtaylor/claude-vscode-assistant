@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. Centered layout with generous whitespace. Upper area has small medium-weight black text reading 'BISHOP AI ACADEMY' with a thin coral-red underline beneath it, acting as a label. Below that, a large ultra-bold black sans-serif headline reading 'See you in' at 60pt, centered. Below it, an even larger ultra-bold black sans-serif text reading 'Module 2' at 80pt, centered. The words 'Module 2' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a wide hand-painted marker swipe. Below the headline, a minimal thin-line illustration of a simple open doorway or forward arrow in black outlines, suggesting progression. At the bottom third, small medium-weight black text reading 'Keep building. Keep learning.' in a clean understated style. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace, warm and encouraging tone. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

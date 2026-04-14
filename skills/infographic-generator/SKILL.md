@@ -22,7 +22,7 @@ Confirm these before building the prompt. If not provided, make reasonable assum
 | Requirement | Default |
 |-------------|---------|
 | Topic & data | (required — ask if missing) |
-| Style | Bishop AI brand — minimal & impactful: dark #000814 bg, generous whitespace, single gold #E0B848 or blue #1894C9 accent per section, white text, max 3 elements per section, no decorative clutter |
+| Style | Bishop AI brand — minimal & impactful: light background #FAFBFA (white) or #E6E2DE (off-white), Deep Navy #000813 headings, Dark Navy #1D2333 body text, Gold #E0B848 primary accent, Blue #1894C9 for positive/result elements, Red/Coral #E05252 for problem/contrast only, max 3 elements per section, no decorative clutter |
 | Aspect ratio | `9:16` (social/mobile) |
 | Platform | Instagram/LinkedIn |
 | Resolution | `2K` |
@@ -52,14 +52,14 @@ Save a JSON file with this structure:
 Write the `prompt` value as a single dense string following this structure:
 
 ```
-Professional infographic titled "[TITLE]". Style: minimal, clean, impactful — dark background #000814, generous whitespace, bold single-idea sections.
+Professional infographic titled "[TITLE]". Bishop AI brand style: light premium background #FAFBFA (white) or #E6E2DE (off-white), generous whitespace, bold single-idea sections.
 Layout: [describe top to bottom — each section has ONE clear message, maximum 3 elements per section, no visual noise].
-Color palette: black #000814 background, white #FFFFFF text, ONE accent color per section (gold #E0B848 OR blue #1894C9 — never both at once), dark card #1E2333 for panels.
-Typography: ultra-bold Poppins headline at 64pt minimum — one dominant headline per section, supporting text at 20pt max, never more than 2 lines of body copy per element.
-Data content: [EXACT DATA — repeat user's numbers verbatim. Present each stat as a BIG number + short label, nothing else].
+Color palette: White #FAFBFA or Off-White #E6E2DE background, Deep Navy #000813 for primary headlines, Dark Navy #1D2333 for body text, Gold #E0B848 for primary accent/highlights, Blue #1894C9 for positive outcomes/results, Red/Coral #E05252 for problem/contrast sections only — never on CTAs or positive elements. Off-White #E6E2DE for card/panel backgrounds.
+Typography: Poppins ExtraBold for H1 headlines at 64pt minimum, Montserrat Bold for subheadings/labels, Open Sans for body copy at 20pt max — never more than 2 lines of body copy per element.
+Data content: [EXACT DATA — repeat user's numbers verbatim. Present each stat as a BIG number in Poppins ExtraBold + short Montserrat label, nothing else].
 Visual elements: thin single-line dividers only, no icons unless essential, no gradients, no shadows, no decorative borders. Let whitespace do the work.
 Quality directive: ultra-sharp, print-quality, pixel-perfect alignment, zero text rendering errors. Less is more — if an element doesn't add meaning, remove it.
-Negative: blurry text, garbled typography, illegible fonts, busy layouts, too many colors, decorative clutter, drop shadows, gradients, icons for decoration, multiple accent colors per section, more than 4 bullet points per section, stock photo aesthetic, photorealistic faces, lens flare, bokeh, photography lighting, beauty filters, skin textures.
+Negative: dark background, blurry text, garbled typography, illegible fonts, busy layouts, too many colors, decorative clutter, drop shadows, gradients, icons for decoration, more than 4 bullet points per section, stock photo aesthetic, photorealistic faces, lens flare, bokeh, photography lighting, beauty filters, skin textures.
 ```
 
 ### Why these details matter
@@ -166,12 +166,14 @@ images/infographics/ai-adoption-v2-bold.jpg
 ### Bishop AI
 **ALWAYS apply this brand kit by default for every infographic unless the user explicitly requests a different style. This is the default brand for all infographic generation.**
 
-- **Background (primary):** `#000814`
-- **Background (secondary/cards):** `#1E2333`
-- **Gold accent:** `#E0B848`
-- **Blue accent:** `#1894C9`
-- **Text:** `#FFFFFF`
-- **Typography:** Poppins Bold (titles), Montserrat (subheadings), Open Sans (body)
+- **Background (primary):** `#FAFBFA` (white)
+- **Background (secondary/cards):** `#E6E2DE` (off-white)
+- **Primary text (headlines):** `#000813` (Deep Navy)
+- **Body text:** `#1D2333` (Dark Navy)
+- **Gold accent (primary highlights, CTAs):** `#E0B848`
+- **Blue accent (positive outcomes/results):** `#1894C9`
+- **Red/Coral accent (problem/contrast only — never on CTAs):** `#E05252`
+- **Typography:** Poppins ExtraBold (H1 titles), Montserrat Bold (subheadings/labels), Open Sans (body)
 - **Logo:** NEVER describe or generate the Bishop AI logo in the AI prompt. AI models cannot reproduce the exact logo. Instead: generate the infographic with a blank reserved zone (e.g., "leave a clean empty area in the bottom-left corner, approximately 100x40px, no text or elements in that zone") and instruct the user to overlay the real logo file in Canva, Photoshop, or similar tool after generation.
 - **Logo placement:** Bottom-left corner, reserved blank zone only — user overlays the actual file manually.
 - **Script:** `C:/Users/richm/Downloads/generate_kie.py`

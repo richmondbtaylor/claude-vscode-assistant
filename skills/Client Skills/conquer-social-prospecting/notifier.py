@@ -78,7 +78,9 @@ def log_to_sheets(post: RawPost, analysis: PostAnalysis) -> bool:
         contact_email    = contact.get("email", "")
         contact_name     = f"{contact.get('first_name', '')} {contact.get('last_name', '')}".strip()
         contact_title    = contact.get("title", "")
-        contact_source   = contact.get("source", "")
+        _src             = contact.get("source", "")
+        _linkedin        = contact.get("linkedin_url", "")
+        contact_source   = f"{_src} | {_linkedin}" if _linkedin else _src
 
         row = [
             datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M"),
