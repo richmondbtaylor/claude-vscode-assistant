@@ -41,6 +41,10 @@ storage_state.json
 linkedin_profile/
 linkedin_profile_fresh/
 linkedin_profile_login/
+whatsapp_session/
+chrome_profile/
+linkedin_session/
+component_crx_cache/
 
 # Python cache
 __pycache__/
