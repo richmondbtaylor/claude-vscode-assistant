@@ -4,9 +4,10 @@ All tunable settings live here. Edit this file to change behavior without touchi
 """
 
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "instagram-engagement.env")
 
 # ---------------------------------------------------------------------------
 # Rate limits (strictly enforced per account per window)

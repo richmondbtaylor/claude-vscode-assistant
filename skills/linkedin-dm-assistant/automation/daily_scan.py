@@ -8,11 +8,12 @@ import sys
 import requests
 import anthropic
 from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Ensure correct working directory so cookies file resolves
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-load_dotenv()
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "linkedin-dm-assistant.env")
 
 from fetch_dms import fetch_pending_dms
 

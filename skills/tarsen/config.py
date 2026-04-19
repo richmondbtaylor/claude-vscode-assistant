@@ -10,7 +10,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 ROOT = Path(__file__).parent
-load_dotenv(ROOT / ".env")
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "tarsen.env")
 
 # --- Anthropic ---
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")

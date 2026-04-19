@@ -155,8 +155,9 @@ def research_topics() -> list[dict]:
 
 
 if __name__ == "__main__":
-    from dotenv import load_dotenv
-    load_dotenv()
+    from pathlib import Path
+from dotenv import load_dotenv
+    load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "daily-carousel.env")
     topics = research_topics()
     for t in topics:
         print(f"\n--- {t['title']} ---")

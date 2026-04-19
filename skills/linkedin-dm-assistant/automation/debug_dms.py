@@ -1,9 +1,10 @@
 """Debug script to understand what messages look like in LinkedIn DM threads."""
 import json, os, time
 from playwright.sync_api import sync_playwright
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "linkedin-dm-assistant.env")
 COOKIES_FILE = os.getenv("LINKEDIN_COOKIES_FILE", "./linkedin_cookies.json")
 
 with sync_playwright() as p:

@@ -14,7 +14,7 @@ import argparse
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent / ".env")
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "conquer-social-prospecting.env")
 
 import gspread
 from google.oauth2.credentials import Credentials

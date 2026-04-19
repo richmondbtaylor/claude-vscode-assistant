@@ -21,32 +21,40 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { writeFileSync } from 'fs';
-import Anthropic from '@anthropic-ai/sdk';
+import { spawnSync } from 'child_process';
+import { platform } from 'os';
 
-const client = new Anthropic();
+// Use claude CLI (Max subscription) — same approach as bishop/braincx agents
+const CLAUDE_CMD = platform() === 'win32'
+  ? 'C:/Users/richm/AppData/Roaming/npm/claude.cmd'
+  : 'claude';
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
 
-const DAYS_BACK = 7;
+const DAYS_BACK = 365;
 const TARGET_LEADS = 50;
-const MIN_INTENT_SCORE = 5;
+const MIN_INTENT_SCORE = 4;
 const SCORE_DELAY_MS = 250;
-const FETCH_DELAY_MS = 1000;
+const FETCH_DELAY_MS = 1500;
 
-// Keywords targeting US R&D tax credit pain points
+// High-signal keywords — specific enough to return on-topic posts
 const KEYWORDS = [
   'R&D tax credit',
   'research and development tax credit',
-  'qualifying research expenses',
-  'R&D documentation',
-  'R&D tax software',
-  'R&D payroll allocation',
+  'qualified research expenses',
   'section 41 credit',
-  'R&D compliance startup',
-  'R&D tax claim',
-  'R&D audit risk',
+  'R&D documentation',
+  'R&D payroll credit',
+  'R&D tax software',
+  'R&D audit',
   'R&D tax accountant',
-  'engineering tax credits',
+  'qualifying research activities',
+  'payroll tax offset startup credit',
+  'startup R&D credit',
+  'biotech R&D tax',
+  'engineering tax credit',
+  'R&D compliance',
+  'R&D wage allocation',
 ];
 
 // Subreddits where founders, CFOs, and tax pros hang out
@@ -62,6 +70,19 @@ const SUBREDDITS = [
   'CFO',
   'fintech',
   'YCombinator',
+  'CPA',
+  'Bookkeeping',
+  'venturecapital',
+  'biotech',
+  'hardware',
+  'medtech',
+  'AskAccountants',
+  'personalfinance',
+  'BusinessTax',
+  'legaladvice',
+  'consulting',
+  'LifeofaCPA',
+  'investing',
 ];
 
 // Google dork templates for manual LinkedIn/Twitter/Facebook searching
@@ -92,16 +113,6 @@ function isWithinWindow(dateStr) {
   return new Date(dateStr) >= daysAgo(DAYS_BACK);
 }
 
-function extractTag(xml, tag) {
-  const match = xml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i'));
-  return match ? match[1].trim() : '';
-}
-
-function extractAttr(xml, tag, attr) {
-  const match = xml.match(new RegExp(`<${tag}[^>]*${attr}="([^"]*)"`, 'i'));
-  return match ? match[1] : '';
-}
-
 function stripHTML(str) {
   return str
     .replace(/<[^>]+>/g, ' ')
@@ -124,76 +135,134 @@ function dedup(items) {
   });
 }
 
+const RELEVANCE_TERMS = [
+  // Exact product terms
+  'r&d tax', 'r&d credit', 'r&d documentation', 'r&d audit', 'r&d compliance',
+  'research tax credit', 'research and development tax', 'research credit',
+  'qualified research', 'qualifying research', 'qualifying activities',
+  'research expenses', 'research activities',
+  // Section references
+  'section 41', 'sec. 41', 'sec 41', '§41', 'irc 41', 'irc §41',
+  // Adjacent terms
+  'payroll tax offset', 'startup tax credit', 'engineering tax credit',
+  'software tax credit', 'biotech tax', 'innovation credit',
+  // Short forms people actually use
+  ' r&d ', 'r&d,', 'r&d.', 'r&d:', '(r&d)', 'rd tax', 'rdec',
+  // Credit study language
+  'credit study', 'nexus fraction', 'wages allocation', 'qre ',
+  // Tool/process pain
+  'r&d software', 'r&d tool', 'r&d documentation burden',
+];
+
 function isRelevant(post) {
-  const text = `${post.title} ${post.content}`.toLowerCase();
-  return KEYWORDS.some((k) => text.includes(k.toLowerCase()));
+  const text = ` ${post.title} ${post.content} `.toLowerCase();
+  return RELEVANCE_TERMS.some((k) => text.includes(k.toLowerCase()));
 }
 
-// ─── REDDIT ──────────────────────────────────────────────────────────────────
+// High-signal subreddits: skip isRelevant, let Claude judge everything
+const HIGH_SIGNAL_SUBS = new Set(['taxpros', 'accounting', 'tax', 'AskAccountants', 'LifeofaCPA', 'CPA']);
 
-function parseRedditRSS(xml, source) {
-  const entries = [];
-  const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
-  let match;
+// ─── REDDIT (JSON API) ───────────────────────────────────────────────────────
 
-  while ((match = entryRegex.exec(xml)) !== null) {
-    const entry = match[1];
-    const updated = extractTag(entry, 'updated');
+const REDDIT_HEADERS = {
+  'User-Agent': 'RadleyLeadFinder/1.0 (research bot; contact radley.tax)',
+  'Accept': 'application/json',
+};
 
-    if (!isWithinWindow(updated)) continue;
+function parseRedditPost(child, source) {
+  const d = child.data;
+  const created = new Date(d.created_utc * 1000).toISOString();
+  if (!isWithinWindow(created)) return null;
 
-    const rawAuthor = extractTag(entry, 'name') || extractTag(entry, 'author') || '';
-    const author = stripHTML(rawAuthor).replace(/\/u\//i, '').trim();
-    const content = stripHTML(extractTag(entry, 'content') || extractTag(entry, 'summary') || '');
-    const title = stripHTML(extractTag(entry, 'title'));
-    const link = extractAttr(entry, 'link', 'href') || extractTag(entry, 'link');
+  const content = stripHTML(d.selftext || d.body || '').slice(0, 1200);
+  const title = d.title || d.link_title || '';
+  const author = d.author || '';
+  const url = d.url?.startsWith('http') ? d.url : `https://reddit.com${d.permalink}`;
 
-    entries.push({
-      platform: 'Reddit',
-      source,
-      title,
-      url: link,
-      author,
-      content: content.slice(0, 1200),
-      date: updated,
-      profileUrl: author ? `https://reddit.com/u/${author}` : '',
-    });
-  }
-
-  return entries;
+  return {
+    platform: 'Reddit',
+    source,
+    title,
+    url: `https://reddit.com${d.permalink}`,
+    author,
+    content: `${title} ${content}`.trim(),
+    date: created,
+    profileUrl: author ? `https://reddit.com/u/${author}` : '',
+  };
 }
 
 async function fetchRedditKeyword(keyword) {
+  // No quotes — let Reddit's full-text search surface broader matches
   const encoded = encodeURIComponent(keyword);
-  const url = `https://www.reddit.com/search.rss?q=${encoded}&sort=new&t=week&limit=25`;
+  const url = `https://www.reddit.com/search.json?q=${encoded}&sort=new&t=year&limit=100&type=link,self`;
 
   try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'RadleyLeadFinder/1.0 (research automation)' },
-    });
+    const res = await fetch(url, { headers: REDDIT_HEADERS });
     if (!res.ok) return [];
-    const xml = await res.text();
-    return parseRedditRSS(xml, `search:${keyword}`);
+    const data = await res.json();
+    return (data?.data?.children || [])
+      .map(c => parseRedditPost(c, `search:${keyword}`))
+      .filter(Boolean)
+      .filter(isRelevant);
   } catch (e) {
     console.error(`  Reddit keyword error "${keyword}": ${e.message}`);
     return [];
   }
 }
 
-async function fetchSubreddit(subreddit) {
-  const url = `https://www.reddit.com/r/${subreddit}/new.rss?limit=50`;
+async function fetchRedditComments(keyword) {
+  // Search comments — this surfaces discussions buried in threads
+  const encoded = encodeURIComponent(keyword);
+  const url = `https://www.reddit.com/search.json?q=${encoded}&sort=new&t=year&limit=100&type=comment`;
 
   try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'RadleyLeadFinder/1.0 (research automation)' },
-    });
+    const res = await fetch(url, { headers: REDDIT_HEADERS });
     if (!res.ok) return [];
-    const xml = await res.text();
-    const posts = parseRedditRSS(xml, `r/${subreddit}`);
-    // Only keep posts that mention R&D tax topics
-    return posts.filter(isRelevant);
+    const data = await res.json();
+    return (data?.data?.children || [])
+      .map(c => parseRedditPost(c, `comment:${keyword}`))
+      .filter(Boolean)
+      .filter(isRelevant);
+  } catch (e) {
+    console.error(`  Reddit comment error "${keyword}": ${e.message}`);
+    return [];
+  }
+}
+
+async function fetchSubreddit(subreddit) {
+  // Pull /new feed directly — avoids Reddit's broken search for niche terms
+  // High-signal subs (taxpros, accounting, tax): pass all posts to Claude
+  // Other subs: pre-filter with isRelevant to avoid noise
+  const url = `https://www.reddit.com/r/${subreddit}/new.json?limit=100`;
+
+  try {
+    const res = await fetch(url, { headers: REDDIT_HEADERS });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const posts = (data?.data?.children || [])
+      .map(c => parseRedditPost(c, `r/${subreddit}`))
+      .filter(Boolean);
+    return HIGH_SIGNAL_SUBS.has(subreddit) ? posts : posts.filter(isRelevant);
   } catch (e) {
     console.error(`  Subreddit error r/${subreddit}: ${e.message}`);
+    return [];
+  }
+}
+
+async function fetchSubredditSearch(subreddit, query) {
+  // Targeted search within a subreddit for high-signal subs
+  const q = encodeURIComponent(query);
+  const url = `https://www.reddit.com/r/${subreddit}/search.json?q=${q}&restrict_sr=true&sort=relevance&t=year&limit=100`;
+
+  try {
+    const res = await fetch(url, { headers: REDDIT_HEADERS });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data?.data?.children || [])
+      .map(c => parseRedditPost(c, `r/${subreddit}:search`))
+      .filter(Boolean)
+      .filter(isRelevant);
+  } catch (e) {
     return [];
   }
 }
@@ -229,16 +298,14 @@ async function fetchHackerNews(keyword) {
 // ─── CLAUDE SCORING ──────────────────────────────────────────────────────────
 
 async function scoreLead(post) {
-  const systemPrompt = `You are a GTM analyst for Radley (radley.tax), a US-focused SaaS platform that automates R&D tax credit claims. Radley connects to code repos, payroll systems, and project tools to auto-generate audit-ready R&D documentation for the IRS.
+  const prompt = `You are a GTM analyst for Radley (radley.tax), a US-focused SaaS platform that automates R&D tax credit claims. Radley connects to code repos, payroll systems, and project tools to auto-generate audit-ready R&D documentation for the IRS.
 
 ICP (Ideal Customer Profile):
 1. Founders and CTOs at US tech startups doing qualified research (software, hardware, biotech, medtech)
 2. CFOs and finance teams managing R&D tax compliance and audit risk
 3. Accountants and tax advisors who file R&D credit claims on behalf of clients
 
-You must return ONLY a valid JSON object. No preamble, no markdown, no explanation.`;
-
-  const userPrompt = `Evaluate this social post as a potential lead for Radley. Return ONLY this JSON:
+Evaluate this social post as a potential lead for Radley. Return ONLY a valid JSON object — no preamble, no markdown, no explanation:
 {
   "isLead": true or false,
   "intentScore": integer 1-10 (10 = actively seeking R&D tax solution, 1 = irrelevant),
@@ -263,16 +330,17 @@ Title: ${post.title}
 Content: ${post.content}`;
 
   try {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 400,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
-    });
-
-    const text = response.content[0].text.replace(/```json|```/g, '').trim();
-    return JSON.parse(text);
-  } catch {
+    const proc = spawnSync(
+      CLAUDE_CMD,
+      ['--print', '--model', 'sonnet', '--max-turns', '1'],
+      { input: prompt, encoding: 'utf8', timeout: 60000, shell: true }
+    );
+    if (proc.status !== 0) throw new Error(`CLI exit ${proc.status}: ${proc.stderr?.slice(0, 200)}`);
+    const text = proc.stdout.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(text);
+    return parsed;
+  } catch (e) {
+    process.stderr.write(`  [score-err] ${e.message}\n`);
     return {
       isLead: false,
       intentScore: 0,
@@ -341,8 +409,8 @@ async function main() {
 
   let allPosts = [];
 
-  // ── Reddit keyword search ─────────────────────────────────────────────────
-  console.log('[1/3] Reddit keyword searches...');
+  // ── Reddit keyword search (posts) ────────────────────────────────────────
+  console.log('[1/4] Reddit keyword searches (posts)...');
   for (const keyword of KEYWORDS) {
     process.stdout.write(`  "${keyword}"...\n`);
     const posts = await fetchRedditKeyword(keyword);
@@ -351,8 +419,20 @@ async function main() {
     await sleep(FETCH_DELAY_MS);
   }
 
-  // ── Reddit subreddits ─────────────────────────────────────────────────────
-  console.log('\n[2/3] Reddit subreddit feeds...');
+  // ── Reddit keyword search (comments) ─────────────────────────────────────
+  // Top 8 highest-intent keywords — comment threads surface real pain
+  const COMMENT_KEYWORDS = KEYWORDS.slice(0, 8);
+  console.log('\n[2/4] Reddit comment searches...');
+  for (const keyword of COMMENT_KEYWORDS) {
+    process.stdout.write(`  "${keyword}"...\n`);
+    const posts = await fetchRedditComments(keyword);
+    console.log(`        ${posts.length} comments found`);
+    allPosts.push(...posts);
+    await sleep(FETCH_DELAY_MS);
+  }
+
+  // ── Reddit subreddits (new feed, locally filtered) ────────────────────────
+  console.log('\n[3/4] Reddit subreddit feeds...');
   for (const sub of SUBREDDITS) {
     process.stdout.write(`  r/${sub}...\n`);
     const posts = await fetchSubreddit(sub);
@@ -361,10 +441,22 @@ async function main() {
     await sleep(FETCH_DELAY_MS);
   }
 
+  // ── Targeted search on highest-signal subs ────────────────────────────────
+  const HIGH_SIGNAL_SUBS = ['taxpros', 'accounting', 'tax', 'smallbusiness', 'startups', 'Entrepreneur', 'SaaS'];
+  const TARGETED_QUERIES = ['R&D tax credit', 'research tax credit', 'qualified research', 'section 41'];
+  console.log('\n  [bonus] Targeted searches on high-signal subs...');
+  for (const sub of HIGH_SIGNAL_SUBS) {
+    for (const q of TARGETED_QUERIES) {
+      const posts = await fetchSubredditSearch(sub, q);
+      if (posts.length) console.log(`    r/${sub} "${q}": ${posts.length}`);
+      allPosts.push(...posts);
+      await sleep(800);
+    }
+  }
+
   // ── Hacker News ───────────────────────────────────────────────────────────
-  console.log('\n[3/3] Hacker News...');
-  // Use top 6 keywords for HN — lower volume, higher signal
-  for (const keyword of KEYWORDS.slice(0, 6)) {
+  console.log('\n[4/4] Hacker News...');
+  for (const keyword of KEYWORDS.slice(0, 8)) {
     process.stdout.write(`  "${keyword}"...\n`);
     const posts = await fetchHackerNews(keyword);
     console.log(`        ${posts.length} posts found`);

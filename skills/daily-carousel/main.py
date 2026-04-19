@@ -17,8 +17,9 @@ from datetime import datetime
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "daily-carousel.env")
 
 from content_generator import generate_content
 from image_generator import generate_images

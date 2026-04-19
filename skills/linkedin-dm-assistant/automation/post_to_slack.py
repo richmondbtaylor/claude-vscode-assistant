@@ -1,8 +1,9 @@
 """Post LinkedIn DM drafts to Slack #human-in-the-loop with Send/Skip buttons."""
 import os, json, requests
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "linkedin-dm-assistant.env")
 SLACK_TOKEN = os.getenv('SLACK_BOT_TOKEN')
 CHANNEL = os.getenv('SLACK_CHANNEL_ID', 'C0AP1AU3109')
 

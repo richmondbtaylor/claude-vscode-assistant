@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Lead Agents — Bishop AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;900&family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #F5F4F1;
+    --white:      #FFFFFF;
+    --off-white:  #FAFBFA;
+    --border:     #E8E5E1;
+    --border-soft:#F0EDE9;
+    --text:       #000813;
+    --body:       #2A3040;
+    --muted:      #7A8299;
+    --soft:       #A8B0C4;
+    --gold:       #E0B848;
+    --gold-bg:    #FBF6E8;
+    --gold-border:#F0DC9A;
+    --blue:       #1894C9;
+    --blue-bg:    #E8F5FB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: var(--bg);
+    color: var(--body);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--text);
+    padding: 80px 48px 72px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(224,184,72,0.4), transparent);
+  }
+
+  .hero-inner { position: relative; max-width: 640px; margin: 0 auto; }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--gold);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    opacity: 0.9;
+  }
+  .hero-eyebrow .line {
+    width: 24px; height: 1px; background: var(--gold); opacity: 0.5;
+  }
+
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 48px; font-weight: 900;
+    color: #fff; letter-spacing: -2.5px; line-height: 1.05;
+    margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: normal; color: var(--gold); }
+
+  .hero-desc {
+    font-size: 15px; color: #7A8599; line-height: 1.8;
+    max-width: 440px; margin: 0 auto 48px;
+  }
+
+  .hero-stats {
+    display: inline-grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .hero-stat {
+    padding: 20px 28px;
+    text-align: center;
+    background: rgba(255,255,255,0.03);
+  }
+  .hero-stat-n {
+    font-family: 'Poppins', sans-serif;
+    font-size: 26px; font-weight: 900;
+    color: var(--gold); letter-spacing: -1px; line-height: 1;
+    margin-bottom: 5px;
+  }
+  .hero-stat-l {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
+    color: #5A6580;
+    text-transform: uppercase;
+  }
+
+  /* ── PAGE BODY ── */
+  .page { max-width: 960px; margin: 0 auto; padding: 0 40px 80px; }
+
+  /* ── SECTION HEADING ── */
+  .section-intro {
+    padding: 60px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .section-intro h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px; font-weight: 900; letter-spacing: -1px;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .section-intro p {
+    font-size: 14px; color: var(--muted); max-width: 520px;
+  }
+
+  /* ── CASE CARD ── */
+  .case-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .case-card:hover {
+    box-shadow: 0 12px 40px rgba(0,8,19,0.08);
+    transform: translateY(-2px);
+  }
+
+  /* Card top bar — colored accent line */
+  .card-accent {
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .card-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 28px 32px 24px;
+  }
+
+  .client-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    border: 1px solid var(--border-soft);
+  }
+
+  .client-info {}
+  .client-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 19px; font-weight: 900;
+    color: var(--text); letter-spacing: -0.5px;
+    margin-bottom: 3px;
+  }
+  .client-desc { font-size: 12.5px; color: var(--muted); }
+
+  .lead-display {
+    text-align: right; flex-shrink: 0;
+  }
+  .lead-number {
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px; font-weight: 900;
+    color: var(--text); letter-spacing: -2px; line-height: 1;
+  }
+  .lead-number span { color: var(--gold); }
+  .lead-sublabel {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* Card divider */
+  .card-divider { height: 1px; background: var(--border-soft); margin: 0 32px; }
+
+  /* Card body */
+  .card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 28px 32px;
+  }
+  .card-body-left { padding-right: 28px; border-right: 1px solid var(--border-soft); }
+  .card-body-right { padding-left: 28px; }
+
+  .col-heading {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--soft);
+    margin-bottom: 14px;
+  }
+
+  .signal-list { list-style: none; }
+  .signal-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: var(--body);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-soft);
+    line-height: 1.5;
+  }
+  .signal-list li:last-child { border-bottom: none; }
+  .signal-list li::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--blue);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  /* Right column sections */
+  .right-section { margin-bottom: 20px; }
+  .right-section:last-child { margin-bottom: 0; }
+
+  .ptags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .ptag {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 6px;
+    border: 1px solid transparent;
+  }
+  .ptag.li { background:#EDF4FD; color:#1255A0; border-color:#C8DCF5; }
+  .ptag.rd { background:#FEF4EE; color:#B84215; border-color:#FAD5B5; }
+  .ptag.tw { background:#E8F6FD; color:#0A6FA1; border-color:#AAE0F5; }
+  .ptag.ig { background:#FDF1F8; color:#A01060; border-color:#F5C0E0; }
+  .ptag.fb { background:#EDF1FD; color:#1A3FA0; border-color:#C0D0F5; }
+  .ptag.wb { background:#F1EEFD; color:#4A22A0; border-color:#D0C5F5; }
+  .ptag.hn { background:#FEF7EE; color:#8A4010; border-color:#FAD5AA; }
+  .ptag.g2 { background:#F8EEFD; color:#6A18A0; border-color:#DCB8F5; }
+  .ptag.gs { background:#EDFAF2; color:#0A5535; border-color:#90E0B8; }
+  .ptag.sl { background:#F2FBF6; color:#0F6640; border-color:#A8EDC8; }
+
+  /* Highlights strip */
+  .card-footer {
+    background: var(--off-white);
+    border-top: 1px solid var(--border-soft);
+    padding: 14px 32px;
+    display: flex; flex-wrap: wrap; gap: 6px 32px;
+    align-items: center;
+  }
+  .highlight {
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .highlight strong {
+    color: var(--body); font-weight: 600;
+  }
+  .highlight::before {
+    content: '';
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-section { padding: 60px 0 0; }
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-top: 32px;
+  }
+  .how-card {
+    background: var(--white);
+    padding: 28px 24px;
+  }
+  .how-num {
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px; font-weight: 900;
+    color: var(--gold-border);
+    line-height: 1;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+  .how-card h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .how-card p { font-size: 12.5px; color: var(--muted); line-height: 1.7; }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    background: var(--text);
+    padding: 36px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-left {}
+  .footer-brand {
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px; font-weight: 900;
+    color: var(--gold); letter-spacing: -0.5px;
+  }
+  .footer-tagline {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 500;
+    color: #4A5568; margin-top: 4px; letter-spacing: 0.3px;
+  }
+  .footer-right { text-align: right; }
+  .footer-cta {
+    font-size: 11px; color: #4A5568;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+  .footer-email {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--gold); text-decoration: none;
+  }
+  .footer-email:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <div class="line"></div>
+      Bishop AI — Agent Portfolio
+      <div class="line"></div>
+    </div>
+    <h1>AI agents that find<br>leads <em>while you sleep.</em></h1>
+    <p class="hero-desc">Custom-built for each client's ICP, pain signals, and platforms. Autonomous. Scored. Human-approved before anything sends.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-n">6</div>
+        <div class="hero-stat-l">Clients Live</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-n">500+</div>
+        <div class="hero-stat-l">Leads / Month</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-n">5+</div>
+        <div class="hero-stat-l">Platforms Each</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-n">24/7</div>
+        <div class="hero-stat-l">Always On</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="section-intro">
+    <div class="eyebrow">Use Cases</div>
+    <h2>Built for real businesses.</h2>
+    <p>Every agent is custom-configured around the client's ICP, competitors, and target platforms — not a template.</p>
+  </div>
+
+  <!-- BISHOP AI -->
+  <div class="case-card">
+    <div class="card-accent"></div>
+    <div class="card-header">
+      <div class="client-icon" style="background:#F1EEFD;">🔎</div>
+      <div class="client-info">
+        <div class="client-name">Bishop AI</div>
+        <div class="client-desc">AI Automation Agency + Prompt Anything platform — internal lead generation</div>
+      </div>
+      <div class="lead-display">
+        <div class="lead-number">120<span>+</span></div>
+        <div class="lead-sublabel">Leads / month</div>
+      </div>
+    </div>
+    <div class="card-divider"></div>
+    <div class="card-body">
+      <div class="card-body-left">
+        <div class="col-heading">Pain signals monitored</div>
+        <ul class="signal-list">
+          <li>Founders asking about AI workflow automation</li>
+          <li>Businesses seeking no-code / n8n help</li>
+          <li>Prompt engineering interest and frustration</li>
+          <li>AI agency or education service needs</li>
+          <li>n8n Community job postings</li>
+        </ul>
+      </div>
+      <div class="card-body-right">
+        <div class="right-section">
+          <div class="col-heading">Platforms</div>
+          <div class="ptags">
+            <span class="ptag rd">Reddit</span>
+            <span class="ptag li">LinkedIn</span>
+            <span class="ptag fb">Facebook</span>
+            <span class="ptag tw">Twitter / X</span>
+            <span class="ptag wb">Web Search</span>
+            <span class="ptag hn">n8n Jobs</span>
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="col-heading">Unique to this agent</div>
+          <div class="ptags">
+            <span class="ptag gs">47+ subreddits</span>
+            <span class="ptag sl">Auto-reply agent</span>
+            <span class="ptag gs">7 AM daily run</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="highlight"><strong>20-col</strong> Google Sheets output</span>
+      <span class="highlight"><strong>SQLite</strong> cross-run deduplication</span>
+      <span class="highlight"><strong>Slack</strong> real-time alerts</span>
+      <span class="highlight"><strong>Auto-replies</strong> to qualifying posts</span>
+    </div>
+  </div>
+
+  <!-- BRAINCX -->
+  <div class="case-card">
+    <div class="card-accent" style="background: linear-gradient(90deg, #1894C9, transparent);"></div>
+    <div class="card-header">
+      <div class="client-icon" style="background:#EDFAF2;">🧠</div>
+      <div class="client-info">
+        <div class="client-name">BrainCX</div>
+        <div class="client-desc">Voice AI answering service for high-volume intake industries</div>
+      </div>
+      <div class="lead-display">
+        <div class="lead-number">85<span>+</span></div>
+        <div class="lead-sublabel">Leads / month</div>
+      </div>
+    </div>
+    <div class="card-divider"></div>
+    <div class="card-body">
+      <div class="card-body-left">
+        <div class="col-heading">Pain signals monitored</div>
+        <ul class="signal-list">
+          <li>Overwhelmed by call volume or missed calls</li>
+          <li>Receptionist staffing gaps and turnover</li>
+          <li>Multilingual client intake bottlenecks</li>
+          <li>After-hours coverage needs</li>
+          <li>Missed leads from phone overload</li>
+        </ul>
+      </div>
+      <div class="card-body-right">
+        <div class="right-section">
+          <div class="col-heading">Target ICPs</div>
+          <div class="ptags">
+            <span class="ptag li">Immigration attorneys</span>
+            <span class="ptag rd">Healthcare practices</span>
+            <span class="ptag tw">Higher education</span>
+            <span class="ptag wb">Professional services</span>
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="col-heading">Platforms</div>
+          <div class="ptags">
+            <span class="ptag rd">Reddit</span>
+            <span class="ptag li">LinkedIn</span>
+            <span class="ptag fb">Facebook</span>
+            <span class="ptag tw">Twitter / X</span>
+            <span class="ptag wb">Web Search</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="highlight"><strong>5 ICPs</strong> targeted simultaneously</span>
+      <span class="highlight"><strong>Hot / Warm / Cold</strong> scoring per lead</span>
+      <span class="highlight"><strong>0–100</strong> AI relevance score</span>
+      <span class="highlight"><strong>Cross-platform</strong> author deduplication</span>
+    </div>
+  </div>
+
+  <!-- RADLEY -->
+  <div class="case-card">
+    <div class="card-accent" style="background: linear-gradient(90deg, #E05252, transparent);"></div>
+    <div class="card-header">
+      <div class="client-icon" style="background:#FEF6EC;">📡</div>
+      <div class="client-info">
+        <div class="client-name">Radley</div>
+        <div class="client-desc">R&amp;D Tax Credit automation SaaS — radley.tax</div>
+      </div>
+      <div class="lead-display">
+        <div class="lead-number">60<span>+</span></div>
+        <div class="lead-sublabel">Leads / month</div>
+      </div>
+    </div>
+    <div class="card-divider"></div>
+    <div class="card-body">
+      <div class="card-body-left">
+        <div class="col-heading">Pain signals monitored</div>
+        <ul class="signal-list">
+          <li>R&amp;D documentation burden and audit risk</li>
+          <li>Section 41 compliance complexity</li>
+          <li>Qualifying expense calculation headaches</li>
+          <li>Manual R&amp;D tracking in spreadsheets</li>
+          <li>Accountants unsure how to file R&amp;D credits</li>
+        </ul>
+      </div>
+      <div class="card-body-right">
+        <div class="right-section">
+          <div class="col-heading">Target ICPs</div>
+          <div class="ptags">
+            <span class="ptag li">Founders / CTOs</span>
+            <span class="ptag rd">CFOs</span>
+            <span class="ptag wb">Tax advisors</span>
+            <span class="ptag hn">Accountants</span>
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="col-heading">Platforms</div>
+          <div class="ptags">
+            <span class="ptag rd">Reddit</span>
+            <span class="ptag hn">Hacker News</span>
+            <span class="ptag wb">Web Search</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="highlight"><strong>Intent Score</strong> 1–10 per lead</span>
+      <span class="highlight"><strong>Buyer Persona</strong> classification</span>
+      <span class="highlight"><strong>Google Dork URLs</strong> for manual research</span>
+      <span class="highlight"><strong>Daily cap</strong> enforcement</span>
+    </div>
+  </div>
+
+  <!-- CONQUER -->
+  <div class="case-card">
+    <div class="card-accent" style="background: linear-gradient(90deg, #1894C9, transparent);"></div>
+    <div class="card-header">
+      <div class="client-icon" style="background:#E8F5FB;">⚡</div>
+      <div class="client-info">
+        <div class="client-name">Conquer</div>
+        <div class="client-desc">Sales engagement and dialer platform — conquer.io</div>
+      </div>
+      <div class="lead-display">
+        <div class="lead-number">75<span>+</span></div>
+        <div class="lead-sublabel">Leads / month</div>
+      </div>
+    </div>
+    <div class="card-divider"></div>
+    <div class="card-body">
+      <div class="card-body-left">
+        <div class="col-heading">Pain signals monitored</div>
+        <ul class="signal-list">
+          <li>Salesforce dialer frustration or broken integrations</li>
+          <li>Teams outgrowing outbound calling tools</li>
+          <li>Dissatisfaction with Outreach, Salesloft, Dialpad</li>
+          <li>CRM and call workflow integration failures</li>
+          <li>Review site complaints about competitor tools</li>
+        </ul>
+      </div>
+      <div class="card-body-right">
+        <div class="right-section">
+          <div class="col-heading">Target ICPs</div>
+          <div class="ptags">
+            <span class="ptag li">Mid-market / Enterprise</span>
+            <span class="ptag rd">50+ sales rep teams</span>
+            <span class="ptag wb">Salesforce users</span>
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="col-heading">Platforms</div>
+          <div class="ptags">
+            <span class="ptag rd">Reddit</span>
+            <span class="ptag li">LinkedIn</span>
+            <span class="ptag g2">G2 Reviews</span>
+            <span class="ptag wb">Web Search</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="highlight"><strong>3 draft messages</strong> per qualified lead</span>
+      <span class="highlight"><strong>Competitor displacement</strong> detection</span>
+      <span class="highlight"><strong>GDPR flagging</strong> for EU prospects</span>
+      <span class="highlight"><strong>Intent score</strong> 0–100</span>
+    </div>
+  </div>
+
+  <!-- SYBILL -->
+  <div class="case-card">
+    <div class="card-accent" style="background: linear-gradient(90deg, #9333EA, transparent);"></div>
+    <div class="card-header">
+      <div class="client-icon" style="background:#F8EEFD;">🎙️</div>
+      <div class="client-info">
+        <div class="client-name">Sybill</div>
+        <div class="client-desc">Sales conversation intelligence and CRM hygiene — sybill.ai</div>
+      </div>
+      <div class="lead-display">
+        <div class="lead-number">90<span>+</span></div>
+        <div class="lead-sublabel">Leads / month</div>
+      </div>
+    </div>
+    <div class="card-divider"></div>
+    <div class="card-body">
+      <div class="card-body-left">
+        <div class="col-heading">Pain signals monitored</div>
+        <ul class="signal-list">
+          <li>Reps avoiding CRM updates after calls</li>
+          <li>Notetaking burden killing rep productivity</li>
+          <li>Managers lacking deal visibility and coaching data</li>
+          <li>Email follow-up inconsistency across the team</li>
+          <li>Frustration with Gong, Chorus, or Clari</li>
+        </ul>
+      </div>
+      <div class="card-body-right">
+        <div class="right-section">
+          <div class="col-heading">Target ICPs</div>
+          <div class="ptags">
+            <span class="ptag li">Sales VPs / Directors</span>
+            <span class="ptag rd">RevOps managers</span>
+            <span class="ptag wb">B2B SaaS (Series A–C)</span>
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="col-heading">Platforms</div>
+          <div class="ptags">
+            <span class="ptag li">LinkedIn</span>
+            <span class="ptag rd">Reddit</span>
+            <span class="ptag tw">Twitter / X</span>
+            <span class="ptag g2">G2</span>
+            <span class="ptag sl">Slack communities</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="highlight"><strong>Role + pain</strong> weighted score 0–100</span>
+      <span class="highlight"><strong>Frustration language</strong> scoring layer</span>
+      <span class="highlight"><strong>Competitor displacement</strong> detection (Gong, Chorus, Clari)</span>
+      <span class="highlight"><strong>CS lead</strong> tagging</span>
+    </div>
+  </div>
+
+  <!-- ALPHA CONNECTORS -->
+  <div class="case-card">
+    <div class="card-accent" style="background: linear-gradient(90deg, #059669, transparent);"></div>
+    <div class="card-header">
+      <div class="client-icon" style="background:#EDFAF2;">🔗</div>
+      <div class="client-info">
+        <div class="client-name">Alpha Connectors</div>
+        <div class="client-desc">Deal origination and capital introduction firm</div>
+      </div>
+      <div class="lead-display">
+        <div class="lead-number">175<span>+</span></div>
+        <div class="lead-sublabel">Leads / month</div>
+      </div>
+    </div>
+    <div class="card-divider"></div>
+    <div class="card-body">
+      <div class="card-body-left">
+        <div class="col-heading">6 verticals monitored</div>
+        <ul class="signal-list">
+          <li>Tech startups actively fundraising (Series A/B)</li>
+          <li>Real estate — bridge loans, distressed assets</li>
+          <li>Renewables / Data Centers — PPA agreements, grants</li>
+          <li>Gov contract holders needing receivables financing</li>
+          <li>Family offices posting capital deployment mandates</li>
+        </ul>
+      </div>
+      <div class="card-body-right">
+        <div class="right-section">
+          <div class="col-heading">Target ICPs</div>
+          <div class="ptags">
+            <span class="ptag li">Startup founders</span>
+            <span class="ptag rd">CFOs / deal teams</span>
+            <span class="ptag wb">Capital partners</span>
+            <span class="ptag hn">Gov contract holders</span>
+          </div>
+        </div>
+        <div class="right-section">
+          <div class="col-heading">Platforms</div>
+          <div class="ptags">
+            <span class="ptag li">LinkedIn</span>
+            <span class="ptag tw">Twitter / X</span>
+            <span class="ptag wb">Web / Press releases</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="highlight"><strong>6-vertical</strong> classifier per lead</span>
+      <span class="highlight"><strong>Dollar amount</strong> signal boost scoring</span>
+      <span class="highlight"><strong>Decision-maker</strong> weighting</span>
+      <span class="highlight"><strong>Connection angle</strong> generated per lead</span>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="how-section">
+    <div class="eyebrow">Process</div>
+    <h2 style="font-family:'Poppins',sans-serif;font-size:26px;font-weight:900;letter-spacing:-0.8px;color:var(--text);margin-top:8px;">How the agent works.</h2>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">01</div>
+        <h4>Configure</h4>
+        <p>We map your ICP, pain signals, competitors, and platforms. Built for your business — no templates.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">02</div>
+        <h4>Detect</h4>
+        <p>The agent scans Reddit, LinkedIn, X, Facebook, Hacker News, G2, and the open web — daily, automatically.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">03</div>
+        <h4>Score</h4>
+        <p>Claude AI ranks every result — Hot, Warm, or Cold — by intent, role fit, and buying signals before it reaches you.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">04</div>
+        <h4>Surface</h4>
+        <p>Leads land in Google Sheets with a Slack alert. Draft outreach included. You approve — the agent sends.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="site-footer">
+  <div class="footer-left">
+    <div class="footer-brand">Bishop AI</div>
+    <div class="footer-tagline">Custom AI agents for sales and marketing teams</div>
+  </div>
+  <div class="footer-right">
+    <div class="footer-cta">Want one built for your business?</div>
+    <a href="mailto:richmondbtaylor@gmail.com" class="footer-email">richmondbtaylor@gmail.com</a>
+  </div>
+</div>
+
+</body>
+</html>

@@ -22,7 +22,7 @@ SCRIPT_DIR = Path(__file__).parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from dotenv import load_dotenv
-load_dotenv(SCRIPT_DIR / ".env")
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "instagram-engagement.env")
 
 import engagement_tracker as tracker
 import gspread

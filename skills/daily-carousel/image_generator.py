@@ -223,8 +223,9 @@ def generate_images(carousel: dict) -> tuple[list[str], list[str]]:
 
 
 if __name__ == "__main__":
-    from dotenv import load_dotenv
-    load_dotenv()
+    from pathlib import Path
+from dotenv import load_dotenv
+    load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "daily-carousel.env")
 
     # Test with a simple 3-slide carousel
     test_carousel = {

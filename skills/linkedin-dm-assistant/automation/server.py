@@ -18,12 +18,13 @@ from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from pathlib import Path
 from dotenv import load_dotenv
 from send_dm import send_linkedin_dm
 
 _executor = ThreadPoolExecutor(max_workers=2)
 
-load_dotenv()
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "linkedin-dm-assistant.env")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

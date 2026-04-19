@@ -348,6 +348,11 @@ MIN_RELEVANCE_FOR_ALERT = 30  # Send to Slack for anything scoring 30+
 LOG_ALL_TO_SHEETS = False
 MIN_RELEVANCE_FOR_SHEETS = 30  # Log warm + hot leads to Sheets
 
+# ── Contact Enrichment ────────────────────────────────────────────────────────
+# Only enrich leads that are both hot (score >= threshold) AND flagged should_contact.
+# Enrichment calls Apify + Apollo + Hunter — costs money, so gate it carefully.
+ENRICH_MIN_SCORE = 70   # Minimum relevance score to trigger enrichment
+
 # ── Google Sheets ─────────────────────────────────────────────────────────────
 
 SHEET_WORKSHEET_NAME = "Leads"
@@ -376,6 +381,16 @@ SHEET_COLUMNS = [
     "Reply Sent Date",
     "Comment Posted",
     "DM Sent",
+    # Contact enrichment columns (populated for hot leads only)
+    "Email",
+    "Email Confidence %",
+    "Phone",
+    "Phone Type",
+    "LinkedIn Profile",
+    "Enriched Name",
+    "Company",
+    "Company Website",
+    "Enrichment Source",
 ]
 
 # ── Company Context (fed to Claude) ──────────────────────────────────────────

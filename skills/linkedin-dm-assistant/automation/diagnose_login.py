@@ -1,9 +1,10 @@
 """Diagnose what LinkedIn's login page actually shows."""
 import os, json
 from playwright.sync_api import sync_playwright
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "linkedin-dm-assistant.env")
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=False, slow_mo=500)

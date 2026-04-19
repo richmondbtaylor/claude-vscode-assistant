@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Command Center — Bishop AI</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --surface2: #f8f9fb;
+    --border: #e5e7eb;
+    --border-bright: #d1d5db;
+    --text: #111827;
+    --muted: #6b7280;
+    --accent: #4f46e5;
+    --accent2: #7c3aed;
+    --green: #059669;
+    --green-bg: #ecfdf5;
+    --green-border: #a7f3d0;
+    --yellow: #d97706;
+    --yellow-bg: #fffbeb;
+    --yellow-border: #fcd34d;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --pink: #db2777;
+    --orange: #ea580c;
+    --cyan: #0891b2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    box-shadow: 0 2px 8px rgba(79,70,229,0.3);
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--text);
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 1px;
+    font-weight: 400;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    color: var(--green);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .pulse {
+    width: 7px;
+    height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.75); }
+  }
+  .date-badge {
+    color: var(--muted);
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    padding: 28px 32px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 20px 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 0 0 12px 12px;
+  }
+  .stat-card.green::after { background: linear-gradient(90deg, #10b981, #34d399); }
+  .stat-card.purple::after { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+  .stat-card.blue::after { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+  .stat-card.orange::after { background: linear-gradient(90deg, #f97316, #fb923c); }
+  .stat-card.pink::after { background: linear-gradient(90deg, #ec4899, #f472b6); }
+  .stat-num {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .stat-card.green .stat-num { color: #059669; }
+  .stat-card.purple .stat-num { color: #4f46e5; }
+  .stat-card.blue .stat-num { color: #2563eb; }
+  .stat-card.orange .stat-num { color: #ea580c; }
+  .stat-card.pink .stat-num { color: #db2777; }
+  .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+  /* SECTION */
+  .section-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* AGENT GRID */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+
+  /* AGENT CARD */
+  .agent-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .agent-card:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.09);
+  }
+  .agent-card-glow {
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    margin-bottom: 12px;
+  }
+  .agent-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    flex-shrink: 0;
+  }
+  .card-title-block { flex: 1; }
+  .agent-name {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 3px;
+    letter-spacing: -0.2px;
+    color: var(--text);
+  }
+  .agent-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .status-dot.active { background: #10b981; box-shadow: 0 0 0 2px #d1fae5; animation: pulse 2.5s infinite; }
+  .status-dot.warmup { background: #f59e0b; box-shadow: 0 0 0 2px #fef3c7; animation: pulse 2.5s infinite; }
+  .status-dot.manual { background: #3b82f6; box-shadow: 0 0 0 2px #dbeafe; }
+  .status-dot.paused { background: #d1d5db; }
+
+  .agent-desc {
+    font-size: 12.5px;
+    color: #4b5563;
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+
+  /* PLATFORM TAGS */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .tag.linkedin { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+  .tag.reddit { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+  .tag.twitter { background: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
+  .tag.instagram { background: #fdf2f8; color: #be185d; border-color: #fbcfe8; }
+  .tag.whatsapp { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+  .tag.web { background: #f5f3ff; color: #5b21b6; border-color: #ddd6fe; }
+  .tag.slack { background: #fdf4ff; color: #7e22ce; border-color: #e9d5ff; }
+  .tag.sheets { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+  .tag.n8n { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+  .tag.claude { background: #eef2ff; color: #3730a3; border-color: #c7d2fe; }
+  .tag.facebook { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+  .tag.canva { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+
+  /* CARD FOOTER */
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .schedule-info {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .status-badge {
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .status-badge.active { background: #d1fae5; color: #065f46; }
+  .status-badge.warmup { background: #fef3c7; color: #92400e; }
+  .status-badge.manual { background: #dbeafe; color: #1e40af; }
+  .status-badge.paused { background: #f3f4f6; color: #6b7280; }
+
+  /* ENTRY POINT */
+  .entry-point {
+    background: #f8f9fb;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+    padding: 7px 11px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 11px;
+    color: #4338ca;
+    margin-bottom: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: default;
+  }
+
+  /* INFRA SECTION */
+  .infra-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  .infra-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .infra-icon { font-size: 22px; margin-bottom: 10px; }
+  .infra-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+  .infra-desc { font-size: 11px; color: var(--muted); line-height: 1.55; }
+
+  /* CONTENT AGENTS (small cards) */
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+    margin-bottom: 40px;
+  }
+  .content-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .content-card:hover { border-color: var(--border-bright); box-shadow: 0 4px 12px rgba(0,0,0,0.07); }
+  .content-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+  .content-card-text .name { font-size: 13px; font-weight: 700; color: var(--text); }
+  .content-card-text .desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* CLIENT AGENTS */
+  .client-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  .client-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .client-card:hover { border-color: var(--border-bright); box-shadow: 0 4px 12px rgba(0,0,0,0.07); }
+  .client-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .client-card-text .client-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .client-card-text .client-agent { font-size: 11px; color: var(--accent); font-weight: 600; margin-top: 2px; }
+  .client-card-text .client-desc { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 18px 32px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 12px;
+    background: var(--surface);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">🤖</div>
+    <div>
+      <h1>Agent Command Center</h1>
+      <div class="header-sub">Bishop AI — Full Automation Stack</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="date-badge">April 16, 2026</div>
+    <div class="live-badge">
+      <div class="pulse"></div>
+      10 Agents Running
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat-card green">
+      <div class="stat-num">10</div>
+      <div class="stat-label">Total Agents</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Lead Finders</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-num">4</div>
+      <div class="stat-label">Social Bots</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Platforms</div>
+    </div>
+    <div class="stat-card pink">
+      <div class="stat-num">2</div>
+      <div class="stat-label">Client Agents</div>
+    </div>
+  </div>
+
+  <!-- LEAD FINDERS -->
+  <div class="section-title">Lead Finder Agents</div>
+  <div class="agent-grid">
+
+    <!-- Bishop Research Agent -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--accent);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.25);">🔎</div>
+        <div class="card-title-block">
+          <div class="agent-name">Bishop AI Research Agent</div>
+          <div class="agent-subtitle">Multi-platform lead finder</div>
+        </div>
+        <div class="status-dot active"></div>
+      </div>
+      <div class="agent-desc">
+        Monitors 47+ Reddit subreddits and 44+ web queries for AI automation / prompting leads. Claude Sonnet 4.6 scores each post, detects decision-makers, flags budget signals, and logs hot leads to Google Sheets with Slack alerts.
+      </div>
+      <div class="tags">
+        <span class="tag reddit">Reddit</span>
+        <span class="tag web">Web</span>
+        <span class="tag linkedin">LinkedIn</span>
+        <span class="tag n8n">n8n</span>
+        <span class="tag claude">Claude 4.6</span>
+        <span class="tag sheets">Sheets</span>
+        <span class="tag slack">Slack</span>
+      </div>
+      <div class="entry-point">skills/bishop-research-agent/main.py</div>
+      <div class="card-footer">
+        <div class="schedule-info">⏰ Daily 7:00 AM EST — Task Scheduler</div>
+        <div class="status-badge active">Active</div>
+      </div>
+    </div>
+
+    <!-- BrainCX Research Agent -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--cyan);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(6,182,212,0.15); border: 1px solid rgba(6,182,212,0.25);">📞</div>
+        <div class="card-title-block">
+          <div class="agent-name">BrainCX Research Agent</div>
+          <div class="agent-subtitle">Call center social listener</div>
+        </div>
+        <div class="status-dot active"></div>
+      </div>
+      <div class="agent-desc">
+        Social listening for businesses expressing call volume pain, receptionist staffing issues, or multilingual IVR problems. Targets 5 ICPs: immigration attorneys, healthcare, higher ed, professional services. Scores Hot / Warm / Cold.
+      </div>
+      <div class="tags">
+        <span class="tag reddit">Reddit</span>
+        <span class="tag linkedin">LinkedIn</span>
+        <span class="tag facebook">Facebook</span>
+        <span class="tag twitter">Twitter/X</span>
+        <span class="tag web">Web</span>
+        <span class="tag claude">Claude 4.6</span>
+      </div>
+      <div class="entry-point">skills/Client Skills/braincx-research-agent/main.py</div>
+      <div class="card-footer">
+        <div class="schedule-info">👤 Client: BrainCX</div>
+        <div class="status-badge active">Active</div>
+      </div>
+    </div>
+
+    <!-- Radley Research Agent -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--orange);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.25);">🎯</div>
+        <div class="card-title-block">
+          <div class="agent-name">Radley Research Agent</div>
+          <div class="agent-subtitle">Daily-capped lead finder</div>
+        </div>
+        <div class="status-dot active"></div>
+      </div>
+      <div class="agent-desc">
+        Lead finder with enforced daily cap per run. Monitors Reddit and web for targeted pain signals, cross-platform author detection, and Slack lead alerts. Built for client Radley with its own lead sheet.
+      </div>
+      <div class="tags">
+        <span class="tag reddit">Reddit</span>
+        <span class="tag web">Web</span>
+        <span class="tag linkedin">LinkedIn</span>
+        <span class="tag slack">Slack</span>
+        <span class="tag sheets">Sheets</span>
+        <span class="tag claude">Claude 4.6</span>
+      </div>
+      <div class="entry-point">skills/Client Skills/radley-research-agent/main.py</div>
+      <div class="card-footer">
+        <div class="schedule-info">👤 Client: Radley</div>
+        <div class="status-badge active">Active</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SOCIAL ENGAGEMENT BOTS -->
+  <div class="section-title">Social Engagement Bots</div>
+  <div class="agent-grid">
+
+    <!-- TARSEN -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--blue);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.25);">🐦</div>
+        <div class="card-title-block">
+          <div class="agent-name">TARSEN</div>
+          <div class="agent-subtitle">Autonomous X reply bot</div>
+        </div>
+        <div class="status-dot warmup"></div>
+      </div>
+      <div class="agent-desc">
+        Grows Rich's B2B AI / automation / GTM X account by posting high-value, contextual replies to mid and high-tier accounts. Claude generates under-40-word replies that vary style and avoid templates. Enforces warm-up schedule with escalating daily caps.
+      </div>
+      <div class="tags">
+        <span class="tag twitter">Twitter/X</span>
+        <span class="tag claude">Claude 4.6</span>
+        <span class="tag sheets">Sheets</span>
+        <span class="tag web">Brave Search</span>
+      </div>
+      <div class="entry-point">skills/tarsen/main.py --live</div>
+      <div class="card-footer">
+        <div class="schedule-info">📈 Active since Apr 7 — Warm-up Week 2</div>
+        <div class="status-badge warmup">Warm-Up</div>
+      </div>
+    </div>
+
+    <!-- ClawdBot WhatsApp LinkedIn Pod -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--green);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.25);">💬</div>
+        <div class="card-title-block">
+          <div class="agent-name">ClawdBot — LinkedIn Pod</div>
+          <div class="agent-subtitle">WhatsApp-triggered auto commenter</div>
+        </div>
+        <div class="status-dot active"></div>
+      </div>
+      <div class="agent-desc">
+        Monitors WhatsApp groups for LinkedIn post URLs, generates contextual comments in Rich's voice using Claude AI (10-20 words, no em dashes, fun tone), then auto-posts to LinkedIn with 45-120s human-like delays. Max 50 comments/day.
+      </div>
+      <div class="tags">
+        <span class="tag linkedin">LinkedIn</span>
+        <span class="tag whatsapp">WhatsApp</span>
+        <span class="tag claude">Claude AI</span>
+      </div>
+      <div class="entry-point">ClawdBot-LinkedIn/main.py</div>
+      <div class="card-footer">
+        <div class="schedule-info">🔁 Continuous — 60s scan interval</div>
+        <div class="status-badge active">Active</div>
+      </div>
+    </div>
+
+    <!-- ClawdBot Feed Bot -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--blue);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.25);">📰</div>
+        <div class="card-title-block">
+          <div class="agent-name">ClawdBot — Feed Bot</div>
+          <div class="agent-subtitle">LinkedIn feed engagement</div>
+        </div>
+        <div class="status-dot active"></div>
+      </div>
+      <div class="agent-desc">
+        Continuously monitors the LinkedIn feed and auto-engages with posts via likes, comments, and follows. Claude generates contextual comments per post. Deduplicates via JSON store. Max 50 comments/day, 10 posts/scan.
+      </div>
+      <div class="tags">
+        <span class="tag linkedin">LinkedIn</span>
+        <span class="tag claude">Claude AI</span>
+      </div>
+      <div class="entry-point">skills/clawdbot-feed/main.py</div>
+      <div class="card-footer">
+        <div class="schedule-info">🔁 45-min scan interval</div>
+        <div class="status-badge active">Active</div>
+      </div>
+    </div>
+
+    <!-- Instagram Engagement -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--pink);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(236,72,153,0.15); border: 1px solid rgba(236,72,153,0.25);">📸</div>
+        <div class="card-title-block">
+          <div class="agent-name">Instagram Engagement</div>
+          <div class="agent-subtitle">AI automation growth bot</div>
+        </div>
+        <div class="status-dot active"></div>
+      </div>
+      <div class="agent-desc">
+        Automates liking, commenting, and follow/unfollow for AI automation education accounts. Respects RISEN rate limits (20-25 min active blocks + 30-90 min breaks). Claude generates contextual comments per post. Avoids competitors.
+      </div>
+      <div class="tags">
+        <span class="tag instagram">Instagram</span>
+        <span class="tag claude">Claude AI</span>
+      </div>
+      <div class="entry-point">skills/instagram-engagement/main.py</div>
+      <div class="card-footer">
+        <div class="schedule-info">⏱ RISEN rate-limit blocks</div>
+        <div class="status-badge active">Active</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MANUAL / HUMAN-IN-LOOP AGENTS -->
+  <div class="section-title">Human-in-the-Loop Agents</div>
+  <div class="agent-grid">
+
+    <!-- LinkedIn Comment Monitor -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--blue);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.25);">💡</div>
+        <div class="card-title-block">
+          <div class="agent-name">LinkedIn Comment Monitor</div>
+          <div class="agent-subtitle">Lead scoring + reply drafter</div>
+        </div>
+        <div class="status-dot manual"></div>
+      </div>
+      <div class="agent-desc">
+        Receives daily batches of LinkedIn post comments, triages and scores each commenter as Hot / Warm / Cold, then drafts approval-ready replies (max 15 words, 1 emoji per 10 replies). Produces a structured daily report with lead breakdown.
+      </div>
+      <div class="tags">
+        <span class="tag linkedin">LinkedIn</span>
+        <span class="tag claude">Claude AI</span>
+        <span class="tag sheets">Sheets</span>
+      </div>
+      <div class="entry-point">/linkedin-comment-monitor (skill)</div>
+      <div class="card-footer">
+        <div class="schedule-info">📋 Manual batch — daily</div>
+        <div class="status-badge manual">Manual Trigger</div>
+      </div>
+    </div>
+
+    <!-- LinkedIn DM Assistant -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--blue);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.25);">✉️</div>
+        <div class="card-title-block">
+          <div class="agent-name">LinkedIn DM Assistant</div>
+          <div class="agent-subtitle">DM ghostwriter + Slack approval</div>
+        </div>
+        <div class="status-dot manual"></div>
+      </div>
+      <div class="agent-desc">
+        Reads LinkedIn DM threads, profiles senders, and drafts relationship-first responses designed to convert to discovery calls. Sends Slack Block Kit messages with "Send it / Skip" buttons. Rich approves before Playwright posts.
+      </div>
+      <div class="tags">
+        <span class="tag linkedin">LinkedIn</span>
+        <span class="tag slack">Slack</span>
+        <span class="tag n8n">n8n</span>
+        <span class="tag claude">Claude AI</span>
+      </div>
+      <div class="entry-point">/linkedin-dm-assistant (skill)</div>
+      <div class="card-footer">
+        <div class="schedule-info">👤 Rich approves every message</div>
+        <div class="status-badge manual">Manual Trigger</div>
+      </div>
+    </div>
+
+    <!-- Daily Carousel -->
+    <div class="agent-card">
+      <div class="agent-card-glow" style="background: var(--accent2);"></div>
+      <div class="card-top">
+        <div class="agent-icon" style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.25);">🎠</div>
+        <div class="card-title-block">
+          <div class="agent-name">Daily Carousel Pipeline</div>
+          <div class="agent-subtitle">Content generation pipeline</div>
+        </div>
+        <div class="status-dot active"></div>
+      </div>
+      <div class="agent-desc">
+        Full pipeline: Brave Search trend research → Claude content generation (5-8 slides) → KIE AI image generation → Slack approval with interactive buttons. Outputs carousel JSON + images to Google Drive ready for posting.
+      </div>
+      <div class="tags">
+        <span class="tag instagram">Instagram</span>
+        <span class="tag linkedin">LinkedIn</span>
+        <span class="tag slack">Slack</span>
+        <span class="tag claude">Claude AI</span>
+        <span class="tag sheets">Drive</span>
+      </div>
+      <div class="entry-point">skills/daily-carousel/main.py</div>
+      <div class="card-footer">
+        <div class="schedule-info">⏰ Daily — run-daily.bat</div>
+        <div class="status-badge active">Active</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONTENT SKILLS -->
+  <div class="section-title">Content Generation Skills</div>
+  <div class="content-grid">
+    <div class="content-card">
+      <div class="content-card-icon" style="background: rgba(236,72,153,0.15);">📷</div>
+      <div class="content-card-text">
+        <div class="name">Carousel</div>
+        <div class="desc">Instagram/LinkedIn slide content + KIE AI images</div>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="content-card-icon" style="background: rgba(251,191,36,0.15);">🎬</div>
+      <div class="content-card-text">
+        <div class="name">VISIGEN</div>
+        <div class="desc">YouTube thumbnail generation — Rich's avatar</div>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="content-card-icon" style="background: rgba(99,102,241,0.15);">📝</div>
+      <div class="content-card-text">
+        <div class="name">ScriptForge</div>
+        <div class="desc">Long-form YouTube scripts with B-roll cues</div>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="content-card-icon" style="background: rgba(16,185,129,0.15);">✍️</div>
+      <div class="content-card-text">
+        <div class="name">CaptionCraft</div>
+        <div class="desc">Platform captions from video transcripts</div>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="content-card-icon" style="background: rgba(6,182,212,0.15);">♻️</div>
+      <div class="content-card-text">
+        <div class="name">Captivate</div>
+        <div class="desc">Content repurposing — YouTube → IG/TikTok/LinkedIn</div>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="content-card-icon" style="background: rgba(249,115,22,0.15);">📊</div>
+      <div class="content-card-text">
+        <div class="name">Infographic Generator</div>
+        <div class="desc">Data viz images via PRISM + KIE AI</div>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="content-card-icon" style="background: rgba(236,72,153,0.15);">🔥</div>
+      <div class="content-card-text">
+        <div class="name">IG/TikTok Scan</div>
+        <div class="desc">Viral content intelligence + post ideas</div>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="content-card-icon" style="background: rgba(139,92,246,0.15);">🖼️</div>
+      <div class="content-card-text">
+        <div class="name">Visual Code</div>
+        <div class="desc">Screenshot/design → production HTML</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT AGENTS -->
+  <div class="section-title">Client Deployments</div>
+  <div class="client-grid">
+    <div class="client-card">
+      <div class="client-logo" style="background: rgba(6,182,212,0.15);">🧠</div>
+      <div class="client-card-text">
+        <div class="client-name">BrainCX</div>
+        <div class="client-agent">Social Listening Lead Finder</div>
+        <div class="client-desc">Monitors Reddit, LinkedIn, Facebook, X, and web for call-center pain signals. Hot/Warm/Cold scoring against 5 ICPs.</div>
+      </div>
+    </div>
+    <div class="client-card">
+      <div class="client-logo" style="background: rgba(249,115,22,0.15);">📡</div>
+      <div class="client-card-text">
+        <div class="client-name">Radley</div>
+        <div class="client-agent">Multi-Platform Lead Finder</div>
+        <div class="client-desc">Daily-capped lead finder with Slack alerts, Google Sheets logging, and cross-platform author detection.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHARED INFRASTRUCTURE -->
+  <div class="section-title">Shared Infrastructure</div>
+  <div class="infra-grid">
+    <div class="infra-card">
+      <div class="infra-icon">🤖</div>
+      <div class="infra-name">Claude Sonnet 4.6</div>
+      <div class="infra-desc">Core AI for lead scoring, content generation, reply drafting, and comment writing across all agents.</div>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">🎭</div>
+      <div class="infra-name">Playwright</div>
+      <div class="infra-desc">Browser automation for LinkedIn, WhatsApp, Instagram with persistent session profiles. Two bots run simultaneously.</div>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">📋</div>
+      <div class="infra-name">Google Sheets + Drive</div>
+      <div class="infra-desc">Lead logging, analytics, approval audit trails, and carousel image storage across all agents.</div>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">💬</div>
+      <div class="infra-name">Slack Integration</div>
+      <div class="infra-desc">Real-time lead alerts, approval workflows (Block Kit buttons), and daily batch digests for all agents.</div>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">🗄️</div>
+      <div class="infra-name">SQLite</div>
+      <div class="infra-desc">Local deduplication, engagement tracking, and seen-post state across lead finders and social bots.</div>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">⚙️</div>
+      <div class="infra-name">n8n</div>
+      <div class="infra-desc">Webhook orchestration, Slack-to-LinkedIn DM automation, and workflow glue for approval pipelines.</div>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">🔍</div>
+      <div class="infra-name">Brave Search API</div>
+      <div class="infra-desc">Web intelligence layer for lead finders and TARSEN context research. DuckDuckGo as backup.</div>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">⏰</div>
+      <div class="infra-name">Task Scheduler</div>
+      <div class="infra-desc">Windows Task Scheduler runs Bishop Research Agent at 7AM EST daily via run-daily.bat.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Bishop AI Agent Command Center &nbsp;·&nbsp; 10 agents across 5 platforms &nbsp;·&nbsp; Built with Claude Code
+</div>
+
+</body>
+</html>

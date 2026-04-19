@@ -5,10 +5,11 @@ then polls for verification_code.txt containing the code to enter.
 This allows Claude Code (or any external process) to supply the code.
 """
 import os, json, time
+from pathlib import Path
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 
-load_dotenv()
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "linkedin-dm-assistant.env")
 email = os.getenv('LINKEDIN_EMAIL')
 password = os.getenv('LINKEDIN_PASSWORD')
 cookies_file = os.getenv('LINKEDIN_COOKIES_FILE', './linkedin_cookies.json')

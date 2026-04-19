@@ -13,6 +13,7 @@ import gspread
 import requests
 
 from analyzer import PostAnalysis, RawPost
+from contact_enricher import EnrichmentResult
 from config import (
     LOG_ALL_TO_SHEETS,
     MIN_RELEVANCE_FOR_ALERT,
@@ -52,11 +53,18 @@ def _get_worksheet() -> gspread.Worksheet:
     return ws
 
 
-def log_to_sheets(post: RawPost, analysis: PostAnalysis, cross_platform: str = "") -> bool:
+def log_to_sheets(
+    post: RawPost,
+    analysis: PostAnalysis,
+    cross_platform: str = "",
+    enrichment: Optional[EnrichmentResult] = None,
+) -> bool:
     """Append a row to Google Sheets. Returns True on success."""
     should_log = LOG_ALL_TO_SHEETS or (analysis.relevance_score >= MIN_RELEVANCE_FOR_SHEETS)
     if not should_log:
         return False
+
+    e = enrichment  # shorthand
 
     try:
         ws = _get_worksheet()
@@ -87,13 +95,27 @@ def log_to_sheets(post: RawPost, analysis: PostAnalysis, cross_platform: str = "
             analysis.suggested_reply,
             "Yes" if analysis.should_contact else "No",
             analysis.reasoning,
-            "",  # Status column — user fills in manually
+            "",  # Status — user fills in manually
+            "",  # Reply Sent Date
+            "",  # Comment Posted
+            "",  # DM Sent
+            # Contact enrichment columns
+            e.email if e else "",
+            str(e.email_confidence) + "%" if (e and e.email_confidence) else "",
+            e.phone if e else "",
+            e.phone_type if e else "",
+            e.linkedin_url if e else "",
+            e.enriched_name if e else "",
+            e.company if e else "",
+            e.website if e else "",
+            e.source if e else "",
         ]
         ws.append_row(row, value_input_option="USER_ENTERED")
-        print(f"[sheets] Logged: {post.title[:60]}...")
+        enriched_tag = " [enriched]" if (e and (e.email or e.phone)) else ""
+        print(f"[sheets] Logged{enriched_tag}: {post.title[:60]}...")
         return True
-    except Exception as e:
-        print(f"[sheets] Failed to log post {post.id}: {e}")
+    except Exception as ex:
+        print(f"[sheets] Failed to log post {post.id}: {ex}")
         return False
 
 

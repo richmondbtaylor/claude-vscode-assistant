@@ -9,7 +9,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 
-load_dotenv()
+load_dotenv(dotenv_path=Path.home() / ".claude" / "security" / "bishop-research-agent.env")
 
 SESSION_DIR = Path(__file__).parent / ".browser_sessions"
 SESSION_DIR.mkdir(exist_ok=True)

@@ -26,6 +26,7 @@ load_dotenv()  # Must happen before any imports that read env vars
 
 import analyzer
 import brave_monitor
+import contact_enricher
 import facebook_monitor
 import linkedin_monitor
 import n8n_jobs_monitor
@@ -35,7 +36,7 @@ import storage
 import twitter_monitor
 import upwork_monitor
 import web_monitor
-from config import REDDIT_POLL_INTERVAL_MINUTES, WEB_POLL_INTERVAL_HOURS
+from config import ENRICH_MIN_SCORE, REDDIT_POLL_INTERVAL_MINUTES, WEB_POLL_INTERVAL_HOURS
 
 
 _MAX_POST_AGE = timedelta(days=1)
@@ -84,7 +85,12 @@ def process_post(post: analyzer.RawPost) -> None:
         f"Contact: {'Yes' if analysis.should_contact else 'No'}"
     )
 
-    notifier.log_to_sheets(post, analysis, cross_platform=cross_platform)
+    # Enrich hot leads with verified contact info (email, phone, LinkedIn)
+    enrichment = None
+    if analysis.should_contact and analysis.relevance_score >= ENRICH_MIN_SCORE:
+        enrichment = contact_enricher.enrich(post, analysis)
+
+    notifier.log_to_sheets(post, analysis, cross_platform=cross_platform, enrichment=enrichment)
     notifier.send_slack_alert(post, analysis)
 
     storage.save_analysis(
