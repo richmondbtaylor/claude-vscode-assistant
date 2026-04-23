@@ -1,5 +1,6 @@
 # Sensitive credentials - never sync
 .credentials.json
+credentials.json
 settings.local.json
 
 # Conversation histories - contain embedded secrets
