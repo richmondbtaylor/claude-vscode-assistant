@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '1/8' in muted gray. Centered layout with generous whitespace. Large ultra-bold black sans-serif headline text reading 'SaaS to AaaS.' at 72pt size, perfectly centered horizontally in the upper-middle area. Below it, a second line in bold black sans-serif text reading '$2 Trillion' at 64pt, centered. The words 'SaaS to AaaS' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below that, medium-weight black text reading 'in market cap. Gone.' at 28pt. Below the text, a minimal thin-line black outline illustration of a sharply downward-trending line graph with a dramatic cliff drop, simple black strokes only. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '3/8' in muted gray. Top section has a large coral-red circled number '2' as a decorative element. Centered layout. A massive ultra-bold black sans-serif number '40%' displayed at 96pt size, dominating the center of the slide. The '40%' has a soft golden-amber #D4A853 brush-stroke highlight behind it, like a hand-painted marker swipe. Below it, bold black sans-serif text reading 'of IT budgets' at 36pt. Below that, medium-weight black text at 24pt reading 'redirected to agentic platforms.' on one line and 'Right now.' on the next line in bold. A minimal thin-line illustration of a budget pie chart with a large wedge being redirected via an arrow toward a robot or agent icon, simple black outlines only. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

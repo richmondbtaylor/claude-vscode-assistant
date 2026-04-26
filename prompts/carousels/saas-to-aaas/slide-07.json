@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '7/8' in muted gray. Top section has a large coral-red circled number '6' as a decorative element. Bold black sans-serif headline text reading 'Wrong question.' at 56pt, centered. The word 'Wrong' has a soft golden-amber #D4A853 brush-stroke highlight behind it, like a hand-painted marker swipe. Below the headline, two stacked dark card-style boxes with cream borders. Top card has small red label text 'WRONG' in the top-left corner, then white sans-serif text reading '\"How do I add AI to my product?\"' inside. Bottom card has small green label text 'RIGHT' in the top-left corner, then white sans-serif text reading '\"What am I still paying per seat for?\"' inside. The bottom card border is slightly brighter cream to draw the eye. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, editorial. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

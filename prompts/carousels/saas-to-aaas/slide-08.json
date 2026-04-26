@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '8/8' in muted gray. Centered layout. Large ultra-bold black sans-serif headline reading 'Selling outcomes.' at 60pt centered in the upper-middle area. The word 'outcomes' has a soft golden-amber #D4A853 brush-stroke highlight behind it, like a hand-painted marker swipe. A second bold line reading 'Not access.' at 52pt centered below. A thin horizontal black divider line below the headlines. Below the divider, medium-weight black text reading 'Figuring out where you fit in this?' at 24pt centered. Below that, bold coral-red sans-serif text reading 'Connect with me.' at 32pt. Below that, smaller medium-weight black text reading 'Let\u2019s talk.' at 26pt. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, bold, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

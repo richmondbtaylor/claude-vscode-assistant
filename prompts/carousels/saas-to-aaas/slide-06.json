@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '6/8' in muted gray. Top section has a large coral-red circled number '5' as a decorative element. Centered layout. A massive ultra-bold black sans-serif number '40%' at 96pt dominating the center, with a soft golden-amber #D4A853 brush-stroke highlight behind it like a hand-painted marker swipe. Below it, bold black sans-serif text reading 'of enterprise SaaS spend' at 30pt, centered. Below that, medium-weight black text reading 'shifts to outcome-based pricing' at 24pt. Below that, bold black text reading 'by 2030.' at 36pt with the '2030' in coral-red color. At the very bottom above the handle, small muted gray text reading 'Source: Gartner'. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}
