@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '4/8' in muted gray. Top section has a large coral-red circled number '3' as a decorative element, centered. Below it, bold black sans-serif headline text reading 'The Internet Did It Again' at 52pt centered. The words 'Did It Again' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, two comparison card-style boxes side by side with dark backgrounds and cream borders. Left card: small red label 'IGNORED IT' at top in coral-red small caps, then white medium-weight text reading 'Pets.com' on one line, '$300M burned' on next line, 'Gone in 2 years' on next line. Right card: small green label 'EMBRACED IT' at top in a muted green small caps, then white medium-weight text reading 'Amazon' on one line, 'Google' on next line, 'Now worth trillions' on next line. Below the cards, medium-weight black text at 20pt centered: 'The chaos built the infrastructure' then 'that runs the world today.' Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

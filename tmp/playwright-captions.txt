@@ -1,0 +1,27 @@
+LINKEDIN POST
+
+Your AI agent can browse the web.
+
+Not just search it. Actually open a browser, log in, click around, and interact with pages the same way you do, but automatically.
+
+That's what Playwright does when you pair it with Claude Code. It acts as a browser controller your agent can command. I've been using it to automate five things I used to do manually every week.
+
+1. Competitor pricing checks - my agent scans pricing pages daily and flags changes
+2. Social intent research - finding people asking about AI help before anyone else responds
+3. Contextual commenting - my agent reads posts and replies, not copy-paste spam
+4. Audience growth - follows, engages, and revisits on a set cadence
+5. Accessing gated content - if it lives in a browser, the agent can reach it
+
+None of this requires a software engineering background. I cover the full setup inside Automation Nation on Skool.
+
+Link in bio to join and build this yourself.
+
+#AIAutomation #BusinessAutomation #AITools #AutomationNation #WorkSmarter #AIForBusiness
+
+INSTAGRAM CAPTION
+
+Your AI agent can open a browser and do whatever you'd normally do manually. Competitor pricing, social research, auto-comments, all of it. Swipe through for the full breakdown.
+
+Build it yourself at Automation Nation: https://www.skool.com/automation-nation-1802
+
+#AIAutomation #ClaudeAI #Playwright #BusinessAutomation #AITools #AutomationNation #WorkSmarter #AIForBusiness #ContentAutomation #TechFounder

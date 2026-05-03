@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '7/8' in muted gray. Top section has a large coral-red circled number '5' as a decorative element, centered. Below it, bold black sans-serif headline text reading 'Which Side of History' at 52pt centered. The words 'Which Side' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, a thin horizontal black divider. Below the divider, medium-weight black text at 24pt centered reading 'You are not watching a tech trend.' on one line. Then 'You are watching the fabric of society' on the next line. Then 'reshape in real time.' on the next line. Below a small gap, slightly larger bold black text at 26pt centered reading 'The question is not whether this changes everything.' Then below that in coral-red bold text at 28pt centered: 'Are you on the right side of it?' Generous whitespace, dramatic and minimal. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

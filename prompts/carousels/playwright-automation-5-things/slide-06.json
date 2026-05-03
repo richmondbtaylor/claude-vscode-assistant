@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '6/7' in muted gray. Top section has a large coral-red circled number '5' as a decorative element, centered. Below it, bold black sans-serif headline text reading 'Behind Login Walls' at 56pt, centered. The words 'Login Walls' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, medium-weight black text at 24pt reading 'If it lives in a browser,' on one line, and 'your agent can reach it.' on the next. Below that, a minimal thin-line black outline illustration of a padlock opening, with a small arrow pointing through it into a browser window outline. Below the illustration, small muted gray text reading 'Gated content, private dashboards, member portals — no manual logins needed.' Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

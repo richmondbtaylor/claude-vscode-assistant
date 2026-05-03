@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '6/8' in muted gray. Top section has a large coral-red circled number '4' as a decorative element, centered. Below it, bold black sans-serif headline text reading 'The AI Renaissance Is Now' at 50pt centered. The words 'Is Now' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, a dark card-style box with cream border containing white medium-weight text: '100M users in 2 months.' on one line, 'Nothing in history moved that fast.' on the next line — styled like a featured stat box. Below the card, three checklist items with coral-red checkmark icons at 21pt black medium-weight text: 'One person now does the work of a team.' then 'Intelligence is getting cheaper by the month.' then '$15 trillion added to global economy by 2030.' Each on its own line, left-aligned. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

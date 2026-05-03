@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '3/6' in muted gray. Top section has a large coral-red circled number '2' as a decorative element, centered. Below it, bold black sans-serif headline text reading 'Drop in your website URL' at 52pt, centered. The words 'website URL' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below, a dark background card-style box with a cream border containing three bullet items in small clean white text with coral-red dot markers: '• Your brand colors' on one line, '• Your fonts' on the next, '• Your visual style' on the next. Below the card, medium-weight black text reading 'Claude reads it all automatically.' Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '2/5' in muted gray. Top section: small coral-red uppercase label text reading 'MISTAKE 1' above a large coral-red circled number '1' as a bold decorative element. Below, bold black sans-serif headline text reading 'Jumping between 10 tools' at 52pt, centered. The words '10 tools' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, a loose cluster of 6 small thin-line abstract app icon outlines (squares, circles, hexagons) arranged slightly chaotically, suggesting tool overwhelm. Below the icons, a short horizontal coral-red divider line, then 'THE FIX:' in small coral-red bold uppercase text, followed by 'Pick one. Use it every day for 30 days.' in medium-weight black text at 24pt. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

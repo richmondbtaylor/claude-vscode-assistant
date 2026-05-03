@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '8/8' in muted gray. Centered layout with generous whitespace. Upper section: large ultra-bold black sans-serif headline text at 54pt centered reading 'The Renaissance voices' on one line then 'are gathering.' on the next line. The words 'Renaissance voices' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. A thin horizontal black divider line below with comfortable spacing. Below the divider, medium-weight black text at 26pt centered reading 'Join the AI Circle' then below that in coral-red bold text at 28pt 'on Skool' centered. Below that, small muted gray text at 18pt reading 'skool.com/automation-nation-1802' centered. A small minimal thin-line illustration of a group of three abstract human silhouettes gathered together in thin black outlines only, centered below the text. No progress bars, no QR codes, no decorative clutter. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, bold, inviting, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '5/7' in muted gray. Top section has a large coral-red circled number '4' as a decorative element, centered. Below it, bold black sans-serif headline text reading 'Growing My Following' at 56pt, centered. The words 'My Following' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, three checklist items stacked vertically, each with a coral-red checkmark icon on the left: first item reads 'Follow accounts in my niche daily', second reads 'Revisit and engage every 3-4 days', third reads 'Unfollow accounts that never follow back'. Below the checklist, small muted gray text reading 'Playwright handles the repetitive work. I show up for real conversations.' Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

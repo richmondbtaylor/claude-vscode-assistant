@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '6/6' in muted gray. Centered layout with generous whitespace. Large ultra-bold black sans-serif headline reading 'Want the free resource guide?' at 52pt, centered. The words 'resource guide' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. A thin horizontal black divider line below the headline. Below the divider, medium-weight black text reading 'Comment' followed by the word 'DESIGN' in bold coral-red text, followed by 'below.' on the same line. Below that, smaller muted gray text reading 'Follow for more AI tools for your business.' Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, bold, minimal. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter, multiple fonts, colorful backgrounds.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

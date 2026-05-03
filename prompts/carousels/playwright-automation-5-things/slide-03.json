@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '3/7' in muted gray. Top section has a large coral-red circled number '2' as a decorative element, centered. Below it, bold black sans-serif headline text reading 'Social Intent Research' at 56pt, centered. The words 'Intent Research' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. Below the headline, medium-weight black text at 24pt reading 'My agent scans social platforms' on one line, and 'for people asking about AI help.' on the next. Below that, a dark card-style box with cream border containing three bullet lines in white medium-weight text: '— \"How do I use AI for my business?\"' and '— \"Recommend me an automation tool\"' and '— \"Anyone tried Claude for this?\"'. Each line represents a real post the agent flags. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}

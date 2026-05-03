@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Clean editorial design. Background: solid warm cream off-white #F5F0E8. In the top-right corner, small text reading '7/7' in muted gray. Centered layout with generous whitespace. Large ultra-bold black sans-serif headline text reading 'Build This Yourself' at 60pt, centered. The words 'Build This' have a soft golden-amber #D4A853 brush-stroke highlight behind them, like a hand-painted marker swipe. A thin horizontal black divider line below the headline. Below the divider, medium-weight black text at 28pt reading 'Join Master AI on Skool' with the words 'Master AI' in coral-red. Below that, a small muted gray text line reading 'Everything you need to get started.' Then a small text in coral-red reading 'Link in bio' with a minimal thin-line arrow icon pointing right. Small text '@bishop_ai_' in muted gray at the bottom center. Ultra-clean, bold, minimal, maximum whitespace. Negative: blurry text, garbled typography, illegible fonts, busy layouts, stock photos, photorealistic faces, lens flare, bokeh, gradients, drop shadows, decorative clutter.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}
