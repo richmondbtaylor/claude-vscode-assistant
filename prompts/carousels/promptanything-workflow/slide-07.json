@@ -1,0 +1,11 @@
+{
+  "task": "carousel_slide_generation",
+  "schema_version": "prism-2.0",
+  "model_target": "nano-banana-2",
+  "prompt": "Social media carousel slide, 4:5 aspect ratio. Premium dark tech design. Background: deep near-black #080B14 with subtle dark navy undertone. No floating cards, no UI mockups, no illustrations -- text only. Top-left: tiny uppercase muted gray label 'TRY IT' with large bold number '07' below it in muted white. Left-aligned text layout with generous whitespace. Bold ultra-heavy white sans-serif text reading 'PromptAnything' at 64pt with a subtle warm golden-amber #E0B848 glow effect on the text itself and a soft ambient amber glow in the background behind the words. Below that, medium-weight muted gray text reading 'Expert prompts in minutes.' A thin golden-amber horizontal line below. Below the line, small muted gray text reading 'Free to try. Link in bio.' Bottom center: small gray '@bishop_ai_' text. Cinematic, premium dark aesthetic, clean and minimal. Negative: blurry text, garbled typography, cream or white backgrounds, photorealistic faces, busy clutter, floating cards, UI mockups, illustrations, images.",
+  "api_parameters": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K",
+    "output_format": "jpg"
+  }
+}
