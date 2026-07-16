@@ -40,3 +40,17 @@ A single static PNG infographic that maps Rich's entire .claude folder for the A
 
 - Render, open the PNG, inspect at full resolution for chip overlap, arrow misalignment, and text truncation. Fix and re-render until clean.
 - Cross-check every skill chip name against the actual folder listing.
+
+## V2 (2026-07-16, approved plan: plans/well-my-claude-folder-reactive-swan.md)
+
+V1 undersold the system. V2 (`poster-v2.html` -> `claude-stack-poster-v2.png`, 1080x4079 css at 2x) expands to the whole ecosystem:
+
+- Dual brand framing: Bishop AI x PromptAnything.
+- Two verified stat rows: system (71 skills, 23 scripts, 9 bots, 8 MCP connectors, 49 memory rules) and shipped (263 video renders, 319 HTML deliverables, 1,427 images, 37 carousel sets, 14 client engagements). All counted with shell one-liners at build time.
+- Runtime band: Claude Code bar + infra rack (plugins, hooks, memory, scripts layer) + MCP connector strip.
+- Skill map: same 8 domains, chips now classed framework / pipeline (gold fill) / bot (red dot) with a legend.
+- Pipeline anatomy section: vistage 9 phases, reelforge render chain, carousel seamless pano, and the 4-skill audit chain, with real script names in mono type.
+- Shared engines grid (Playwright 14 skills, ffmpeg 6, KIE.ai 4, Drive+Sheets 10+, Suno, ElevenLabs, headshot ledger, brand configs).
+- Autonomous layer: 6 cards with trigger badges (Atlas daemon, LinkedIn bot daily 1:55 PM, pod watcher, research agents, Instagram sessions, housekeeping incl. 5 AM auto-push and Stop-hook archive).
+- Outputs: 6 destinations incl. live deploys (Netlify/Vercel) and WhatsApp reports; red dashed memory loop routed from the Memory card up the right margin into Claude Code.
+- render.py now takes a filename arg; v1 files unchanged.
