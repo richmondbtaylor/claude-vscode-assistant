@@ -1,0 +1,73 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="brand.css"><script src="gsap.min.js"></script>
+<style>
+  #hdr { position: absolute; left: 90px; top: 110px; font-size: 110px; max-width: 2380px; }
+  .row { position: absolute; left: 90px; width: 2380px; display: flex; gap: 60px; align-items: flex-start; }
+  #r1 { top: 380px; } #r2 { top: 700px; } #r3 { top: 1020px; }
+  .num { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 150px; line-height: 1;
+         color: #E0B848; opacity: .25; width: 150px; flex: none; }
+  .body { padding-top: 14px; }
+  .tip-main { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 66px;
+              color: #000813; line-height: 1.15; opacity: 0; }
+  .tip-sub { font-family: 'Open Sans', sans-serif; font-weight: 600; font-size: 44px;
+             color: #1D2333; margin-top: 16px; opacity: 0; }
+  .hl { color: #1894C9; }
+  #recap { position: absolute; left: 90px; bottom: 130px; display: flex; align-items: center;
+           gap: 40px; opacity: 0; }
+  #recapbar { width: 16px; height: 110px; background: #E0B848; border-radius: 8px; }
+  #recap .display { font-size: 76px; }
+</style></head>
+<body><div class="card">
+  <div style="position:absolute;left:90px;top:60px" class="tag"><span class="dot"></span>Before you go build</div>
+  <div id="hdr" class="display">3 tips for building an <span class="gold">AI Operating System</span></div>
+  <div class="row" id="r1"><div class="num" id="n1">1</div><div class="body">
+    <div class="tip-main" id="m1">Be thorough. Speak to your AI <span class="hl">the way it likes to be spoken to.</span></div>
+    <div class="tip-sub" id="b1">PromptAnything writes those prompts for you.</div></div></div>
+  <div class="row" id="r2"><div class="num" id="n2">2</div><div class="body">
+    <div class="tip-main" id="m2">Confused? Ask it to explain <span class="hl">like you're five.</span></div>
+    <div class="tip-sub" id="b2">Step by step. Foolproof. Your own <span id="ckbk">cookbook</span>.</div></div></div>
+  <div class="row" id="r3"><div class="num" id="n3">3</div><div class="body">
+    <div class="tip-main" id="m3">Not satisfied? <span class="hl">Demand a full audit.</span></div>
+    <div class="tip-sub" id="b3">Tell it to research the internet for better solutions.</div></div></div>
+  <div id="recap"><div id="recapbar"></div><div class="display">Use all three, <span class="gold">every build</span></div></div>
+  <div class="footer">Bishop AI</div>
+</div>
+<script>
+  const tl = gsap.timeline({ paused: true });
+  tl.set({}, {}, 49.6);
+  tl.from("#hdr", { y: 60, opacity: 0, duration: .6, ease: "power3.out" }, 0.05);
+  tl.from(["#n1", "#n2", "#n3"], { scale: .6, opacity: 0, duration: .4, stagger: .25, ease: "back.out(1.7)" }, 0.8);
+
+  function fill(numSel, mainSel, subSel, at) {
+    tl.to(numSel, { opacity: 1, scale: 1.08, duration: .35, ease: "power2.out" }, at);
+    tl.to(numSel, { scale: 1, duration: .3 }, at + .35);
+    tl.to(mainSel, { opacity: 1, y: 0, duration: .5, startAt: { y: 40 }, ease: "power3.out" }, at);
+    tl.to(subSel, { opacity: 1, duration: .5 }, at + .9);
+  }
+  fill("#n1", "#m1", "#b1", 3.4);    // 445.0 tip 1
+  fill("#n2", "#m2", "#b2", 12.6);   // 454.2 tip 2
+  fill("#n3", "#m3", "#b3", 28.5);   // 470.1 tip 3
+
+  // fillers: keep a visible change every <=1.5s inside each waiting stretch
+  function sweep(sel, at) {
+    tl.to(sel, { color: "#1894C9", duration: .4, yoyo: true, repeat: 1 }, at);
+  }
+  [5.4, 6.8, 8.2, 9.6, 11.0].forEach(at => sweep("#b1", at));
+  tl.to("#n1", { scale: 1.05, duration: .3, yoyo: true, repeat: 1 }, 6.1);
+  [14.6, 16.0, 17.4, 20.2, 21.6, 23.0, 25.8, 27.2].forEach(at => sweep("#b2", at));
+  tl.to("#m2 .hl", { color: "#0f6f99", duration: .45, yoyo: true, repeat: 1 }, 18.0);   // "like you're five"
+  tl.to("#ckbk", { color: "#E0B848", fontWeight: 800, duration: .45, yoyo: true, repeat: 1 }, 24.0);
+  tl.to("#n2", { scale: 1.05, duration: .3, yoyo: true, repeat: 1 }, 19.5);
+  [30.5, 31.9, 33.3, 34.7, 36.1, 37.5, 38.9].forEach(at => sweep("#b3", at));
+  tl.to("#m3 .hl", { color: "#0f6f99", duration: .45, yoyo: true, repeat: 1 }, 32.6);
+
+  // 40.3 (=481.9): recap — rows compress up, tag line in
+  tl.to(["#r1", "#r2", "#r3"], { y: -70, scale: .92, transformOrigin: "left top", duration: .7, ease: "power2.inOut" }, 40.3);
+  tl.to("#hdr", { y: -30, scale: .92, transformOrigin: "left top", duration: .7, ease: "power2.inOut" }, 40.3);
+  tl.to("#recap", { opacity: 1, y: 0, startAt: { y: 60 }, duration: .6, ease: "power3.out" }, 41.0);
+  [43.0, 44.4, 45.8, 47.2, 48.6].forEach((at, i) => {
+    tl.to(["#n1", "#n2", "#n3"][i % 3], { color: "#c9a23c", duration: .35, yoyo: true, repeat: 1 }, at);
+  });
+  window.seekTo = t => { tl.seek(Math.min(t, tl.duration() - 0.001), false); };
+  window.cardReady = Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 3000))]);
+</script></body></html>

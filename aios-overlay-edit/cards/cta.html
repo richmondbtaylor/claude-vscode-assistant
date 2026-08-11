@@ -1,0 +1,47 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="brand.css"><script src="gsap.min.js"></script>
+<style>
+  #share { position: absolute; left: 90px; top: 420px; font-size: 150px; max-width: 2300px; }
+  #sub { position: absolute; left: 90px; top: 800px; font-family: 'Open Sans', sans-serif;
+         font-weight: 600; font-size: 60px; color: #1D2333; }
+  #uline { position: absolute; left: 94px; top: 760px; width: 0; height: 12px;
+           background: #E0B848; border-radius: 6px; }
+  #panel { position: absolute; left: 0; bottom: 0; width: 2560px; height: 520px;
+           background: #000813; display: flex; align-items: center; gap: 70px;
+           padding: 0 120px; }
+  #panel .display { color: #FAFBFA; font-size: 84px; max-width: 1900px; }
+  #bubble { flex: none; width: 220px; height: 220px; }
+</style></head>
+<body><div class="card">
+  <div style="position:absolute;left:90px;top:90px" class="tag"><span class="dot"></span>You made it</div>
+  <div id="share" class="display">Share this <span class="gold">with the masses</span></div>
+  <div id="uline"></div>
+  <div id="sub">Nobody gets left behind the curve.</div>
+  <div id="panel">
+    <svg id="bubble" viewBox="0 0 100 100" fill="none">
+      <path d="M14 22 H86 A8 8 0 0 1 94 30 V64 A8 8 0 0 1 86 72 H44 L26 88 V72 H14 A8 8 0 0 1 6 64 V30 A8 8 0 0 1 14 22 Z" fill="#E0B848"/>
+      <circle cx="32" cy="47" r="6" fill="#000813"/><circle cx="50" cy="47" r="6" fill="#000813"/><circle cx="68" cy="47" r="6" fill="#000813"/>
+    </svg>
+    <div class="display">Comment: <span class="gold">what AI skill did you build today?</span></div>
+  </div>
+  <div class="footer">Bishop AI</div>
+</div>
+<script>
+  const tl = gsap.timeline({ paused: true });
+  tl.set({}, {}, 16.3);
+  tl.from("#share", { y: 70, opacity: 0, duration: .6, ease: "power3.out" }, 0.05);
+  tl.from("#sub", { opacity: 0, duration: .5 }, 0.7);
+  tl.to("#uline", { width: 900, duration: .8, ease: "power2.inOut" }, 2.0);
+  tl.to("#sub", { color: "#1894C9", duration: .45, yoyo: true, repeat: 1 }, 3.6);
+  tl.to("#share .gold", { color: "#c9a23c", duration: .45, yoyo: true, repeat: 1 }, 5.5);
+  tl.to("#sub", { color: "#1894C9", duration: .45, yoyo: true, repeat: 1 }, 8.0);
+  tl.to("#uline", { width: 1400, duration: .8, ease: "power2.inOut" }, 9.2);
+  // 10.5 (=536.9): comment panel slides up, share compresses toward top
+  tl.to(["#share", "#sub", "#uline"], { y: -160, scale: .85, transformOrigin: "left top", duration: .7, ease: "power2.inOut" }, 10.5);
+  tl.from("#panel", { y: 520, duration: .7, ease: "power3.out" }, 10.5);
+  [12.0, 13.2, 14.4, 15.6].forEach(at => {
+    tl.to("#bubble", { y: -18, duration: .3, yoyo: true, repeat: 1, ease: "power2.inOut" }, at);
+  });
+  window.seekTo = t => { tl.seek(Math.min(t, tl.duration() - 0.001), false); };
+  window.cardReady = Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 3000))]);
+</script></body></html>
