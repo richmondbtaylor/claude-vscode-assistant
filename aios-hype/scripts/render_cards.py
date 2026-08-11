@@ -4,11 +4,12 @@ from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FPS = 30
-CARDS = [  # id, duration (spliced-timeline windows in compose.py)
-    ("c1_hook", 13.65),
-    ("c2_build", 7.57),
-    ("c3_demo", 6.30),
-    ("c4_cta", 13.834),
+CARDS = [  # id, duration, viewport, transparent (spliced-timeline windows live in compose.py)
+    ("c0_words", 12.7, (1080, 1920), True),
+    ("c1_hook", 9.9, (1080, 960), False),
+    ("c2_nocode", 3.75, (1080, 960), False),
+    ("c2_build", 7.57, (1080, 960), False),
+    ("c4_cta", 13.834, (1080, 960), False),
 ]
 
 
@@ -25,7 +26,11 @@ def main():
                 page.screenshot(path=str(ROOT / "build" / f"preview_{cid}_{t}.png"))
             browser.close()
             return
-        for cid, dur in CARDS:
+        only = sys.argv[1] if len(sys.argv) > 1 else None
+        for cid, dur, (vw, vh), transparent in CARDS:
+            if only and cid != only:
+                continue
+            page.set_viewport_size({"width": vw, "height": vh})
             n = math.ceil(dur * FPS)
             frames = ROOT / "build" / f"frames_{cid}"
             frames.mkdir(parents=True, exist_ok=True)
@@ -33,7 +38,13 @@ def main():
             page.evaluate("() => window.cardReady")
             for i in range(n):
                 page.evaluate(f"void window.seekTo({i / FPS})")
-                page.screenshot(path=str(frames / f"f{i:05d}.png"))
+                page.screenshot(path=str(frames / f"f{i:05d}.png"),
+                                omit_background=transparent)
+            if transparent:
+                # keep as PNG sequence (alpha survives); compose reads it directly
+                assert len(list(frames.glob("f*.png"))) >= n
+                print(cid, "ok", n, "alpha frames", flush=True)
+                continue
             subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS),
                             "-i", str(frames / "f%05d.png"), "-c:v", "libx264",
                             "-preset", "fast", "-crf", "16", "-pix_fmt", "yuv420p",

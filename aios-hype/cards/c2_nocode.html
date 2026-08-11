@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="sarev.css"><script src="gsap.min.js"></script></head>
+<body><div class="card">
+  <div style="position:absolute;left:70px;top:70px" class="tag"><span class="dot"></span>The whole trick</div>
+  <div id="pill" style="position:absolute;left:70px;top:330px;background:#000814;border-radius:44px;padding:56px 64px">
+    <div class="display" style="font-size:86px;color:#F9F6F0">No code.</div>
+    <div class="display" style="font-size:86px;color:#E0B848" id="l2">Just English.</div>
+  </div>
+  <div id="cursor" class="display" style="position:absolute;left:70px;top:730px;font-size:54px;color:#1E2333;opacity:0">
+    You type. It builds.<span id="caret" style="color:#E0B848">▌</span></div>
+</div>
+<script>
+  const tl = gsap.timeline({ paused: true });
+  tl.set({}, {}, 3.75);
+  tl.from("#pill", { y: 70, opacity: 0, duration: .45, ease: "power3.out" }, 0.05);
+  tl.to("#l2", { color: "#c9a23c", duration: .35, yoyo: true, repeat: 1 }, 1.1);
+  tl.to("#cursor", { opacity: 1, duration: .35 }, 1.9);
+  tl.to("#caret", { opacity: 0, duration: .18, yoyo: true, repeat: 3 }, 2.5);
+  tl.to("#pill", { scale: 1.02, duration: .3, yoyo: true, repeat: 1, ease: "power2.inOut" }, 3.2);
+  window.seekTo = t => { tl.seek(Math.min(t, tl.duration() - 0.001), false); };
+  window.cardReady = Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 3000))]);
+</script></body></html>
