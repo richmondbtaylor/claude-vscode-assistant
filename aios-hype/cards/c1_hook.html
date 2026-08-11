@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="sarev.css"><script src="gsap.min.js"></script></head>
+<body><div class="card">
+  <div style="position:absolute;left:70px;top:70px" class="tag"><span class="dot"></span>New video</div>
+  <div id="title" class="display" style="position:absolute;left:70px;top:170px;font-size:96px;max-width:940px">
+    Build your<br><span class="brush">AI Operating System</span></div>
+  <div id="sub" class="display" style="position:absolute;left:70px;top:560px;font-size:60px;color:#1E2333;max-width:940px;opacity:0">
+    Become a <span class="blue">Master Prompt Engineer</span> in minutes</div>
+  <div id="pill" style="position:absolute;left:70px;bottom:70px;background:#000814;border-radius:60px;padding:28px 46px;opacity:0">
+    <span class="display" style="font-size:48px;color:#F9F6F0">No code. <span class="gold">Just English.</span></span></div>
+</div>
+<script>
+  const tl = gsap.timeline({ paused: true });
+  tl.set({}, {}, 13.65);
+  tl.from("#title", { y: 70, opacity: 0, duration: .55, ease: "power3.out" }, 0.05);
+  tl.from("#title .brush", { backgroundPosition: "0 0", duration: .01 }, 0.6);
+  tl.to("#sub", { opacity: 1, y: 0, startAt: { y: 40 }, duration: .5, ease: "power3.out" }, 4.6);
+  tl.to("#sub .blue", { color: "#0f6f99", duration: .4, yoyo: true, repeat: 1 }, 6.4);
+  tl.to("#title .brush", { scale: 1.02, transformOrigin: "left center", duration: .35, yoyo: true, repeat: 1 }, 7.8);
+  tl.to("#sub .blue", { color: "#0f6f99", duration: .4, yoyo: true, repeat: 1 }, 9.0);
+  tl.to("#pill", { opacity: 1, y: 0, startAt: { y: 50 }, duration: .5, ease: "power3.out" }, 10.1);
+  tl.to("#pill .gold", { color: "#c9a23c", duration: .4, yoyo: true, repeat: 1 }, 11.6);
+  tl.to("#pill", { scale: 1.03, duration: .3, yoyo: true, repeat: 1, ease: "power2.inOut" }, 12.8);
+  window.seekTo = t => { tl.seek(Math.min(t, tl.duration() - 0.001), false); };
+  window.cardReady = Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 3000))]);
+</script></body></html>

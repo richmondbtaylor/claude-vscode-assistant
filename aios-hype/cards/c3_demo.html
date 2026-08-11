@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="sarev.css"><script src="gsap.min.js"></script></head>
+<body><div class="card">
+  <div style="position:absolute;left:70px;top:70px" class="tag"><span class="dot"></span>Built in the video</div>
+  <div id="title" class="display" style="position:absolute;left:70px;top:160px;font-size:90px;max-width:940px">
+    A <span class="brush">Video Editing</span> Agent</div>
+  <div id="l1" class="display" style="position:absolute;left:70px;top:480px;font-size:52px;color:#1E2333;opacity:0">
+    → Hand it any video on your computer</div>
+  <div id="l2" class="display" style="position:absolute;left:70px;top:590px;font-size:52px;color:#1E2333;opacity:0">
+    → It cuts it <span class="gold">the way you want</span></div>
+  <svg id="play" viewBox="0 0 100 100" style="position:absolute;right:90px;bottom:70px;width:150px;height:150px;opacity:0">
+    <circle cx="50" cy="50" r="46" fill="#000814"/><path d="M40 32 L70 50 L40 68 Z" fill="#E0B848"/></svg>
+</div>
+<script>
+  const tl = gsap.timeline({ paused: true });
+  tl.set({}, {}, 6.3);
+  tl.from("#title", { y: 60, opacity: 0, duration: .5, ease: "power3.out" }, 0.05);
+  tl.to("#l1", { opacity: 1, x: 0, startAt: { x: -40 }, duration: .45, ease: "power3.out" }, 1.5);
+  tl.to("#l2", { opacity: 1, x: 0, startAt: { x: -40 }, duration: .45, ease: "power3.out" }, 3.0);
+  tl.to("#play", { opacity: 1, scale: 1, startAt: { scale: .6 }, duration: .45, ease: "back.out(1.8)" }, 4.2);
+  tl.to("#play", { scale: 1.1, duration: .35, yoyo: true, repeat: 1, ease: "power2.inOut" }, 5.3);
+  window.seekTo = t => { tl.seek(Math.min(t, tl.duration() - 0.001), false); };
+  window.cardReady = Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 3000))]);
+</script></body></html>

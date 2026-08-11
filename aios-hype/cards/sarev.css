@@ -1,0 +1,17 @@
+@import url('fonts/fonts.css');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 960px; overflow: hidden; background: #F9F6F0; }
+.card { position: relative; width: 1080px; height: 960px; background: #F9F6F0;
+        font-family: 'Open Sans', sans-serif; color: #000814; }
+.tag { font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: .2em;
+       text-transform: uppercase; font-size: 26px; color: #1E2333; }
+.tag .dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%;
+            background: #E0B848; margin-right: 16px; vertical-align: middle; }
+.display { font-family: 'Poppins', sans-serif; font-weight: 900; line-height: 1.05;
+           letter-spacing: -0.02em; color: #000814; }
+.gold { color: #E0B848; } .blue { color: #1894C9; }
+.panel { background: #E6E2DE; border-radius: 22px; }
+.brush { position: relative; z-index: 1; }
+.brush::before { content: ''; position: absolute; left: -12px; right: -12px; top: 12%;
+                 bottom: 4%; background: #E0B848; opacity: .55; border-radius: 14px;
+                 transform: skew(-4deg); z-index: -1; }

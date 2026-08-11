@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="sarev.css"><script src="gsap.min.js"></script>
+<style>
+  .chip { display: inline-block; background: #E6E2DE; border-radius: 50px; padding: 18px 34px;
+          font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 34px;
+          letter-spacing: .08em; text-transform: uppercase; color: #1E2333; margin-right: 18px; }
+  #docu { position: absolute; left: 70px; top: 360px; opacity: 0; }
+  #cta { position: absolute; left: 0; bottom: 0; width: 1080px; height: 300px; background: #000814;
+         display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+         padding: 0 70px; gap: 18px; transform: translateY(300px); }
+</style></head>
+<body><div class="card">
+  <div style="position:absolute;left:70px;top:70px" class="tag"><span class="dot"></span>What people run on it</div>
+  <div id="chips" style="position:absolute;left:70px;top:150px;width:940px">
+    <span class="chip" id="ch1">Sales</span><span class="chip" id="ch2">Lead gen</span><span class="chip" id="ch3">Operations</span>
+  </div>
+  <div id="docu" class="display" style="font-size:74px;max-width:940px">
+    We replicated <span class="brush">DocuSign</span><br>in <span class="gold" id="mins">30 minutes</span></div>
+  <div id="pa" class="display" style="position:absolute;left:70px;top:700px;font-size:46px;color:#1894C9;opacity:0">
+    with promptanything.io</div>
+  <div id="cta">
+    <div class="display" style="font-size:56px;color:#F9F6F0">Full build on the channel</div>
+    <div class="display" style="font-size:46px;color:#E0B848" id="comment">Comment "AIOS" and I'll send you the setup</div>
+  </div>
+</div>
+<script>
+  const tl = gsap.timeline({ paused: true });
+  tl.set({}, {}, 13.834);
+  [["#ch1", 0.1], ["#ch2", 0.8], ["#ch3", 1.5]].forEach(([s, at]) => {
+    tl.from(s, { scale: .7, opacity: 0, duration: .4, ease: "back.out(1.7)" }, at);
+  });
+  tl.to("#docu", { opacity: 1, y: 0, startAt: { y: 50 }, duration: .5, ease: "power3.out" }, 3.4);
+  tl.to("#mins", { scale: 1.12, transformOrigin: "left center", duration: .4, yoyo: true, repeat: 1 }, 5.6);
+  tl.to("#pa", { opacity: 1, duration: .45 }, 7.2);
+  tl.to("#docu .brush", { scale: 1.02, transformOrigin: "left center", duration: .35, yoyo: true, repeat: 1 }, 8.6);
+  tl.to("#pa", { color: "#0f6f99", duration: .4, yoyo: true, repeat: 1 }, 9.8);
+  tl.to("#cta", { y: 0, duration: .6, ease: "power3.out" }, 11.0);
+  tl.to("#comment", { color: "#c9a23c", duration: .4, yoyo: true, repeat: 1 }, 12.6);
+  window.seekTo = t => { tl.seek(Math.min(t, tl.duration() - 0.001), false); };
+  window.cardReady = Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 3000))]);
+</script></body></html>
