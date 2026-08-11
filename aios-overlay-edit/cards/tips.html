@@ -62,6 +62,7 @@
   tl.to("#m3 .hl", { color: "#0f6f99", duration: .45, yoyo: true, repeat: 1 }, 32.6);
 
   // 40.3 (=481.9): recap — rows compress up, tag line in
+  tl.to(".tag", { opacity: 0, duration: .4 }, 40.3);
   tl.to(["#r1", "#r2", "#r3"], { y: -70, scale: .92, transformOrigin: "left top", duration: .7, ease: "power2.inOut" }, 40.3);
   tl.to("#hdr", { y: -30, scale: .92, transformOrigin: "left top", duration: .7, ease: "power2.inOut" }, 40.3);
   tl.to("#recap", { opacity: 1, y: 0, startAt: { y: 60 }, duration: .6, ease: "power3.out" }, 41.0);
