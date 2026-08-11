@@ -1,0 +1,9 @@
+My whole AI setup lives in one folder. Skills, config, memory. Any model can run it.
+
+I recorded the full build for people getting started. You set up a free IDE, create the folder structure that acts as the brain, then build two working skills: an orchestrator that routes any request to the right skill, and a video editing agent built from a single prompt.
+
+The easiest step to skip is the prompt itself, and it costs you the most. A strong prompt is the difference between a skill that works on the first try and an afternoon of rewrites. We use PromptAnything for that step. It writes the prompt with you.
+
+Full walkthrough is in the comments.
+
+What would you automate first?

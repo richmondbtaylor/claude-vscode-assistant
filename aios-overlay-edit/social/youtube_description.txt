@@ -1,0 +1,27 @@
+Your whole AI setup can live in one folder on your computer. This video walks through the full build: a free IDE, the folder structure that works as your AI's brain, and your first two working skills. There is no code anywhere in it. You write plain English and the AI does the translating.
+
+What you'll build:
+- An orchestrator agent that takes any request and routes it to the right skill
+- A video editing agent that grabs a file off your desktop and edits it for you
+
+Links from the video:
+Setup guide: https://aiossetup.netlify.app
+PromptAnything (writes the prompts with you): https://www.promptanything.io
+
+Work with me: richmond@bishopai.io
+
+Chapters:
+0:00 What you're building
+0:22 Download your IDE (Antigravity + OpenCode)
+0:58 Install Node.js
+1:05 Your AIOS folder structure
+1:50 The skill builder file
+2:21 What your AI OS can build
+2:43 The orchestrator agent explained
+3:04 Writing the prompt with PromptAnything
+5:51 Building the skill in Antigravity
+6:22 Build a video editing agent
+7:21 Three tips before you go build
+8:11 What to build next
+
+Drop a comment 👇 what AI skill did you build today?

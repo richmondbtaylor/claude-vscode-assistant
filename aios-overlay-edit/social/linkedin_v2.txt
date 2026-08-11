@@ -1,0 +1,7 @@
+In the new video I ask my AI to edit a video. It finds the file on my desktop and cuts it the way I asked.
+
+Behind that is one folder: skills, config, memory. The whole thing gets built in plain English with a free IDE, and I recorded every step so you can copy it.
+
+The build order matters. IDE first, then the folder structure, then an orchestrator agent that decides which skill handles each request. Once that exists, every new skill you add makes the system more useful. We built a video editor as the demo, but the same steps work for sales, operations, or reporting.
+
+Video is in the comments. What is the first task you would hand off?
