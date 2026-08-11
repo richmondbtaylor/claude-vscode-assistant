@@ -74,16 +74,20 @@ for c in cards:
         out_f.resize((640, 360)).save(REPORT / f"{cid}_{label.replace('+','p').replace('-','m')}.png")
         check(f"{cid} {label}", ok, f"diff {dv:.1f} ({'card expected' if want_card else 'no card expected'})")
 
-# 4. beats: visible change across each beat inside the output
+# 4. beats: the output must preserve the visual change the card itself makes.
+# Ground truth = the card's own rendered frames: if the card mutates by X across
+# the beat, the output must show at least half of X (and the card must actually
+# mutate, catching dead beats in the card design too).
 for cid, beats in BEATS.items():
     b = next(x for x in cards if x["id"] == cid)
     for t in beats:
-        if not (b["in"] + 0.45 <= t <= b["out"] - 0.45):
-            lo, hi = max(t - 0.4, b["in"] + 0.02), min(t + 0.4, b["out"] - 0.02)
-        else:
-            lo, hi = t - 0.4, t + 0.4
-        dv = diff(thumb(DST, lo), thumb(DST, hi))
-        check(f"{cid} beat@{t:.1f}", dv > 0.8, f"frame diff {dv:.2f} across beat")
+        lo = max(t - 0.4, b["in"] + 0.02)
+        hi = min(t + 0.4, b["out"] - 0.02)
+        card_dv = diff(card_thumb(cid, lo - b["in"]), card_thumb(cid, hi - b["in"]))
+        out_dv = diff(thumb(DST, lo), thumb(DST, hi))
+        ok = card_dv > 0.1 and out_dv >= 0.5 * card_dv
+        check(f"{cid} beat@{t:.1f}", ok,
+              f"output diff {out_dv:.2f} vs card diff {card_dv:.2f}")
 
 fails = [c for c in checks if not c[1]]
 print(f"\n{'GATE PASS' if not fails else 'GATE FAIL'}: {len(checks) - len(fails)}/{len(checks)} checks passed")
