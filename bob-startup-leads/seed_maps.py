@@ -204,15 +204,15 @@ def run(categories, metros):
                     except Exception as e:
                         print(f"  [err] {item['name']}: {type(e).__name__}", flush=True)
                         continue
-                    if not place:
-                        continue  # couldn't even get a name; leave unseen, retry next run
-                    rec = place_to_record(place, q, metro)
-                    if rec:
-                        # C14: append (and flush) the record before this fid is ever
-                        # allowed to reach seen_ids.json, so a crash never leaves a
-                        # fid marked seen without its record durably on disk.
-                        append_jsonl(OUT, [rec])
-                        n_new += 1
+                    if place:
+                        rec = place_to_record(place, q, metro)
+                        if rec:
+                            # C14: append (and flush) the record before this fid's
+                            # seen-state is ever persisted to disk, so a crash never
+                            # leaves seen_ids.json claiming a fid whose record is not
+                            # yet durable.
+                            append_jsonl(OUT, [rec])
+                            n_new += 1
                     seen.add(fid)
                     if n_new and n_new % 25 == 0:
                         save_seen(seen)

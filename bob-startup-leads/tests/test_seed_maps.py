@@ -1,3 +1,7 @@
+import json
+
+import seed_maps
+from lib.records import read_jsonl
 from seed_maps import fresh_only, place_to_record
 
 PLACE = {
@@ -54,3 +58,88 @@ def test_resume_keeps_only_unseen_fids():
     links = {"fid1": {"href": "a"}, "fid2": {"href": "b"}}
     seen = {"fid1"}
     assert fresh_only(links, seen) == {"fid2": {"href": "b"}}
+
+
+# --- end-to-end resume check: a second run() of the same cell must append
+# nothing, given the seen_ids.json a clean first run() left behind (C14). ---
+
+_FEED = {
+    "0xAAA:0x111": {"href": "https://maps.example/place/a", "name": "A Roofing"},
+    "0xBBB:0x222": {"href": "https://maps.example/place/b", "name": "B Roofing"},
+}
+
+_PLACES_BY_HREF = {
+    "https://maps.example/place/a": {
+        "name": "A Roofing", "phone": "+13055551201",
+        "website": "https://aroofing.com/",
+        "address": "1 Main St, Miami, FL 33101",
+        "category": "Roofing contractor", "rating": 4.8, "reviews": 20,
+    },
+    "https://maps.example/place/b": {
+        "name": "B Roofing", "phone": "+13055551202",
+        "website": "https://broofing.com/",
+        "address": "2 Main St, Miami, FL 33101",
+        "category": "Roofing contractor", "rating": 4.2, "reviews": 5,
+    },
+}
+
+
+class _FakePage:
+    def goto(self, *a, **k):
+        pass
+
+    def wait_for_selector(self, *a, **k):
+        pass
+
+
+class _FakeContext:
+    def new_page(self):
+        return _FakePage()
+
+
+class _FakeBrowser:
+    def new_context(self, **k):
+        return _FakeContext()
+
+    def close(self):
+        pass
+
+
+class _FakeChromium:
+    def launch(self, **k):
+        return _FakeBrowser()
+
+
+class _FakeSyncPlaywright:
+    chromium = _FakeChromium()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+
+def test_rerun_of_same_cell_appends_nothing_once_seen(tmp_path, monkeypatch):
+    out = tmp_path / "seed_maps.jsonl"
+    seen_path = tmp_path / "seen_ids.json"
+    monkeypatch.setattr(seed_maps, "OUT", out)
+    monkeypatch.setattr(seed_maps, "SEEN_PATH", seen_path)
+    monkeypatch.setattr(seed_maps, "sync_playwright", lambda: _FakeSyncPlaywright())
+    monkeypatch.setattr(seed_maps, "scroll_feed", lambda page, max_scrolls=10: dict(_FEED))
+    monkeypatch.setattr(seed_maps, "scrape_place",
+                         lambda page, href: dict(_PLACES_BY_HREF[href]))
+    monkeypatch.setattr("time.sleep", lambda *a, **k: None)
+
+    seed_maps.run(["roofing contractor"], ["Miami FL"])
+    first_records = list(read_jsonl(out))
+    first_seen = json.loads(seen_path.read_text())
+    assert len(first_records) == 2
+    assert len(first_seen) == 2
+
+    # Second run of the identical cell: scroll_feed rediscovers the same
+    # feed, but seen_ids.json (written by the first run) already covers
+    # both feature-ids, so nothing new should be scraped or appended.
+    seed_maps.run(["roofing contractor"], ["Miami FL"])
+    second_records = list(read_jsonl(out))
+    assert second_records == first_records  # file did not grow or duplicate
