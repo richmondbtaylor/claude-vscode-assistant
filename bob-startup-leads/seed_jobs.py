@@ -64,7 +64,7 @@ def parse_ats_result(result: dict) -> dict | None:
     if len(parts) <= idx:
         return None
     slug = parts[idx]
-    name = slug.replace("-", " ").replace("_", " ").strip().title().replace(" ", "")
+    name = slug.replace("-", " ").replace("_", " ").strip().title()
     if not name or len(name) < 3:
         return None
 
@@ -85,6 +85,8 @@ def parse_ats_result(result: dict) -> dict | None:
             "job_url": url,
             "job_blurb": result.get("description", ""),
             "needs_liveness_check": False,
+            "ats_host": host,
+            "ats_slug": slug,
         },
     }
 
