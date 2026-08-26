@@ -1,0 +1,23 @@
+[project]
+name = "bob-startup-leads"
+version = "0.1.0"
+description = "US small-business lead list pipeline"
+requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4>=4.15.0",
+    "google-api-python-client>=2.199.0",
+    "google-auth>=2.57.0",
+    "google-auth-oauthlib>=1.4.1",
+    "httpx>=0.28.1",
+    "playwright>=1.62.0",
+    "rapidfuzz>=3.14.5",
+    "tldextract>=5.3.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
