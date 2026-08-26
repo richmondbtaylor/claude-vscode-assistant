@@ -9,7 +9,11 @@ routed through place_to_record so output matches the canonical record shape
 instead of the old firms_raw.jsonl shape.
 
 Collects: name, category, rating, review count, address, phone, website, maps URL.
-Checkpoints by feature-id so re-runs skip already-scraped places.
+Checkpoints by feature-id so re-runs skip already-scraped places. Each accepted
+record is appended (append_jsonl) and flushed to data/seed_maps.jsonl before its
+feature-id is ever added to the in-memory seen set, and seen_ids.json is only
+saved after that (C14) - so a crash can at worst cost a harmless re-scrape of a
+handful of places, never a silent permanent loss of an already-durable record.
 
 Usage:
   uv run seed_maps.py
@@ -25,7 +29,7 @@ from playwright.sync_api import sync_playwright
 
 import config
 from lib.normalize import norm_phone, registrable_domain
-from lib.records import company_id, read_jsonl, write_jsonl
+from lib.records import append_jsonl, company_id
 
 OUT = config.DATA / "seed_maps.jsonl"
 SEEN_PATH = config.DATA / "seen_ids.json"
@@ -121,6 +125,17 @@ def get_attr(page, selector, attr):
     return el.get_attribute(attr) if el else None
 
 
+def fresh_only(links: dict, seen: set) -> dict:
+    """Feature-ids in links that are not already in seen.
+
+    This is the sole resume gate: a re-run of the same metro/category cell
+    rediscovers the same feature-ids on the feed, and every one of them is
+    filtered out here before the loop that calls scrape_place / append_jsonl
+    ever runs, so a resumed run appends nothing for places already recorded.
+    """
+    return {fid: v for fid, v in links.items() if fid not in seen}
+
+
 def scrape_place(page, href):
     page.goto(href, timeout=45000)
     page.wait_for_selector("h1", timeout=20000)
@@ -157,8 +172,9 @@ def scrape_place(page, href):
 
 
 def run(categories, metros):
+    # Resume relies only on seen_ids.json; data/seed_maps.jsonl is append-only
+    # so there is nothing to preload from it (C14).
     seen = load_seen()
-    records = list(read_jsonl(OUT))  # resume: keep whatever a prior run already wrote
     n_new = 0
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -180,7 +196,7 @@ def run(categories, metros):
                     continue
                 time.sleep(random.uniform(2, 3.5))
                 links = scroll_feed(page)
-                fresh = {fid: v for fid, v in links.items() if fid not in seen}
+                fresh = fresh_only(links, seen)
                 print(f"[{metro} | {q}] feed={len(links)} new={len(fresh)}", flush=True)
                 for fid, item in fresh.items():
                     try:
@@ -188,20 +204,21 @@ def run(categories, metros):
                     except Exception as e:
                         print(f"  [err] {item['name']}: {type(e).__name__}", flush=True)
                         continue
+                    if not place:
+                        continue  # couldn't even get a name; leave unseen, retry next run
+                    rec = place_to_record(place, q, metro)
+                    if rec:
+                        # C14: append (and flush) the record before this fid is ever
+                        # allowed to reach seen_ids.json, so a crash never leaves a
+                        # fid marked seen without its record durably on disk.
+                        append_jsonl(OUT, [rec])
+                        n_new += 1
                     seen.add(fid)
-                    if place:
-                        rec = place_to_record(place, q, metro)
-                        if rec:
-                            records.append(rec)
-                            n_new += 1
                     if n_new and n_new % 25 == 0:
-                        write_jsonl(OUT, records)
                         save_seen(seen)
                     time.sleep(random.uniform(1.5, 3.5))
-                write_jsonl(OUT, records)
                 save_seen(seen)
         browser.close()
-    write_jsonl(OUT, records)
     save_seen(seen)
     print(f"DONE: {n_new} new records written to {OUT}", flush=True)
 

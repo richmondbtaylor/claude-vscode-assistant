@@ -1,4 +1,4 @@
-from seed_maps import place_to_record
+from seed_maps import fresh_only, place_to_record
 
 PLACE = {
     "name": "Castillo Smart Services LLC",
@@ -39,3 +39,18 @@ def test_address_without_parseable_state_still_records():
     odd = dict(PLACE, address="20350 S Dixie Hwy")
     out = place_to_record(odd, "q", "Miami FL")
     assert out["state"] == "FL"  # falls back to the search city
+
+
+def test_resume_skips_everything_already_seen():
+    # A re-run of the same metro/category cell rediscovers the same
+    # feature-ids; this is the sole gate that must empty out so the run
+    # appends nothing for places already recorded (C14).
+    links = {"fid1": {"href": "a"}, "fid2": {"href": "b"}}
+    seen = {"fid1", "fid2"}
+    assert fresh_only(links, seen) == {}
+
+
+def test_resume_keeps_only_unseen_fids():
+    links = {"fid1": {"href": "a"}, "fid2": {"href": "b"}}
+    seen = {"fid1"}
+    assert fresh_only(links, seen) == {"fid2": {"href": "b"}}
