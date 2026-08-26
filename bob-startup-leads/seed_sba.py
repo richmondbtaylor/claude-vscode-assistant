@@ -4,7 +4,7 @@ Streams the CSVs rather than downloading them whole. The 7(a) file is 181 MB.
 """
 import argparse
 import csv
-import io
+import math
 
 import httpx
 
@@ -21,12 +21,21 @@ def _num(value, cast=float):
 
     Real SBA data writes JobsSupported as "9.0", not "9" - int("9.0") raises
     ValueError, so we always parse through float first and cast from there.
+
+    Non-finite results ("nan", "inf", "-inf") are rejected outright: cast(nan)
+    raises ValueError and cast(inf) raises OverflowError when cast is int, and
+    even under the default cast=float a NaN/Infinity would silently defeat the
+    floor comparisons in the callers (nan < X is always False), so both casts
+    and the finiteness check all live inside the same try/except - nothing
+    downstream of float() can raise uncaught.
     """
     try:
         parsed = float(str(value).strip())
-    except (TypeError, ValueError):
+        if not math.isfinite(parsed):
+            return None
+        return cast(parsed)
+    except (TypeError, ValueError, OverflowError):
         return None
-    return cast(parsed)
 
 
 def row_from_7a(row: dict) -> dict | None:
@@ -110,32 +119,46 @@ def row_from_ppp(row: dict) -> dict | None:
     }
 
 
+def _iter_lines(resp):
+    """Yield physical lines, one at a time, from a streaming text response.
+
+    Holds only the current unflushed buffer in memory - never the whole
+    file - so this is safe for the 181 MB 7(a) file. Splitting text on "\n"
+    as chunks arrive is exactly what a text file's own line iteration does,
+    so it is fine as a *physical line* boundary. What is NOT safe is asking
+    a fresh csv.DictReader to parse each chunk's line batch in isolation:
+    a quoted field with an embedded newline (legal CSV, e.g. a multi-line
+    address) can have that newline land on a chunk boundary, so its two
+    halves would end up in different DictReader instances with no memory of
+    each other, corrupting the row. Feeding a single persistent generator to
+    one long-lived csv.DictReader (see stream_csv) fixes this: the csv
+    module tracks quote state itself and calls next() on this generator
+    again mid-field when it needs another physical line to close the quote,
+    pulling more network chunks transparently through the loop below.
+    """
+    buf = ""
+    for chunk in resp.iter_text():
+        buf += chunk
+        while "\n" in buf:
+            line, buf = buf.split("\n", 1)
+            yield line + "\n"
+    if buf:
+        yield buf
+
+
 def stream_csv(url: str, mapper, limit: int):
     """Stream a remote CSV and yield mapped rows until limit is reached."""
     kept = 0
     with httpx.stream("GET", url, timeout=120.0, follow_redirects=True,
                       headers={"User-Agent": "Mozilla/5.0"}) as resp:
         resp.raise_for_status()
-        buf = io.StringIO()
-        reader = None
-        for chunk in resp.iter_text():
-            buf.write(chunk)
-            buf.seek(0)
-            lines = buf.getvalue().split("\n")
-            buf = io.StringIO()
-            buf.write(lines.pop())  # keep the partial last line
-            if reader is None and lines:
-                reader = csv.DictReader([lines.pop(0)])
-                header = reader.fieldnames
-            if reader is None:
-                continue
-            for parsed in csv.DictReader(lines, fieldnames=header):
-                out = mapper(parsed)
-                if out:
-                    yield out
-                    kept += 1
-                    if kept >= limit:
-                        return
+        for parsed in csv.DictReader(_iter_lines(resp)):
+            out = mapper(parsed)
+            if out:
+                yield out
+                kept += 1
+                if kept >= limit:
+                    return
 
 
 def main():

@@ -1,4 +1,6 @@
-from seed_sba import row_from_7a, row_from_ppp
+import csv
+
+from seed_sba import _iter_lines, row_from_7a, row_from_ppp
 
 SEVEN_A = {
     "BorrName": "AMERIPRO CONSTRUCTION SERVICES, INC.",
@@ -56,6 +58,63 @@ def test_ppp_row_flagged_for_liveness_check():
     assert out["signals"]["jobs_supported"] == 62
 
 
+def test_7a_row_accepts_decimal_formatted_jobs():
+    # Real SBA data writes JobsSupported as "9.0", not "9" - this is the
+    # exact shape that made int("9.0") raise and silently reject every row.
+    out = row_from_7a(dict(SEVEN_A, JobsSupported="12.0"))
+    assert out is not None
+    assert out["signals"]["jobs_supported"] == 12
+
+
+def test_ppp_row_accepts_decimal_formatted_jobs():
+    out = row_from_ppp(dict(PPP, JobsReported="62.0"))
+    assert out is not None
+    assert out["signals"]["jobs_supported"] == 62
+
+
 def test_malformed_numbers_do_not_raise():
     assert row_from_7a(dict(SEVEN_A, JobsSupported="")) is None
     assert row_from_7a(dict(SEVEN_A, GrossApproval="N/A")) is None
+    assert row_from_7a(dict(SEVEN_A, JobsSupported="nan")) is None
+    assert row_from_7a(dict(SEVEN_A, JobsSupported="inf")) is None
+    assert row_from_7a(dict(SEVEN_A, JobsSupported="-inf")) is None
+    assert row_from_7a(dict(SEVEN_A, GrossApproval="nan")) is None
+    assert row_from_7a(dict(SEVEN_A, GrossApproval="inf")) is None
+
+
+class _FakeStream:
+    """Stands in for an httpx.Response, yielding pre-chosen text chunks."""
+
+    def __init__(self, chunks):
+        self._chunks = chunks
+
+    def iter_text(self):
+        yield from self._chunks
+
+
+def test_iter_lines_reassembles_quoted_newline_split_across_chunks():
+    # A quoted field's embedded newline (legal CSV, e.g. a multi-line
+    # address) lands exactly on a network chunk boundary. The naive
+    # buf.split("\n") approach this replaced would treat that embedded
+    # newline as a row boundary and corrupt the row; feeding one persistent
+    # generator to a single csv.DictReader must reassemble it correctly.
+    chunks = [
+        'name,note\n"Acme Co","line one\n',
+        'line two"\n',
+    ]
+    reader = csv.DictReader(_iter_lines(_FakeStream(chunks)))
+    rows = list(reader)
+    assert rows == [{"name": "Acme Co", "note": "line one\nline two"}]
+
+
+def test_iter_lines_handles_quoted_comma_field_split_across_chunks():
+    # A quoted field containing a comma (e.g. "AMERIPRO CONSTRUCTION
+    # SERVICES, INC.") with the chunk boundary landing mid-field, no
+    # embedded newline involved. Confirms the rewrite didn't regress this.
+    chunks = [
+        'name,city\n"Acme, Inc',
+        '.","Springfield"\n',
+    ]
+    reader = csv.DictReader(_iter_lines(_FakeStream(chunks)))
+    rows = list(reader)
+    assert rows == [{"name": "Acme, Inc.", "city": "Springfield"}]
