@@ -143,3 +143,43 @@ def test_rerun_of_same_cell_appends_nothing_once_seen(tmp_path, monkeypatch):
     seed_maps.run(["roofing contractor"], ["Miami FL"])
     second_records = list(read_jsonl(out))
     assert second_records == first_records  # file did not grow or duplicate
+
+
+def test_place_with_no_usable_record_is_not_marked_seen_and_is_retried(tmp_path, monkeypatch):
+    # Matches the original ported scraper exactly: `if not place: continue`
+    # sits BEFORE seen.add(fid), so a transient scrape_place failure (page
+    # hiccup, no h1, etc.) leaves that fid out of seen_ids.json and it gets
+    # retried on the next run, instead of being permanently skipped (C15).
+    out = tmp_path / "seed_maps.jsonl"
+    seen_path = tmp_path / "seen_ids.json"
+    monkeypatch.setattr(seed_maps, "OUT", out)
+    monkeypatch.setattr(seed_maps, "SEEN_PATH", seen_path)
+    monkeypatch.setattr(seed_maps, "sync_playwright", lambda: _FakeSyncPlaywright())
+    monkeypatch.setattr(seed_maps, "scroll_feed", lambda page, max_scrolls=10: dict(_FEED))
+    monkeypatch.setattr("time.sleep", lambda *a, **k: None)
+
+    calls = []
+
+    def _flaky_scrape(page, href):
+        calls.append(href)
+        if href.endswith("/a"):
+            return None  # "A Roofing" never yields a usable place
+        return dict(_PLACES_BY_HREF[href])
+
+    monkeypatch.setattr(seed_maps, "scrape_place", _flaky_scrape)
+
+    seed_maps.run(["roofing contractor"], ["Miami FL"])
+    seen_after_first = json.loads(seen_path.read_text())
+    assert "0xAAA:0x111" not in seen_after_first  # place=None -> left unseen
+    assert "0xBBB:0x222" in seen_after_first
+    records_after_first = list(read_jsonl(out))
+    assert len(records_after_first) == 1  # only B Roofing recorded
+    assert calls.count("https://maps.example/place/a") == 1
+
+    # Second run: A's fid is still unseen, so scroll_feed rediscovering the
+    # same feed must send it through scrape_place again.
+    seed_maps.run(["roofing contractor"], ["Miami FL"])
+    assert calls.count("https://maps.example/place/a") == 2  # retried
+    assert calls.count("https://maps.example/place/b") == 1  # B already seen
+    records_after_second = list(read_jsonl(out))
+    assert records_after_second == records_after_first  # no duplicate of B
