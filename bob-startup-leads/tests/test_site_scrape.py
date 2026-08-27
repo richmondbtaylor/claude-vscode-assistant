@@ -109,3 +109,137 @@ def test_extract_phone_bare_fallback_when_no_label():
 
 def test_extract_phone_returns_none_for_no_candidates():
     assert extract_phone("<html><body>no numbers here</body></html>") is None
+
+
+# --- RULING C29: TECH_PATTERNS expanded from 10 to 43 platforms across
+# payments, ecommerce, paid marketing/CRM, support, booking, field
+# service, payroll/HR, accounting and reviews. Same C28 discipline: every
+# new pattern gets a positive test against a realistic embed; the ordinary-
+# English-word names (drift, toast, clover, podium, acuity) additionally
+# get a negative test.
+
+NEW_PLATFORM_EMBEDS = {
+    "paypal": '<a href="https://www.paypal.com/paypalme/example">Pay with PayPal</a>',
+    "braintree": '<script src="https://js.braintreegateway.com/web/dropin/1.33.7/js/dropin.min.js"></script>',
+    "authorizenet": '<script src="https://js.authorize.net/v1/Accept.js"></script>',
+    "clover": '<script src="https://checkout.clover.com/sdk.js"></script>',
+    "toast": '<a href="https://order.toasttab.com/online/example-restaurant">Order Online</a>',
+    "helcim": '<script src="https://secure.helcim.com/js/helcim.js"></script>',
+    "bigcommerce": '<link rel="stylesheet" href="https://cdn11.bigcommerce.com/theme.css">',
+    "woocommerce": '<body class="woocommerce woocommerce-page">',
+    "hubspot": '<script src="https://js.hs-scripts.com/123456.js"></script>',
+    "salesforce": '<a href="https://mycompany.my.salesforce.com/login">Client Portal</a>',
+    "pardot": '<script src="https://pi.pardot.com/pd.js"></script>',
+    "marketo": '<script src="https://app-abc.marketo.com/js/forms2/forms2.min.js"></script>',
+    "activecampaign": '<script src="https://example123.activehosted.com/f/1.js"></script>',
+    "klaviyo": '<script src="https://static.klaviyo.com/onsite/js/klaviyo.js"></script>',
+    "mailchimp": '<a href="https://mycompany.list-manage.com/subscribe">Subscribe</a>',
+    "constantcontact": '<a href="https://visitor.constantcontact.com/d.jsp?m=abc">Subscribe</a>',
+    "zendesk": '<script src="https://static.zdassets.com/ekr/snippet.js"></script>',
+    "intercom": '<script src="https://widget.intercom.io/widget/abc123"></script>',
+    "freshdesk": '<script src="https://mycompany.freshdesk.com/widget.js"></script>',
+    "drift": '<script src="https://js.driftt.com/include/12345/abc.js"></script>',
+    "calendly": '<a href="https://calendly.com/example/30min">Book a call</a>',
+    "acuity": '<a href="https://app.acuityscheduling.com/schedule.php?owner=123">Book Now</a>',
+    "mindbody": '<script src="https://widgets.mindbodyonline.com/widgets/schedules/123.js"></script>',
+    "workiz": '<script src="https://app.workiz.com/booking-widget.js"></script>',
+    "fieldedge": '<a href="https://www.fieldedge.com/login">Field Tech Login</a>',
+    "paychex": '<a href="https://www.paychex.com/login">Employee Login</a>',
+    "bamboohr": '<a href="https://mycompany.bamboohr.com/jobs/">Careers</a>',
+    "rippling": '<a href="https://app.rippling.com/login">Employee Portal</a>',
+    "xero": '<a href="https://www.xero.com/uk/pay/12345">Pay Invoice via Xero</a>',
+    "freshbooks": '<a href="https://my.freshbooks.com/#/estimate/abc">View Estimate</a>',
+    "birdeye": '<script src="https://birdeye.com/widget.js"></script>',
+    "podium": '<script src="https://webchat.podium.com/widget.js"></script>',
+    "nicejob": '<a href="https://nicejob.co/r/mycompany">Leave us a review</a>',
+}
+
+
+@pytest.mark.parametrize("platform, html", NEW_PLATFORM_EMBEDS.items())
+def test_fingerprint_detects_each_new_platform(platform, html):
+    assert fingerprint_tech(html) == [platform]
+
+
+def test_fingerprint_drift_no_false_positive_on_ordinary_text():
+    html = "<p>Watch for roof drift after heavy wind storms.</p>"
+    assert fingerprint_tech(html) == []
+
+
+def test_fingerprint_toast_no_false_positive_on_ordinary_text():
+    html = "<p>We'll toast to your new roof at the completion party.</p>"
+    assert fingerprint_tech(html) == []
+
+
+def test_fingerprint_clover_no_false_positive_on_ordinary_text():
+    html = "<p>Our clover lawn seed mix keeps your yard green year round.</p>"
+    assert fingerprint_tech(html) == []
+
+
+def test_fingerprint_podium_no_false_positive_on_ordinary_text():
+    html = "<p>The award-winning contractor stood on the podium at the gala.</p>"
+    assert fingerprint_tech(html) == []
+
+
+def test_fingerprint_acuity_no_false_positive_on_ordinary_text():
+    html = "<p>Our inspectors have the visual acuity to catch every missing shingle.</p>"
+    assert fingerprint_tech(html) == []
+
+
+def test_fingerprint_xero_no_false_positive_on_similar_domain():
+    html = '<a href="https://www.flexero.com/careers">Careers at Flexero</a>'
+    assert fingerprint_tech(html) == []
+
+
+def test_fingerprint_excluded_platforms_never_tracked():
+    """RULING C29: WordPress, Wix, Squarespace, GoDaddy and Webflow are
+    deliberately excluded. A website builder is not evidence money moves."""
+    html = ('<link rel="stylesheet" href="https://mysite.wordpress.com/wp-content/theme.css">'
+            '<script src="https://static.wixstatic.com/site.js"></script>'
+            '<img src="https://images.squarespace-cdn.com/logo.png">'
+            '<a href="https://www.godaddy.com">Domains by GoDaddy</a>'
+            '<meta name="generator" content="Webflow">')
+    assert fingerprint_tech(html) == []
+
+
+# --- RULING C30: clean_emails also drops template placeholder addresses,
+# URL-encoding artifacts, and local parts that are purely numeric or a
+# single character. Each closes a real gap found in the previous live run.
+
+def test_clean_emails_drops_placeholder_localparts():
+    found = {"email@acme.com", "youremail@acme.com", "name@acme.com",
+             "example@acme.com", "yourname@acme.com", "owner@acme.com"}
+    assert clean_emails(found, "acme.com") == ["owner@acme.com"]
+
+
+def test_clean_emails_drops_placeholder_domains():
+    found = {"info@company.com", "info@yourcompany.com", "info@yourdomain.com",
+             "info@roofingcompany.com"}
+    # "roofingcompany.com" is a real registrable domain that happens to end
+    # in "company.com" -- must survive an exact rhs match, not a substring one.
+    assert clean_emails(found, "roofingcompany.com") == ["info@roofingcompany.com"]
+
+
+def test_clean_emails_drops_url_encoding_artifact():
+    found = {"%20office@acme.com", "owner@acme.com"}
+    assert clean_emails(found, "acme.com") == ["owner@acme.com"]
+
+
+def test_clean_emails_drops_numeric_and_single_char_localparts():
+    found = {"2@gmail.com", "789@gmail.com", "a@gmail.com", "owner@acme.com"}
+    assert clean_emails(found, "acme.com") == ["owner@acme.com"]
+
+
+# --- RULING C31: the license/invoice/order/PO/EIN reject list also
+# applies to tel: hrefs, and a tel: link in a contact region is preferred
+# over one that reads as a footer design credit, even when the credit
+# link appears earlier in the document.
+
+def test_extract_phone_rejects_tel_href_preceded_by_license_label():
+    html = 'License: <a href="tel:+15125550199">Call</a>'
+    assert extract_phone(html) is None
+
+
+def test_extract_phone_prefers_contact_tel_over_earlier_footer_credit_tel():
+    html = ('<footer>Site by <a href="tel:+15125550100">WebCo</a></footer>'
+            '<div class="contact">Call us: <a href="tel:+15125550199">(512) 555-0199</a></div>')
+    assert extract_phone(html) == "+15125550199"

@@ -43,6 +43,14 @@ GENERIC_LOCALPARTS = {
     "team", "mail", "enquiries", "inquiries", "help", "service", "billing",
 }
 
+# RULING C30: template placeholder addresses that ship as if contactable.
+# Matched by exact equality, not substring, because a substring check on
+# "company.com" would wrongly reject real domains like
+# "precisionroofingcompany.com".
+PLACEHOLDER_LOCALPARTS = {"email", "youremail", "name", "example", "yourname", "yourcompany"}
+PLACEHOLDER_DOMAINS = {"company.com", "yourcompany.com", "yourdomain.com",
+                        "example.com", "domain.com", "email.com"}
+
 # RULING C26: phone extraction preference order is tel: href, then a digit
 # run near a phone label, then a bare match as last resort. A candidate
 # immediately preceded by a license/invoice/order/PO/EIN label is rejected
@@ -52,8 +60,33 @@ PHONE_CANDIDATE_RE = re.compile(r"(\+?1?[\s.\-]?\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?
 PHONE_LABEL_RE = re.compile(r"\b(phone|call|tel|office|toll[\s-]?free)\b", re.I)
 PHONE_REJECT_RE = re.compile(
     r"\b(licen[cs]e|lic|invoice|order|po|ein)\b\W{0,5}$", re.I)
+# RULING C31: a tel: link is not automatically the company's own number. A
+# web designer's credit link or a chamber-of-commerce badge can carry a
+# tel: href too, and can appear earlier in document order than the real
+# contact block. Deprioritize (do not reject outright, since it may be the
+# only candidate) a tel: link whose surrounding text reads like a footer
+# credit rather than a contact section.
+FOOTER_CREDIT_RE = re.compile(
+    r"designed by|powered by|site by|built by|web design by|developed by|"
+    r"\bcredits?\b", re.I)
 
 # Fingerprints for the money stack. Presence implies real transactions.
+#
+# RULING C29: expanded from the original ten (kept unchanged below) after
+# a live probe found zero hits on 103 real businesses across two verticals
+# while an identical-technique probe for untracked platforms found real
+# signal (WordPress, HubSpot, etc.) on the same pages. The original ten
+# were mistuned for the population this pipeline actually collects.
+#
+# Deliberately EXCLUDED: WordPress, Wix, Squarespace, GoDaddy, Webflow.
+# A website builder is not evidence that money moves through a business;
+# nearly every company would score a free hit.
+#
+# Short/ordinary-word platform names (clover, toast, drift, podium,
+# acuity, rippling, xero) are anchored to their actual embed/widget
+# domain, not the bare word, and several carry a leading \b boundary so
+# a longer domain that merely ends in the same letters (e.g.
+# "flexero.com") cannot match.
 TECH_PATTERNS = {
     "stripe": r"js\.stripe\.com|stripe\.com/v3",
     "shopify": r"cdn\.shopify\.com|window\.Shopify",
@@ -65,6 +98,48 @@ TECH_PATTERNS = {
     "servicetitan": r"servicetitan\.com",
     "jobber": r"getjobber\.com",
     "housecallpro": r"housecallpro\.com",
+    # Payments
+    "paypal": r"paypal\.com|paypalobjects\.com",
+    "braintree": r"braintreegateway\.com|braintreepayments\.com",
+    "authorizenet": r"authorize\.net|authorizenet",
+    "clover": r"\bclover\.com\b|checkout\.clover\.com",
+    "toast": r"toasttab\.com",
+    "helcim": r"helcim\.com",
+    # Ecommerce
+    "bigcommerce": r"bigcommerce\.com",
+    "woocommerce": r"woocommerce",
+    # Paid marketing and CRM
+    "hubspot": r"hubspot\.com|hs-scripts|hsforms",
+    "salesforce": r"salesforce\.com",
+    "pardot": r"pardot\.com",
+    "marketo": r"marketo\.com|marketo\.net",
+    "activecampaign": r"activecampaign\.com|activehosted\.com",
+    "klaviyo": r"klaviyo\.com",
+    "mailchimp": r"mailchimp\.com|list-manage\.com",
+    "constantcontact": r"constantcontact\.com",
+    # Support
+    "zendesk": r"zendesk\.com|zdassets\.com",
+    "intercom": r"intercom\.io|intercomcdn\.com",
+    "freshdesk": r"freshdesk\.com",
+    "drift": r"driftt\.com",
+    # Booking
+    "calendly": r"calendly\.com",
+    "acuity": r"acuityscheduling\.com",
+    "mindbody": r"mindbodyonline\.com",
+    # Field service
+    "workiz": r"workiz\.com",
+    "fieldedge": r"fieldedge\.com",
+    # Payroll and HR
+    "paychex": r"paychex\.com",
+    "bamboohr": r"bamboohr\.com",
+    "rippling": r"\brippling\.com\b",
+    # Accounting
+    "xero": r"\bxero\.com\b",
+    "freshbooks": r"freshbooks\.com",
+    # Reviews and reputation
+    "birdeye": r"birdeye\.com",
+    "podium": r"\bpodium\.com\b",
+    "nicejob": r"nicejob\.co\b",
 }
 
 
@@ -79,13 +154,26 @@ def fetch(url):
 
 
 def clean_emails(found: set[str], domain: str) -> list[str]:
-    """Filter asset and vendor noise, prefer addresses on the company domain."""
+    """Filter asset and vendor noise, prefer addresses on the company domain.
+    RULING C30: also drops template placeholder addresses (email@,
+    youremail@, name@, example@, yourname@, @company.com, @yourdomain.com
+    style), URL-encoding artifacts (a stray "%" from an un-decoded mailto
+    href), and local parts that are purely numeric or a single character
+    -- none of these are a real, contactable address even though they
+    parse as syntactically valid email strings."""
     keep = []
     for email in found:
         low = email.lower().strip(".")
         if any(j in low for j in JUNK):
             continue
         if low.count("@") != 1 or len(low) > 80:
+            continue
+        if "%" in low:
+            continue
+        local, _, rhs = low.partition("@")
+        if not local or len(local) == 1 or local.isdigit():
+            continue
+        if local in PLACEHOLDER_LOCALPARTS or rhs in PLACEHOLDER_DOMAINS:
             continue
         keep.append(low)
     on_domain = [e for e in keep if e.endswith("@" + domain.lower())]
@@ -134,14 +222,43 @@ def extract_phone(html: str) -> str | None:
     label ("phone", "call", "tel", "office", "toll free") over a bare
     match; reject any candidate immediately preceded by a license,
     invoice, order, PO or EIN label. Every candidate passes through
-    norm_phone, which already rejects impossible area/exchange codes."""
+    norm_phone, which already rejects impossible area/exchange codes.
+    RULING C31: the license/invoice/order/PO/EIN reject list also applies
+    to tel: hrefs, and a tel: link in a contact region is preferred over
+    one that reads as a footer design credit, regardless of which one
+    appears first in the document."""
+    tel_spans = []
+    tel_candidates = []
     for m in TEL_HREF_RE.finditer(html):
+        tel_spans.append(m.span())
+        # The reject label (e.g. "License:") sits before the opening tag
+        # ("<a href=..."), not immediately before the href= attribute
+        # itself, so the window is anchored to the tag's own start.
+        tag_start = html.rfind("<", 0, m.start())
+        if tag_start == -1:
+            tag_start = m.start()
+        window_before = html[max(0, tag_start - 20):tag_start]
+        if PHONE_REJECT_RE.search(window_before):
+            continue
         p = norm_phone(m.group(1))
-        if p:
-            return p
+        if not p:
+            continue
+        context = html[max(0, m.start() - 80):m.end() + 80]
+        is_credit = bool(FOOTER_CREDIT_RE.search(context))
+        tel_candidates.append((p, is_credit))
+    if tel_candidates:
+        non_credit = [p for p, is_credit in tel_candidates if not is_credit]
+        if non_credit:
+            return non_credit[0]
+        return tel_candidates[0][0]
 
     labeled, bare = [], []
     for m in PHONE_CANDIDATE_RE.finditer(html):
+        # A tel: href's own digits are governed entirely by the tel:
+        # branch above (including its reject check); do not let a
+        # rejected tel: number leak back in through the bare-digit path.
+        if any(s <= m.start() < e for s, e in tel_spans):
+            continue
         window_before = html[max(0, m.start() - 20):m.start()]
         if PHONE_REJECT_RE.search(window_before):
             continue
