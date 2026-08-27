@@ -1,10 +1,12 @@
 """Scrape company websites for contact data and payment-tech fingerprints.
 
 Port of ~/.claude/bob-miami-150/site_scrape.py. Reuses its fetch, path-walk,
-email regex, junk filter and ThreadPoolExecutor main loop. Drops the loose
-NAME_RE owner-extraction block entirely (that regex is what produced junk
-contact names like "Get Ah" in the previous production run); name extraction
-is handled in a later task using lib.normalize.is_valid_person_name.
+email regex, junk filter and ThreadPoolExecutor main loop, including the
+resume-on-restart behaviour (skip company_ids already written to the
+output file). Drops the loose NAME_RE owner-extraction block entirely
+(that regex is what produced junk contact names like "Get Ah" in the
+previous production run); name extraction is handled in a later task
+using lib.normalize.is_valid_person_name.
 
 Usage: uv run site_scrape.py [--limit N]
 Input: data/resolved.jsonl
@@ -40,6 +42,16 @@ GENERIC_LOCALPARTS = {
     "info", "hello", "contact", "sales", "support", "admin", "office",
     "team", "mail", "enquiries", "inquiries", "help", "service", "billing",
 }
+
+# RULING C26: phone extraction preference order is tel: href, then a digit
+# run near a phone label, then a bare match as last resort. A candidate
+# immediately preceded by a license/invoice/order/PO/EIN label is rejected
+# outright, since those are commonly formatted as 3-3-4 digit groups too.
+TEL_HREF_RE = re.compile(r'href=["\']tel:([^"\']+)["\']', re.I)
+PHONE_CANDIDATE_RE = re.compile(r"(\+?1?[\s.\-]?\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?\d{4})")
+PHONE_LABEL_RE = re.compile(r"\b(phone|call|tel|office|toll[\s-]?free)\b", re.I)
+PHONE_REJECT_RE = re.compile(
+    r"\b(licen[cs]e|lic|invoice|order|po|ein)\b\W{0,5}$", re.I)
 
 # Fingerprints for the money stack. Presence implies real transactions.
 TECH_PATTERNS = {
@@ -116,6 +128,38 @@ def extract_jsonld_org(html: str) -> dict:
     return out
 
 
+def extract_phone(html: str) -> str | None:
+    """Extract a US phone number from page HTML or text. RULING C26: a
+    tel: href wins outright; otherwise prefer a digit run near a phone
+    label ("phone", "call", "tel", "office", "toll free") over a bare
+    match; reject any candidate immediately preceded by a license,
+    invoice, order, PO or EIN label. Every candidate passes through
+    norm_phone, which already rejects impossible area/exchange codes."""
+    for m in TEL_HREF_RE.finditer(html):
+        p = norm_phone(m.group(1))
+        if p:
+            return p
+
+    labeled, bare = [], []
+    for m in PHONE_CANDIDATE_RE.finditer(html):
+        window_before = html[max(0, m.start() - 20):m.start()]
+        if PHONE_REJECT_RE.search(window_before):
+            continue
+        p = norm_phone(m.group(1))
+        if not p:
+            continue
+        context = html[max(0, m.start() - 40):m.end() + 10]
+        if PHONE_LABEL_RE.search(context):
+            labeled.append(p)
+        else:
+            bare.append(p)
+    if labeled:
+        return labeled[0]
+    if bare:
+        return bare[0]
+    return None
+
+
 def scrape_domain(root_url: str, domain: str) -> dict:
     """Walk the standard path set for one site, returning everything the
     money-scoring stage needs: emails, phone, tech fingerprint and the
@@ -159,11 +203,10 @@ def scrape_domain(root_url: str, domain: str) -> dict:
 
     if phone is None:
         for html in sources:
-            m = re.search(r"(\+?1?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})", html)
-            if m:
-                phone = norm_phone(m.group(1))
-                if phone:
-                    break
+            p = extract_phone(html)
+            if p:
+                phone = p
+                break
 
     emails = clean_emails(found_emails, domain)
     tech = fingerprint_tech(" ".join(sources))
@@ -205,10 +248,18 @@ def scrape_row(row: dict) -> dict:
 
 
 def main(limit: int | None = None, workers: int = 12):
-    rows = list(read_jsonl(config.DATA / "resolved.jsonl"))
+    # RULING C27: resume support. A domain already written to sites.jsonl
+    # is skipped, so an interrupted run (up to eight fetches per domain
+    # across thousands of companies) can restart without duplicating rows.
+    done_ids = {row.get("company_id") for row in read_jsonl(config.DATA / "sites.jsonl")
+                if row.get("company_id")}
+    all_rows = list(read_jsonl(config.DATA / "resolved.jsonl"))
+    skipped = sum(1 for r in all_rows if r.get("company_id") in done_ids)
+    rows = [r for r in all_rows if r.get("company_id") not in done_ids]
     if limit:
         rows = rows[:limit]
-    print(f"{len(rows)} rows to scrape ({workers} workers)", flush=True)
+    print(f"{len(rows)} rows to scrape ({workers} workers), "
+          f"{skipped} already done and skipped", flush=True)
 
     lock = threading.Lock()
     counter = {"n": 0, "hits": 0, "tech": 0}
