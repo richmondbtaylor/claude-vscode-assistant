@@ -39,38 +39,41 @@ US_STATES = {
     "WI": "Wisconsin", "WY": "Wyoming", "DC": "District of Columbia",
 }
 
-# These two-letter codes double as ordinary English words ("in", "or", "ok",
-# "me", "hi", "de"). Brave snippets write real postal abbreviations in caps,
-# so for these codes only, require an exact-case whole-word match. Every
-# other code (and every full state name) matches case-insensitively.
-AMBIGUOUS_STATE_CODES = {"IN", "OR", "OK", "ME", "HI", "DE"}
-
+# RULING C18: enumerating "ambiguous" codes (CO for "Company", IN/OR/OK/ME/HI/DE
+# for ordinary words, etc.) is a losing game, and a caps-only gate breaks on
+# stylized all-caps titles. Instead, a two-letter code counts as a state
+# reference ONLY in postal form: preceded by a comma (optional whitespace), or
+# immediately followed by a five-digit ZIP. Nothing else counts, in either
+# letter case. Full state names still match as whole words/phrases,
+# case-insensitively, anywhere -- they carry most real cases, including the
+# Collaer/Collier regression, which names "Florida" outright.
 _STATE_NAME_PATTERNS = {
     code: re.compile(r"\b" + re.escape(name) + r"\b", re.IGNORECASE)
     for code, name in US_STATES.items()
 }
-_STATE_CODE_PATTERNS_CI = {
-    code: re.compile(r"\b" + code + r"\b", re.IGNORECASE)
-    for code in US_STATES if code not in AMBIGUOUS_STATE_CODES
+_STATE_CODE_COMMA_PATTERNS = {
+    code: re.compile(r",\s*" + code + r"\b", re.IGNORECASE)
+    for code in US_STATES
 }
-_STATE_CODE_PATTERNS_CS = {
-    code: re.compile(r"\b" + code + r"\b")  # no IGNORECASE: caps only
-    for code in AMBIGUOUS_STATE_CODES
+_STATE_CODE_ZIP_PATTERNS = {
+    code: re.compile(r"\b" + code + r"(?=\s+\d{5}\b)", re.IGNORECASE)
+    for code in US_STATES
 }
 
 
 def _mentioned_states(text: str) -> set[str]:
-    """US state codes named in text, matched as whole words/phrases only."""
+    """US states named in text: full names anywhere, two-letter codes only
+    in postal form (", TX" or "TX 78701")."""
     if not text:
         return set()
     found = set()
     for code, pattern in _STATE_NAME_PATTERNS.items():
         if pattern.search(text):
             found.add(code)
-    for code, pattern in _STATE_CODE_PATTERNS_CI.items():
+    for code, pattern in _STATE_CODE_COMMA_PATTERNS.items():
         if pattern.search(text):
             found.add(code)
-    for code, pattern in _STATE_CODE_PATTERNS_CS.items():
+    for code, pattern in _STATE_CODE_ZIP_PATTERNS.items():
         if pattern.search(text):
             found.add(code)
     return found
