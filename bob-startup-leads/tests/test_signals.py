@@ -149,6 +149,47 @@ def test_score_press_results_word_boundary_rejects_similarly_named_company():
     assert score_press_results(results, "Roof X") == 0
 
 
+# RULING C37: press coverage is third-party by definition. A company's own
+# site self-reporting an award is not evidence of anything; left unfiltered
+# any business could inflate this signal by writing "award-winning" on its
+# own homepage. registrable_domain is reused for the comparison so this
+# stays consistent with the rest of the pipeline's domain handling.
+
+def test_score_press_results_excludes_companys_own_domain():
+    results = [
+        {"url": "https://acmeroofing.com/blog/best-of-florida",
+         "title": "Acme Roofing named Best of Florida award winner",
+         "description": "self-reported on our own site"},
+        {"url": "https://tampabaytimes.com/business/acme-roofing-wins-award",
+         "title": "Acme Roofing named a top contractor", "description": "local news coverage"},
+    ]
+    assert score_press_results(results, "Acme Roofing LLC", domain="acmeroofing.com") == 1
+
+
+def test_score_press_results_own_domain_check_is_case_insensitive():
+    results = [{"url": "https://www.AcmeRoofing.com/press",
+                "title": "Acme Roofing named award winner", "description": ""}]
+    assert score_press_results(results, "Acme Roofing LLC", domain="acmeroofing.com") == 0
+
+
+def test_score_press_results_no_domain_does_not_crash_and_applies_no_own_domain_filter():
+    results = [{"url": "https://acmeroofing.com/blog/best-of-florida",
+                "title": "Acme Roofing named Best of Florida award winner", "description": ""}]
+    assert score_press_results(results, "Acme Roofing LLC", domain=None) == 1
+    assert score_press_results(results, "Acme Roofing LLC", domain="") == 1
+
+
+def test_press_hits_threads_domain_through_to_exclude_own_site(monkeypatch):
+    raw = [
+        {"url": "https://acmeroofing.com/blog/best-of-florida",
+         "title": "Acme Roofing named Best of Florida award winner", "description": ""},
+        {"url": "https://tampabaytimes.com/business/acme-roofing-wins-award",
+         "title": "Acme Roofing named a top contractor", "description": "local news coverage"},
+    ]
+    monkeypatch.setattr(signals, "brave_search", lambda *a, **k: raw)
+    assert signals.press_hits("Acme Roofing", "Tampa", "acmeroofing.com") == 1
+
+
 # RULING C34: LinkedIn URL construction and page-parse logic, covered with
 # fake page/response objects since the saved session does not authenticate
 # and the live path cannot be exercised for real right now.

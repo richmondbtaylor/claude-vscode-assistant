@@ -21,7 +21,7 @@ import tldextract
 from playwright.sync_api import sync_playwright
 
 import config
-from lib.normalize import NON_COMPANY_HOSTS, norm_name
+from lib.normalize import NON_COMPANY_HOSTS, norm_name, registrable_domain
 from lib.records import append_jsonl, company_id, read_jsonl
 from seed_jobs import brave_search
 
@@ -105,19 +105,28 @@ def _mentions_company(text: str, target: str) -> bool:
     return bool(re.search(r"\b" + re.escape(target) + r"\b", norm_name(text)))
 
 
-def score_press_results(results: list[dict], name: str) -> int:
+def score_press_results(results: list[dict], name: str, domain: str | None = None) -> int:
     """Count only results that actually name the company AND carry a press
-    or funding term, excluding directory/social listing pages. RULING C33:
-    a result whose title/description mentions neither is not evidence
-    about that company, and raw Brave volume alone is close to a constant
-    across almost any query. RULING C36: directory/badge hosts are
-    excluded outright, and the name match is whole-word anchored."""
+    or funding term, excluding directory/social listing pages and the
+    company's own site. RULING C33: a result whose title/description
+    mentions neither is not evidence about that company, and raw Brave
+    volume alone is close to a constant across almost any query. RULING
+    C36: directory/badge hosts are excluded outright, and the name match
+    is whole-word anchored. RULING C37: press coverage is third-party by
+    definition, so a result on the company's own domain is excluded too;
+    domain is optional and a falsy value simply skips that check (a row
+    with no domain never reaches this function via press_hits anyway,
+    since main() returns it unchanged before any query is spent)."""
     target = norm_name(name)
     if not target:
         return 0
+    own_domain = domain.lower() if domain else None
     count = 0
     for r in results:
-        if _is_directory_or_social_host(r.get("url", "")):
+        url = r.get("url", "")
+        if _is_directory_or_social_host(url):
+            continue
+        if own_domain and registrable_domain(url) == own_domain:
             continue
         text = f"{r.get('title', '')} {r.get('description', '')}"
         if _mentions_company(text, target) and _PRESS_TERM_RE.search(text):
@@ -125,16 +134,17 @@ def score_press_results(results: list[dict], name: str) -> int:
     return count
 
 
-def press_hits(name: str, city: str) -> int:
-    """Count news and funding mentions that actually name the company.
-    RULING C33: filtered through score_press_results rather than a raw
-    result count."""
+def press_hits(name: str, city: str, domain: str | None = None) -> int:
+    """Count news and funding mentions that actually name the company on a
+    third-party site. RULING C33/C36/C37: filtered through
+    score_press_results rather than a raw result count; domain is threaded
+    through so a result on the company's own site is excluded."""
     query = f'"{name}" ({city}) (raised OR acquired OR expands OR "named" OR award)'
     try:
         results = brave_search(query, count=10)
     except Exception:
         return 0
-    return score_press_results(results, name)
+    return score_press_results(results, name, domain)
 
 
 def marketplace_presence(name: str, domain: str) -> list[str]:
@@ -291,7 +301,7 @@ def process_row(row: dict, page) -> dict:
     sig = row.setdefault("signals", {})
     sig["headcount"] = linkedin_headcount(page, domain) if page else None
     sig["marketplaces"] = marketplace_presence(row["name"], domain)
-    sig["press_hits"] = press_hits(row["name"], row.get("city", ""))
+    sig["press_hits"] = press_hits(row["name"], row.get("city", ""), domain)
     return row
 
 
