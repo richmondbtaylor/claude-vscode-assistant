@@ -95,6 +95,60 @@ def test_press_hits_filters_raw_results_through_score_press_results(monkeypatch)
     assert signals.press_hits("Acme Roofing", "Tampa") == 1
 
 
+# RULING C36: a live diagnostic against real Brave results for two small
+# roofing contractors showed the dominant false-positive pattern was
+# directory/certification-badge listings (buildzoom, thebluebook,
+# fivestarrated, bestpickreports, angi, nextdoor, facebook) naming the
+# company and carrying "award" on a badge, not press coverage. These are
+# excluded via the shared NON_COMPANY_HOSTS set. Also anchors the company
+# name match on word boundaries so "Roof X" cannot match "Roof Xpress".
+
+def test_is_directory_or_social_host_true_for_known_directory():
+    assert signals._is_directory_or_social_host(
+        "https://www.buildzoom.com/contractor/acme-roofing-llc") is True
+
+
+def test_is_directory_or_social_host_true_for_angi_badge_page():
+    assert signals._is_directory_or_social_host(
+        "https://www.angi.com/companylist/us/fl/tampa/roofing.htm") is True
+
+
+def test_is_directory_or_social_host_false_for_companys_own_site():
+    assert signals._is_directory_or_social_host("https://acmeroofing.com/about") is False
+
+
+def test_is_directory_or_social_host_false_for_blank_url():
+    assert signals._is_directory_or_social_host("") is False
+
+
+def test_score_press_results_excludes_directory_and_social_hosts():
+    results = [
+        {"url": "https://www.angi.com/companylist/us/fl/tampa/roofing.htm",
+         "title": "Top 10 Best Roofers", "description": "Acme Roofing named a top pick, award winner."},
+        {"url": "https://www.buildzoom.com/contractor/acme-roofing-llc",
+         "title": "Acme Roofing | BuildZoom", "description": "Acme Roofing named a certified GAF contractor, award."},
+        {"url": "https://acmeroofing.com/blog/press",
+         "title": "Acme Roofing raises $2M", "description": "funding announced"},
+    ]
+    assert score_press_results(results, "Acme Roofing LLC") == 1
+
+
+def test_mentions_company_word_boundary_true_for_exact_name():
+    assert signals._mentions_company("Acme Roofing raised funding", "acme roofing") is True
+
+
+def test_mentions_company_word_boundary_false_for_partial_word_overlap():
+    # "roof x" must not match inside "roof xpress" -- no boundary between
+    # the "x" in the target and the "press" that immediately follows it.
+    assert signals._mentions_company("Roof Xpress named best contractor", "roof x") is False
+
+
+def test_score_press_results_word_boundary_rejects_similarly_named_company():
+    results = [{"url": "https://roofxpress.com",
+                "title": "Roof Xpress named best contractor in Tampa", "description": ""}]
+    assert score_press_results(results, "Roof X") == 0
+
+
 # RULING C34: LinkedIn URL construction and page-parse logic, covered with
 # fake page/response objects since the saved session does not authenticate
 # and the live path cannot be exercised for real right now.
@@ -245,13 +299,37 @@ NEW_ROW_NO_DOMAIN = {
     "signals": {"open_finance_req": True, "job_title": "Bookkeeper"},
 }
 
+# Every earlier-stage signal key the scoring stage reads by name, all 18,
+# populated with a concrete value. Exhaustive on purpose (not a
+# representative subset) so a silently dropped key cannot slip past this
+# test the way a partial spot-check would.
 NEW_ROW_WITH_DOMAIN = {
     "company_id": "def456", "name": "New Co", "domain": "new.com", "website": None,
     "phone": None, "email": None, "email_status": "none", "address": "", "city": "Austin",
-    "state": "TX", "zip": "", "naics": "", "category": "", "sources": ["maps"],
-    "signals": {"reviews": 20, "rating": 4.2, "maps_query": "marketing agency",
-                "maps_city": "Austin TX", "needs_liveness_check": False,
-                "tech": ["stripe"], "has_pricing_page": True, "has_careers_page": False},
+    "state": "TX", "zip": "", "naics": "", "category": "", "sources": ["maps", "jobs", "sba", "ats"],
+    "signals": {
+        # site_scrape.py
+        "tech": ["stripe"], "has_pricing_page": True, "has_careers_page": False,
+        # seed_maps.py
+        "reviews": 20, "rating": 4.2, "maps_query": "marketing agency",
+        "maps_city": "Austin TX", "needs_liveness_check": False,
+        # seed_jobs.py
+        "open_finance_req": True, "job_title": "Staff Accountant",
+        "job_url": "https://boards.greenhouse.io/newco/jobs/123",
+        "job_blurb": "New Co is hiring a Staff Accountant in Austin, TX.",
+        "ats_host": "boards.greenhouse.io", "ats_slug": "newco",
+        # seed_sba.py
+        "jobs_supported": 12, "loan_amount": 250000, "loan_fy": 2023, "business_age": 7,
+    },
+}
+
+# The 18 keys above, named explicitly so the assertion is exhaustive
+# rather than a spot-check of whichever ones happened to get typed in.
+EARLIER_STAGE_SIGNAL_KEYS = {
+    "tech", "has_pricing_page", "has_careers_page",
+    "reviews", "rating", "maps_query", "maps_city", "needs_liveness_check",
+    "open_finance_req", "job_title", "job_url", "job_blurb", "ats_host", "ats_slug",
+    "jobs_supported", "loan_amount", "loan_fy", "business_age",
 }
 
 
@@ -319,15 +397,16 @@ def test_main_preserves_earlier_stage_signals_on_domain_row(tmp_path, monkeypatc
     out = _read_jsonl(tmp_path / "signals.jsonl")
     assert len(out) == 1
     sig = out[0]["signals"]
-    # every earlier-stage key survives
-    assert sig["reviews"] == 20
-    assert sig["rating"] == 4.2
-    assert sig["maps_query"] == "marketing agency"
-    assert sig["maps_city"] == "Austin TX"
-    assert sig["needs_liveness_check"] is False
-    assert sig["tech"] == ["stripe"]
-    assert sig["has_pricing_page"] is True
-    assert sig["has_careers_page"] is False
+
+    # Exhaustive: every one of the 18 earlier-stage keys the scoring
+    # stage reads by name, checked against its original value, not just
+    # a representative handful.
+    original = NEW_ROW_WITH_DOMAIN["signals"]
+    assert EARLIER_STAGE_SIGNAL_KEYS == set(original.keys())
+    for key in EARLIER_STAGE_SIGNAL_KEYS:
+        assert key in sig, f"earlier-stage signal key {key!r} was dropped"
+        assert sig[key] == original[key], f"earlier-stage signal key {key!r} changed value"
+
     # new keys land inside signals too
     assert sig["headcount"] is None
     assert sig["marketplaces"] == ["bbb"]

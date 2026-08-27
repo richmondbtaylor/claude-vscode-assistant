@@ -17,10 +17,11 @@ import pathlib
 import re
 import time
 
+import tldextract
 from playwright.sync_api import sync_playwright
 
 import config
-from lib.normalize import norm_name
+from lib.normalize import NON_COMPANY_HOSTS, norm_name
 from lib.records import append_jsonl, company_id, read_jsonl
 from seed_jobs import brave_search
 
@@ -84,18 +85,42 @@ def score_marketplace_results(results: list[dict]) -> list[str]:
     return sorted(hits)
 
 
+def _is_directory_or_social_host(url: str) -> bool:
+    """RULING C36: a directory or badge-listing page (angi, buildzoom, the
+    company's own Facebook post, etc.) names the company and often carries
+    the word "award" on a certification badge, which is exactly the false
+    positive pattern press scoring needs to reject. Reuses the same
+    NON_COMPANY_HOSTS set registrable_domain already maintains rather than
+    keeping a second list in sync."""
+    ext = tldextract.extract(url or "")
+    return ext.domain.lower() in NON_COMPANY_HOSTS
+
+
+def _mentions_company(text: str, target: str) -> bool:
+    """RULING C36: whole-word match, not a raw substring. Without a
+    boundary, target "roof x" (from a company literally named "Roof X")
+    is a substring of "roof xpress", a different company entirely."""
+    if not target:
+        return False
+    return bool(re.search(r"\b" + re.escape(target) + r"\b", norm_name(text)))
+
+
 def score_press_results(results: list[dict], name: str) -> int:
     """Count only results that actually name the company AND carry a press
-    or funding term. RULING C33: a result whose title/description mentions
-    neither is not evidence about that company, and raw Brave volume alone
-    is close to a constant across almost any query."""
+    or funding term, excluding directory/social listing pages. RULING C33:
+    a result whose title/description mentions neither is not evidence
+    about that company, and raw Brave volume alone is close to a constant
+    across almost any query. RULING C36: directory/badge hosts are
+    excluded outright, and the name match is whole-word anchored."""
     target = norm_name(name)
     if not target:
         return 0
     count = 0
     for r in results:
+        if _is_directory_or_social_host(r.get("url", "")):
+            continue
         text = f"{r.get('title', '')} {r.get('description', '')}"
-        if target in norm_name(text) and _PRESS_TERM_RE.search(text):
+        if _mentions_company(text, target) and _PRESS_TERM_RE.search(text):
             count += 1
     return count
 

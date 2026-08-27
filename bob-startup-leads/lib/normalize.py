@@ -12,10 +12,19 @@ _PUNCT = re.compile(r"[^a-z0-9&\s]")
 _WS = re.compile(r"\s+")
 
 # Social and directory hosts are never a company's own domain.
+#
+# RULING C36: buildzoom, thebluebook, fivestarrated and bestpickreports
+# added after a live signals.py press-hit diagnostic showed these
+# contractor-directory/badge sites as the dominant source of false
+# positives (a listing page names the company and carries the word
+# "award" without being press coverage). Same category as the angi,
+# homeadvisor and thumbtack entries already here, so both call sites
+# (registrable_domain and signals.score_press_results) benefit.
 NON_COMPANY_HOSTS = {
     "facebook", "instagram", "linkedin", "twitter", "x", "yelp", "google",
     "youtube", "tiktok", "nextdoor", "bbb", "angi", "homeadvisor", "thumbtack",
     "indeed", "glassdoor", "mapquest", "yellowpages", "manta", "bizapedia",
+    "buildzoom", "thebluebook", "fivestarrated", "bestpickreports",
 }
 
 
