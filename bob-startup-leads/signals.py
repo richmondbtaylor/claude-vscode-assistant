@@ -17,8 +17,11 @@ import pathlib
 import re
 import time
 
+from playwright.sync_api import sync_playwright
+
 import config
-from lib.records import append_jsonl, read_jsonl
+from lib.normalize import norm_name
+from lib.records import append_jsonl, company_id, read_jsonl
 from seed_jobs import brave_search
 
 MARKETPLACES = {
@@ -31,6 +34,25 @@ MARKETPLACES = {
 
 _HEADCOUNT = re.compile(r"([\d,]+)\s*(?:-|to|–)\s*([\d,]+)\s*employees", re.I)
 _HEADCOUNT_PLUS = re.compile(r"([\d,]+)\+\s*employees", re.I)
+
+# RULING C33: a Brave result only counts as press evidence when its own
+# title/description names the company AND carries one of these terms.
+# Brave returns something for almost any query, so raw result count is
+# close to a constant and is not evidence about the company by itself.
+_PRESS_TERM_RE = re.compile(
+    r"\b(raised|raises|acquired|acquisition|acquires|expands?|expansion|"
+    r"funding|funded|named|award(?:ed)?|series [a-z]\b|investment|merger)\b",
+    re.I,
+)
+
+# RULING C34: LinkedIn's soft-404 renders as a normal 200 page with this
+# kind of copy rather than an HTTP 404, so a real HTTP 404 status is
+# checked first and this text is the fallback.
+_NOT_FOUND_MARKERS = (
+    "page not found",
+    "this page doesn't exist",
+    "sorry, we couldn't find that page",
+)
 
 # Key name looked up inside each ~/.claude/security/*.env file when
 # LINKEDIN_COOKIES_FILE is not already set in the environment.
@@ -62,13 +84,32 @@ def score_marketplace_results(results: list[dict]) -> list[str]:
     return sorted(hits)
 
 
+def score_press_results(results: list[dict], name: str) -> int:
+    """Count only results that actually name the company AND carry a press
+    or funding term. RULING C33: a result whose title/description mentions
+    neither is not evidence about that company, and raw Brave volume alone
+    is close to a constant across almost any query."""
+    target = norm_name(name)
+    if not target:
+        return 0
+    count = 0
+    for r in results:
+        text = f"{r.get('title', '')} {r.get('description', '')}"
+        if target in norm_name(text) and _PRESS_TERM_RE.search(text):
+            count += 1
+    return count
+
+
 def press_hits(name: str, city: str) -> int:
-    """Count news and funding mentions. Cheap proxy for momentum."""
+    """Count news and funding mentions that actually name the company.
+    RULING C33: filtered through score_press_results rather than a raw
+    result count."""
     query = f'"{name}" ({city}) (raised OR acquired OR expands OR "named" OR award)'
     try:
-        return len(brave_search(query, count=10))
+        results = brave_search(query, count=10)
     except Exception:
         return 0
+    return score_press_results(results, name)
 
 
 def marketplace_presence(name: str, domain: str) -> list[str]:
@@ -78,15 +119,53 @@ def marketplace_presence(name: str, domain: str) -> list[str]:
         return []
 
 
+def _linkedin_company_url(domain: str) -> str:
+    """Build the guessed LinkedIn company page URL from a domain. RULING
+    C34: this slug guess is deliberately left as-is; there is no live
+    session to validate a smarter guess against, and guessing harder
+    without feedback is how this pipeline picked up earlier false-positive
+    bugs."""
+    slug = domain.split(".")[0]
+    return f"https://www.linkedin.com/company/{slug}/about/"
+
+
+def _looks_like_not_found(body: str, status: int | None) -> bool:
+    """True if the response looks like a dead slug guess rather than a real
+    company page: either a genuine HTTP 404, or LinkedIn's soft-404 (200
+    status, "page not found" style copy in the body)."""
+    if status == 404:
+        return True
+    low = (body or "").lower()
+    return any(marker in low for marker in _NOT_FOUND_MARKERS)
+
+
 def linkedin_headcount(page, domain: str) -> int | None:
-    """Read the employee band off a LinkedIn company page using the saved session."""
+    """Read the employee band off a LinkedIn company page using the saved
+    session. RULING C34: "page not found" (wrong slug guess) and "page
+    found but no headcount text" are both returned as None to match the
+    int|None contract, but are recorded distinctly via a log line, so a
+    run against a restored session can tell a wrong slug from a genuine
+    miss by reading the log rather than guessing."""
+    url = _linkedin_company_url(domain)
     try:
-        page.goto(f"https://www.linkedin.com/company/{domain.split('.')[0]}/about/",
-                  wait_until="domcontentloaded", timeout=25000)
+        response = page.goto(url, wait_until="domcontentloaded", timeout=25000)
         page.wait_for_timeout(1500)
-        return parse_headcount(page.inner_text("body")[:6000])
+        body = page.inner_text("body")[:6000]
     except Exception:
+        print(f"[linkedin_headcount] navigation failed for domain={domain}", flush=True)
         return None
+
+    status = getattr(response, "status", None) if response is not None else None
+    if _looks_like_not_found(body, status):
+        print(f"[linkedin_headcount] page not found (slug guess likely wrong) "
+              f"for domain={domain}", flush=True)
+        return None
+
+    headcount = parse_headcount(body)
+    if headcount is None:
+        print(f"[linkedin_headcount] page found but no headcount text "
+              f"for domain={domain}", flush=True)
+    return headcount
 
 
 def _linkedin_cookies_path() -> pathlib.Path | None:
@@ -124,7 +203,9 @@ def _linkedin_cookies_path() -> pathlib.Path | None:
 
 def _linkedin_authenticated(page) -> bool:
     """True if the saved session is actually logged in, not bounced to a
-    login wall or checkpoint challenge."""
+    login wall or checkpoint challenge. Reviewer-confirmed: this probe
+    hits linkedin.com/feed/ directly and is independent of any per-row
+    slug-guess logic."""
     try:
         page.goto("https://www.linkedin.com/feed/", wait_until="domcontentloaded", timeout=20000)
         page.wait_for_timeout(1200)
@@ -163,58 +244,72 @@ def _open_linkedin_page(pw):
         return None, None
 
 
+def _row_key(row: dict) -> str:
+    """Stable resume key for a row. RULING C35: falls back from company_id
+    (which can be falsy or missing on an older/malformed row) to domain,
+    then to normalized name plus state, using the same canonical identity
+    function every other stage uses, so every row gets a stable key and
+    none is silently reprocessed and duplicated on resume."""
+    cid = row.get("company_id")
+    if cid:
+        return cid
+    return company_id(row.get("name", ""), row.get("state", ""), row.get("domain"))
+
+
+def process_row(row: dict, page) -> dict:
+    """Enrich one row with headcount, marketplaces and press hits. A row
+    with no domain is returned unchanged, no query spent. Never touches
+    disk; the caller checkpoints."""
+    domain = row.get("domain")
+    if not domain:
+        return row
+    sig = row.setdefault("signals", {})
+    sig["headcount"] = linkedin_headcount(page, domain) if page else None
+    sig["marketplaces"] = marketplace_presence(row["name"], domain)
+    sig["press_hits"] = press_hits(row["name"], row.get("city", ""))
+    return row
+
+
 def main(limit: int | None = 20):
-    # Resume: a company_id already written to signals.jsonl is skipped, so
-    # an interrupted run (this is the slowest, most rate-limited stage) can
+    # Resume: a row already checkpointed to signals.jsonl is skipped, so an
+    # interrupted run (this is the slowest, most rate-limited stage) can
     # restart without duplicating rows or re-spending Brave/LinkedIn budget.
-    done_ids = {row.get("company_id") for row in read_jsonl(config.DATA / "signals.jsonl")
-                if row.get("company_id")}
+    done_keys = {_row_key(row) for row in read_jsonl(config.DATA / "signals.jsonl")}
     all_rows = list(read_jsonl(config.DATA / "sites.jsonl"))
-    skipped = sum(1 for r in all_rows if r.get("company_id") in done_ids)
-    pending = [r for r in all_rows if r.get("company_id") not in done_ids]
+    skipped = sum(1 for r in all_rows if _row_key(r) in done_keys)
+    pending = [r for r in all_rows if _row_key(r) not in done_keys]
     if limit:
         pending = pending[:limit]
     with_domain = sum(1 for r in pending if r.get("domain"))
     print(f"{len(pending)} rows to process this run ({with_domain} with a domain), "
           f"{skipped} already done and skipped", flush=True)
 
-    browser = page = None
+    browser = page = pw = None
     if with_domain:
-        from playwright.sync_api import sync_playwright
         pw = sync_playwright().start()
         browser, page = _open_linkedin_page(pw)
-    else:
-        pw = None
 
     n = hc_hits = mk_hits = press_total = 0
     try:
         for row in pending:
-            domain = row.get("domain")
-            if not domain:
-                # No domain: nothing to look up, no query spent, pass through
-                # unchanged.
-                append_jsonl(config.DATA / "signals.jsonl", [row])
-                n += 1
-                continue
+            had_domain = bool(row.get("domain"))
+            result = process_row(row, page)
 
-            sig = row.setdefault("signals", {})
+            if had_domain:
+                sig = result.get("signals", {})
+                if sig.get("headcount") is not None:
+                    hc_hits += 1
+                if sig.get("marketplaces"):
+                    mk_hits += 1
+                press_total += sig.get("press_hits", 0) or 0
 
-            sig["headcount"] = linkedin_headcount(page, domain) if page else None
-            if sig["headcount"] is not None:
-                hc_hits += 1
-            if page:
-                time.sleep(2.0)  # LinkedIn pacing, separate from Brave's budget
-
-            sig["marketplaces"] = marketplace_presence(row["name"], domain)
-            if sig["marketplaces"]:
-                mk_hits += 1
-            hits = press_hits(row["name"], row.get("city", ""))
-            sig["press_hits"] = hits
-            press_total += hits
-
-            append_jsonl(config.DATA / "signals.jsonl", [row])
+            append_jsonl(config.DATA / "signals.jsonl", [result])
             n += 1
-            time.sleep(1.1)  # Brave free tier is rate limited to about 1 qps
+
+            if had_domain:
+                if page:
+                    time.sleep(2.0)  # LinkedIn pacing, separate from Brave's budget
+                time.sleep(1.1)  # Brave free tier is rate limited to about 1 qps
 
             if n % 10 == 0:
                 print(f"  {n}/{len(pending)} processed, {hc_hits} headcounts, "
