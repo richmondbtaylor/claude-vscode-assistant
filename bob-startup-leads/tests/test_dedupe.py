@@ -1,4 +1,4 @@
-import random
+from itertools import permutations
 
 from dedupe import dedupe, merge_pair
 
@@ -64,11 +64,11 @@ def test_dedupe_is_order_independent():
     assert len(dedupe([MAPS, SBA, JOBS])) == len(dedupe([JOBS, SBA, MAPS]))
 
 
-# --- RULING C20: conflicting strong identifiers veto a weak-key merge -----
+# --- RULING C20 / C22: conflicting strong identifiers veto a weak-key merge
 
 # Real records pulled from data/seed_maps.jsonl (rows 4 and 35 of the actual
-# 2026-08-26 scrape run) — this is the exact false-positive merge that
-# surfaced when dedupe.py was run against real data. Two distinct Tampa
+# 2026-08-26 scrape run). This is the exact false-positive merge that
+# surfaced when dedupe.py was run against real data: two distinct Tampa
 # roofing companies, same normalized name and state, different domain,
 # phone, and address.
 TAMPA_ROOF_A = {
@@ -123,6 +123,30 @@ def test_dedupe_shared_domain_still_merges_despite_differing_phone():
     assert sorted(out[0]["sources"]) == ["maps", "sba_7a"]
 
 
+def test_dedupe_does_not_bridge_differently_stated_companies_through_state_less_row():
+    # RULING C22 regression: the fold loop must veto on STATE too, not just
+    # domain/phone, or a state-less bridge row silently merges two distinct
+    # companies in different states. Neither TX_CO nor CA_CO carries a
+    # domain or phone, so before C22 nothing stopped the bridge.
+    tx_co = {"company_id": "tx1", "name": "Foo Bar Plumbing", "domain": None,
+             "website": None, "phone": None, "email": None, "email_status": "none",
+             "address": "", "city": "", "state": "TX", "zip": "", "naics": "",
+             "category": "", "sources": ["maps"], "signals": {}}
+    ca_co = {"company_id": "ca1", "name": "Foo Bar Plumbing", "domain": None,
+             "website": None, "phone": None, "email": None, "email_status": "none",
+             "address": "", "city": "", "state": "CA", "zip": "", "naics": "",
+             "category": "", "sources": ["maps"], "signals": {}}
+    bridge = {"company_id": "br1", "name": "Foo Bar Plumbing", "domain": None,
+              "website": None, "phone": None, "email": None, "email_status": "none",
+              "address": "", "city": "", "state": "", "zip": "", "naics": "",
+              "category": "", "sources": ["jobs"], "signals": {}}
+
+    for ordering in permutations([tx_co, ca_co, bridge]):
+        out = dedupe(list(ordering))
+        assert len(out) == 3
+        assert sorted(r["state"] for r in out) == ["", "CA", "TX"]
+
+
 # --- RULING C21: state-less rows and glued names widen the weak key ------
 
 def test_dedupe_job_lane_merges_with_sba_lane_same_company():
@@ -138,7 +162,13 @@ def test_dedupe_job_lane_does_not_merge_different_company_same_state():
     assert len(out) == 2
 
 
+# --- RULING C23: an ambiguous weak-key bridge merges with nothing --------
+
 def test_dedupe_transitive_veto_does_not_bridge_through_shared_weak_key():
+    # A and C share a name+state with each other and each independently
+    # with B, but A and C conflict on domain with each other. Per C23, B
+    # (the bridge) must join NEITHER: all three stay separate records, in
+    # every one of the six possible input orderings.
     a = {"company_id": "a1", "name": "Foo Bar Plumbing", "domain": "foo.com",
          "website": None, "phone": None, "email": None, "email_status": "none",
          "address": "", "city": "", "state": "TX", "zip": "", "naics": "",
@@ -152,24 +182,50 @@ def test_dedupe_transitive_veto_does_not_bridge_through_shared_weak_key():
          "address": "", "city": "", "state": "TX", "zip": "", "naics": "",
          "category": "", "sources": ["jobs"], "signals": {}}
 
-    for ordering in ([a, b, c], [b, a, c], [c, b, a], [a, c, b]):
-        out = dedupe(ordering)
-        # a and c must never land in the same output record, in any order.
-        assert len(out) == 2
-        rec_with_foo = next(r for r in out if r.get("domain") == "foo.com")
-        rec_with_bar = next(r for r in out if r.get("domain") == "bar.com")
-        assert rec_with_foo is not rec_with_bar
-        # b (the bridge, source "jobs") joined exactly one of them rather
-        # than creating a third record of its own.
-        total_sources = sorted(s for r in out for s in r["sources"])
-        assert total_sources == ["jobs", "maps", "maps"]
+    for ordering in permutations([a, b, c]):
+        out = dedupe(list(ordering))
+        assert len(out) == 3
+        by_domain = {r.get("domain"): r for r in out}
+        assert set(by_domain) == {"foo.com", "bar.com", None}
+        # Full grouping check: each record's sources must still be exactly
+        # what it started with, proving B did not get absorbed by either A
+        # or C in any ordering (not just that A and C stayed apart).
+        assert by_domain["foo.com"]["sources"] == ["maps"]
+        assert by_domain["bar.com"]["sources"] == ["maps"]
+        assert by_domain[None]["sources"] == ["jobs"]
 
 
-def test_dedupe_is_order_independent_compares_records_not_just_count():
-    # Engineered so no field has an ambiguous winner: within each company,
-    # domain/phone appear on at most one contributing row and every row's
-    # name string is identical, so the grouping (which is what order
-    # independence actually guarantees) fully determines the output.
+# --- RULING C24: email_status travels with email --------------------------
+
+def test_merge_email_status_travels_with_filled_email():
+    a = dict(SBA, email=None, email_status="none")
+    b = dict(MAPS, email="info@riveramechanical.com", email_status="verified")
+    out = merge_pair(a, b)
+    assert out["email"] == "info@riveramechanical.com"
+    assert out["email_status"] == "verified"
+
+
+def test_merge_email_status_not_disturbed_when_email_already_populated():
+    # a already has a verified email; b offers a different, unverified one.
+    # Neither the email nor its status should move.
+    a = dict(SBA, email="verified@riveramechanical.com", email_status="verified")
+    b = dict(MAPS, email="guessed@riveramechanical.com", email_status="guessed")
+    out = merge_pair(a, b)
+    assert out["email"] == "verified@riveramechanical.com"
+    assert out["email_status"] == "verified"
+
+
+# --- Order independence, strengthened -------------------------------------
+
+def test_dedupe_is_order_independent_across_all_permutations():
+    # Engineered so grouping fully determines the output: within each
+    # company, domain/phone appear on at most one contributing row and
+    # every row's name string for that company is identical, so there is
+    # no field where two contributing rows disagree on a populated value.
+    # dedupe() folds a group's rows in company_id order (not input order),
+    # so the result should be byte-for-byte identical across every
+    # possible ordering of the input list, not just permutation-blind on a
+    # coarse fingerprint.
     acme_sba = {"company_id": "s1", "name": "Acme Plumbing LLC", "domain": None,
                 "website": None, "phone": None, "email": None, "email_status": "none",
                 "address": "1 Main St", "city": "Austin", "state": "TX", "zip": "78701",
@@ -187,19 +243,12 @@ def test_dedupe_is_order_independent_compares_records_not_just_count():
 
     rows = [acme_sba, acme_maps, acme_jobs, TAMPA_ROOF_A, TAMPA_ROOF_B]
 
-    def fingerprint(out):
-        return sorted(
-            (r["domain"], r["phone"], r["state"], tuple(sorted(r["sources"])))
-            for r in out
-        )
+    def canonical(out):
+        return sorted(out, key=lambda r: r.get("company_id") or "")
 
-    baseline = dedupe(rows)
+    baseline = canonical(dedupe(rows))
     assert len(baseline) == 3  # acme trio merged, the two Tampa roofers stay apart
 
-    rng = random.Random(42)
-    for _ in range(5):
-        shuffled = rows[:]
-        rng.shuffle(shuffled)
-        out = dedupe(shuffled)
-        assert len(out) == len(baseline)
-        assert fingerprint(out) == fingerprint(baseline)
+    for perm in permutations(rows):
+        out = canonical(dedupe(list(perm)))
+        assert out == baseline
