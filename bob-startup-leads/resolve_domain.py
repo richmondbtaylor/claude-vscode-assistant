@@ -4,6 +4,7 @@ Strict on purpose. A wrong domain poisons every downstream stage, so an
 unresolved company is preferable to a mismatched one.
 """
 import argparse
+import re
 import time
 
 from rapidfuzz import fuzz
@@ -14,6 +15,90 @@ from seed_jobs import brave_search
 from lib.normalize import norm_name, registrable_domain
 
 MATCH_THRESHOLD = 82
+
+# Domain-stem similarity alone confuses "Collaer Enterprises" with
+# "Collier Enterprises" because the generic token "enterprises" dominates
+# the ratio. Below this ratio a candidate needs the company's own city or
+# state to show up somewhere in its snippet before it is trusted; above it,
+# a candidate is trusted unless it names a *different* state outright.
+CORROBORATION_RATIO = 90
+
+US_STATES = {
+    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
+    "CA": "California", "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware",
+    "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho",
+    "IL": "Illinois", "IN": "Indiana", "IA": "Iowa", "KS": "Kansas",
+    "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
+    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi",
+    "MO": "Missouri", "MT": "Montana", "NE": "Nebraska", "NV": "Nevada",
+    "NH": "New Hampshire", "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York",
+    "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma",
+    "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina",
+    "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah",
+    "VT": "Vermont", "VA": "Virginia", "WA": "Washington", "WV": "West Virginia",
+    "WI": "Wisconsin", "WY": "Wyoming", "DC": "District of Columbia",
+}
+
+# These two-letter codes double as ordinary English words ("in", "or", "ok",
+# "me", "hi", "de"). Brave snippets write real postal abbreviations in caps,
+# so for these codes only, require an exact-case whole-word match. Every
+# other code (and every full state name) matches case-insensitively.
+AMBIGUOUS_STATE_CODES = {"IN", "OR", "OK", "ME", "HI", "DE"}
+
+_STATE_NAME_PATTERNS = {
+    code: re.compile(r"\b" + re.escape(name) + r"\b", re.IGNORECASE)
+    for code, name in US_STATES.items()
+}
+_STATE_CODE_PATTERNS_CI = {
+    code: re.compile(r"\b" + code + r"\b", re.IGNORECASE)
+    for code in US_STATES if code not in AMBIGUOUS_STATE_CODES
+}
+_STATE_CODE_PATTERNS_CS = {
+    code: re.compile(r"\b" + code + r"\b")  # no IGNORECASE: caps only
+    for code in AMBIGUOUS_STATE_CODES
+}
+
+
+def _mentioned_states(text: str) -> set[str]:
+    """US state codes named in text, matched as whole words/phrases only."""
+    if not text:
+        return set()
+    found = set()
+    for code, pattern in _STATE_NAME_PATTERNS.items():
+        if pattern.search(text):
+            found.add(code)
+    for code, pattern in _STATE_CODE_PATTERNS_CI.items():
+        if pattern.search(text):
+            found.add(code)
+    for code, pattern in _STATE_CODE_PATTERNS_CS.items():
+        if pattern.search(text):
+            found.add(code)
+    return found
+
+
+def _candidate_text(result: dict) -> str:
+    return " ".join(
+        str(result.get(k) or "") for k in ("title", "description", "url")
+    )
+
+
+def _conflicting_state(text: str, state: str) -> bool:
+    """True if text names a US state other than the company's own."""
+    state = (state or "").strip().upper()
+    if not state:
+        return False  # nothing to conflict with
+    return any(code != state for code in _mentioned_states(text))
+
+
+def _has_location_corroboration(text: str, city: str, state: str) -> bool:
+    """True if the company's own city or state shows up in text."""
+    city = (city or "").strip()
+    if city and re.search(r"\b" + re.escape(city) + r"\b", text, re.IGNORECASE):
+        return True
+    state = (state or "").strip().upper()
+    if state and state in _mentioned_states(text):
+        return True
+    return False
 
 
 def pick_domain(company_name: str, city: str, state: str,
@@ -28,8 +113,15 @@ def pick_domain(company_name: str, city: str, state: str,
         if not domain:
             continue  # social and directory hosts are filtered by registrable_domain
         stem = domain.rsplit(".", 1)[0].replace("-", "").replace("_", "")
-        if fuzz.ratio(target, stem) >= MATCH_THRESHOLD:
-            return domain
+        ratio = fuzz.ratio(target, stem)
+        if ratio < MATCH_THRESHOLD:
+            continue
+        text = _candidate_text(result)
+        if _conflicting_state(text, state):
+            continue  # names a different state outright: disqualified
+        if ratio < CORROBORATION_RATIO and not _has_location_corroboration(text, city, state):
+            continue  # below the corroboration floor with no supporting location
+        return domain
     return None
 
 
