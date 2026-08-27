@@ -11,6 +11,78 @@ SCALAR_FIELDS = ("name", "domain", "website", "phone", "email", "address",
                  "city", "state", "zip", "naics", "category")
 
 
+def _max_present(a, b):
+    """The greater of two values; a present value always beats an absent
+    (None / missing) one. Associative and commutative, so it composes
+    correctly through any grouping of a multi-way merge."""
+    if a is None:
+        return b
+    if b is None:
+        return a
+    return a if a >= b else b
+
+
+def _or_present(a, b):
+    """Logical OR, but two absent values stay absent rather than becoming
+    False."""
+    if a is None and b is None:
+        return None
+    return bool(a) or bool(b)
+
+
+def _needs_liveness_check_merge(a, b):
+    """A present False always wins (RULING C20's original rule, unchanged):
+    once any contributing row proves the company is still trading, the
+    liveness flag clears for good, through any number of merges."""
+    if a is False or b is False:
+        return False
+    if a is None:
+        return b
+    if b is None:
+        return a
+    return bool(a) or bool(b)
+
+
+def _list_union(a, b):
+    """Union of two list-valued signals, sorted for a deterministic order
+    that does not depend on which side supplied which items or in what
+    order they arrived."""
+    return sorted(set(a or []) | set(b or []))
+
+
+# RULING C25: explicit per-key merge policy for `signals`, kept as data
+# rather than a chain of special cases. Any key not listed here keeps the
+# original first-writer-wins behaviour (whichever side has it, preferring
+# a). Any key whose value is a list is unioned regardless of whether its
+# name appears here.
+SIGNAL_MERGE_POLICY = {
+    "loan_amount": _max_present,
+    "jobs_supported": _max_present,
+    "loan_fy": _max_present,
+    "reviews": _max_present,
+    "rating": _max_present,
+    "open_finance_req": _or_present,
+    "needs_liveness_check": _needs_liveness_check_merge,
+}
+
+
+def _merge_signals(a_signals: dict, b_signals: dict) -> dict:
+    out = {}
+    for key in set(a_signals) | set(b_signals):
+        a_present, b_present = key in a_signals, key in b_signals
+        a_val = a_signals.get(key)
+        b_val = b_signals.get(key)
+        if key in SIGNAL_MERGE_POLICY:
+            out[key] = SIGNAL_MERGE_POLICY[key](
+                a_val if a_present else None, b_val if b_present else None
+            )
+        elif isinstance(a_val, list) or isinstance(b_val, list):
+            out[key] = _list_union(a_val, b_val)
+        else:
+            out[key] = a_val if a_present else b_val
+    return out
+
+
 def merge_pair(a: dict, b: dict) -> dict:
     """Merge b into a. Existing populated values win; blanks get filled.
 
@@ -18,6 +90,10 @@ def merge_pair(a: dict, b: dict) -> dict:
     scalar field -- if email gets filled from b, b's email_status comes
     with it, so a verified label never ends up describing a different,
     unverified address.
+
+    RULING C25: signals merge by an explicit per-key policy
+    (SIGNAL_MERGE_POLICY), not a blind dict union, so a company with two
+    SBA loans does not silently lose one loan's figures.
     """
     out = dict(a)
     email_filled_from_b = not out.get("email") and bool(b.get("email"))
@@ -26,10 +102,8 @@ def merge_pair(a: dict, b: dict) -> dict:
             out[field] = b[field]
     if email_filled_from_b:
         out["email_status"] = b.get("email_status")
-    out["signals"] = {**b.get("signals", {}), **a.get("signals", {})}
+    out["signals"] = _merge_signals(a.get("signals", {}), b.get("signals", {}))
     out["sources"] = sorted(set(a.get("sources", [])) | set(b.get("sources", [])))
-    if b.get("signals", {}).get("needs_liveness_check") is False:
-        out["signals"]["needs_liveness_check"] = False
     return out
 
 

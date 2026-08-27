@@ -123,6 +123,18 @@ def test_dedupe_shared_domain_still_merges_despite_differing_phone():
     assert sorted(out[0]["sources"]) == ["maps", "sba_7a"]
 
 
+def test_dedupe_shared_domain_still_merges_despite_differing_states():
+    # Structurally the state veto only ever gates the weak name+state key
+    # (it is folded into _identity_conflicts, used only in Phase 2). Domain
+    # equality is Phase 1, unconditional, and never consults state at all.
+    # This proves it, rather than leaving it airtight-by-inspection only.
+    a = dict(SBA, domain="riveramechanical.com", state="TX")
+    b = dict(MAPS, domain="riveramechanical.com", state="FL")
+    out = dedupe([a, b])
+    assert len(out) == 1
+    assert sorted(out[0]["sources"]) == ["maps", "sba_7a"]
+
+
 def test_dedupe_does_not_bridge_differently_stated_companies_through_state_less_row():
     # RULING C22 regression: the fold loop must veto on STATE too, not just
     # domain/phone, or a state-less bridge row silently merges two distinct
@@ -252,3 +264,85 @@ def test_dedupe_is_order_independent_across_all_permutations():
     for perm in permutations(rows):
         out = canonical(dedupe(list(perm)))
         assert out == baseline
+
+
+# --- RULING C25: signals merge by an explicit per-key policy -------------
+
+def test_merge_signals_takes_max_of_loan_amount_and_jobs_supported():
+    a = dict(SBA, signals={"loan_amount": 200000.0, "jobs_supported": 5})
+    b = dict(MAPS, signals={"loan_amount": 500000.0, "jobs_supported": 20})
+    out = merge_pair(a, b)
+    assert out["signals"]["loan_amount"] == 500000.0
+    assert out["signals"]["jobs_supported"] == 20
+
+    # The larger value wins regardless of which side is "a".
+    out2 = merge_pair(b, a)
+    assert out2["signals"]["loan_amount"] == 500000.0
+    assert out2["signals"]["jobs_supported"] == 20
+
+
+def test_merge_signals_present_value_beats_missing_key_both_orders():
+    a = dict(SBA, signals={"loan_amount": 300000.0})
+    b = dict(MAPS, signals={"reviews": 40})  # no loan_amount key at all
+
+    out = merge_pair(a, b)
+    assert out["signals"]["loan_amount"] == 300000.0
+    assert out["signals"]["reviews"] == 40
+
+    out2 = merge_pair(b, a)
+    assert out2["signals"]["loan_amount"] == 300000.0
+    assert out2["signals"]["reviews"] == 40
+
+
+def test_merge_signals_open_finance_req_true_wins_when_absent_on_other_side():
+    a = dict(SBA, signals={"open_finance_req": True})
+    b = dict(MAPS, signals={"reviews": 10})  # no open_finance_req key at all
+
+    out = merge_pair(a, b)
+    assert out["signals"]["open_finance_req"] is True
+
+    out2 = merge_pair(b, a)
+    assert out2["signals"]["open_finance_req"] is True
+
+
+def test_merge_signals_three_way_max_loan_amount_is_association_independent():
+    r1 = dict(SBA, company_id="r1", signals={"loan_amount": 150000.0})
+    r2 = dict(SBA, company_id="r2", signals={"loan_amount": 900000.0})
+    r3 = dict(SBA, company_id="r3", signals={"loan_amount": 500000.0})
+
+    left = merge_pair(merge_pair(r1, r2), r3)
+    right = merge_pair(r1, merge_pair(r2, r3))
+    middle = merge_pair(merge_pair(r1, r3), r2)
+
+    for out in (left, right, middle):
+        assert out["signals"]["loan_amount"] == 900000.0
+
+
+def test_dedupe_three_way_merge_max_loan_amount_holds_across_permutations():
+    # Same property, proven through the full dedupe() pipeline (which folds
+    # in company_id order, not input order) rather than direct merge_pair
+    # calls, across every possible input ordering.
+    base = {"company_id": "z1", "name": "Acme Plumbing LLC", "domain": None,
+            "website": None, "phone": None, "email": None, "email_status": "none",
+            "address": "", "city": "", "state": "TX", "zip": "", "naics": "",
+            "category": "", "sources": ["sba_7a"], "signals": {"loan_amount": 150000.0}}
+    r1 = dict(base, company_id="z1", signals={"loan_amount": 150000.0})
+    r2 = dict(base, company_id="z2", signals={"loan_amount": 900000.0})
+    r3 = dict(base, company_id="z3", signals={"loan_amount": 500000.0})
+
+    for perm in permutations([r1, r2, r3]):
+        out = dedupe(list(perm))
+        assert len(out) == 1
+        assert out[0]["signals"]["loan_amount"] == 900000.0
+
+
+def test_merge_signals_needs_liveness_check_false_wins_through_multi_way_merge():
+    ppp_a = dict(SBA, sources=["ppp"], signals={"needs_liveness_check": True})
+    ppp_b = dict(SBA, sources=["ppp"], signals={"needs_liveness_check": True})
+    seven_a = dict(SBA, sources=["sba_7a"], signals={"needs_liveness_check": False})
+
+    left = merge_pair(merge_pair(ppp_a, ppp_b), seven_a)
+    right = merge_pair(ppp_a, merge_pair(ppp_b, seven_a))
+
+    assert left["signals"]["needs_liveness_check"] is False
+    assert right["signals"]["needs_liveness_check"] is False
