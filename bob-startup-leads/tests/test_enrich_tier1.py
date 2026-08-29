@@ -323,3 +323,119 @@ def test_main_skips_rows_already_in_enriched_output(tmp_path, monkeypatch):
     assert calls == []  # already-present row never reaches a paid step
     lines = (tmp_path / "enriched.jsonl").read_text(encoding="utf-8").strip().splitlines()
     assert len(lines) == 1  # untouched, not duplicated
+
+
+# RULING C45: main() must write every non-reject row to enriched.jsonl.
+# Only tier1 rows are ever run through the paid waterfall; master rows
+# pass through unchanged, for free, and must not consume --limit. Reject
+# rows are excluded (Task 13 sources the Rejects tab from scored.jsonl
+# directly). Everything downstream reads enriched.jsonl, so a master row
+# missing from it never ships.
+
+def test_main_passes_a_master_row_through_unchanged_without_calling_waterfall(
+        tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+
+    master_row = {"company_id": "m-1", "name": "Acme Roofing", "domain": "acme.test",
+                  "state": "TX", "tier": "master", "score": 61}
+    (tmp_path / "scored.jsonl").write_text(json.dumps(master_row) + "\n", encoding="utf-8")
+
+    calls = []
+
+    def spy_waterfall(r, budget, page=None):
+        calls.append(r)
+        return r
+
+    monkeypatch.setattr(enrich_tier1, "waterfall", spy_waterfall)
+    monkeypatch.setattr(sys, "argv", ["enrich_tier1.py"])
+
+    enrich_tier1.main()
+
+    assert calls == []
+    lines = (tmp_path / "enriched.jsonl").read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 1
+    assert json.loads(lines[0]) == master_row
+
+
+def test_main_excludes_reject_rows_from_the_output(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+
+    reject_row = {"company_id": "r-1", "name": "Too Small LLC", "domain": "toosmall.test",
+                  "state": "TX", "tier": "reject", "score": 12}
+    (tmp_path / "scored.jsonl").write_text(json.dumps(reject_row) + "\n", encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["enrich_tier1.py"])
+
+    enrich_tier1.main()
+
+    out_path = tmp_path / "enriched.jsonl"
+    if out_path.exists():
+        assert out_path.read_text(encoding="utf-8").strip() == ""
+
+
+def test_main_limit_bounds_only_tier1_enrichment_not_master_passthrough(
+        tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+
+    rows = [
+        {"company_id": "t-1", "name": "Tier One A", "domain": "t1a.test",
+         "state": "TX", "tier": "tier1"},
+        {"company_id": "t-2", "name": "Tier One B", "domain": "t1b.test",
+         "state": "TX", "tier": "tier1"},
+        {"company_id": "t-3", "name": "Tier One C", "domain": "t1c.test",
+         "state": "TX", "tier": "tier1"},
+        {"company_id": "m-1", "name": "Master A", "domain": "ma.test",
+         "state": "TX", "tier": "master"},
+        {"company_id": "m-2", "name": "Master B", "domain": "mb.test",
+         "state": "TX", "tier": "master"},
+        {"company_id": "m-3", "name": "Master C", "domain": "mc.test",
+         "state": "TX", "tier": "master"},
+    ]
+    with (tmp_path / "scored.jsonl").open("w", encoding="utf-8") as fh:
+        for row in rows:
+            fh.write(json.dumps(row) + "\n")
+
+    enriched_calls = []
+
+    def spy_waterfall(r, budget, page=None):
+        enriched_calls.append(r["company_id"])
+        out = dict(r)
+        out["contact_email_status"] = "none"
+        return out
+
+    monkeypatch.setattr(enrich_tier1, "waterfall", spy_waterfall)
+    monkeypatch.setattr(sys, "argv", ["enrich_tier1.py", "--limit", "1"])
+
+    enrich_tier1.main()
+
+    assert len(enriched_calls) == 1
+    written = [json.loads(l) for l in
+               (tmp_path / "enriched.jsonl").read_text(encoding="utf-8").strip().splitlines()]
+    written_ids = {r["company_id"] for r in written}
+    # exactly one tier1 row enriched, but every master row still passed through
+    assert len({r["company_id"] for r in written if r["company_id"].startswith("t-")}) == 1
+    assert {"m-1", "m-2", "m-3"} <= written_ids
+    assert len(written) == 4  # 1 tier1 + 3 master
+
+
+def test_main_resume_skips_an_already_written_master_row_too(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+
+    master_row = {"company_id": "m-1", "name": "Master A", "domain": "ma.test",
+                  "state": "TX", "tier": "master"}
+    (tmp_path / "scored.jsonl").write_text(json.dumps(master_row) + "\n", encoding="utf-8")
+    (tmp_path / "enriched.jsonl").write_text(json.dumps(master_row) + "\n", encoding="utf-8")
+
+    calls = []
+
+    def spy_waterfall(r, budget, page=None):
+        calls.append(r)
+        return r
+
+    monkeypatch.setattr(enrich_tier1, "waterfall", spy_waterfall)
+    monkeypatch.setattr(sys, "argv", ["enrich_tier1.py"])
+
+    enrich_tier1.main()
+
+    assert calls == []
+    lines = (tmp_path / "enriched.jsonl").read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 1  # not duplicated

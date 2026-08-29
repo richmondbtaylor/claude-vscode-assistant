@@ -463,6 +463,20 @@ def waterfall(row: dict, budget: Budget, page=None) -> dict:
 
 
 def main():
+    """RULING C45: scored.jsonl carries reject, master and tier1 rows.
+    Only tier1 rows are ever enriched (the waterfall costs money), but
+    every non-reject row must reach enriched.jsonl -- everything
+    downstream (hooks.py, the QA gate, the Sheet) reads that one file,
+    so a master row that never gets written there is a master row that
+    never ships. Reject rows are excluded on purpose: Task 13 sources
+    the Rejects tab from scored.jsonl directly, not from this file.
+
+    `--limit` bounds only the number of tier1 rows actually run through
+    the waterfall in this invocation; passing a master row through
+    unchanged is free and must never count against it, so a low
+    --limit still lets every master row in the input reach the output
+    in a single run.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=250)
     args = ap.parse_args()
@@ -472,27 +486,35 @@ def main():
     already = {r.get("company_id") for r in read_jsonl(out_path)}
 
     pw = browser = page = None
-    done = 0
+    enriched = 0
     try:
         for row in read_jsonl(config.DATA / "scored.jsonl"):
-            if done >= args.limit:
-                break
-            if row.get("tier") != "tier1":
+            if row.get("tier") == "reject":
                 continue
             if row.get("company_id") in already:
+                continue
+            if row.get("tier") != "tier1":
+                # Master (or any other non-reject, non-tier1 tier):
+                # pass through unchanged. Free, does not touch --limit.
+                append_jsonl(out_path, [row])
+                continue
+            if enriched >= args.limit:
+                # Leave this tier1 row for a future run rather than
+                # writing it unenriched or stopping the whole loop --
+                # master rows further down the file still need through.
                 continue
             if page is None and row.get("state") == "FL":
                 pw, browser, page = open_sunbiz_page()
             result = waterfall(row, budget, page)
             append_jsonl(out_path, [result])
-            done += 1
+            enriched += 1
     finally:
         if browser is not None:
             browser.close()
         if pw is not None:
             pw.stop()
 
-    print(f"enriched {done} tier1 rows, Apify spend ${budget.spent:.2f}")
+    print(f"enriched {enriched} tier1 rows, Apify spend ${budget.spent:.2f}")
 
 
 if __name__ == "__main__":
