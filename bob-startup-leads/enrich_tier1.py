@@ -63,6 +63,11 @@ class Budget:
         return self.limit_usd - self.spent
 
 
+# Every value _key() has ever resolved this run, so _redact() can strip
+# a credential out of a message even if a call site forgets to.
+_SEEN_KEYS: set[str] = set()
+
+
 def _key(name: str) -> str:
     """Read a secret from the environment, falling back to
     ~/.claude/security/*.env. Several bots share this directory and some
@@ -72,14 +77,54 @@ def _key(name: str) -> str:
     instead of returning."""
     value = os.environ.get(name)
     if value:
+        _SEEN_KEYS.add(value)
         return value
     for path in sorted(SECURITY.glob("*.env")):
         for line in path.read_text(encoding="utf-8").splitlines():
             if line.startswith(name + "="):
                 candidate = line.split("=", 1)[1].strip()
                 if candidate:
+                    _SEEN_KEYS.add(candidate)
                     return candidate
     raise RuntimeError(f"{name} not found")
+
+
+_KEY_PATTERN = re.compile(r"(?i)(api[_-]?key[\"']?\s*[:=]\s*[\"']?)[^\"'&\s]+")
+
+
+def _redact(text: str) -> str:
+    """Strip credential material out of a message before it is ever
+    recorded. Two layers: any value _key() has actually resolved this
+    run (an exact match, however it got into the string), and anything
+    that merely looks like a key= or key: parameter, as a backstop for a
+    value _key() never saw. Every call site that writes to
+    enrich_errors must route through this via _record_error -- a
+    RULING C38 fix, after a live check found httpx.HTTPStatusError's
+    default message embeds the full request URL, api_key query param
+    included, and that string was being written straight into
+    data/enriched.jsonl."""
+    for value in _SEEN_KEYS:
+        if value:
+            text = text.replace(value, "***REDACTED***")
+    return _KEY_PATTERN.sub(r"\1***REDACTED***", text)
+
+
+def _record_error(out: dict, message: str) -> None:
+    """The only way enrich_errors should ever be appended to. Redacts
+    first, so a future call site cannot reintroduce a credential leak
+    just by forgetting to be careful."""
+    out.setdefault("enrich_errors", []).append(_redact(message))
+
+
+def _http_error_summary(exc: Exception) -> str:
+    """A safe, generic description of a failure -- a status code where
+    there is one, otherwise just the exception's class name. Never the
+    exception's own message: httpx.HTTPStatusError's message is built
+    from the full request, and for a GET the request URL includes every
+    query parameter, api_key among them."""
+    if isinstance(exc, httpx.HTTPStatusError):
+        return f"http {exc.response.status_code}"
+    return type(exc).__name__
 
 
 def is_satisfied(row: dict) -> bool:
@@ -174,24 +219,46 @@ def _sunbiz_html(page, url: str) -> str:
     return page.content()
 
 
-def _sunbiz_search_entity(page, firm: str) -> tuple[str, str] | tuple[None, None]:
-    """Exact match only after normalization. The source implementation
-    (sunbiz_fill.py) also accepted an 8-character prefix match, which a
-    live check against real Tampa rows showed picks the wrong entity --
-    "SouthShore Roofing & Exteriors" matched "SOUTHSHORE ROTARY
-    FOUNDATION, INC." on the shared "southshore" prefix and would have
-    attributed that foundation's officer to the roofing company. A
-    missed match is acceptable (the row just stays unsatisfied and falls
-    through to the next step); a wrong company is not."""
+def _sunbiz_search_candidates(page, firm: str) -> list[tuple[str, str]]:
+    """Every exact-normalized-name match, not just the first. The
+    source implementation (sunbiz_fill.py) also accepted an 8-character
+    prefix match, which a live check against real Tampa rows showed
+    picks the wrong entity -- "SouthShore Roofing & Exteriors" matched
+    "SOUTHSHORE ROTARY FOUNDATION, INC." on the shared "southshore"
+    prefix and would have attributed that foundation's officer to the
+    roofing company. A missed match is acceptable (the row just stays
+    unsatisfied and falls through to the next step); a wrong company is
+    not. RULING C39: even exact-name matching is not enough on its own
+    -- two genuinely different FL entities can normalize identically
+    ("X Roofing LLC" and "X Roofing Inc" both become "x roofing") -- so
+    every match is returned here and registry_lookup_fl decides what to
+    do when there is more than one."""
     html = _sunbiz_html(
         page, f"{_SUNBIZ_URL}/Inquiry/CorporationSearch/SearchResults"
               f"?inquiryType=EntityName&searchTerm={quote(firm)}")
     soup = BeautifulSoup(html, "html.parser")
     want = _sunbiz_norm(firm)
+    out: list[tuple[str, str]] = []
+    if not want:
+        return out
     for a in soup.select("td.large-width a, a[href*='SearchResultDetail']"):
-        if want and _sunbiz_norm(a.get_text()) == want:
-            return a.get_text(strip=True), _SUNBIZ_URL + a["href"]
-    return None, None
+        if _sunbiz_norm(a.get_text()) == want:
+            out.append((a.get_text(strip=True), _SUNBIZ_URL + a["href"]))
+    return out
+
+
+_SUNBIZ_CITY_RE = re.compile(r"([A-Z][A-Za-z .'-]+),\s*FL\s*\d{5}")
+
+
+def _sunbiz_detail_city(page, detail_url: str) -> str | None:
+    """Best-effort city out of an entity's detail page (principal or
+    mailing address is normally the first "CITY, FL ZIP" on the page).
+    Used only to disambiguate when the name search returns more than
+    one candidate."""
+    html = _sunbiz_html(page, detail_url)
+    text = BeautifulSoup(html, "html.parser").get_text("\n")
+    m = _SUNBIZ_CITY_RE.search(text)
+    return m.group(1).strip() if m else None
 
 
 def _sunbiz_officers(page, detail_url: str) -> list[dict]:
@@ -213,12 +280,35 @@ def _sunbiz_officers(page, detail_url: str) -> list[dict]:
     return out
 
 
-def registry_lookup_fl(page, firm_name: str) -> dict | None:
+def registry_lookup_fl(page, firm_name: str, city: str | None = None) -> dict | None:
     """Step 3: best valid decision-maker from Sunbiz for a FL entity, or
-    None if the firm was not found or had no usable officer names."""
-    entity, url = _sunbiz_search_entity(page, firm_name)
-    if not url:
+    None if the firm was not found, was ambiguous with no corroborating
+    city, or had no usable officer names.
+
+    RULING C39: when the name search returns more than one candidate,
+    a name match alone is not enough to trust -- attributing a real
+    named human to the wrong company is worse than having no name, so a
+    second entity is only accepted if its registered address city
+    agrees with the row's own city, and only if exactly one candidate
+    agrees. Zero or more than one corroborating candidate means no
+    officer is recorded at all.
+    """
+    candidates = _sunbiz_search_candidates(page, firm_name)
+    if not candidates:
         return None
+    if len(candidates) == 1:
+        _, url = candidates[0]
+    else:
+        if not city:
+            return None
+        want_city = _sunbiz_norm(city)
+        corroborated = [
+            (name, url) for name, url in candidates
+            if want_city and _sunbiz_norm(_sunbiz_detail_city(page, url) or "") == want_city
+        ]
+        if len(corroborated) != 1:
+            return None
+        _, url = corroborated[0]
     officers = _sunbiz_officers(page, url)
     return pick_best_contact([{"name": o["name"], "title": o["title"]} for o in officers])
 
@@ -317,12 +407,12 @@ def waterfall(row: dict, budget: Budget, page=None) -> dict:
     # and skipped entirely when no page was supplied.
     if not is_satisfied(out) and out.get("state") == "FL" and out.get("name") and page is not None:
         try:
-            best = registry_lookup_fl(page, out["name"])
+            best = registry_lookup_fl(page, out["name"], out.get("city"))
             if best:
                 out["contact_name"] = best["name"]
                 out["contact_title"] = best.get("title", "")
         except Exception as exc:  # Cloudflare/network flake must not kill the batch
-            out.setdefault("enrich_errors", []).append(f"sunbiz: {exc}")
+            _record_error(out, f"sunbiz: {_http_error_summary(exc)}")
 
     # Step 4: LinkedIn -- deliberately out of scope (Task 8).
 
@@ -339,7 +429,7 @@ def waterfall(row: dict, budget: Budget, page=None) -> dict:
                 out["contact_email"] = best["email"]
                 out["contact_email_status"] = hunter_verify(best["email"])
         except (httpx.HTTPError, RuntimeError) as exc:
-            out.setdefault("enrich_errors", []).append(f"hunter: {exc}")
+            _record_error(out, f"hunter: {_http_error_summary(exc)}")
 
     # Step 6: Apollo.
     if not is_satisfied(out) and domain:
@@ -351,7 +441,7 @@ def waterfall(row: dict, budget: Budget, page=None) -> dict:
                 out["contact_email"] = best["email"]
                 out["contact_email_status"] = hunter_verify(best["email"])
         except (httpx.HTTPError, RuntimeError) as exc:
-            out.setdefault("enrich_errors", []).append(f"apollo: {exc}")
+            _record_error(out, f"apollo: {_http_error_summary(exc)}")
 
     # Step 7: Apify, last and cheapest actor only. Stubbed -- no
     # apify-client import, no HTTP call, zero real dollars spent. Wiring
@@ -359,13 +449,16 @@ def waterfall(row: dict, budget: Budget, page=None) -> dict:
     if not is_satisfied(out) and budget.remaining() > 0.05:
         try:
             budget.charge(0.05)
-            out.setdefault("enrich_errors", []).append("apify: stub only, not wired")
+            _record_error(out, "apify: stub only, not wired")
         except BudgetExceeded:
-            out.setdefault("enrich_errors", []).append("apify: budget exhausted")
+            _record_error(out, "apify: budget exhausted")
 
+    # RULING C41: name and email are independent facts. An invalid name
+    # (one that slipped in some other way than pick_best_contact, which
+    # already filters) must not erase a perfectly good email status.
     if out.get("contact_name") and not is_valid_person_name(out["contact_name"]):
         out["contact_name"] = ""
-        out["contact_email_status"] = "none"
+        out["contact_title"] = ""
     return out
 
 
