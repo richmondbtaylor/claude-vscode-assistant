@@ -13,6 +13,14 @@ Honesty requirements this module exists to enforce:
   - every cell written to a tab is a primitive (str, int or float); a raw
     dict or list reaching a cell is a defect.
   - a blank cell is honest. Nothing here invents a value to fill a column.
+
+RULING C47: the Sheet discloses its own limitations. A blank column or an
+empty tab must never be left for the reader to guess at. The Method tab
+carries a fixed LIMITATIONS block (no Hunter key, dead LinkedIn, what
+press hits actually measure, why hooks are blank by design) alongside the
+existing score-proxy note, and an empty Tier 1 Deep tab gets a one-line
+note explaining why, derived from the real demotion reason on the rows
+rather than assumed.
 """
 import datetime
 import json
@@ -27,6 +35,26 @@ MASTER_HEADERS = ["Company", "Domain", "City", "State", "Phone", "Email",
 TIER1_HEADERS = MASTER_HEADERS + ["Contact name", "Contact title", "Contact email",
                                   "Contact email status", "Hook"]
 REJECT_HEADERS = ["Company", "City", "State", "Score", "Reason"]
+
+# RULING C47: the Sheet discloses its own limitations. These are known,
+# permanent facts about this build, not run-specific numbers, so they are
+# fixed rows rather than anything computed from meta. Written for someone
+# opening the Sheet cold: plain sentences, no hedging, no marketing.
+LIMITATIONS = [
+    ["Limitation: email verification",
+     "No Hunter API key is configured, so no email can be marked verified. "
+     "Every address is generic, personal or guessed."],
+    ["Limitation: headcount",
+     "The LinkedIn session does not authenticate, so headcount is blank "
+     "for every company."],
+    ["Limitation: press hits",
+     "Press hits count only third party coverage that names the company. "
+     "This is near zero for small local businesses and is an honest "
+     "measurement, not a gap."],
+    ["Limitation: hooks",
+     "Hooks are written only where a payment or accounting platform was "
+     "detected. Blank elsewhere by design."],
+]
 
 SPREADSHEET_TITLE = "BOB Startup Leads - Master List"
 
@@ -74,6 +102,25 @@ def _master_cells(row: dict) -> list:
             ", ".join(row.get("sources", []))]
 
 
+def _tier1_empty_note(keepers: list[dict]) -> str:
+    """One honest sentence explaining an empty Tier 1 Deep tab, derived
+    from what actually happened to these rows rather than a fixed
+    assumption. qa.run_gates() is the only thing that ever sets
+    demoted_from_tier1, and only on a row it actually demoted (RULING
+    C7), so this reads real state, not a guess. If several rows were
+    demoted for different reasons, every distinct reason is listed."""
+    demoted = [r for r in keepers if r.get("demoted_from_tier1")]
+    if demoted:
+        reasons = sorted({r["demoted_from_tier1"] for r in demoted})
+        reason_text = "; ".join(reasons)
+        return (f"No tier1 rows in this run. {len(demoted)} row(s) reached "
+                f"tier1 during scoring but were demoted to master because: "
+                f"{reason_text}. See the Method and Sources tab for why "
+                f"contact enrichment is limited right now.")
+    return ("No tier1 rows in this run. No row both cleared the tier1 "
+            "score threshold and kept tier1 status through the QA gate.")
+
+
 def build_tabs(rows: list[dict], meta: dict) -> dict[str, list[list]]:
     """Build every tab as a list of primitive-only rows."""
     keepers = sorted([r for r in rows if r.get("tier") in ("master", "tier1")],
@@ -90,17 +137,23 @@ def build_tabs(rows: list[dict], meta: dict) -> dict[str, list[list]]:
               ["Hunter requests used", meta.get("hunter_used", 0)],
               ["Score note", "Score is a revenue proxy from public signals, "
                              "not reported revenue"]]
+    method.extend(LIMITATIONS)
     for source, count in (meta.get("sources") or {}).items():
         method.append([f"Seed rows from {source}", count])
 
+    tier1_body = [
+        _master_cells(r) + [r.get("contact_name", ""), r.get("contact_title", ""),
+                            r.get("contact_email", ""),
+                            r.get("contact_email_status", "none"),
+                            r.get("hook", "")]
+        for r in tier1
+    ]
+    if not tier1_body:
+        tier1_body = [[_tier1_empty_note(keepers)]]
+
     return {
         "Master": [MASTER_HEADERS] + [_master_cells(r) for r in keepers],
-        "Tier 1 Deep": [TIER1_HEADERS] + [
-            _master_cells(r) + [r.get("contact_name", ""), r.get("contact_title", ""),
-                                r.get("contact_email", ""),
-                                r.get("contact_email_status", "none"),
-                                r.get("hook", "")]
-            for r in tier1],
+        "Tier 1 Deep": [TIER1_HEADERS] + tier1_body,
         "Method and Sources": method,
         "Rejects": [REJECT_HEADERS] + [
             [r.get("name", ""), r.get("city", ""), r.get("state", ""),

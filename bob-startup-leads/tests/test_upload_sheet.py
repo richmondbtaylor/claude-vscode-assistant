@@ -1,5 +1,9 @@
+import json
+
 import pytest
-from upload_sheet import MASTER_HEADERS, TIER1_HEADERS, build_tabs
+
+import config
+from upload_sheet import MASTER_HEADERS, TIER1_HEADERS, build_tabs, main
 
 MASTER_ROW = {"name": "Rivera Mechanical", "domain": "rivera.com", "city": "Austin",
               "state": "TX", "phone": "+15125550111", "email": "info@rivera.com",
@@ -55,3 +59,46 @@ def test_master_sorted_by_score_descending():
     high = dict(MASTER_ROW, name="High", score=90)
     tabs = build_tabs([low, high], META)
     assert tabs["Master"][1][0] == "High"
+
+
+# RULING C47: the Sheet discloses its own limitations, so a reader never
+# has to guess why a column or a whole tab is blank.
+def test_method_tab_discloses_known_limitations():
+    tabs = build_tabs([MASTER_ROW], META)
+    flat = " ".join(str(c) for row in tabs["Method and Sources"] for c in row)
+    assert "Hunter API key" in flat
+    assert "LinkedIn" in flat
+    assert "Press hits" in flat
+    assert "Hooks are written only" in flat
+
+
+def test_tier1_tab_empty_gets_an_explanatory_note_not_a_bare_header():
+    tabs = build_tabs([MASTER_ROW, REJECT_ROW], META)
+    assert tabs["Tier 1 Deep"][0] == TIER1_HEADERS
+    assert len(tabs["Tier 1 Deep"]) == 2
+    note = tabs["Tier 1 Deep"][1][0]
+    assert isinstance(note, str) and len(note) > 0
+    assert "no tier1 rows" in note.lower()
+
+
+def test_tier1_empty_note_names_the_real_demotion_reason():
+    demoted = dict(MASTER_ROW, tier="master", demoted_from_tier1="no contact name")
+    tabs = build_tabs([demoted], META)
+    note = tabs["Tier 1 Deep"][1][0]
+    assert "no contact name" in note
+
+
+# RULING C48: the QA guard is the reason the QA stage exists, so both
+# branches that block an upload are exercised directly.
+def test_main_blocks_when_qa_report_is_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    with pytest.raises(SystemExit):
+        main()
+
+
+def test_main_blocks_when_qa_report_has_failed_rows(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    (tmp_path / "qa_report.json").write_text(
+        json.dumps({"passed": 0, "failed": 2}), encoding="utf-8")
+    with pytest.raises(SystemExit):
+        main()
