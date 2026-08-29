@@ -17,15 +17,22 @@ _MIRROR = re.compile(r"\bnot\s+\w+[,;]?\s+but\s+\w+", re.I)
 # RULING C42: a marketing or support embed (HubSpot, Calendly, Freshdesk,
 # Klaviyo, Podium, Drift, Intercom, and so on) supports no specific true
 # statement connecting it to a bookkeeping product, so those platforms get
-# no hook at all. Only platforms that actually move or hold a company's
-# money earn the generic-tech line. QuickBooks is handled by its own branch
-# ahead of this one; it stays in this set too so the set reads as "every
-# financial platform this stage can name," not as a hint that QuickBooks
-# reaches this branch.
+# no hook at all. Only platforms that actually move, hold or record a
+# company's money earn a hook.
+#
+# RULING C44: a payment processor and an accounting ledger are not the same
+# claim. "Takes payments through Xero" is false; Xero is a ledger, not a
+# gateway. So the financial platforms split into two disjoint sets rather
+# than one, each with its own sentence:
+#   - ACCOUNTING_TECH: a ledger the company's books actually live in.
+#   - PAYMENT_TECH: a processor or ecommerce checkout that moves money.
+#     Ecommerce checkouts (woocommerce, shopify, bigcommerce) stay here on
+#     purpose: the storefront itself processes the payment even though a
+#     gateway sits behind it, so "takes payments through" still holds.
+ACCOUNTING_TECH = {"quickbooks", "xero", "freshbooks", "billcom"}
 PAYMENT_TECH = {
     "authorizenet", "stripe", "square", "paypal", "braintree", "clover",
-    "toast", "woocommerce", "shopify", "bigcommerce", "quickbooks", "xero",
-    "freshbooks", "billcom",
+    "toast", "woocommerce", "shopify", "bigcommerce",
 }
 
 # Correct capitalization for the payment/accounting platforms this stage
@@ -64,8 +71,8 @@ def lint_hook(text: str) -> list[str]:
 
 
 def hook_for(row: dict) -> str:
-    """Build the angle. Requisition first, then QuickBooks specifically,
-    then a payment or accounting platform, then nothing.
+    """Build the angle. Requisition first, then an accounting platform,
+    then a payment processor or ecommerce checkout, then nothing.
 
     Each branch only asserts what the underlying signal actually supports.
     open_finance_req and job_title come from a real job posting, so naming
@@ -76,9 +83,14 @@ def hook_for(row: dict) -> str:
     RULING C42: a marketing, support, booking or reputation embed (HubSpot,
     Calendly, Freshdesk, Klaviyo, Podium, and the like) supports no true
     statement connecting it to a bookkeeping product, so it earns no hook.
-    Only a payment or accounting platform, where money actually moves or
-    gets recorded, gets a line, and that line names what the platform does
-    with the money rather than claiming the product integrates with it.
+
+    RULING C44: a ledger (QuickBooks, Xero, FreshBooks, Bill.com) and a
+    payment processor or ecommerce checkout are different claims and get
+    different sentences. QuickBooks used to have its own hardcoded branch;
+    it is now just the first entry ACCOUNTING_TECH can match, so the wording
+    for every ledger platform cannot drift apart from QuickBooks by
+    accident. Accounting stays ahead of payments in priority, same as
+    QuickBooks outranked generic tech before this split.
     """
     sig = row.get("signals", {})
     name = row.get("name", "")
@@ -88,8 +100,11 @@ def hook_for(row: dict) -> str:
         return f"{name} is hiring a {title}. BOB does that work, so the req can wait."
 
     tech = sig.get("tech") or []
-    if "quickbooks" in tech:
-        return f"{name} runs QuickBooks. BOB reads it and handles the bills around it."
+
+    accounting_tech = next((t for t in tech if t in ACCOUNTING_TECH), None)
+    if accounting_tech:
+        display = DISPLAY_NAME.get(accounting_tech, accounting_tech.title())
+        return f"{name} runs {display}. BOB reads it and keeps the books straight."
 
     payment_tech = next((t for t in tech if t in PAYMENT_TECH), None)
     if payment_tech:

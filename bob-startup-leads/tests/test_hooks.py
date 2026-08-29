@@ -1,6 +1,6 @@
 import config
 import hooks as hooks_module
-from hooks import hook_for, lint_hook
+from hooks import ACCOUNTING_TECH, hook_for, lint_hook
 from lib.records import read_jsonl, write_jsonl
 
 JOB_ROW = {"name": "Rivera Mechanical", "city": "Austin", "state": "TX",
@@ -10,14 +10,20 @@ TECH_ROW = {"name": "Summit Roofing", "city": "Denver", "state": "CO",
             "signals": {"tech": ["quickbooks", "stripe"], "jobs_supported": 30}}
 BARE_ROW = {"name": "Plain Co", "city": "Tampa", "state": "FL", "signals": {}}
 
-# RULING C42 fixtures. PAYMENT_ROW exercises the generic-tech branch after
-# the split (a payment/accounting platform with no QuickBooks present).
-# NONFINANCIAL_ROW exercises the new no-hook outcome for a marketing or
-# support embed that has nothing true to say about a bookkeeping product.
+# RULING C42 fixtures. PAYMENT_ROW exercises the payment-processor branch
+# (a checkout/gateway platform, no ledger present). NONFINANCIAL_ROW
+# exercises the no-hook outcome for a marketing or support embed that has
+# nothing true to say about a bookkeeping product.
 PAYMENT_ROW = {"name": "Coastal Plumbing", "city": "Miami", "state": "FL",
                "signals": {"tech": ["woocommerce"], "jobs_supported": 20}}
 NONFINANCIAL_ROW = {"name": "Hillside Landscaping", "city": "Raleigh", "state": "NC",
                      "signals": {"tech": ["hubspot", "calendly"]}}
+
+# RULING C44 fixture: an accounting ledger with no payment processor in the
+# tech list at all, so this exercises the accounting branch on its own,
+# separate from TECH_ROW (which mixes quickbooks with stripe).
+ACCOUNTING_ROW = {"name": "Beacon Electrical", "city": "Nashville", "state": "TN",
+                   "signals": {"tech": ["xero"], "jobs_supported": 15}}
 
 
 def test_job_row_gets_requisition_hook():
@@ -50,11 +56,12 @@ def test_lint_flags_overlong_hook():
     assert any("too long" in v for v in lint_hook(long_hook))
 
 
-# RULING C43 item 3: after the generic-tech branch split, every branch that
-# can actually produce a hook (requisition, QuickBooks, generic payment)
-# must pass its own lint, not just the two the brief originally covered.
+# RULING C43 item 3 / RULING C44: after the financial split, every branch
+# that can actually produce a hook (requisition, accounting ledger, payment
+# processor) must pass its own lint, not just the two the brief originally
+# covered.
 def test_every_generated_hook_passes_lint():
-    for row in (JOB_ROW, TECH_ROW, PAYMENT_ROW):
+    for row in (JOB_ROW, TECH_ROW, ACCOUNTING_ROW, PAYMENT_ROW):
         assert lint_hook(hook_for(row)) == []
 
 
@@ -69,6 +76,29 @@ def test_payment_platform_names_the_platform_and_reconciliation():
     hook = hook_for(PAYMENT_ROW)
     assert "woocommerce" in hook.lower()
     assert lint_hook(hook) == []
+
+
+# RULING C44: an accounting ledger is not a payment gateway. Xero, like
+# QuickBooks, gets the "runs the ledger" phrasing, never the payments
+# sentence.
+def test_accounting_platform_gets_ledger_hook_not_payments_hook():
+    hook = hook_for(ACCOUNTING_ROW)
+    assert "xero" in hook.lower()
+    assert "payments" not in hook.lower()
+    assert lint_hook(hook) == []
+
+
+# RULING C44 regression guard: this is exactly the bug the ruling reported
+# ("Acme Roofing's site takes payments through Xero" is false because Xero
+# is a ledger, not a gateway). Sweep every accounting platform this stage
+# can name and assert none of them ever produces the word "payments".
+def test_no_accounting_platform_ever_says_payments():
+    for platform in ACCOUNTING_TECH:
+        row = {"name": "Test Co", "city": "Austin", "state": "TX",
+               "signals": {"tech": [platform]}}
+        hook = hook_for(row)
+        assert "payments" not in hook.lower(), f"{platform} hook wrongly claims payments: {hook!r}"
+        assert lint_hook(hook) == []
 
 
 # RULING C43 item 1: this is the entire point of the lint gate in main() -
