@@ -14,22 +14,36 @@ BANNED = {
 MAX_WORDS = 25
 _MIRROR = re.compile(r"\bnot\s+\w+[,;]?\s+but\s+\w+", re.I)
 
-# Correct capitalization for the tech fingerprints this stage names in a
-# hook. tech[0].title() alone mangles multi-word or mixed-case brand names
-# (woocommerce -> "Woocommerce" instead of "WooCommerce"), and a hook is
-# supposed to be a fact stated back to the company, so getting their own
-# vendor's name wrong undercuts the one thing the hook has to get right.
-# Only covers platforms this stage actually names (quickbooks explicitly,
-# plus the others verified present in real scraped data).
+# RULING C42: a marketing or support embed (HubSpot, Calendly, Freshdesk,
+# Klaviyo, Podium, Drift, Intercom, and so on) supports no specific true
+# statement connecting it to a bookkeeping product, so those platforms get
+# no hook at all. Only platforms that actually move or hold a company's
+# money earn the generic-tech line. QuickBooks is handled by its own branch
+# ahead of this one; it stays in this set too so the set reads as "every
+# financial platform this stage can name," not as a hint that QuickBooks
+# reaches this branch.
+PAYMENT_TECH = {
+    "authorizenet", "stripe", "square", "paypal", "braintree", "clover",
+    "toast", "woocommerce", "shopify", "bigcommerce", "quickbooks", "xero",
+    "freshbooks", "billcom",
+}
+
+# Correct capitalization for the payment/accounting platforms this stage
+# names in a hook. tech.title() alone mangles multi-word or mixed-case
+# brand names (woocommerce -> "Woocommerce" instead of "WooCommerce",
+# billcom -> "Billcom" instead of "Bill.com"), and a hook is supposed to be
+# a fact stated back to the company, so getting their own vendor's name
+# wrong undercuts the one thing the hook has to get right. Platforms whose
+# .title() already reads correctly (stripe, square, braintree, clover,
+# toast, shopify, xero) are left out on purpose.
 DISPLAY_NAME = {
     "quickbooks": "QuickBooks",
+    "paypal": "PayPal",
     "woocommerce": "WooCommerce",
-    "hubspot": "HubSpot",
-    "calendly": "Calendly",
+    "bigcommerce": "BigCommerce",
+    "freshbooks": "FreshBooks",
+    "billcom": "Bill.com",
     "authorizenet": "Authorize.Net",
-    "podium": "Podium",
-    "freshdesk": "Freshdesk",
-    "klaviyo": "Klaviyo",
 }
 
 
@@ -51,14 +65,20 @@ def lint_hook(text: str) -> list[str]:
 
 def hook_for(row: dict) -> str:
     """Build the angle. Requisition first, then QuickBooks specifically,
-    then any other detected tech, then nothing.
+    then a payment or accounting platform, then nothing.
 
     Each branch only asserts what the underlying signal actually supports.
     open_finance_req and job_title come from a real job posting, so naming
     the role is a fact. tech is a regex hit against an embedded script or
     widget URL on the company's own site, not proof the company "runs its
-    business" on that platform, so the copy stays to what a widget on the
-    page actually shows: the site uses it.
+    business" on that platform.
+
+    RULING C42: a marketing, support, booking or reputation embed (HubSpot,
+    Calendly, Freshdesk, Klaviyo, Podium, and the like) supports no true
+    statement connecting it to a bookkeeping product, so it earns no hook.
+    Only a payment or accounting platform, where money actually moves or
+    gets recorded, gets a line, and that line names what the platform does
+    with the money rather than claiming the product integrates with it.
     """
     sig = row.get("signals", {})
     name = row.get("name", "")
@@ -70,9 +90,11 @@ def hook_for(row: dict) -> str:
     tech = sig.get("tech") or []
     if "quickbooks" in tech:
         return f"{name} runs QuickBooks. BOB reads it and handles the bills around it."
-    if tech:
-        display = DISPLAY_NAME.get(tech[0], tech[0].title())
-        return f"{name}'s site runs {display}. BOB keeps the books straight either way."
+
+    payment_tech = next((t for t in tech if t in PAYMENT_TECH), None)
+    if payment_tech:
+        display = DISPLAY_NAME.get(payment_tech, payment_tech.title())
+        return f"{name}'s site takes payments through {display}. BOB reconciles what lands in the account."
 
     return ""
 
