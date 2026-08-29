@@ -1,8 +1,12 @@
 import json
+from unittest.mock import MagicMock
 
 import pytest
 
 import config
+import qa
+import upload_sheet
+from lib.records import write_jsonl
 from upload_sheet import MASTER_HEADERS, TIER1_HEADERS, _compute_meta, build_tabs, main
 
 MASTER_ROW = {"name": "Rivera Mechanical", "domain": "rivera.com", "city": "Austin",
@@ -162,3 +166,108 @@ def test_method_tab_discloses_apify_is_not_wired():
     flat = " ".join(str(c) for row in tabs["Method and Sources"] for c in row)
     assert "Apify" in flat
     assert "not wired" in flat
+
+
+# RULING C54: build_tabs (via _signal_summary) must survive a row whose
+# "signals" key is present but explicitly null, not just absent.
+# row.get("signals", {}) only substitutes the default when the key is
+# missing entirely; a present-null value returns None, and the very next
+# sig.get(...) call raises AttributeError, aborting the whole Sheet build
+# on one bad row.
+def test_build_tabs_survives_a_present_but_null_signals_key():
+    row = dict(MASTER_ROW, signals=None)
+    tabs = build_tabs([row], META)
+    assert tabs["Master"][1][0] == "Rivera Mechanical"
+
+
+# RULING C50: a contactability rejection must reach the Rejects tab, not
+# just stop counting as a hard failure. qa.run_gates() mutates a rejected
+# row's tier to "reject" in place; this proves the same list handed to
+# build_tabs afterward (the real upload_sheet.main() flow: keepers is
+# passed to qa.run_gates() then to build_tabs()) routes that row into
+# Rejects with a reason, and out of Master, without any separate read path.
+def test_run_gates_rejected_row_flows_into_the_rejects_tab():
+    contactless = dict(MASTER_ROW, name="No Contact Co", phone=None, email=None)
+    keepers = [contactless]
+
+    report = qa.run_gates(keepers)
+
+    assert report["rejected"] == 1
+    assert contactless["tier"] == "reject"
+
+    tabs = build_tabs(keepers, META)
+
+    master_names = [r[0] for r in tabs["Master"][1:]]
+    assert "No Contact Co" not in master_names
+
+    reject_rows = tabs["Rejects"][1:]
+    assert any(r[0] == "No Contact Co" for r in reject_rows)
+    reject_row = next(r for r in reject_rows if r[0] == "No Contact Co")
+    assert "contactable" in reject_row[-1]
+
+
+# --- Coordinator follow-up: does a qa-rejected row actually reach the
+# Rejects tab through the REAL upload_sheet.main() flow, end to end, or
+# does it get silently dropped from both keepers and rejects? The test
+# above proves build_tabs() handles a pre-mutated row correctly; this one
+# drives main() itself (with the Google API calls mocked out, since no
+# network calls or real Sheets are allowed) to prove the same thing holds
+# through the actual production code path, not just a hand-built list.
+
+def _fake_sheets_and_drive():
+    """A MagicMock sheets/drive pair shaped enough to survive main():
+    spreadsheets().create() returns a spreadsheet id/url/sheet list,
+    files().get() returns a parents list, everything else is an
+    unconfigured MagicMock (main() never inspects those return values)."""
+    sheets = MagicMock()
+    drive = MagicMock()
+    sheets.spreadsheets.return_value.create.return_value.execute.return_value = {
+        "spreadsheetId": "sheet123",
+        "spreadsheetUrl": "https://example.invalid/sheet123",
+        "sheets": [{"properties": {"sheetId": i, "title": t}}
+                   for i, t in enumerate(
+                       ["Master", "Tier 1 Deep", "Method and Sources", "Rejects"])],
+    }
+    drive.files.return_value.get.return_value.execute.return_value = {"parents": ["folder1"]}
+    return sheets, drive
+
+
+def test_main_end_to_end_routes_a_contactless_master_row_to_rejects_tab(
+        tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    (tmp_path / "qa_report.json").write_text(
+        json.dumps({"passed": 1, "failed": 0, "rejected": 0}), encoding="utf-8")
+
+    contactless = dict(MASTER_ROW, name="No Contact Co", phone=None, email=None)
+    reachable = dict(MASTER_ROW, name="Rivera Mechanical")
+    write_jsonl(tmp_path / "hooks.jsonl", [contactless, reachable])
+    write_jsonl(tmp_path / "scored.jsonl", [])
+    write_jsonl(tmp_path / "companies.jsonl", [])
+
+    monkeypatch.setattr(upload_sheet, "_load_credentials", lambda: object())
+    sheets, drive = _fake_sheets_and_drive()
+
+    def fake_build_service(name, version, credentials=None):
+        return sheets if name == "sheets" else drive
+    monkeypatch.setattr("googleapiclient.discovery.build", fake_build_service)
+
+    main()
+
+    update_mock = sheets.spreadsheets.return_value.values.return_value.update
+    # range is always built as f"'{name}'!A1" -- strip the fixed 1-char
+    # leading quote and 4-char trailing "'!A1" wrapper to recover name.
+    calls_by_tab = {c.kwargs["range"][1:-4]: c.kwargs["body"]["values"]
+                    for c in update_mock.call_args_list}
+
+    master_names = [r[0] for r in calls_by_tab["Master"][1:]]
+    reject_names = [r[0] for r in calls_by_tab["Rejects"][1:]]
+
+    # The contactless row must NOT silently vanish from both tabs -- it
+    # must leave Master and land in Rejects with a reason, not disappear.
+    assert "No Contact Co" not in master_names
+    assert "No Contact Co" in reject_names
+    assert "Rivera Mechanical" in master_names
+    assert "Rivera Mechanical" not in reject_names
+
+    reject_row = next(r for r in calls_by_tab["Rejects"][1:] if r[0] == "No Contact Co")
+    assert "contactable" in reject_row[-1]

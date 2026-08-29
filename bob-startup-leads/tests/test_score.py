@@ -154,3 +154,61 @@ def test_maps_only_company_with_dark_signals_still_clears_the_floor():
            "signals": {"reviews": 350, "tech": ["stripe", "quickbooks"],
                        "has_pricing_page": True, "marketplaces": ["bbb"]}}
     assert total_score(row) >= config.SCORE_FLOOR
+
+
+# --- RULING C55: reach evidence must use the same presence test as every
+# other family (_present), not a bespoke `is not None` check. An empty
+# string is not None, so the old check counted a blank email as present
+# reach evidence -- a free family on a row nobody has ever actually
+# contacted -- which let MIN_FAMILIES=2 behave as if it were 1.
+
+def test_blank_email_does_not_count_as_reach_evidence():
+    from score import _families_with_evidence
+    row = {"name": "Blank Email Co", "domain": None, "phone": None,
+           "email": "", "email_status": "none", "sources": ["sba_7a"],
+           "signals": {"loan_amount": 500000}}
+    # Only "money" (loan_amount) is real evidence; reach must NOT count
+    # the blank email string as a second family.
+    assert _families_with_evidence(row) == 1
+
+
+def test_blank_email_alone_is_rejected_for_lack_of_evidence_families():
+    row = {"name": "Blank Email Only Co", "domain": None, "phone": None,
+           "email": "", "email_status": "none", "sources": ["sba_7a"],
+           "signals": {"loan_amount": 500000}}
+    out = assign_tiers([row])[0]
+    assert out["tier"] == "reject"
+    assert "families" in out["reject_reason"]
+
+
+def test_real_phone_still_counts_as_reach_evidence():
+    # Sanity check: the C55 fix must not also exclude a genuine phone.
+    from score import _families_with_evidence
+    row = {"name": "Real Phone Co", "domain": None, "phone": "+15125550188",
+           "email": None, "email_status": "none", "sources": ["maps"],
+           "signals": {"loan_amount": 500000}}
+    assert _families_with_evidence(row) == 2  # money + reach
+
+
+# --- RULING C54: family_scores and _families_with_evidence must survive
+# a row whose "signals" key is present but explicitly null, not just
+# absent. row.get("signals", {}) only substitutes the default when the
+# key is missing entirely; a present-null value makes it return None,
+# and every sig.get(...) call after it then raises AttributeError.
+
+def test_family_scores_survives_a_present_but_null_signals_key():
+    row = {"name": "Null Signals Co", "domain": None, "phone": "+15125550188",
+           "email": None, "email_status": "none", "sources": ["maps"],
+           "signals": None}
+    fams = family_scores(row)
+    assert fams["money"] == 0.0
+    assert fams["scale"] == 0.0
+    assert fams["signal"] == 0.0
+
+
+def test_assign_tiers_survives_a_present_but_null_signals_key():
+    row = {"name": "Null Signals Co", "domain": None, "phone": "+15125550188",
+           "email": None, "email_status": "none", "sources": ["maps"],
+           "signals": None}
+    out = assign_tiers([row])[0]
+    assert out["tier"] == "reject"  # no evidence at all, but must not raise

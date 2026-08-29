@@ -110,6 +110,49 @@ def test_seed_contact_from_row_preserves_all_other_fields():
     assert out["state"] == "FL"
 
 
+# --- RULING C54: resp.json() can raise json.JSONDecodeError outside the
+# httpx exception types the waterfall's steps caught, which is a real
+# gap: a Hunter or Apollo response that returns a 200 with a non-JSON or
+# truncated body (a proxy error page, a flaky connection) would crash the
+# whole batch mid-run instead of failing the one row. Deferred at Task
+# 10, now closed.
+
+def test_waterfall_survives_a_non_json_hunter_response(monkeypatch):
+    monkeypatch.setenv("HUNTER_API_KEY", "fake-key-for-this-test")
+    monkeypatch.delenv("APOLLO_API_KEY", raising=False)
+    monkeypatch.setattr("enrich_tier1.SECURITY", pytest.importorskip("pathlib").Path("no/such/dir"))
+
+    def fake_get(url, params=None, timeout=None):
+        request = httpx.Request("GET", url, params=params)
+        # A 200 with a body that is not valid JSON -- resp.raise_for_status()
+        # passes, but resp.json() raises json.JSONDecodeError.
+        return httpx.Response(200, request=request, text="not json at all")
+
+    monkeypatch.setattr(httpx, "get", fake_get)
+
+    row = {"company_id": "x2", "name": "Acme LLC", "domain": "acme-example-nonexistent.test",
+           "state": "TX"}
+    out = waterfall(row, Budget(limit_usd=0.0))
+
+    assert not is_satisfied(out)
+    errors = " ".join(out.get("enrich_errors", []))
+    assert "hunter" in errors
+    assert "JSONDecodeError" in errors
+
+
+def test_apollo_contact_returns_none_on_non_json_response(monkeypatch):
+    monkeypatch.setenv("APOLLO_API_KEY", "fake-apollo-key-for-this-test")
+
+    def fake_post(url, headers=None, json=None, timeout=None):
+        request = httpx.Request("POST", url)
+        return httpx.Response(200, request=request, text="<html>not json</html>")
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+
+    from enrich_tier1 import apollo_contact
+    assert apollo_contact("acme-example-nonexistent.test") is None
+
+
 # The waterfall must never crash a whole batch when a key is missing --
 # money-safety demands the row comes back with an error noted, not a
 # stack trace that kills every row after it.
@@ -439,3 +482,44 @@ def test_main_resume_skips_an_already_written_master_row_too(tmp_path, monkeypat
     assert calls == []
     lines = (tmp_path / "enriched.jsonl").read_text(encoding="utf-8").strip().splitlines()
     assert len(lines) == 1  # not duplicated
+
+
+# --- RULING C53: resume must key on row_key, not a bare company_id with
+# no truthiness guard. The old `already = {r.get("company_id") for r in
+# read_jsonl(out_path)}` put a literal None into `already` the moment any
+# ALREADY-WRITTEN row lacked a company_id, and every later INPUT row that
+# also lacked one then matched that None and was silently skipped
+# forever -- never enriched, never passed through, just dropped. That
+# drops master rows on the paid stage, per the reviewer's finding.
+
+def test_main_does_not_drop_idless_rows_when_an_idless_row_is_already_written(
+        tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+
+    # One row already in enriched.jsonl with no company_id at all -- this
+    # is what used to poison `already` with a bare None.
+    already_written = {"company_id": None, "name": "Written Co", "domain": "written.test",
+                        "state": "TX", "tier": "master"}
+    # A DIFFERENT idless master row still waiting to be written.
+    pending_master = {"company_id": None, "name": "Pending Co", "domain": "pending.test",
+                       "state": "TX", "tier": "master"}
+
+    with (tmp_path / "scored.jsonl").open("w", encoding="utf-8") as fh:
+        fh.write(json.dumps(already_written) + "\n")
+        fh.write(json.dumps(pending_master) + "\n")
+    (tmp_path / "enriched.jsonl").write_text(
+        json.dumps(already_written) + "\n", encoding="utf-8")
+
+    monkeypatch.setattr(sys, "argv", ["enrich_tier1.py"])
+
+    enrich_tier1.main()
+
+    lines = (tmp_path / "enriched.jsonl").read_text(encoding="utf-8").strip().splitlines()
+    written = [json.loads(l) for l in lines]
+    names = {r["name"] for r in written}
+    # The already-written idless row must not be duplicated, AND the
+    # different idless row must still make it through -- under the old
+    # bug both idless rows collide on a bare None and the second one is
+    # silently dropped instead of ever reaching enriched.jsonl.
+    assert names == {"Written Co", "Pending Co"}
+    assert len(written) == 2

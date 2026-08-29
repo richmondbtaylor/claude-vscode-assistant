@@ -20,6 +20,41 @@ def company_id(name: str, state: str, domain: str | None) -> str:
     return hashlib.sha1(key.encode("utf-8")).hexdigest()[:16]
 
 
+def row_key(row: dict) -> str:
+    """Stable resume/identity key for a row, shared by every stage that
+    checkpoints against a growing output file. RULING C35 introduced this
+    fallback chain in signals.py alone; RULING C53 promotes it here so
+    site_scrape.py and enrich_tier1.py stop keying resume on a bare
+    `company_id`, which is falsy or missing on an older/malformed row and
+    would otherwise silently reprocess (site_scrape) or silently DROP
+    (enrich_tier1, which had no truthiness guard at all: one output row
+    with no company_id put None into its seen-set, and every later idless
+    input row then matched that None and was skipped forever) that row.
+    Falls back from company_id to domain, then to normalized name plus
+    state, so every row gets a stable, non-empty key."""
+    cid = row.get("company_id")
+    if cid:
+        return cid
+    return company_id(row.get("name", ""), row.get("state", ""), row.get("domain"))
+
+
+def ensure_signals(row: dict) -> dict:
+    """Return row['signals'] as a mutable dict, creating or replacing it if
+    the key is absent OR present with an explicit null. RULING C54:
+    row.setdefault("signals", {}) only helps when the key is absent
+    entirely; a key that is present with an explicit None (round-tripped
+    through JSON, or written by an upstream stage that never filled it in)
+    makes setdefault a no-op that returns None, and a caller that then
+    does sig[key] = value raises TypeError and aborts the whole batch on
+    one bad row. Mutates row in place (matching setdefault's contract)
+    and returns the same dict so callers can keep writing into it."""
+    sig = row.get("signals")
+    if sig is None:
+        sig = {}
+    row["signals"] = sig
+    return sig
+
+
 def read_jsonl(path) -> Iterator[dict]:
     """Yield each well-formed row. A malformed trailing line (a process killed
     mid-append can leave one) is skipped rather than raising, so a file that

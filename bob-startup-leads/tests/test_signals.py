@@ -424,6 +424,44 @@ class _FakePW:
         pass
 
 
+# --- RULING C51: --limit must not silently cap a bare run. It used to
+# default to 20, and the documented run order invokes this stage bare
+# (`uv run signals.py`), so a full run silently scored 20 rows against a
+# 1,000-row target with nothing printed to say so.
+
+def test_limit_flag_defaults_to_no_cap():
+    args = signals._parse_args([])
+    assert args.limit is None
+
+
+def test_limit_flag_still_available_for_a_deliberate_small_run():
+    args = signals._parse_args(["--limit", "5"])
+    assert args.limit == 5
+
+
+def test_main_default_limit_is_none_too():
+    import inspect
+    assert inspect.signature(signals.main).parameters["limit"].default is None
+
+
+# --- RULING C54: process_row must survive a row whose "signals" key is
+# present but explicitly null (as opposed to merely absent), which is
+# exactly the shape a row round-trips through JSON with once an earlier
+# stage writes `"signals": null`. row.setdefault("signals", {}) is a
+# no-op in that case and returns None, so sig["headcount"] = ... used to
+# raise TypeError and abort the whole Brave/LinkedIn batch on one row.
+
+def test_process_row_survives_a_present_but_null_signals_key(monkeypatch):
+    monkeypatch.setattr(signals, "marketplace_presence", lambda *a, **k: ["bbb"])
+    monkeypatch.setattr(signals, "press_hits", lambda *a, **k: 2)
+    row = {"name": "Acme Roofing", "domain": "acmeroofing.com", "city": "Austin",
+           "signals": None}
+    out = signals.process_row(row, page=None)
+    assert out["signals"]["marketplaces"] == ["bbb"]
+    assert out["signals"]["press_hits"] == 2
+    assert out["signals"]["headcount"] is None
+
+
 def test_main_preserves_earlier_stage_signals_on_domain_row(tmp_path, monkeypatch):
     monkeypatch.setattr(signals.config, "DATA", tmp_path)
     _write_jsonl(tmp_path / "sites.jsonl", [NEW_ROW_WITH_DOMAIN])

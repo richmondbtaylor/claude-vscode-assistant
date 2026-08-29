@@ -2,9 +2,18 @@
 
 RULING C8: build_tabs reads its keeper rows (master and tier1) from
 data/hooks.jsonl, the last file in the chain carrying every field the
-tabs render. The Rejects tab is sourced from data/scored.jsonl instead,
+tabs render. The Rejects tab is sourced from data/scored.jsonl too,
 because reject rows deliberately stop at the scoring stage and never
 enter the enrichment chain.
+
+RULING C50: the Rejects tab ALSO picks up rows that made it all the way
+to hooks.jsonl as master or tier1 but failed contactability at the QA
+gate. qa.run_gates() mutates those rows' tier to "reject" in place
+(the row is a property of the row: unfixable, not a pipeline defect),
+so main() passing the same, now-partially-mutated `keepers` list into
+build_tabs() is what routes them into Rejects here -- no separate read
+path is needed, build_tabs already partitions purely on each row's
+current tier.
 
 Honesty requirements this module exists to enforce:
   - the score is a proxy, never revenue -- the Method tab says so plainly.
@@ -87,7 +96,11 @@ FOLDER_REFERENCE_FILE_ID = "10jvPwa0maelE_oF5Fn5AmeKH-U8aZfy11r5OMnD3B0I"
 
 
 def _signal_summary(row: dict) -> str:
-    sig = row.get("signals", {})
+    # RULING C54: row.get("signals", {}) only substitutes the default
+    # when the key is absent; a key present with an explicit None makes
+    # this return None, and every sig.get(...) call below then raises
+    # AttributeError, aborting the whole Sheet build on one bad row.
+    sig = row.get("signals") or {}
     parts = []
     if sig.get("open_finance_req"):
         parts.append("open finance req")
@@ -275,10 +288,14 @@ def main():
     keepers = [r for r in read_jsonl(config.DATA / "hooks.jsonl")
                if r.get("tier") in ("master", "tier1")]
     # Re-run the same gate qa.py ran so any tier1-to-master demotion
-    # (RULING C7) is applied in memory the same way it was when
-    # data/qa_report.json was written. hooks.jsonl on disk still shows
-    # the pre-demotion tier; this reproduces the mutation rather than
-    # trusting a stale on-disk value.
+    # (RULING C7) AND any contactability rejection (RULING C50) is
+    # applied in memory the same way it was when data/qa_report.json was
+    # written. hooks.jsonl on disk still shows the pre-gate tier; this
+    # reproduces the mutation rather than trusting a stale on-disk value.
+    # A row run_gates rejects here gets tier="reject" mutated onto the
+    # same object still sitting in `keepers`, so build_tabs (called
+    # below with keepers + rejects) routes it into the Rejects tab
+    # without any separate read path.
     qa.run_gates(keepers)
     rejects = [r for r in read_jsonl(config.DATA / "scored.jsonl")
                if r.get("tier") == "reject"]

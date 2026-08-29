@@ -20,6 +20,7 @@ billed for rows that a free step would have already satisfied. Steps 1-3
 below close that gap.
 """
 import argparse
+import json
 import os
 import pathlib
 import re
@@ -31,7 +32,7 @@ from bs4 import BeautifulSoup
 
 import config
 from lib.normalize import is_valid_person_name
-from lib.records import append_jsonl, read_jsonl
+from lib.records import append_jsonl, read_jsonl, row_key
 
 SECURITY = pathlib.Path.home() / ".claude" / "security"
 
@@ -350,15 +351,16 @@ def hunter_domain_search(domain: str) -> dict:
 
 def hunter_verify(email: str) -> str:
     """Return 'verified' or 'guessed' for one address. Any failure --
-    HTTP error or a missing key -- degrades to 'guessed' rather than
-    raising, since a guess is honest and a crash is not."""
+    HTTP error, a missing key, or a response body that is not valid JSON
+    (RULING C54) -- degrades to 'guessed' rather than raising, since a
+    guess is honest and a crash mid-batch is not."""
     try:
         resp = httpx.get("https://api.hunter.io/v2/email-verifier",
                           params={"email": email, "api_key": _key("HUNTER_API_KEY")},
                           timeout=30.0)
         resp.raise_for_status()
         result = resp.json().get("data", {}).get("result")
-    except (httpx.HTTPError, RuntimeError):
+    except (httpx.HTTPError, RuntimeError, json.JSONDecodeError):
         return "guessed"
     return "verified" if result == "deliverable" else "guessed"
 
@@ -367,7 +369,8 @@ def hunter_verify(email: str) -> str:
 
 def apollo_contact(domain: str) -> dict | None:
     """One decision-maker from Apollo for this domain. Any failure --
-    HTTP error or a missing key -- returns None rather than raising.
+    HTTP error, a missing key, or a non-JSON response body (RULING C54)
+    -- returns None rather than raising.
 
     Apollo now requires the key in the X-Api-Key header, not the JSON
     body, and the People Search path is mixed_people/api_search -- a
@@ -386,7 +389,7 @@ def apollo_contact(domain: str) -> dict | None:
         people = [{"name": p.get("name"), "title": p.get("title"),
                    "email": p.get("email")}
                   for p in resp.json().get("people", []) if p.get("email")]
-    except (httpx.HTTPError, RuntimeError):
+    except (httpx.HTTPError, RuntimeError, json.JSONDecodeError):
         return None
     return pick_best_contact(people)
 
@@ -428,7 +431,7 @@ def waterfall(row: dict, budget: Budget, page=None) -> dict:
                 out["contact_title"] = best["title"]
                 out["contact_email"] = best["email"]
                 out["contact_email_status"] = hunter_verify(best["email"])
-        except (httpx.HTTPError, RuntimeError) as exc:
+        except (httpx.HTTPError, RuntimeError, json.JSONDecodeError) as exc:
             _record_error(out, f"hunter: {_http_error_summary(exc)}")
 
     # Step 6: Apollo.
@@ -440,7 +443,7 @@ def waterfall(row: dict, budget: Budget, page=None) -> dict:
                 out["contact_title"] = best["title"]
                 out["contact_email"] = best["email"]
                 out["contact_email_status"] = hunter_verify(best["email"])
-        except (httpx.HTTPError, RuntimeError) as exc:
+        except (httpx.HTTPError, RuntimeError, json.JSONDecodeError) as exc:
             _record_error(out, f"apollo: {_http_error_summary(exc)}")
 
     # Step 7: Apify, last and cheapest actor only. Stubbed -- no
@@ -483,7 +486,15 @@ def main():
 
     budget = Budget(config.APIFY_BUDGET_USD)
     out_path = config.DATA / "enriched.jsonl"
-    already = {r.get("company_id") for r in read_jsonl(out_path)}
+    # RULING C53: keyed on row_key, not a bare company_id. The old
+    # `{r.get("company_id") for r in ...}` had no truthiness guard: one
+    # output row with no company_id put a literal None into `already`,
+    # and every later input row that also lacked one then matched that
+    # None and was silently skipped forever -- never enriched, never
+    # passed through, just dropped. row_key never returns a falsy value
+    # (it falls back to domain, then normalized name plus state), so
+    # this class of bug cannot recur.
+    already = {row_key(r) for r in read_jsonl(out_path)}
 
     pw = browser = page = None
     enriched = 0
@@ -491,7 +502,7 @@ def main():
         for row in read_jsonl(config.DATA / "scored.jsonl"):
             if row.get("tier") == "reject":
                 continue
-            if row.get("company_id") in already:
+            if row_key(row) in already:
                 continue
             if row.get("tier") != "tier1":
                 # Master (or any other non-reject, non-tier1 tier):

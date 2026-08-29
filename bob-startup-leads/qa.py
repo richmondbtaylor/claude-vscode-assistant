@@ -39,7 +39,7 @@ def _looks_like_email(s: str) -> bool:
 def check_row(row: dict) -> list[str]:
     """Return blocking violations for one row. Empty list means it can ship.
 
-    Four hard gates only, per RULING C7:
+    Four gates, per RULING C7 / C50 / C56:
       1. contactability -- the one absolute requirement on a Master row.
       2. liveness -- a PPP-sourced row still flagged needs_liveness_check
          has not been confirmed as still trading.
@@ -64,6 +64,12 @@ def check_row(row: dict) -> list[str]:
     stripping applies to the verified-without-address gate. signals may
     be present and explicitly null rather than merely absent; a bad row
     there must fail that one row, not raise and abort the whole run.
+
+    RULING C50 / C56: this function still reports EVERY violation on a
+    row, contactability and liveness included -- check_row's contract
+    does not change. What changes is what run_gates() does with those two
+    violations: see its docstring. A row is only ever demoted to master
+    OR rejected, never both, and never silently.
     """
     problems = []
 
@@ -72,6 +78,9 @@ def check_row(row: dict) -> list[str]:
     if not phone and not (email and _looks_like_email(email)):
         problems.append("not contactable: no email and no phone")
 
+    # RULING C56: an unconfirmed liveness flag is a property of the ROW
+    # (2020-2021 PPP data with no current evidence found), not proof the
+    # pipeline misbehaved -- see run_gates() for how this is now handled.
     signals = row.get("signals") or {}
     if signals.get("needs_liveness_check"):
         problems.append("liveness not confirmed for a PPP-sourced row")
@@ -106,24 +115,95 @@ def demotion_reason(row: dict) -> str | None:
     return "; ".join(missing) if missing else None
 
 
+# RULING C50 / C56: a problem whose message starts with one of these
+# prefixes is a property of the ROW (unfixable by the time it reaches
+# this gate), not evidence the pipeline misbehaved, so it rejects rather
+# than hard-fails. Contactability (C50): no phone or email exists to
+# enrich further. Liveness (C56): a PPP row carries 2020-2021 data, and
+# an unconfirmed flag means only that no CURRENT evidence was found --
+# not that anything upstream is broken. Everything else check_row can
+# report (an invalid contact name, "verified" with no address) still
+# genuinely indicates upstream misbehaviour and keeps hard-failing.
+_REJECTABLE_PREFIXES = ("not contactable", "liveness not confirmed")
+
+
 def run_gates(rows: list[dict]) -> dict:
-    """Gate every row, demoting under-enriched tier1 rows to master in
-    place (RULING C7) rather than failing them. Rows are mutated: a
-    demoted row gets tier set to "master" and a demoted_from_tier1 reason
-    recorded on it, so any caller holding the same list sees the effect.
+    """Gate every row. Rows are mutated in place, so any caller holding
+    the same list sees every effect below.
+
+    RULING C50: a contactability violation ("not contactable: ...") no
+    longer counts as a hard failure. Contactability is a property of the
+    ROW: by the time a row reaches this gate, no phone and no email
+    exists to enrich further, so the row is unfixable, not defective.
+    Spec section 11.1 already says what should happen to it: "Rows
+    failing this move to Rejects with a reason." A contactability-only
+    row is rejected here (tier="reject", reject_reason set) instead of
+    counted under "failed", which is what let upload_sheet.py's
+    `failed > 0` gate block the upload permanently with no way to clear
+    it -- 260 of 555 real rows hit exactly this on the live data.
+
+    RULING C56: an unconfirmed liveness flag joins contactability as a
+    rejection, not a hard failure. The original C50/C7 framing called
+    this "something wrong with the pipeline" -- that was wrong. A PPP
+    row carries 2020-2021 data by construction; an unconfirmed flag
+    means no CURRENT evidence of trading was found, which is a fact
+    about the row (like contactability), not proof anything upstream
+    misbehaved. site_scrape.py now gives standalone PPP rows an actual
+    path to confirmation (a successful site fetch clears the flag, see
+    site_scrape.scrape_row); a row that still carries the flag here
+    genuinely could not be confirmed and rejects honestly instead of
+    blocking the whole upload forever with no way to clear it.
+
+    The remaining two gates (an invalid contact name, a "verified"
+    status with no address) still hard-fail and are still counted under
+    "failed". Each of those signals something wrong with the PIPELINE,
+    not the row: upstream code produced a shape that should never exist
+    (a name a filter should have caught, a verified label the waterfall
+    never actually earned). Binning those silently into Rejects would
+    hide the defect that produced them instead of surfacing it, so they
+    keep blocking the run the way RULING C7 always intended for genuine
+    defects.
+
+    A row can carry both a hard-gate problem and a rejectable one; the
+    hard-gate problem always takes priority, so a row that is both
+    invalid-named and contactless still fails loudly rather than being
+    quietly routed to Rejects. Demotion (RULING C7) is only ever
+    considered once a row has neither kind of problem.
+
+    Demoted rows get tier set to "master" and demoted_from_tier1
+    recorded (unchanged from RULING C7). Rejected rows get tier set to
+    "reject" and reject_reason recorded (every rejectable problem found,
+    joined, in case a row is both contactless and liveness-unconfirmed),
+    matching the shape score.py already uses, so upload_sheet.py's
+    Rejects tab (which filters on tier=="reject") picks these up
+    automatically alongside the rows scored.jsonl rejected earlier.
     """
-    passed, failed = 0, 0
+    passed, failed, rejected = 0, 0, 0
     by_reason: dict[str, int] = {}
+    rejected_by_reason: dict[str, int] = {}
     demoted = 0
     demoted_by_reason: dict[str, int] = {}
 
     for row in rows:
         problems = check_row(row)
-        if problems:
+        hard_problems = [p for p in problems if not p.startswith(_REJECTABLE_PREFIXES)]
+        reject_problems = [p for p in problems if p.startswith(_REJECTABLE_PREFIXES)]
+
+        if hard_problems:
             failed += 1
-            for problem in problems:
+            for problem in hard_problems:
                 key = problem.split(":")[0]
                 by_reason[key] = by_reason.get(key, 0) + 1
+            continue
+
+        if reject_problems:
+            reason = "; ".join(reject_problems)
+            row["tier"] = "reject"
+            row["reject_reason"] = reason
+            rejected += 1
+            for problem in reject_problems:
+                key = problem.split(":")[0]
+                rejected_by_reason[key] = rejected_by_reason.get(key, 0) + 1
             continue
 
         reason = demotion_reason(row)
@@ -138,7 +218,9 @@ def run_gates(rows: list[dict]) -> dict:
     return {
         "passed": passed,
         "failed": failed,
+        "rejected": rejected,
         "by_reason": by_reason,
+        "rejected_by_reason": rejected_by_reason,
         "demoted": demoted,
         "demoted_by_reason": demoted_by_reason,
     }

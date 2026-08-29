@@ -2,6 +2,17 @@
 
 Strict on purpose. A wrong domain poisons every downstream stage, so an
 unresolved company is preferable to a mismatched one.
+
+RULING C52: this is a network stage (one Brave query per unresolved
+company) and gets the same resume discipline as site_scrape.py and
+signals.py. It used to rewrite data/resolved.jsonl wholesale on every
+run with no memory of what it had already attempted, so a re-run
+re-spent one query per company that had already been queried and simply
+came back with no match, roughly 74% of the pool at the measured 25.7%
+resolve rate. The subtlety: a company that was attempted and did NOT
+resolve must still be recorded as attempted (domain_resolve_attempted),
+or it is retried forever -- "no domain" and "never tried" would be
+indistinguishable on the next run otherwise.
 """
 import argparse
 import re
@@ -10,7 +21,7 @@ import time
 from rapidfuzz import fuzz
 
 import config
-from lib.records import read_jsonl, write_jsonl
+from lib.records import append_jsonl, read_jsonl, row_key
 from seed_jobs import brave_search
 from lib.normalize import norm_name, registrable_domain
 
@@ -134,29 +145,52 @@ def main():
     ap.add_argument("--limit", type=int, default=2000)
     args = ap.parse_args()
 
-    rows, resolved, attempted = [], 0, 0
-    for row in read_jsonl(config.DATA / args.infile):
-        if row.get("domain") or attempted >= args.limit:
-            rows.append(row)
-            continue
-        attempted += 1
-        query = " ".join(x for x in [row["name"], row.get("city"), row.get("state")] if x)
-        try:
-            results = brave_search(query, count=8)
-        except Exception as exc:
-            print(f"skip {row['name']}: {exc}")
-            rows.append(row)
-            continue
-        domain = pick_domain(row["name"], row.get("city", ""), row.get("state", ""), results)
-        if domain:
-            row["domain"] = domain
-            row["website"] = f"https://{domain}"
-            resolved += 1
-        rows.append(row)
-        time.sleep(1.1)
+    out_path = config.DATA / "resolved.jsonl"
+    # RULING C52: resume. A row already checkpointed to resolved.jsonl is
+    # skipped -- whether it resolved a domain or was genuinely queried and
+    # came back with no match (marked via domain_resolve_attempted below).
+    # Only the second case is the subtlety: without that marker, a company
+    # Brave could never match would be indistinguishable from one never
+    # tried, and would be re-queried, and billed, on every future run.
+    done_keys = {row_key(row) for row in read_jsonl(out_path)}
+    all_rows = list(read_jsonl(config.DATA / args.infile))
+    skipped = sum(1 for r in all_rows if row_key(r) in done_keys)
+    pending = [r for r in all_rows if row_key(r) not in done_keys]
+    print(f"{len(pending)} rows to consider this run, {skipped} already done "
+          f"and skipped", flush=True)
 
-    n = write_jsonl(config.DATA / "resolved.jsonl", rows)
-    print(f"attempted {attempted}, resolved {resolved}, wrote {n} rows")
+    resolved, attempted, n = 0, 0, 0
+    for row in pending:
+        if not row.get("domain") and attempted >= args.limit:
+            # Limit reached this run -- leave it genuinely unattempted (do
+            # not checkpoint it) so a future run still considers it.
+            continue
+        if not row.get("domain"):
+            attempted += 1
+            query = " ".join(x for x in [row["name"], row.get("city"), row.get("state")] if x)
+            try:
+                results = brave_search(query, count=8)
+            except Exception as exc:
+                print(f"skip {row['name']}: {exc}")
+                results = None
+            if results is not None:
+                domain = pick_domain(row["name"], row.get("city", ""),
+                                     row.get("state", ""), results)
+                if domain:
+                    row["domain"] = domain
+                    row["website"] = f"https://{domain}"
+                    resolved += 1
+            time.sleep(1.1)
+        # Checkpoint every row this run touches, including one that
+        # already had a domain coming in (no query needed) and one that
+        # was queried and came back with no match -- both must be marked
+        # attempted so a future run does not reconsider them.
+        row["domain_resolve_attempted"] = True
+        append_jsonl(out_path, [row])
+        n += 1
+
+    print(f"attempted {attempted}, resolved {resolved}, wrote {n} rows this run "
+          f"-> data/resolved.jsonl")
 
 
 if __name__ == "__main__":

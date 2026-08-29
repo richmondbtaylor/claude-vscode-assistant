@@ -3,8 +3,9 @@
 Runs only against companies that already cleared the site scrape with a
 domain (data/sites.jsonl), never the whole seed pool. This is the slowest,
 most rate-limited stage in the pipeline: two Brave queries per company plus
-one LinkedIn page load, so it defaults to a small --limit and checkpoints
-with append_jsonl so an interrupted run is resumable.
+one LinkedIn page load. --limit defaults to None (RULING C51: a silent
+default cap here shipped a 20-row Sheet against a 1,000-row target), and
+checkpoints with append_jsonl so an interrupted run is resumable.
 
 Usage: uv run signals.py [--limit N]
 Input: data/sites.jsonl
@@ -22,7 +23,8 @@ from playwright.sync_api import sync_playwright
 
 import config
 from lib.normalize import NON_COMPANY_HOSTS, norm_name, registrable_domain
-from lib.records import append_jsonl, company_id, read_jsonl
+from lib.records import append_jsonl, ensure_signals, read_jsonl
+from lib.records import row_key as _shared_row_key
 from seed_jobs import brave_search
 
 MARKETPLACES = {
@@ -280,15 +282,13 @@ def _open_linkedin_page(pw):
 
 
 def _row_key(row: dict) -> str:
-    """Stable resume key for a row. RULING C35: falls back from company_id
-    (which can be falsy or missing on an older/malformed row) to domain,
-    then to normalized name plus state, using the same canonical identity
-    function every other stage uses, so every row gets a stable key and
-    none is silently reprocessed and duplicated on resume."""
-    cid = row.get("company_id")
-    if cid:
-        return cid
-    return company_id(row.get("name", ""), row.get("state", ""), row.get("domain"))
+    """Stable resume key for a row. RULING C35 introduced this fallback
+    chain (company_id, then domain, then normalized name plus state) here
+    first; RULING C53 promoted the implementation to lib.records.row_key
+    so site_scrape.py and enrich_tier1.py can share it instead of each
+    carrying its own copy. This stays as a thin re-export so existing
+    call sites (and tests) that reference signals._row_key keep working."""
+    return _shared_row_key(row)
 
 
 def process_row(row: dict, page) -> dict:
@@ -298,14 +298,18 @@ def process_row(row: dict, page) -> dict:
     domain = row.get("domain")
     if not domain:
         return row
-    sig = row.setdefault("signals", {})
+    # RULING C54: row.setdefault("signals", {}) is a no-op (and returns
+    # None) when "signals" is present but explicitly null, which raises
+    # TypeError on the next line and aborts the whole batch on one bad
+    # row. ensure_signals handles both "absent" and "present but null".
+    sig = ensure_signals(row)
     sig["headcount"] = linkedin_headcount(page, domain) if page else None
     sig["marketplaces"] = marketplace_presence(row["name"], domain)
     sig["press_hits"] = press_hits(row["name"], row.get("city", ""), domain)
     return row
 
 
-def main(limit: int | None = 20):
+def main(limit: int | None = None):
     # Resume: a row already checkpointed to signals.jsonl is skipped, so an
     # interrupted run (this is the slowest, most rate-limited stage) can
     # restart without duplicating rows or re-spending Brave/LinkedIn budget.
@@ -356,15 +360,31 @@ def main(limit: int | None = 20):
         if pw:
             pw.stop()
 
-    print(f"DONE: {n} rows processed this run, {hc_hits} headcounts resolved, "
-          f"{mk_hits} rows with a marketplace hit, {press_total} total press hits "
-          f"-> data/signals.jsonl", flush=True)
+    # RULING C51: a bare run must never look truncated by surprise. Every
+    # domain row spends exactly 2 Brave queries (marketplace_presence,
+    # press_hits), win or lose, so this is an exact count, not an estimate.
+    brave_queries = 2 * with_domain
+    print(f"DONE: {n} rows processed this run, {brave_queries} Brave queries spent, "
+          f"{hc_hits} headcounts resolved, {mk_hits} rows with a marketplace hit, "
+          f"{press_total} total press hits -> data/signals.jsonl", flush=True)
+
+
+def _parse_args(argv=None):
+    """RULING C51: --limit no longer defaults to a silent cap. It used to
+    default to 20, and the documented run order invokes this stage bare
+    (`uv run signals.py`), so a full run silently scored 20 rows against a
+    1,000-row target with nothing on screen to say so. Default to no
+    limit; the flag stays available for a deliberate small run. Split out
+    of `if __name__` so tests can exercise the default without spawning a
+    subprocess."""
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--limit", type=int, default=None,
+                     help="max rows to process this run (each row with a domain "
+                          "costs 2 Brave queries plus one LinkedIn page load); "
+                          "omit for no limit (a full run)")
+    return ap.parse_args(argv)
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--limit", type=int, default=20,
-                     help="max rows to process this run (each row with a domain "
-                          "costs 2 Brave queries plus one LinkedIn page load)")
-    args = ap.parse_args()
+    args = _parse_args()
     main(limit=args.limit)

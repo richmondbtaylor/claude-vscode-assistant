@@ -1,4 +1,10 @@
-from resolve_domain import pick_domain
+import json
+import sys
+
+import config
+import resolve_domain
+from lib.records import read_jsonl, write_jsonl
+from resolve_domain import main, pick_domain
 
 RESULTS = [
     {"title": "Rivera Mechanical | HVAC in Austin TX",
@@ -261,3 +267,92 @@ def test_bare_lowercase_code_in_prose_is_not_treated_as_a_state():
         "description": "Proudly serving the greater tx region.",
     }]
     assert pick_domain("Sunrise Bakery LLC", "Los Angeles", "CA", results) == "sunrisebakery.com"
+
+
+# --- RULING C52: resolve_domain.py is a network stage (one Brave query
+# per unresolved company) and gets the same resume discipline every other
+# network stage has. The subtlety: a company that was queried and came
+# back with no match must be recorded as attempted, or it is retried
+# (and re-billed) forever, indistinguishable from a company never tried.
+
+ROW_NO_DOMAIN = {"company_id": "c1", "name": "Rivera Mechanical", "domain": None,
+                  "website": None, "city": "Austin", "state": "TX"}
+
+
+def test_main_resume_skips_a_row_already_checkpointed(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    already_done = dict(ROW_NO_DOMAIN, domain_resolve_attempted=True)
+    write_jsonl(tmp_path / "companies.jsonl", [ROW_NO_DOMAIN])
+    write_jsonl(tmp_path / "resolved.jsonl", [already_done])
+
+    def boom(*a, **k):
+        raise AssertionError("brave_search must not be called for an already-done row")
+    monkeypatch.setattr(resolve_domain, "brave_search", boom)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py"])
+
+    main()
+
+    out = list(read_jsonl(tmp_path / "resolved.jsonl"))
+    assert len(out) == 1  # not duplicated
+
+
+def test_main_records_a_genuine_no_match_attempt_so_it_is_not_retried(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    write_jsonl(tmp_path / "companies.jsonl", [ROW_NO_DOMAIN])
+
+    calls = []
+    def fake_search(query, count=8):
+        calls.append(query)
+        return []  # no results -> pick_domain returns None -> genuinely unresolved
+    monkeypatch.setattr(resolve_domain, "brave_search", fake_search)
+    monkeypatch.setattr(resolve_domain.time, "sleep", lambda *a, **k: None)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py"])
+
+    main()  # first run: attempts and fails to resolve
+
+    assert len(calls) == 1
+    out = list(read_jsonl(tmp_path / "resolved.jsonl"))
+    assert len(out) == 1
+    assert out[0]["domain"] is None
+    assert out[0]["domain_resolve_attempted"] is True
+
+    main()  # second run: must not re-query the same unresolved row
+
+    assert len(calls) == 1  # unchanged -- no second Brave query spent
+    out = list(read_jsonl(tmp_path / "resolved.jsonl"))
+    assert len(out) == 1  # not duplicated either
+
+
+def test_main_checkpoints_a_row_that_already_has_a_domain_without_a_query(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    row_with_domain = dict(ROW_NO_DOMAIN, domain="riveramechanical.com",
+                            website="https://riveramechanical.com")
+    write_jsonl(tmp_path / "companies.jsonl", [row_with_domain])
+
+    def boom(*a, **k):
+        raise AssertionError("brave_search must not be called for a row with a domain")
+    monkeypatch.setattr(resolve_domain, "brave_search", boom)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py"])
+
+    main()
+
+    out = list(read_jsonl(tmp_path / "resolved.jsonl"))
+    assert len(out) == 1
+    assert out[0]["domain"] == "riveramechanical.com"
+    assert out[0]["domain_resolve_attempted"] is True
+
+
+def test_main_limit_leaves_unattempted_rows_uncheckpointed_for_a_future_run(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    row_a = dict(ROW_NO_DOMAIN, company_id="c1", name="Company A")
+    row_b = dict(ROW_NO_DOMAIN, company_id="c2", name="Company B")
+    write_jsonl(tmp_path / "companies.jsonl", [row_a, row_b])
+
+    monkeypatch.setattr(resolve_domain, "brave_search", lambda query, count=8: [])
+    monkeypatch.setattr(resolve_domain.time, "sleep", lambda *a, **k: None)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py", "--limit", "1"])
+
+    main()
+
+    out = list(read_jsonl(tmp_path / "resolved.jsonl"))
+    assert len(out) == 1  # only the one row the limit allowed is checkpointed

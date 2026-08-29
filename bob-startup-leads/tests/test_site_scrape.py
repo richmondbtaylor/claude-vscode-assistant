@@ -1,5 +1,10 @@
+import sys
+
 import pytest
 
+import config
+import site_scrape
+from lib.records import read_jsonl, row_key, write_jsonl
 from site_scrape import (classify_email, clean_emails, extract_jsonld_org,
                           extract_phone, fingerprint_tech)
 
@@ -243,3 +248,95 @@ def test_extract_phone_prefers_contact_tel_over_earlier_footer_credit_tel():
     html = ('<footer>Site by <a href="tel:+15125550100">WebCo</a></footer>'
             '<div class="contact">Call us: <a href="tel:+15125550199">(512) 555-0199</a></div>')
     assert extract_phone(html) == "+15125550199"
+
+
+# --- RULING C53: resume must key on row_key (company_id, falling back to
+# domain, then normalized name plus state), not a bare company_id. The
+# old `done_ids = {row.get("company_id") for row in ... if row.get(
+# "company_id")}` filtered OUT any idless row from the done-set, so an
+# idless row already sitting in sites.jsonl was never recognized as
+# already scraped and got rescraped on every resumed run.
+
+def test_main_resume_skips_a_row_already_scraped_even_without_company_id(
+        tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    row = {"company_id": None, "name": "Acme Roofing", "domain": "acmeroofing.com",
+           "website": "https://acmeroofing.com", "state": "TX"}
+    write_jsonl(tmp_path / "resolved.jsonl", [row])
+    write_jsonl(tmp_path / "sites.jsonl", [row])  # already scraped, no id on it
+
+    calls = []
+    monkeypatch.setattr(site_scrape, "scrape_row", lambda r: (calls.append(r) or r))
+    monkeypatch.setattr(sys, "argv", ["site_scrape.py"])
+
+    site_scrape.main(limit=None, workers=1)
+
+    assert calls == []  # resume recognized it as done -- no rescrape
+    out = list(read_jsonl(tmp_path / "sites.jsonl"))
+    assert len(out) == 1  # not duplicated either
+
+
+def test_main_resume_distinguishes_two_idless_rows_by_domain(tmp_path, monkeypatch):
+    # Two different, idless companies must not collide on resume just
+    # because neither has a company_id -- row_key falls back to domain,
+    # which differs here, so both get scraped independently.
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    row_a = {"company_id": None, "name": "Acme Roofing", "domain": "acmeroofing.com",
+             "website": "https://acmeroofing.com", "state": "TX"}
+    row_b = {"company_id": None, "name": "Summit HVAC", "domain": "summithvac.com",
+             "website": "https://summithvac.com", "state": "CO"}
+    write_jsonl(tmp_path / "resolved.jsonl", [row_a, row_b])
+    write_jsonl(tmp_path / "sites.jsonl", [row_a])  # only A already scraped
+
+    calls = []
+    monkeypatch.setattr(site_scrape, "scrape_row", lambda r: (calls.append(r["name"]) or r))
+    monkeypatch.setattr(sys, "argv", ["site_scrape.py"])
+
+    site_scrape.main(limit=None, workers=1)
+
+    assert calls == ["Summit HVAC"]  # only the un-scraped one ran
+
+
+# --- RULING C56: a successful site fetch is direct evidence a PPP-sourced
+# company is still trading, giving a standalone PPP row (one that never
+# merged with a Maps or current 7(a) record in dedupe.py) an actual path
+# to liveness confirmation. Only a genuine successful fetch clears the
+# flag; a failed fetch must leave it exactly as it was.
+
+def _fake_scrape_result(pages_fetched: int) -> dict:
+    return {"emails": [], "phone": None, "tech": [], "has_pricing_page": False,
+            "has_careers_page": False, "pages_fetched": pages_fetched}
+
+
+def test_scrape_row_clears_liveness_flag_on_a_successful_fetch(monkeypatch):
+    monkeypatch.setattr(site_scrape, "scrape_domain", lambda url, domain: _fake_scrape_result(3))
+    row = {"domain": "acmeroofing.com", "website": "https://acmeroofing.com",
+           "signals": {"needs_liveness_check": True}}
+
+    out = site_scrape.scrape_row(row)
+
+    assert out["signals"]["needs_liveness_check"] is False
+
+
+def test_scrape_row_keeps_liveness_flag_on_a_failed_fetch(monkeypatch):
+    monkeypatch.setattr(site_scrape, "scrape_domain", lambda url, domain: _fake_scrape_result(0))
+    row = {"domain": "deadcompany.test", "website": "https://deadcompany.test",
+           "signals": {"needs_liveness_check": True}}
+
+    out = site_scrape.scrape_row(row)
+
+    assert out["signals"]["needs_liveness_check"] is True
+
+
+def test_scrape_row_does_not_invent_a_liveness_key_on_a_row_that_never_had_one(monkeypatch):
+    # A Maps-sourced row (or any row never flagged for liveness) must not
+    # gain a needs_liveness_check key just because its site fetched fine
+    # -- that key means something specific (a PPP row with no current
+    # evidence) and must not be manufactured for rows that never asked.
+    monkeypatch.setattr(site_scrape, "scrape_domain", lambda url, domain: _fake_scrape_result(2))
+    row = {"domain": "mapsco.com", "website": "https://mapsco.com",
+           "signals": {"reviews": 5}}
+
+    out = site_scrape.scrape_row(row)
+
+    assert "needs_liveness_check" not in out["signals"]

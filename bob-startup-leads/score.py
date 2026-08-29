@@ -34,11 +34,15 @@ def _clamp(value: float) -> float:
 
 
 def _present(sig: dict, key: str) -> bool:
-    """A sub-signal counts as present when its key exists and is not None.
-    A present zero, False, or empty list is a real measurement, not an
-    absence (RULING C32) - only a missing key or an explicit None means
-    the data source never reported anything for this company."""
-    return key in sig and sig[key] is not None
+    """A sub-signal counts as present when its key exists and is not None
+    or an empty string. A present zero, False, or empty list is a real
+    measurement, not an absence (RULING C32) - only a missing key, an
+    explicit None, or a blank string means the data source never reported
+    anything for this company. The blank-string exclusion (RULING C55)
+    matters for row-level string fields like email/phone reused through
+    this same function: none of money/scale/signal's sub-signals are ever
+    a string, so it is a no-op for them and only changes reach."""
+    return key in sig and sig[key] is not None and sig[key] != ""
 
 
 def _weighted_fraction(parts: list[tuple[bool, float, float]]) -> float:
@@ -56,7 +60,12 @@ def _weighted_fraction(parts: list[tuple[bool, float, float]]) -> float:
 
 def family_scores(row: dict) -> dict[str, float]:
     """Each family returns a 0.0 to 1.0 fraction of its available evidence."""
-    sig = row.get("signals", {})
+    # RULING C54: row.get("signals", {}) only substitutes the default when
+    # the key is absent; a key present with an explicit None (as every
+    # signals-null row round-trips through JSON) makes this return None,
+    # and every sig.get(...) call below then raises AttributeError,
+    # aborting the whole scoring run on one bad row instead of failing it.
+    sig = row.get("signals") or {}
 
     # Money proof: loan evidence, payment stack, a real pricing surface.
     money = _weighted_fraction([
@@ -120,14 +129,19 @@ def _families_with_evidence(row: dict) -> int:
     whether that evidence happens to score above zero (RULING C32) - a
     family that is genuinely all-zero still counts, only a family nobody
     ever measured does not."""
-    sig = row.get("signals", {})
+    sig = row.get("signals") or {}  # RULING C54: see family_scores above.
     money = (_present(sig, "loan_amount") or _present(sig, "tech")
              or _present(sig, "has_pricing_page"))
     scale = (_present(sig, "headcount") or _present(sig, "jobs_supported")
              or _present(sig, "reviews"))
     signal = (_present(sig, "open_finance_req") or _present(sig, "press_hits")
               or _present(sig, "marketplaces"))
-    reach = row.get("email") is not None or row.get("phone") is not None
+    # RULING C55: reach must use the same presence test as every other
+    # family (_present), not its own `is not None` check. An empty string
+    # is not None, so the old test counted a blank email/phone as present
+    # evidence -- a free family on every row that has never actually been
+    # contacted -- which let MIN_FAMILIES=2 behave as if it were 1.
+    reach = _present(row, "email") or _present(row, "phone")
     return sum([money, scale, signal, reach])
 
 

@@ -26,7 +26,7 @@ from bs4 import BeautifulSoup
 
 import config
 from lib.normalize import norm_phone
-from lib.records import append_jsonl, read_jsonl
+from lib.records import append_jsonl, read_jsonl, row_key
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                          "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
@@ -360,19 +360,41 @@ def scrape_row(row: dict) -> dict:
     signals["tech"] = result["tech"]
     signals["has_pricing_page"] = result["has_pricing_page"]
     signals["has_careers_page"] = result["has_careers_page"]
+    if result["pages_fetched"] > 0 and "needs_liveness_check" in signals:
+        # RULING C56: a successful fetch of the company's own website is
+        # direct evidence the company is still trading right now, which
+        # is exactly what needs_liveness_check exists to confirm.
+        # dedupe.py already clears the flag when a PPP row merges with a
+        # Maps or current 7(a) record, but a standalone PPP row (no
+        # merge partner) had no path to confirmation at all before this
+        # -- it could never ship regardless of how the QA gate is wired.
+        # Gated on the key already being present so this only ever
+        # touches a row that actually carries the flag (a PPP-sourced
+        # row), never adding it to a row that never had a liveness
+        # question in the first place. Only a genuine successful fetch
+        # clears it: pages_fetched counts fetch() calls that returned a
+        # real 200 HTML response (fetch() already follows redirects to
+        # their final destination and returns None on any failure), so a
+        # dead domain or a fetch that never lands on real content leaves
+        # the flag exactly as it was.
+        signals["needs_liveness_check"] = False
     row["signals"] = signals
     return row
 
 
 def main(limit: int | None = None, workers: int = 12):
-    # RULING C27: resume support. A domain already written to sites.jsonl
-    # is skipped, so an interrupted run (up to eight fetches per domain
+    # RULING C27: resume support. A row already written to sites.jsonl is
+    # skipped, so an interrupted run (up to eight fetches per domain
     # across thousands of companies) can restart without duplicating rows.
-    done_ids = {row.get("company_id") for row in read_jsonl(config.DATA / "sites.jsonl")
-                if row.get("company_id")}
+    # RULING C53: keyed on row_key (company_id, falling back to domain,
+    # then normalized name plus state) rather than a bare company_id --
+    # company_id can be falsy or missing on an older/malformed row, which
+    # would make that row's resume key always compare unequal to itself
+    # and get rescraped (and re-appended, duplicated) on every resume.
+    done_keys = {row_key(row) for row in read_jsonl(config.DATA / "sites.jsonl")}
     all_rows = list(read_jsonl(config.DATA / "resolved.jsonl"))
-    skipped = sum(1 for r in all_rows if r.get("company_id") in done_ids)
-    rows = [r for r in all_rows if r.get("company_id") not in done_ids]
+    skipped = sum(1 for r in all_rows if row_key(r) in done_keys)
+    rows = [r for r in all_rows if row_key(r) not in done_keys]
     if limit:
         rows = rows[:limit]
     print(f"{len(rows)} rows to scrape ({workers} workers), "
