@@ -17,10 +17,17 @@ Honesty requirements this module exists to enforce:
 RULING C47: the Sheet discloses its own limitations. A blank column or an
 empty tab must never be left for the reader to guess at. The Method tab
 carries a fixed LIMITATIONS block (no Hunter key, dead LinkedIn, what
-press hits actually measure, why hooks are blank by design) alongside the
-existing score-proxy note, and an empty Tier 1 Deep tab gets a one-line
-note explaining why, derived from the real demotion reason on the rows
-rather than assumed.
+press hits actually measure, why hooks are blank by design, Apify never
+wired) alongside the existing score-proxy note, and an empty Tier 1 Deep
+tab gets a one-line note explaining why, derived from the real demotion
+reason on the rows rather than assumed.
+
+RULING C49: a figure on the Method tab must correspond to something that
+actually happened. apify_spend is a constant 0.00 because the Apify step
+never issues a real HTTP call, full stop. hunter_used counts only
+enrich_errors entries that prove Hunter's API was actually reached; an
+entry that only proves the call was blocked before it was ever attempted
+(no key configured) is not counted, and is disclosed in words instead.
 """
 import datetime
 import json
@@ -54,6 +61,11 @@ LIMITATIONS = [
     ["Limitation: hooks",
      "Hooks are written only where a payment or accounting platform was "
      "detected. Blank elsewhere by design."],
+    ["Limitation: Apify",
+     "The Apify step is stubbed and not wired to a live actor. No HTTP "
+     "call is ever made there, so Apify spend is always 0.00 in this "
+     "build. The zero is structural, not a run that happened to spend "
+     "nothing."],
 ]
 
 SPREADSHEET_TITLE = "BOB Startup Leads - Master List"
@@ -128,13 +140,23 @@ def build_tabs(rows: list[dict], meta: dict) -> dict[str, list[list]]:
     tier1 = [r for r in keepers if r.get("tier") == "tier1"]
     rejects = [r for r in rows if r.get("tier") == "reject"]
 
+    # RULING C49: a count or a dollar figure in this tab must correspond to
+    # something that actually happened. hunter_used is 0 either way here,
+    # but when that 0 is specifically because no API key is configured
+    # (hunter_key_missing), say so in words rather than leaving a bare 0
+    # that a reader could misread as "0 calls happened to be needed."
+    hunter_used = meta.get("hunter_used", 0)
+    hunter_value = hunter_used
+    if meta.get("hunter_key_missing") and not hunter_used:
+        hunter_value = "No Hunter API key configured, 0 calls made"
+
     method = [["Field", "Value"],
               ["Run date", meta.get("run_date", "")],
               ["Master rows", len(keepers)],
               ["Tier 1 rows", len(tier1)],
               ["Rejected rows", len(rejects)],
               ["Apify spend USD", meta.get("apify_spend", 0.0)],
-              ["Hunter requests used", meta.get("hunter_used", 0)],
+              ["Hunter requests used", hunter_value],
               ["Score note", "Score is a revenue proxy from public signals, "
                              "not reported revenue"]]
     method.extend(LIMITATIONS)
@@ -175,32 +197,50 @@ def _lane_counts() -> dict[str, int]:
 
 
 def _compute_meta(keepers: list[dict]) -> dict:
-    """Real, derivable numbers only. apify_spend and hunter_used are read
-    off enrich_errors left on the rows by enrich_tier1.py's waterfall,
-    which is the only record of what that stage actually did -- nothing
-    here is estimated or recalled from memory.
+    """Real, derivable numbers only -- and RULING C49: a number here must
+    correspond to something that actually happened, never to an entry
+    that only proves an attempt was made or could not be made at all.
 
-    Apify's stub charges budget.charge(0.05) each time it records
-    "apify: stub only, not wired" (enrich_tier1.py waterfall()), so
-    counting that exact string reconstructs the real spend. Hunter's
-    call attempts are counted the same way, from every "hunter:"-prefixed
-    entry -- this counts attempts (successful and failed), the only trace
-    left on the row; a hunter call that succeeded without incident and
-    also failed to satisfy the row leaves no separate marker.
+    Apify's step 7 (enrich_tier1.py waterfall()) is fully stubbed: no
+    apify-client import, no HTTP call, ever. "apify: stub only, not
+    wired" is bookkeeping against the local Budget object only, not a
+    record of money leaving anyone's account. There is no marker in this
+    codebase that could ever mean a real Apify call happened, so
+    apify_spend is a constant 0.00, not something counted off a marker
+    that misrepresents its own meaning.
+
+    Hunter is different: hunter_domain_search() (enrich_tier1.py) really
+    does call httpx.get() against Hunter's API, so a real call CAN
+    happen and CAN fail after actually reaching the network. But
+    hunter_domain_search() also calls _key("HUNTER_API_KEY") to build
+    its params, and _key() raises RuntimeError synchronously, before
+    httpx.get() ever runs, when no key is configured. So a "hunter:
+    RuntimeError" entry in enrich_errors is proof a call was blocked
+    before it was ever issued; any other "hunter:"-prefixed entry (an
+    HTTP status, a connection error, a timeout) can only exist after
+    httpx.get() actually ran, which is proof a real call was made. Only
+    the second kind is counted. hunter_key_missing is set when at least
+    one RuntimeError entry is seen, so callers can render "no key
+    configured" instead of a bare 0 that could be misread as "zero calls
+    happened to be needed."
     """
-    apify_spend = 0.0
     hunter_used = 0
+    hunter_key_missing = False
     for row in keepers:
         for err in row.get("enrich_errors") or []:
-            if err.startswith("apify: stub only, not wired"):
-                apify_spend += 0.05
-            elif err.startswith("hunter:"):
+            if not err.startswith("hunter:"):
+                continue
+            reason = err.split(":", 1)[1].strip()
+            if reason == "RuntimeError":
+                hunter_key_missing = True
+            else:
                 hunter_used += 1
 
     return {
         "run_date": datetime.date.today().isoformat(),
-        "apify_spend": round(apify_spend, 2),
+        "apify_spend": 0.0,
         "hunter_used": hunter_used,
+        "hunter_key_missing": hunter_key_missing,
         "sources": _lane_counts(),
     }
 

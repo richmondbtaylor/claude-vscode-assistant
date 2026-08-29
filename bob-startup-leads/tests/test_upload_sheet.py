@@ -3,7 +3,7 @@ import json
 import pytest
 
 import config
-from upload_sheet import MASTER_HEADERS, TIER1_HEADERS, build_tabs, main
+from upload_sheet import MASTER_HEADERS, TIER1_HEADERS, _compute_meta, build_tabs, main
 
 MASTER_ROW = {"name": "Rivera Mechanical", "domain": "rivera.com", "city": "Austin",
               "state": "TX", "phone": "+15125550111", "email": "info@rivera.com",
@@ -102,3 +102,63 @@ def test_main_blocks_when_qa_report_has_failed_rows(tmp_path, monkeypatch):
         json.dumps({"passed": 0, "failed": 2}), encoding="utf-8")
     with pytest.raises(SystemExit):
         main()
+
+
+# RULING C49: a figure on the Method tab must correspond to something
+# that actually happened. The Apify step never issues a real HTTP call,
+# so the stub marker must never be read as real spend.
+def test_compute_meta_apify_stub_marker_never_counts_as_spend(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    (tmp_path / "companies.jsonl").write_text("", encoding="utf-8")
+    row = dict(MASTER_ROW, enrich_errors=["apify: stub only, not wired"])
+    meta = _compute_meta([row])
+    assert meta["apify_spend"] == 0.0
+
+
+# A "hunter: RuntimeError" entry proves _key() raised before httpx.get()
+# ever ran (enrich_tier1.py hunter_domain_search), so it proves a call
+# was blocked, not made, and must not be counted as one.
+def test_compute_meta_hunter_missing_key_error_is_not_counted_as_a_call(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    (tmp_path / "companies.jsonl").write_text("", encoding="utf-8")
+    row = dict(MASTER_ROW, enrich_errors=["hunter: RuntimeError"])
+    meta = _compute_meta([row])
+    assert meta["hunter_used"] == 0
+    assert meta["hunter_key_missing"] is True
+
+
+# Any other "hunter:"-prefixed reason can only exist after httpx.get()
+# actually ran, which is proof of a real call. The counting path that
+# remains must still count that real call.
+def test_compute_meta_hunter_real_failure_after_a_live_call_is_counted(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    (tmp_path / "companies.jsonl").write_text("", encoding="utf-8")
+    row = dict(MASTER_ROW, enrich_errors=["hunter: http 429"])
+    meta = _compute_meta([row])
+    assert meta["hunter_used"] == 1
+    assert meta["hunter_key_missing"] is False
+
+
+def test_method_tab_shows_no_hunter_key_text_instead_of_a_bare_zero():
+    meta = dict(META, hunter_used=0, hunter_key_missing=True)
+    tabs = build_tabs([MASTER_ROW], meta)
+    flat = " ".join(str(c) for row in tabs["Method and Sources"] for c in row)
+    assert "No Hunter API key configured" in flat
+
+
+def test_method_tab_still_shows_a_real_count_when_calls_were_made():
+    meta = dict(META, hunter_used=3, hunter_key_missing=False)
+    tabs = build_tabs([MASTER_ROW], meta)
+    row = next(r for r in tabs["Method and Sources"] if r[0] == "Hunter requests used")
+    assert row[1] == 3
+
+
+def test_method_tab_discloses_apify_is_not_wired():
+    tabs = build_tabs([MASTER_ROW], META)
+    flat = " ".join(str(c) for row in tabs["Method and Sources"] for c in row)
+    assert "Apify" in flat
+    assert "not wired" in flat
