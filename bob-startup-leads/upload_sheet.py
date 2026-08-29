@@ -28,7 +28,7 @@ TIER1_HEADERS = MASTER_HEADERS + ["Contact name", "Contact title", "Contact emai
                                   "Contact email status", "Hook"]
 REJECT_HEADERS = ["Company", "City", "State", "Score", "Reason"]
 
-SPREADSHEET_TITLE = "BOB Startup Leads — Master List"
+SPREADSHEET_TITLE = "BOB Startup Leads - Master List"
 
 # Auth note (task brief): the OAuth token at ~/.config/gspread/authorized_user.json
 # is reused verbatim from bob-miami-150/upload_master.py, scopes included.
