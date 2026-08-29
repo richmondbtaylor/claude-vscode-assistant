@@ -28,6 +28,14 @@ SAMPLE_FIELDS = (
 )
 
 
+def _looks_like_email(s: str) -> bool:
+    """Minimal structural check, not a full RFC validator: an at sign
+    with something on both sides. RULING C46 point 2 -- contactability
+    should not accept a malformed string just because it is non-empty."""
+    local, sep, domain = s.partition("@")
+    return bool(sep) and bool(local.strip()) and bool(domain.strip())
+
+
 def check_row(row: dict) -> list[str]:
     """Return blocking violations for one row. Empty list means it can ship.
 
@@ -47,13 +55,25 @@ def check_row(row: dict) -> list[str]:
     non-financial signals), so failing on it would deadlock the entire
     deliverable on the first under-enriched row. That case is handled by
     demotion_reason() / run_gates() instead: the row ships as master.
+
+    RULING C46: contactability is the one absolute requirement on a
+    Master row, so it stands on its own rather than trusting an upstream
+    invariant to hold forever. A whitespace-only phone or email counts as
+    absent, and an email must have the minimal shape of an email (an at
+    sign with something on both sides) to count as contactable. The same
+    stripping applies to the verified-without-address gate. signals may
+    be present and explicitly null rather than merely absent; a bad row
+    there must fail that one row, not raise and abort the whole run.
     """
     problems = []
 
-    if not row.get("phone") and not row.get("email"):
+    phone = (row.get("phone") or "").strip()
+    email = (row.get("email") or "").strip()
+    if not phone and not (email and _looks_like_email(email)):
         problems.append("not contactable: no email and no phone")
 
-    if row.get("signals", {}).get("needs_liveness_check"):
+    signals = row.get("signals") or {}
+    if signals.get("needs_liveness_check"):
         problems.append("liveness not confirmed for a PPP-sourced row")
 
     name = row.get("contact_name") or ""
@@ -61,7 +81,8 @@ def check_row(row: dict) -> list[str]:
         problems.append(f"invalid contact name: {name!r}")
 
     status = row.get("contact_email_status")
-    if status == "verified" and not row.get("contact_email"):
+    contact_email = (row.get("contact_email") or "").strip()
+    if status == "verified" and not contact_email:
         problems.append("email status is verified but no address is present")
 
     return problems

@@ -40,6 +40,40 @@ def test_guessed_email_labelled_verified_fails():
     assert any("email" in v for v in check_row(bad))
 
 
+# RULING C46: contactability is the one absolute requirement on a Master
+# row, so it must not depend on an upstream invariant (clean_emails,
+# norm_phone) holding forever. It has to stand on its own as the backstop.
+def test_whitespace_only_phone_and_email_fails_contactability():
+    bad = dict(GOOD, phone="   ", email="   ")
+    assert any("contactable" in v for v in check_row(bad))
+
+
+def test_malformed_email_without_at_sign_fails_contactability():
+    bad = dict(GOOD, phone=None, email="not-an-email")
+    assert any("contactable" in v for v in check_row(bad))
+
+
+def test_email_missing_local_or_domain_part_fails_contactability():
+    assert any("contactable" in v for v in check_row(dict(GOOD, phone=None, email="@rivera.com")))
+    assert any("contactable" in v for v in check_row(dict(GOOD, phone=None, email="info@")))
+
+
+def test_whitespace_padded_valid_email_still_passes_contactability():
+    ok = dict(GOOD, phone=None, email="  info@rivera.com  ")
+    assert check_row(ok) == []
+
+
+def test_verified_status_with_whitespace_only_contact_email_fails():
+    bad = dict(GOOD_T1, contact_email_status="verified", contact_email="   ")
+    assert any("email" in v for v in check_row(bad))
+
+
+def test_null_signals_does_not_raise_and_row_is_not_flagged_for_liveness():
+    row = dict(GOOD, signals=None)
+    problems = check_row(row)
+    assert not any("liveness" in v for v in problems)
+
+
 def test_run_gates_counts_by_reason():
     out = run_gates([GOOD, dict(GOOD, phone=None, email=None)])
     assert out["passed"] == 1
