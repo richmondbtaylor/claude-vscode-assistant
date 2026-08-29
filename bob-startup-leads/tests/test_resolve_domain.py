@@ -356,3 +356,148 @@ def test_main_limit_leaves_unattempted_rows_uncheckpointed_for_a_future_run(tmp_
 
     out = list(read_jsonl(tmp_path / "resolved.jsonl"))
     assert len(out) == 1  # only the one row the limit allowed is checkpointed
+
+
+# --- RULING C57: a query that never completed is not a result --------------
+#
+# The prior C52 fix stamped domain_resolve_attempted=True and checkpointed
+# a row even when brave_search raised (network error, rate limit, or a
+# missing key), which permanently poisons the pool: 555 rows would all
+# print "skip", all get checkpointed as attempted, and no future run would
+# ever retry them, with the only recovery being manual deletion of
+# resolved.jsonl. Only a query that genuinely COMPLETED (whether it found
+# a match or not) may be checkpointed.
+
+def test_main_leaves_a_row_unstamped_after_a_transport_exception(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    write_jsonl(tmp_path / "companies.jsonl", [ROW_NO_DOMAIN])
+
+    def boom(query, count=8):
+        raise TimeoutError("Brave request timed out")
+    monkeypatch.setattr(resolve_domain, "brave_search", boom)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py"])
+
+    main()  # first run: the only query raises
+
+    out = list(read_jsonl(tmp_path / "resolved.jsonl"))
+    assert out == []  # the row must NOT be checkpointed -- the query never completed
+
+
+def test_main_retries_a_row_on_the_next_run_after_a_transport_exception(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    write_jsonl(tmp_path / "companies.jsonl", [ROW_NO_DOMAIN])
+    monkeypatch.setattr(resolve_domain.time, "sleep", lambda *a, **k: None)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py"])
+
+    monkeypatch.setattr(resolve_domain, "brave_search",
+                        lambda query, count=8: (_ for _ in ()).throw(TimeoutError("boom")))
+    main()  # first run: fails, nothing checkpointed
+    assert list(read_jsonl(tmp_path / "resolved.jsonl")) == []
+
+    calls = []
+    def fake_search(query, count=8):
+        calls.append(query)
+        return []
+    monkeypatch.setattr(resolve_domain, "brave_search", fake_search)
+    main()  # second run: the same row must be retried, not skipped as "done"
+
+    assert len(calls) == 1  # the row WAS retried -- resume did not poison it
+    out = list(read_jsonl(tmp_path / "resolved.jsonl"))
+    assert len(out) == 1
+    assert out[0]["domain_resolve_attempted"] is True
+
+
+def test_main_treats_missing_key_runtime_error_same_as_a_transport_exception(
+        tmp_path, monkeypatch):
+    # _brave_key() raises RuntimeError synchronously, before any network
+    # call, when no Brave key is configured. This must behave exactly
+    # like the transport-exception case above: unstamped, uncheckpointed,
+    # retried next run -- never treated as a "completed, no match" result.
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    write_jsonl(tmp_path / "companies.jsonl", [ROW_NO_DOMAIN])
+
+    def boom(query, count=8):
+        raise RuntimeError("BRAVE_API_KEY not found")
+    monkeypatch.setattr(resolve_domain, "brave_search", boom)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py"])
+
+    main()
+
+    out = list(read_jsonl(tmp_path / "resolved.jsonl"))
+    assert out == []  # not checkpointed, not marked attempted
+
+
+def test_main_stops_immediately_on_a_runtime_error_rather_than_grinding_through_the_pool(
+        tmp_path, monkeypatch):
+    # A missing-key RuntimeError is certain to repeat on every remaining
+    # row this run (it fires before a request is ever issued), so the
+    # run should stop at the first one rather than calling brave_search
+    # (and sleeping) for hundreds of rows that cannot possibly succeed.
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    rows = [dict(ROW_NO_DOMAIN, company_id=f"c{i}", name=f"Company {i}") for i in range(10)]
+    write_jsonl(tmp_path / "companies.jsonl", rows)
+
+    calls = []
+    def boom(query, count=8):
+        calls.append(query)
+        raise RuntimeError("BRAVE_API_KEY not found")
+    monkeypatch.setattr(resolve_domain, "brave_search", boom)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py"])
+
+    main()
+
+    assert len(calls) == 1  # stopped after the first, did not touch the other 9
+    assert list(read_jsonl(tmp_path / "resolved.jsonl")) == []
+
+
+def test_main_stops_after_consecutive_transport_failures_reach_the_limit(
+        tmp_path, monkeypatch):
+    # A run-of-the-mill transient exception should not stop the whole
+    # run on its own (see test_main_retries_a_row_on_the_next_run_after_
+    # a_transport_exception above, where a single failure just retries
+    # next run), but CONSECUTIVE_FAILURE_LIMIT in a row is treated as a
+    # systemic outage or a live rate limit, not one flaky row, and the
+    # run stops rather than grinding through the rest of the pool.
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    rows = [dict(ROW_NO_DOMAIN, company_id=f"c{i}", name=f"Company {i}") for i in range(20)]
+    write_jsonl(tmp_path / "companies.jsonl", rows)
+    monkeypatch.setattr(resolve_domain.time, "sleep", lambda *a, **k: None)
+
+    calls = []
+    def boom(query, count=8):
+        calls.append(query)
+        raise TimeoutError("boom")
+    monkeypatch.setattr(resolve_domain, "brave_search", boom)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py"])
+
+    main()
+
+    assert len(calls) == resolve_domain.CONSECUTIVE_FAILURE_LIMIT
+    assert list(read_jsonl(tmp_path / "resolved.jsonl")) == []
+
+
+def test_main_consecutive_failure_count_resets_on_a_completed_query(tmp_path, monkeypatch):
+    # A completed query (even one that raised earlier in the run) resets
+    # the consecutive-failure count, so an isolated bad patch does not
+    # make an otherwise-healthy run stop early once it recovers.
+    monkeypatch.setattr(config, "DATA", tmp_path)
+    limit = resolve_domain.CONSECUTIVE_FAILURE_LIMIT
+    # (limit - 1) failures, then a success, repeated -- never reaches the
+    # threshold because the counter keeps resetting.
+    rows = [dict(ROW_NO_DOMAIN, company_id=f"c{i}", name=f"Company {i}")
+            for i in range((limit - 1) * 2 + 2)]
+    write_jsonl(tmp_path / "companies.jsonl", rows)
+    monkeypatch.setattr(resolve_domain.time, "sleep", lambda *a, **k: None)
+
+    calls = []
+    def flaky(query, count=8):
+        calls.append(query)
+        if len(calls) % limit == 0:  # every `limit`th call succeeds
+            return []
+        raise TimeoutError("boom")
+    monkeypatch.setattr(resolve_domain, "brave_search", flaky)
+    monkeypatch.setattr(sys, "argv", ["resolve_domain.py"])
+
+    main()
+
+    assert len(calls) == len(rows)  # ran the whole pool, never stopped early

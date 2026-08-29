@@ -139,6 +139,15 @@ def pick_domain(company_name: str, city: str, state: str,
     return None
 
 
+# RULING C57: how many consecutive Brave failures (timeouts, 429s, 5xx --
+# anything that means the query never completed) before this run gives up
+# rather than grinding through the rest of the pool. One flaky row should
+# not stop a run; five in a row is evidence of a systemic outage or a
+# live rate limit, and continuing would just burn wall-clock time
+# printing "skip" for every remaining row with zero chance of success.
+CONSECUTIVE_FAILURE_LIMIT = 5
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--infile", default="companies.jsonl")
@@ -160,6 +169,8 @@ def main():
           f"and skipped", flush=True)
 
     resolved, attempted, n = 0, 0, 0
+    consecutive_failures = 0
+    stopped_early = False
     for row in pending:
         if not row.get("domain") and attempted >= args.limit:
             # Limit reached this run -- leave it genuinely unattempted (do
@@ -170,27 +181,64 @@ def main():
             query = " ".join(x for x in [row["name"], row.get("city"), row.get("state")] if x)
             try:
                 results = brave_search(query, count=8)
+            except RuntimeError as exc:
+                # RULING C57: _brave_key() raises RuntimeError
+                # synchronously, before brave_search ever issues a
+                # request, when no Brave key is configured. Every
+                # remaining row in this run would fail identically and
+                # instantly -- this is not "maybe transient", it is
+                # certain to repeat -- so there is nothing to gain by
+                # grinding through the rest of the pool. Leave this row
+                # (and everything after it) genuinely unattempted and
+                # stop the run outright rather than waiting for a
+                # consecutive-failure count to confirm what is already
+                # certain.
+                print(f"STOPPING: {row['name']}: {exc} -- this is a "
+                      f"configuration failure that would repeat on every "
+                      f"remaining row this run; fix it and re-run",
+                      flush=True)
+                stopped_early = True
+                break
             except Exception as exc:
-                print(f"skip {row['name']}: {exc}")
-                results = None
-            if results is not None:
-                domain = pick_domain(row["name"], row.get("city", ""),
-                                     row.get("state", ""), results)
-                if domain:
-                    row["domain"] = domain
-                    row["website"] = f"https://{domain}"
-                    resolved += 1
+                # RULING C57: a query that never completed (timeout,
+                # 429, 5xx, any transport failure) is not a result at
+                # all -- unlike a query that completed and genuinely
+                # found no match (checkpointed below), this row must
+                # stay unattempted so a future run retries it rather
+                # than the pool being permanently poisoned by a run that
+                # happened to hit an expired key or a rate limit.
+                print(f"skip {row['name']}: {exc}", flush=True)
+                consecutive_failures += 1
+                if consecutive_failures >= CONSECUTIVE_FAILURE_LIMIT:
+                    print(f"STOPPING: {consecutive_failures} consecutive "
+                          f"Brave failures -- this looks systemic (an "
+                          f"outage or a live rate limit), not one flaky "
+                          f"row; leaving the rest of this run for a "
+                          f"future retry", flush=True)
+                    stopped_early = True
+                    break
+                continue  # never checkpoint a query that did not complete
+            consecutive_failures = 0
+            domain = pick_domain(row["name"], row.get("city", ""),
+                                 row.get("state", ""), results)
+            if domain:
+                row["domain"] = domain
+                row["website"] = f"https://{domain}"
+                resolved += 1
             time.sleep(1.1)
-        # Checkpoint every row this run touches, including one that
-        # already had a domain coming in (no query needed) and one that
-        # was queried and came back with no match -- both must be marked
-        # attempted so a future run does not reconsider them.
+        # Checkpoint every row this run actually completed a query for
+        # (or that already had a domain coming in, no query needed) --
+        # including one that was genuinely queried and came back with no
+        # match, which must be marked attempted so a future run does not
+        # re-query and re-bill it. A row whose query never completed
+        # `continue`s above and never reaches this line.
         row["domain_resolve_attempted"] = True
         append_jsonl(out_path, [row])
         n += 1
 
+    early_note = " (stopped early, see log above)" if stopped_early else ""
     print(f"attempted {attempted}, resolved {resolved}, wrote {n} rows this run "
-          f"-> data/resolved.jsonl")
+          f"-> data/resolved.jsonl{early_note}")
 
 
 if __name__ == "__main__":
