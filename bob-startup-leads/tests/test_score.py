@@ -212,3 +212,50 @@ def test_assign_tiers_survives_a_present_but_null_signals_key():
            "signals": None}
     out = assign_tiers([row])[0]
     assert out["tier"] == "reject"  # no evidence at all, but must not raise
+
+
+def test_tier1_is_drawn_only_from_contactable_rows():
+    """An unreachable company must never consume a Tier 1 slot.
+
+    Scoring rewards loan evidence heavily, so SBA-sourced rows outscore
+    everything while carrying no phone, email or domain. Tiering over every
+    keeper filled Tier 1 with companies the QA gate then rejected, leaving the
+    tab empty.
+    """
+    unreachable = {
+        "name": "Loan Co", "phone": None, "email": None, "email_status": "none",
+        "sources": ["sba_7a"],
+        "signals": {"jobs_supported": 60, "loan_amount": 5_000_000.0,
+                    "reviews": 400, "tech": ["stripe"], "has_pricing_page": True},
+    }
+    reachable = {
+        "name": "Reachable Co", "phone": "+15125550111",
+        "email": "info@reachable.com", "email_status": "generic",
+        "sources": ["maps"],
+        "signals": {"reviews": 120, "tech": ["stripe"]},
+    }
+    # Ten contactable rows so the 20 percent cutoff yields two Tier 1 slots,
+    # against nine unreachable rows that each outscore every one of them.
+    rows = [dict(unreachable, name=f"loan{i}") for i in range(9)]
+    for i in range(10):
+        row = dict(reachable, name=f"reach{i}")
+        row["signals"] = dict(reachable["signals"], reviews=400 - i * 10)
+        rows.append(row)
+    out = assign_tiers(rows)
+
+    tier1 = [r for r in out if r["tier"] == "tier1"]
+    assert len(tier1) == 2
+    assert all(r.get("phone") or r.get("email") for r in tier1)
+    assert {r["name"] for r in tier1} == {"reach0", "reach1"}
+
+
+def test_contactless_rows_still_reach_master_when_they_clear_the_floor():
+    """Excluding them from Tier 1 must not reject them outright."""
+    unreachable = {
+        "name": "Loan Co", "phone": None, "email": None, "email_status": "none",
+        "sources": ["sba_7a"],
+        "signals": {"jobs_supported": 60, "loan_amount": 5_000_000.0,
+                    "reviews": 400, "tech": ["stripe"], "has_pricing_page": True},
+    }
+    out = assign_tiers([unreachable])
+    assert out[0]["tier"] == "master"

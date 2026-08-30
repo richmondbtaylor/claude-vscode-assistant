@@ -163,8 +163,17 @@ def assign_tiers(rows: list[dict]) -> list[dict]:
             out["reject_reason"] = ""
         scored.append(out)
 
-    keepers = sorted([r for r in scored if r["tier"] == "master"],
-                     key=lambda r: r["score"], reverse=True)
+    # Tier 1 is drawn only from rows that can actually be contacted. Scoring
+    # rewards loan evidence heavily, so SBA-sourced rows dominate the top of
+    # the ranking while carrying no phone, email or domain until the domain
+    # resolution stage has run. Tiering over every keeper therefore filled the
+    # deep-enrichment tier with companies the QA gate then rejected as
+    # unreachable, and Tier 1 came out empty. An unreachable company cannot be
+    # enriched or contacted, so it has no business consuming a Tier 1 slot.
+    keepers = sorted(
+        [r for r in scored
+         if r["tier"] == "master" and (_present(r, "phone") or _present(r, "email"))],
+        key=lambda r: r["score"], reverse=True)
     cutoff = int(len(keepers) * config.TIER1_FRACTION)
     for row in keepers[:cutoff]:
         row["tier"] = "tier1"

@@ -43,7 +43,7 @@ WEIGHTS = {"money": 40, "scale": 25, "signal": 25, "reach": 10}
 
 # A company must clear this to reach Master, and must have evidence in at
 # least this many families, so review count alone can never qualify anyone.
-SCORE_FLOOR = 35
+SCORE_FLOOR = 11
 MIN_FAMILIES = 2
 
 TIER1_FRACTION = 0.20
