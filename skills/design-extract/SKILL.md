@@ -108,6 +108,21 @@ Append-only and idempotent. Re-run it after editing the block text in
 Check `manifest.json`'s `has` map before relying on a file. Default-mode entries have no
 `screens/`, `ANIMATIONS.md`, or `INTERACTIONS.md`.
 
+## Fonts are local-only, never committed
+
+SkillUI downloads the site's actual font files into `<slug>/fonts/`. Those are
+often commercially licensed: Linear ships Berkeley Mono, Stripe ships Sohne,
+both paid faces. Committing them to a repo redistributes them.
+
+`design-systems/*/fonts/` is gitignored as a blanket rule. Not a name list --
+a list only catches faces already seen, and the next extraction can pull any
+commercial face. Re-running `extract.py` restores the fonts, so tracking none
+of them costs a command and risks nothing.
+
+Consequence for builds: reference font families by NAME and load them from a
+CDN or the user's own licensed copy. Never point a deliverable at a woff2 in
+`design-systems/`; it will not exist on anyone else's machine.
+
 ## Tests
 
 ```bash

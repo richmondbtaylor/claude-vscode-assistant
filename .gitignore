@@ -112,8 +112,9 @@ plugins/marketplaces/
 # and the .db-wal has exceeded 100MB, which GitHub rejects outright.
 context-mode/content/
 
-# Commercial fonts captured by design-extract. Kept locally so extracted
-# systems render, never redistributed: Berkeley Mono and Sohne are paid
-# licences. Open faces (Inter, Source Code Pro) are fine to track.
-design-systems/*/fonts/BerkeleyMono*
-design-systems/*/fonts/sohne*
+# Fonts captured by design-extract. Kept locally so extracted systems render,
+# never redistributed. Blanket rule on purpose: a name-specific list only
+# catches faces we have already seen (Berkeley Mono, Sohne), and the next
+# extraction can pull any commercial face. Re-running extract.py restores them,
+# so tracking none of them costs a command and risks nothing.
+design-systems/*/fonts/
