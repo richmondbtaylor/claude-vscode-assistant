@@ -87,3 +87,23 @@ design-sources/*/
 # Vendored third-party skill build, regenerable from the design-sources
 # checkout (see skills/design-sources/SKILL.md). Restore: sync.py update.
 skills/impeccable/
+
+# Live credentials, never commit. gmail_token.json holds a Google OAuth
+# access + refresh token; sessions/*.key are per-session secrets.
+scripts/gmail_token.json
+sessions/*.key
+
+# Heavy media and build artifacts. Kept on disk, out of git. GitHub caps
+# files at 100MB and these total ~32GB.
+skills/reelforge/videos/
+impact-survey/
+jitter-ugc/
+grammarly-scripts/
+aios-hype/build/
+
+# Plugin marketplace clones are regenerable, and each is its own git repo, so
+# committing them yields broken gitlinks. Restore via the plugin marketplace.
+plugins/marketplaces/
+
+# Editor backup artifacts.
+*.bak
