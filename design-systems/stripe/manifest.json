@@ -1,0 +1,37 @@
+{
+  "slug": "stripe",
+  "name": "Stripe",
+  "source": "https://stripe.com",
+  "source_type": "url",
+  "mode": "default",
+  "extracted": "2026-09-01",
+  "skillui_version": "1.3.4",
+  "screens": 0,
+  "has": {
+    "tokens": false,
+    "design_md": true,
+    "screenshots": true,
+    "screens": false,
+    "fonts": true,
+    "skill_package": true,
+    "animations": false,
+    "interactions": false,
+    "layout": false,
+    "components": false,
+    "visual_guide": false
+  },
+  "palette": [
+    "#7389ff",
+    "#ffffff",
+    "#0a2540",
+    "#445566",
+    "#ffcc55",
+    "#533afd",
+    "#50617a",
+    "#061b31"
+  ],
+  "fonts": [
+    "sohne-var",
+    "SourceCodePro"
+  ]
+}

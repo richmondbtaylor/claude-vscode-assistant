@@ -107,3 +107,13 @@ plugins/marketplaces/
 
 # Editor backup artifacts.
 *.bak
+
+# context-mode SQLite store and its write-ahead log. Transient, machine-local,
+# and the .db-wal has exceeded 100MB, which GitHub rejects outright.
+context-mode/content/
+
+# Commercial fonts captured by design-extract. Kept locally so extracted
+# systems render, never redistributed: Berkeley Mono and Sohne are paid
+# licences. Open faces (Inter, Source Code Pro) are fine to track.
+design-systems/*/fonts/BerkeleyMono*
+design-systems/*/fonts/sohne*
