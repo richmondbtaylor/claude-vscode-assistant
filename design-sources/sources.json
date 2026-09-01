@@ -1,0 +1,41 @@
+{
+  "$schema": "./sources.schema.md",
+  "version": 1,
+  "updated": "2026-08-31",
+  "sources": [
+    {
+      "name": "impeccable",
+      "repo": "https://github.com/pbakaus/impeccable",
+      "pinned_commit": "bfafc7dbcbbe550e7eb1a42f7b431dfbfc1d659a",
+      "pinned_version": "3.6.1",
+      "cli_installed_version": "3.6.0",
+      "cli_version_note": "Checkout git HEAD is 3.6.1 but npm `latest` IS 3.6.0 (verified via `npm view impeccable version`), so 3.6.1 is unreleased and there is NO upgrade to apply. A clean `npm install -g impeccable` re-run exits 0 and still yields 3.6.0. Not drift, and nothing to action. Verified 3.6.0 runs non-degraded.",
+      "synced": "2026-08-31",
+      "license": "Apache-2.0",
+      "digest": "digests/impeccable.md",
+      "kind": "craft-rules",
+      "has_cli": true,
+      "cli": {
+        "binary": "impeccable",
+        "gate_command": "impeccable detect <target> --json",
+        "clean_exit": 0,
+        "findings_exit": 2,
+        "requires": ["htmlparser2", "css-select", "css-tree", "domutils"],
+        "degraded_without_deps": true
+      },
+      "applies_to": {
+        "web-ui": "full",
+        "deck-doc": "full",
+        "brand-graphics": "guidance-only",
+        "video-motion": "type-craft-only"
+      },
+      "prune": [
+        "tests", "demos", "extension", "docs", "plugin",
+        ".claude", ".claude-plugin", ".codex", ".cursor", ".gemini",
+        ".github", ".grok", ".hermes", ".kiro", ".opencode", ".pi",
+        ".qoder", ".rovodev", ".trae", ".trae-cn", ".vibe", ".agents"
+      ],
+      "notes": "Repo ships a prebuilt copy of itself for ~15 harnesses as hidden dot-dirs (75MB). Prune list keeps .agent (canonical build, holds detector rules), .impeccable, skill/ (source), cli/. Pruned footprint ~12MB."
+    }
+  ]
+}

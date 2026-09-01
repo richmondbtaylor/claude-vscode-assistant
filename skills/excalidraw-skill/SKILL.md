@@ -292,3 +292,34 @@ Then use the **Read tool** on the PNG to view it.
 18. No text overflow or overlapping elements
 19. Even spacing, arrows connect correctly
 20. Readable at export size, balanced composition
+<!-- design-extract:connector v1 -->
+
+---
+
+## Extracted Design System
+
+**First, scan the request for the literal phrase "full <name> system"** (e.g. "full linear
+system"). Near-miss phrasings — "use Linear's colors", "make it look like Linear", "match
+Linear's branding" — do NOT count. Only the literal phrase.
+
+- **Phrase present** -> that extracted system supersedes `branding-agent` for this one
+  deliverable. Read `~/.claude/design-systems/<slug>/DESIGN.md` and `tokens/`, and use its
+  colors and font families directly.
+- **Phrase absent** -> resolve the active system the normal way:
+  1. A system named in the request ("in the linear system", "build this like Stripe"), or a
+     `.design-system` marker file in the working folder.
+  2. If found, read `~/.claude/design-systems/<slug>/DESIGN.md` and `tokens/`.
+  3. **BORROW** from it: layout, spacing grid, type scale ratios, component patterns,
+     motion, easing, interaction states.
+     **KEEP from `branding-agent`:** Bishop AI / Prompt Anything colors, font families, logo
+     treatment.
+  4. Nothing active -> proceed exactly as normal. This block adds no default behavior.
+
+Measured beats recommended: where an active system covers a decision, it outranks
+`design-intel`. Where it is silent — accessibility, chart choice, breakpoints —
+`design-intel` is still the answer.
+
+**This skill emits motion.** Read `references/ANIMATIONS.md` and `references/INTERACTIONS.md` for real keyframes, durations, and easing curves rather than inventing timings.
+
+Full contract: `~/.claude/skills/design-extract/references/consumption.md`
+<!-- /design-extract:connector v1 -->

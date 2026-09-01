@@ -1,0 +1,40 @@
+{
+  "_comment": "Brand-wins overrides for the impeccable detector. check_design.py copies this into a temp .impeccable/config.json alongside the scanned target. Every entry is a case where a LOCKED Rich brand rule legitimately violates a generic Impeccable rule. Nothing is ignored for convenience, and each entry records what was empirically verified.",
+  "_generated_by": "~/.claude/skills/design-sources",
+  "_verified": "2026-08-31 against impeccable 3.6.0 CLI, non-degraded",
+  "detector": {
+    "ignoreRules": ["cream-palette", "kicker-above-heading"],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "open sans",
+        "reason": "VERIFIED FIRES on Open Sans, which tokens.json locks as the Bishop AI body face. Rich's brand typography is authoritative and is not up for redesign by a generic saturation heuristic.",
+        "scope": "Bishop AI body copy only. This override names ONE face on purpose - it does not waive overused-font generally, so Inter/Roboto/Geist/Plus Jakarta Sans/Space Grotesk still fail as they should."
+      },
+      {
+        "rule": "overused-font",
+        "value": "montserrat",
+        "reason": "VERIFIED FIRES 2026-08-31 on the rebuilt Bishop AI homepage. BRAND.md locks Montserrat for subheadings (H3) and all uppercase micro-labels, and the warm page language uses a kicker on every card and band, so on a component-dense page Montserrat becomes the most-used face by count and the rule reports it as 'Primary font'. The face is locked brand and the usage matches BRAND.md's own hierarchy.",
+        "scope": "Bishop AI subheads and labels only. BEFORE ADDING THIS the page was first corrected rather than waived: .row .title, .amount and .link-more were moved off Montserrat to Open Sans, because those are data and inline-link text and BRAND.md reserves Montserrat for subheads and labels. The finding survived that correction, which is what made it a genuine brand conflict rather than drift. Names ONE face; overused-font still fails for every other flagged family."
+      }
+    ]
+  },
+  "hook": {
+    "enabled": false,
+    "_reason": "Gate runs at delivery via check_design.py, not on every file edit."
+  },
+  "_ignoreRules_justification": {
+    "kicker-above-heading": "VERIFIED FIRES on the Bishop AI editorial collateral hero. Rich decided 2026-09-01 that the kicker stays and this rule is waived. WHY: the uppercase kicker above the hero headline is prescribed by bishop-ai-profile/brand/COLLATERAL-STYLE.md, which Rich approved 2026-08-19 and which kept the kicker through the 2026-09-01 warm-register rewrite. design-sources' own precedence is explicit: external design rules are advice, Rich's brand is law. Impeccable calls the eyebrow an absolute ban with no brief exception, and that judgment is noted and overruled here rather than quietly ignored. WHY RULE-LEVEL AND NOT VALUE-SCOPED: verified at source (detector/rules/checks.mjs, checkKickerAboveHeading) that the rule emits only id and snippet and no ignoreValue, so the CLI cannot scope it to one selector or one page; an ignoreValues entry would be silently inert, exactly as with cream-palette. MITIGATION: check_design.py runs a second --no-config pass and prints every suppressed finding under 'overridden by brand', so a genuinely lazy AI-SaaS eyebrow on non-brand work is still surfaced to a human rather than dropped. NOT A LICENCE: the kicker is earned only where COLLATERAL-STYLE prescribes it, one per hero, short and in TYPE / QUALIFIER form. A kicker on every card and band is still wrong, and the reviewer should say so.",
+    "cream-palette": "VERIFIED FIRES on Bishop AI warm-white #F9F6F0 (rgb 249,246,240), which tokens.json defines as 'Primary background - default for all light-mode content', and on the approved Anthropic cream/ink/orange card theme (#F5F1E8). Both are locked brand grounds. Without this waiver EVERY Bishop AI light-mode deliverable fails the gate. WHY RULE-LEVEL AND NOT VALUE-SCOPED: verified at source (detector/engines/static-html/detect-html.mjs:229) that cream-palette emits no ignoreValue, so the CLI cannot scope this rule to specific hexes - ignoreValues entries for it are silently inert. MITIGATION: check_design.py runs a second --no-config pass and prints every suppressed finding under 'overridden by brand', so a genuine beige-slop background is still surfaced to a human rather than silently dropped."
+  },
+  "_rules_deliberately_kept_on": {
+    "ai-color-palette": "VERIFIED it does NOT fire on BOB violet #5921E8 as a solid brand colour, nor on Bishop gold #E0B848. It fires on purple-to-blue gradients, which Rich also rejects. Keep enabled.",
+    "overused-font (other faces)": "VERIFIED Poppins (Bishop title) and Figtree (BOB) do NOT fire. Open Sans and Montserrat each needed a named override. CORRECTION 2026-08-31: an earlier note here claimed Montserrat does not fire. That held only for pages where Open Sans dominated by volume; on a label-dense page Montserrat becomes the primary face and the rule fires. The note was wrong as written, not stale, and is corrected rather than left in place.",
+    "em-dash-overuse": "Advisory only - never changes the exit code - but Rich bans em dashes outright, so treat any hit as a required fix rather than advice.",
+    "low-contrast": "VERIFIED it correctly caught white-on-lime #AAEB1F at 1.4:1, a real bug in a brand-coloured element. Never ignore; fix the pairing.",
+    "gray-on-color": "Matches Rich's own rule. Keep enabled.",
+    "kicker-above-heading": "SUPERSEDED 2026-09-01, see _ignoreRules_justification. Rich decided the kicker stays and the rule is waived.",
+    "nested-cards": "Rich has independently rejected cards-inside-cards. Keep enabled."
+  }
+}

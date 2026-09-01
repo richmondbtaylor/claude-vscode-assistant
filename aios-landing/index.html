@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIOS Program | Bishop AI</title>
+  <meta name="description" content="4 live classes. 1 month. Build a research agent, marketing agent, finance agent, and any custom AI agent, all inside your own AI Operating System.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green:      #1E2333;
+      --green-light:#F9F6F0;
+      --green-dark: #000814;
+      --ink:        #000814;
+      --slate:      #1E2333;
+      --muted:      #5A5F6B;
+      --border:     #E6E2DE;
+      --surface:    #F9F6F0;
+      --white:      #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      height: 68px;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      gap: 2rem;
+    }
+    .nav-logo { height: 60px; width: 60px; display: block; flex-shrink: 0; border-radius: 50%; object-fit: cover; }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      margin: 0 auto;
+    }
+    .nav-links a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--slate);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-cta {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      background: var(--green);
+      color: var(--white);
+      padding: 10px 22px;
+      border-radius: 8px;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .nav-cta:hover { background: var(--green-dark); }
+
+    /* ── HERO ── */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 2rem 88px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 .accent { color: var(--green); }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--slate);
+      line-height: 1.75;
+      margin-bottom: 2rem;
+      max-width: 480px;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2.25rem;
+      flex-wrap: wrap;
+    }
+    .hero-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--slate);
+    }
+    .hero-stat .stat-icon {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      background: var(--white);
+      flex-shrink: 0;
+    }
+    .hero-stat strong { display: block; font-weight: 600; color: var(--ink); font-size: 0.8rem; }
+    .hero-stat span { font-size: 0.75rem; color: var(--muted); }
+    .hero-ctas {
+      display: flex;
+      gap: 0.875rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-green {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      background: var(--ink);
+      color: var(--white);
+      padding: 14px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.15s;
+    }
+    .btn-green:hover { background: #1E2333; }
+    .hero-secondary {
+      font-size: 0.875rem;
+      color: var(--slate);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+    .hero-secondary .check { color: var(--green); font-size: 1rem; }
+
+    /* ── HERO VISUAL ── */
+    .hero-visual {
+      position: relative;
+    }
+    .program-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.09), 0 4px 16px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .card-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+    .card-header img { height: 20px; width: auto; }
+    .card-header-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .card-body { padding: 0; }
+    .agent-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .agent-item:last-child { border-bottom: none; }
+    .agent-item:hover { background: var(--surface); }
+    .agent-num {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--green);
+      color: var(--white);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.825rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .agent-item:nth-child(4) .agent-num { background: var(--ink); }
+    .agent-info { flex: 1; }
+    .agent-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+    .agent-meta { font-size: 0.775rem; color: var(--muted); }
+    .agent-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--green-light);
+      color: var(--green-dark);
+    }
+    .agent-item:nth-child(4) .agent-tag { background: #FAFBFA; color: var(--slate); }
+    .card-footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-footer-text { font-size: 0.78rem; color: var(--slate); }
+    .card-footer-badge {
+      background: var(--green);
+      color: var(--white);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .floating-badge {
+      position: absolute;
+      bottom: -16px;
+      right: 20px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      font-size: 0.8rem;
+      max-width: 200px;
+    }
+    .floating-badge strong { display: block; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+    .floating-badge span { color: var(--muted); font-size: 0.75rem; }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--border); }
+
+    /* ── SECTION LAYOUT ── */
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 2rem;
+    }
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .section-h2 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.85rem, 3vw, 2.75rem);
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+    .section-h2 .accent { color: var(--green); }
+    .section-sub {
+      color: var(--slate);
+      font-size: 1rem;
+      line-height: 1.75;
+      max-width: 540px;
+    }
+
+    /* ── WHY SECTION ── */
+    .why-bg { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .why-item {}
+    .why-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .why-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--ink);
+      margin-bottom: 0.375rem;
+    }
+    .why-desc { font-size: 0.85rem; color: var(--slate); line-height: 1.65; }
+
+    /* ── CURRICULUM ── */
+    .curriculum-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      margin-top: 3rem;
+    }
+    .accordion-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 0.875rem;
+      background: var(--white);
+    }
+    .accordion-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .accordion-btn:hover { background: var(--surface); }
+    .acc-num {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      background: var(--green);
+      color: var(--white);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .accordion-item:nth-child(4) .acc-num { background: var(--ink); }
+    .acc-label {
+      flex: 1;
+    }
+    .acc-week {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .acc-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--ink);
+    }
+    .acc-arrow {
+      font-size: 0.75rem;
+      color: var(--muted);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .accordion-item.open .acc-arrow { transform: rotate(180deg); }
+    .accordion-body {
+      display: none;
+      padding: 0 22px 20px 22px;
+      padding-left: calc(22px + 28px + 1rem);
+      font-size: 0.875rem;
+      color: var(--slate);
+      line-height: 1.7;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+    .accordion-item.open .accordion-body { display: block; }
+
+    /* curriculum right panel */
+    .curriculum-preview {
+      position: sticky;
+      top: 84px;
+    }
+    .preview-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+    .preview-header {
+      background: var(--ink);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .preview-header img { height: 20px; width: auto; }
+    .preview-header-text { color: rgba(255,255,255,0.75); font-size: 0.8rem; font-weight: 500; }
+    .preview-progress-wrap { padding: 20px 22px; border-bottom: 1px solid var(--border); }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.78rem; color: var(--slate); margin-bottom: 8px;
+    }
+    .progress-bar {
+      height: 6px; background: var(--border); border-radius: 999px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 100%; transform: scaleX(0); transform-origin: left center; background: var(--green); border-radius: 999px;
+      transition: transform 1.5s ease;
+    }
+    .preview-modules { padding: 16px 0; }
+    .preview-module-header {
+      padding: 6px 22px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .preview-lesson {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 10px 22px;
+      font-size: 0.83rem;
+      color: var(--slate);
+      cursor: pointer;
+    }
+    .preview-lesson:hover { background: var(--surface); }
+    .preview-lesson.active { color: var(--green); font-weight: 600; background: var(--green-light); }
+    .lesson-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--border); flex-shrink: 0;
+    }
+    .preview-lesson.active .lesson-dot { background: var(--green); }
+
+    /* ── INSTRUCTOR ── */
+    .instructor-layout {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .instructor-photo-wrap {
+      position: relative;
+    }
+    .instructor-photo {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .photo-placeholder {
+      width: 100%;
+      aspect-ratio: 3/4;
+      border-radius: 20px;
+      background: linear-gradient(160deg, #1E2333 0%, #000814 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.25);
+      font-size: 0.85rem;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+    .photo-badge {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .photo-badge-icon { font-size: 1.1rem; }
+    .photo-badge-text strong {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .photo-badge-text span { font-size: 0.72rem; color: var(--muted); }
+    .instructor-checklist {
+      list-style: none;
+      margin: 1.5rem 0 2rem;
+    }
+    .instructor-checklist li {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+      color: var(--slate);
+      margin-bottom: 0.6rem;
+    }
+    .instructor-checklist li::before {
+      content: '✓';
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--green-light);
+      color: var(--green);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .btn-outline-ink {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--ink);
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .btn-outline-ink:hover { border-color: var(--ink); background: var(--surface); }
+
+    /* ── FORM SECTION ── */
+    .form-bg {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .form-layout {
+      display: grid;
+      grid-template-columns: 1fr 480px;
+      gap: 5rem;
+      align-items: start;
+    }
+    .form-left .section-h2 { margin-bottom: 1rem; }
+    .form-perks { list-style: none; margin-top: 2rem; }
+    .form-perks li {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+      color: var(--slate);
+      margin-bottom: 0.75rem;
+    }
+    .form-perks li::before {
+      content: '✓';
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--green-light);
+      color: var(--green);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    }
+    .form-card-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--ink);
+      margin-bottom: 0.375rem;
+    }
+    .form-card-sub {
+      font-size: 0.875rem;
+      color: var(--slate);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .infinity-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      background: #FDF8EC;
+      border: 1.5px solid #E0B848;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 1.5rem;
+      font-size: 0.825rem;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .infinity-notice a { color: var(--green); font-weight: 600; text-decoration: none; }
+    .infinity-notice a:hover { text-decoration: underline; }
+    .form-group { margin-bottom: 1.1rem; }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.825rem;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--ink);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+    input:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(90,157,197,0.18);
+    }
+    textarea { resize: vertical; min-height: 100px; }
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: var(--green);
+      color: var(--white);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 0.4rem;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+    .btn-submit:hover { background: var(--green-dark); }
+    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+    .error-msg {
+      display: none;
+      background: #FEE2E2;
+      border: 1px solid #FCA5A5;
+      color: #991B1B;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 0.825rem;
+      margin-top: 0.75rem;
+      line-height: 1.5;
+    }
+    .success-card {
+      display: none;
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+    }
+    .success-icon {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: var(--green);
+      color: var(--white);
+      font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.1rem;
+    }
+    .success-card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .success-card p { font-size: 0.875rem; color: var(--slate); line-height: 1.7; }
+
+    /* ── BOTTOM CTA BANNER ── */
+    .cta-banner {
+      background: var(--ink);
+      padding: 60px 2rem;
+    }
+    .cta-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+    .cta-left {}
+    .cta-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      color: var(--white);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .cta-title .accent { color: var(--green); }
+    .cta-sub { color: rgba(255,255,255,0.55); font-size: 0.95rem; }
+    .cta-right {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      align-items: flex-end;
+    }
+    .cta-perks { list-style: none; margin-bottom: 0.75rem; }
+    .cta-perks li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 0.375rem;
+    }
+    .cta-perks li::before {
+      content: '✓';
+      color: var(--green);
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .btn-cta-green {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      background: var(--green);
+      color: var(--white);
+      padding: 14px 30px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.15s;
+    }
+    .btn-cta-green:hover { background: var(--green-dark); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #000814;
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-logo { height: 24px; width: auto; opacity: 0.8; }
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 0.825rem;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: rgba(255,255,255,0.75); }
+    .footer-copy { font-size: 0.8rem; color: rgba(255,255,255,0.3); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .hero { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-visual { order: -1; }
+      .floating-badge { display: none; }
+      .why-grid { grid-template-columns: repeat(2, 1fr); }
+      .curriculum-layout { grid-template-columns: 1fr; }
+      .curriculum-preview { display: none; }
+      .instructor-layout { grid-template-columns: 1fr; }
+      .instructor-photo-wrap { max-width: 320px; }
+      .form-layout { grid-template-columns: 1fr; }
+      .cta-inner { flex-direction: column; align-items: flex-start; }
+      .cta-right { align-items: flex-start; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .why-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#"><img src="assets/logos/bishop-ai-logo-dark.png" alt="Bishop AI" class="nav-logo"></a>
+  <ul class="nav-links">
+    <li><a href="#why">Program</a></li>
+    <li><a href="#curriculum">Curriculum</a></li>
+    <li><a href="#instructor">Instructor</a></li>
+    <li><a href="#register">FAQ</a></li>
+  </ul>
+  <a href="#register" class="nav-cta">Reserve My Spot &rarr;</a>
+</nav>
+
+<!-- HERO -->
+<div style="max-width:1200px;margin:0 auto;">
+  <div class="hero">
+    <div class="hero-left">
+      <h1>Build Your <span class="accent">AI Operating System.</span> From Scratch.</h1>
+      <p class="hero-sub">A step-by-step live program to build real AI agents that run your business. Research, marketing, finance, and anything else you can imagine.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="stat-icon">📅</div>
+          <div><strong>4 Classes</strong><span>Live sessions</span></div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-icon">⏱️</div>
+          <div><strong>1 Hour Each</strong><span>Per class</span></div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-icon">📆</div>
+          <div><strong>1 Month</strong><span>To completion</span></div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-icon">♾️</div>
+          <div><strong>Infinity Tier</strong><span>Required</span></div>
+        </div>
+      </div>
+      <div class="hero-ctas">
+        <a href="#register" class="btn-green">Reserve My Spot &rarr;</a>
+        <a href="https://promptanything.io" target="_blank" rel="noopener" class="hero-secondary">
+          <span class="check">✓</span> Infinity tier required &mdash; get it at promptanything.io
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="program-card">
+        <div class="card-header">
+          <img src="assets/logos/bishop-ai-logo-dark.png" alt="Bishop AI">
+          <span class="card-header-title">AIOS Program &mdash; 4 Live Classes</span>
+        </div>
+        <div class="card-body">
+          <div class="agent-item">
+            <div class="agent-num">1</div>
+            <div class="agent-info">
+              <div class="agent-name">Research Agent</div>
+              <div class="agent-meta">Class 1 &middot; 1 hour live</div>
+            </div>
+            <span class="agent-tag">AI Agent</span>
+          </div>
+          <div class="agent-item">
+            <div class="agent-num">2</div>
+            <div class="agent-info">
+              <div class="agent-name">Marketing Agent</div>
+              <div class="agent-meta">Class 2 &middot; 1 hour live</div>
+            </div>
+            <span class="agent-tag">AI Agent</span>
+          </div>
+          <div class="agent-item">
+            <div class="agent-num">3</div>
+            <div class="agent-info">
+              <div class="agent-name">Finance Agent</div>
+              <div class="agent-meta">Class 3 &middot; 1 hour live</div>
+            </div>
+            <span class="agent-tag">AI Agent</span>
+          </div>
+          <div class="agent-item">
+            <div class="agent-num">4</div>
+            <div class="agent-info">
+              <div class="agent-name">Build Any Agent You Want</div>
+              <div class="agent-meta">Class 4 &middot; 1 hour live</div>
+            </div>
+            <span class="agent-tag">Custom</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="card-footer-text">Powered by Prompt Anything + Antigravity</span>
+          <span class="card-footer-badge">Waitlist Open</span>
+        </div>
+      </div>
+      <div class="floating-badge">
+        <strong>Build Your AI OS</strong>
+        <span>Real agents. Real results. We show you how.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- WHY THIS PROGRAM -->
+<div class="why-bg" id="why">
+  <div class="section" style="text-align:center;">
+    <span class="section-label">Why This Program?</span>
+    <h2 class="section-h2">Go Beyond Prompts.<br><span class="accent">Build Real AI Systems.</span></h2>
+    <div class="why-grid" style="text-align:left;margin-top:3rem;">
+      <div class="why-item">
+        <div class="why-icon">🤖</div>
+        <div class="why-title">Build Real Agents</div>
+        <div class="why-desc">Not theory. You build agents that actually work inside your business, live during the class.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">🎯</div>
+        <div class="why-title">One System, All Capability</div>
+        <div class="why-desc">Research, marketing, finance, and custom agents in one unified AI operating system.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">📖</div>
+        <div class="why-title">Learn by Doing</div>
+        <div class="why-desc">Every class is hands-on. You leave with something running, not just notes to review later.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">⚡</div>
+        <div class="why-title">Powered by Prompt Anything</div>
+        <div class="why-desc">Use Prompt Anything as your prompt OS and Antigravity as your build environment.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CURRICULUM -->
+<div id="curriculum">
+  <div class="section">
+    <span class="section-label">Curriculum</span>
+    <h2 class="section-h2">What You'll <span class="accent">Learn</span></h2>
+    <div class="curriculum-layout">
+      <div class="accordion-list">
+
+        <div class="accordion-item open">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="acc-num">1</div>
+            <div class="acc-label">
+              <div class="acc-week">Class 1</div>
+              <div class="acc-title">Research Agent</div>
+            </div>
+            <span class="acc-arrow">&#9660;</span>
+          </button>
+          <div class="accordion-body">
+            Build an AI agent that researches any topic, gathers intelligence, and delivers structured reports on demand. You will walk away with a fully working research agent tailored to your industry.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="acc-num">2</div>
+            <div class="acc-label">
+              <div class="acc-week">Class 2</div>
+              <div class="acc-title">Marketing Agent</div>
+            </div>
+            <span class="acc-arrow">&#9660;</span>
+          </button>
+          <div class="accordion-body">
+            Build an AI that writes content, plans campaigns, and executes your marketing strategy. Your brand keeps moving even when you don't.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="acc-num">3</div>
+            <div class="acc-label">
+              <div class="acc-week">Class 3</div>
+              <div class="acc-title">Finance Agent</div>
+            </div>
+            <span class="acc-arrow">&#9660;</span>
+          </button>
+          <div class="accordion-body">
+            Build an AI agent that tracks, categorizes, and reports on your numbers in real time. You'll always know where your business stands.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="acc-num">4</div>
+            <div class="acc-label">
+              <div class="acc-week">Class 4</div>
+              <div class="acc-title">Build Any Agent You Want</div>
+            </div>
+            <span class="acc-arrow">&#9660;</span>
+          </button>
+          <div class="accordion-body">
+            Apply everything you've learned and build a fully custom AI agent designed specifically for your business. Your use case. Your rules.
+          </div>
+        </div>
+
+      </div>
+
+      <div class="curriculum-preview">
+        <div class="preview-card">
+          <div class="preview-header">
+            <img src="assets/logos/bishop-ai-logo-light.png" alt="Bishop AI">
+            <span class="preview-header-text">Program Overview</span>
+          </div>
+          <div class="preview-progress-wrap">
+            <div class="progress-label">
+              <span>Your Progress</span>
+              <span id="prog-pct">0%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+          </div>
+          <div class="preview-modules">
+            <div class="preview-module-header">Module 1</div>
+            <div class="preview-lesson active">
+              <div class="lesson-dot"></div>
+              1.1 Research Agent Overview
+            </div>
+            <div class="preview-lesson">
+              <div class="lesson-dot"></div>
+              1.2 Building the Agent
+            </div>
+            <div class="preview-lesson">
+              <div class="lesson-dot"></div>
+              1.3 Live Output Demo
+            </div>
+            <div class="preview-module-header" style="margin-top:8px;">Module 2</div>
+            <div class="preview-lesson">
+              <div class="lesson-dot"></div>
+              2.1 Marketing Agent Basics
+            </div>
+            <div class="preview-lesson">
+              <div class="lesson-dot"></div>
+              2.2 Content Workflows
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INSTRUCTOR -->
+<div style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);" id="instructor">
+  <div class="section">
+    <div class="instructor-layout">
+      <div class="instructor-photo-wrap">
+        <!-- Replace with: <img src="path/to/rich-taylor.jpg" alt="Richmond Taylor" class="instructor-photo"> -->
+        <div class="photo-placeholder">
+          <span style="position:relative;z-index:1;">Instructor photo</span>
+          <div class="photo-badge">
+            <span class="photo-badge-icon">♟️</span>
+            <div class="photo-badge-text">
+              <strong>AI Builder &amp; Educator</strong>
+              <span>Bishop AI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="instructor-right">
+        <span class="section-label">Your Instructor</span>
+        <h2 class="section-h2">Built. Shipped. Teaching.<br>Now It's <span class="accent">Your Turn.</span></h2>
+        <p style="color:var(--slate);font-size:0.975rem;line-height:1.75;margin-top:0.75rem;">
+          I'm Richmond Taylor, founder of Bishop AI. I've built and scaled AI products now used by thousands of people. Through Prompt Anything, I've helped hundreds of teams go from zero to production-ready AI systems. Now I'm bringing that same framework to you, live, over four classes.
+        </p>
+        <ul class="instructor-checklist">
+          <li>AI builder with real-world shipping experience</li>
+          <li>Founder of Bishop AI and Prompt Anything</li>
+          <li>Focused on practical, actionable learning</li>
+          <li>Helping you build, ship, and scale your AI OS</li>
+        </ul>
+        <a href="https://bishopai.io" target="_blank" rel="noopener" class="btn-outline-ink">Learn More About Bishop AI &#8599;</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTRATION FORM -->
+<div class="form-bg" id="register">
+  <div class="section">
+    <div class="form-layout">
+      <div class="form-left">
+        <span class="section-label">Reserve Your Spot</span>
+        <h2 class="section-h2">Ready to Build Your <span class="accent">AI OS?</span></h2>
+        <p style="color:var(--slate);font-size:0.975rem;line-height:1.75;margin-top:0.75rem;">
+          Join the waitlist for the AIOS Program. Four live classes. One month. You leave with a fully running AI Operating System.
+        </p>
+        <ul class="form-perks">
+          <li>4 live classes, 1 hour each</li>
+          <li>Research, Marketing, Finance + Custom Agent</li>
+          <li>Powered by Prompt Anything and Antigravity</li>
+          <li>Infinity tier members only</li>
+          <li>Date and schedule sent on confirmation</li>
+        </ul>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">Get on the List</div>
+        <div class="form-card-sub">Fill out the form below and we'll confirm your spot when the program dates drop.</div>
+
+        <div class="infinity-notice">
+          <span>&#9889;</span>
+          <span><strong>Infinity tier required.</strong> Not on Infinity yet? <a href="https://promptanything.io" target="_blank" rel="noopener">Upgrade at promptanything.io &rarr;</a></span>
+        </div>
+
+        <form id="aios-form" name="aios-registration" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+          <input type="hidden" name="form-name" value="aios-registration">
+          <input type="hidden" name="bot-field" style="display:none">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" placeholder="Your first name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="you@company.com" required>
+          </div>
+          <div class="form-group">
+            <label for="company">Company / Business Name</label>
+            <input type="text" id="company" name="company" placeholder="Your company or brand" required>
+          </div>
+          <div class="form-group">
+            <label for="linkedin">LinkedIn URL</label>
+            <input type="text" id="linkedin" name="linkedin" placeholder="linkedin.com/in/yourprofile" required>
+          </div>
+          <div class="form-group">
+            <label for="buildGoal">What do you want to build with AI?</label>
+            <textarea id="buildGoal" name="buildGoal" placeholder="Describe what you're trying to build, automate, or launch..." required></textarea>
+          </div>
+          <button type="submit" class="btn-submit" id="submit-btn">Reserve My Spot &rarr;</button>
+          <div class="error-msg" id="error-msg">
+            Something went wrong. Please try again or email <a href="mailto:richmond@bishopai.io">richmond@bishopai.io</a>
+          </div>
+        </form>
+
+        <div class="success-card" id="success-card">
+          <div class="success-icon">&#10003;</div>
+          <h3>You're on the list.</h3>
+          <p>We'll send your class schedule as soon as the program dates drop. Make sure you're on the Infinity tier at promptanything.io. That's your ticket in.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM CTA BANNER -->
+<div class="cta-banner">
+  <div class="cta-inner">
+    <div class="cta-left">
+      <div class="cta-title">Ready to Build the Future with AI?<br><span class="accent">Your OS starts here.</span></div>
+      <div class="cta-sub">Join the waitlist and be first in the room when we build it live.</div>
+    </div>
+    <div class="cta-right">
+      <ul class="cta-perks">
+        <li>4 live classes over 1 month</li>
+        <li>Real agents you can use immediately</li>
+        <li>Infinity tier members only</li>
+      </ul>
+      <a href="#register" class="btn-cta-green">Reserve My Spot &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <img src="assets/logos/bishop-ai-logo-light.png" alt="Bishop AI" class="footer-logo">
+  <ul class="footer-links">
+    <li><a href="#">Terms</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="mailto:richmond@bishopai.io">Contact</a></li>
+  </ul>
+  <span class="footer-copy">&copy; 2026 Bishop AI. All rights reserved.</span>
+</footer>
+
+<script>
+  function toggleAcc(btn) {
+    var item = btn.closest('.accordion-item');
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.accordion-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!isOpen) item.classList.add('open');
+  }
+
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      var fill = document.getElementById('prog-fill');
+      var pct  = document.getElementById('prog-pct');
+      if (fill) { fill.style.transform = 'scaleX(0.25)'; pct.textContent = '25%'; }
+    }, 400);
+  });
+
+  document.getElementById('aios-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn   = document.getElementById('submit-btn');
+    var errEl = document.getElementById('error-msg');
+
+    var firstName = document.getElementById('firstName').value.trim();
+    var email     = document.getElementById('email').value.trim();
+    var company   = document.getElementById('company').value.trim();
+    var linkedin  = document.getElementById('linkedin').value.trim();
+    var buildGoal = document.getElementById('buildGoal').value.trim();
+
+    if (!firstName || !email || !company || !linkedin || !buildGoal) {
+      errEl.textContent = 'Please fill out all fields before submitting.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    errEl.style.display = 'none';
+
+    var body = new URLSearchParams({
+      'form-name': 'aios-registration',
+      firstName: firstName,
+      email: email,
+      company: company,
+      linkedin: linkedin,
+      buildGoal: buildGoal
+    }).toString();
+
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body
+    })
+    .then(function () {
+      document.getElementById('aios-form').style.display = 'none';
+      document.getElementById('success-card').style.display = 'block';
+    })
+    .catch(function () {
+      errEl.textContent = 'Something went wrong. Please try again or email richmond@bishopai.io';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Reserve My Spot →';
+    });
+  });
+</script>
+
+</body>
+</html>
