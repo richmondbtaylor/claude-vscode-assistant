@@ -206,3 +206,34 @@ Use the same structure as Infographics output format.
 ```
 
 Keep every suggestion concrete. "Use a horizontal progress bar in `#0A4C84` showing 80% budget consumed" is good. "Add more visuals" is not.
+<!-- design-extract:connector v1 nl -->
+
+---
+
+## Extracted Design System
+
+**First, scan the request for the literal phrase "full <name> system"** (e.g. "full linear
+system"). Near-miss phrasings — "use Linear's colors", "make it look like Linear", "match
+Linear's branding" — do NOT count. Only the literal phrase.
+
+- **Phrase present** -> that extracted system supersedes `branding-agent` for this one
+  deliverable. Read `~/.claude/design-systems/<slug>/DESIGN.md` and `tokens/`, and use its
+  colors and font families directly.
+- **Phrase absent** -> resolve the active system the normal way:
+  1. A system named in the request ("in the linear system", "build this like Stripe"), or a
+     `.design-system` marker file in the working folder.
+  2. If found, read `~/.claude/design-systems/<slug>/DESIGN.md` and `tokens/`.
+  3. **BORROW** from it: layout, spacing grid, type scale ratios, component patterns,
+     motion, easing, interaction states.
+     **KEEP from `branding-agent`:** Bishop AI / Prompt Anything colors, font families, logo
+     treatment.
+  4. Nothing active -> proceed exactly as normal. This block adds no default behavior.
+
+Measured beats recommended: where an active system covers a decision, it outranks
+`design-intel`. Where it is silent — accessibility, chart choice, breakpoints —
+`design-intel` is still the answer.
+
+**This skill emits images or decks.** Read `screens/` and `references/VISUAL_GUIDE.md` to describe the visual language in prompts, and `tokens/` for palette bounds.
+
+Full contract: `~/.claude/skills/design-extract/references/consumption.md`
+<!-- /design-extract:connector v1 -->
