@@ -1,6 +1,7 @@
 ---
 name: prestige
-description: Builds high-impact presentations for webinars, keynotes, online courses/cohorts, corporate training, YouTube/content education, and university/academic formats using the PRESTIGE Framework v2. Use this skill whenever the user asks to create, build, write, or plan a presentation, webinar, keynote, slide deck, online course, corporate training session, or educational content. Trigger on: "make me a presentation", "build a webinar", "write a keynote", "create a slide deck", "design a course", "I need a presentation on", "create a training session", "help me present", "build a deck", "make slides". Also trigger if the user provides a topic and a presentation format without explicit instruction.
+description: |-
+  Builds high-impact presentations for webinars, keynotes, online courses/cohorts, corporate training, YouTube/content education, and university/academic formats using the PRESTIGE Framework v2. Use this skill whenever the user asks to create, build, write, or plan a presentation, webinar, keynote, slide deck, online course, corporate training session, or educational content. Trigger on: "make me a presentation", "build a webinar", "write a keynote", "create a slide deck", "design a course", "I need a presentation on", "create a training session", "help me present", "build a deck", "make slides". Also trigger if the user provides a topic and a presentation format without explicit instruction.
 ---
 
 # PRESTIGE FRAMEWORK v2
@@ -107,3 +108,44 @@ Identify which prompt produced the content being revised. Revise only that promp
 3. The CTA is always booking a paid strategy call unless the user explicitly changes the objective.
 4. Banned words and phrases apply to every prompt, every output, every format.
 5. If user feedback contradicts these rules, apply it for the session and flag the contradiction.
+
+
+<!-- design-bridge:start -->
+
+## Design bridges: consult before building
+
+Three bridge skills sit under this one. None of them produces deliverables; this
+skill still owns the output.
+
+1. **`design-extract`** — MEASURED tokens from one named site, repo, or project.
+   When a design system is active it wins on layout, spacing, type scale,
+   components, motion and interaction states.
+2. **`design-intel`** — RECOMMENDED generic values (layout, spacing, UX,
+   accessibility, chart selection, font pairing) where brand and the active
+   system are silent.
+3. **`design-sources`** — external craft rules plus the deterministic gate. Read
+   `C:/Users/richm/.claude/skills/design-sources/references/deck-doc.md` for this medium.
+
+**Precedence:** explicit instruction in the request > `branding-agent` (colours,
+fonts, logo) > active extracted system > style preset (`brutalist-skill`,
+`minimalist-skill`) > `design-intel` > skill defaults. Measured beats
+recommended where both cover a decision. Borrow ratios and structure from an
+extracted system; keep brand colours and typefaces from `branding-agent`.
+
+`design-sources` is a **gate, not a precedence layer**: it runs before shipping
+no matter which layer supplied the values.
+
+3. **Gate before export (blocking).** Run it on the HTML *before* the PDF or screenshot step:
+   ```bash
+   python C:/Users/richm/.claude/skills/design-sources/scripts/check_design.py <file>
+   ```
+   A defect baked into a PDF is far more expensive to find than one caught in the HTML.
+
+**Brand outranks both.** Bishop AI / Prompt Anything / BOB colours and typefaces
+come from `branding-agent` and `tokens.json`, never from an external source.
+Verified: Bishop AI's own palette trips two Impeccable rules (`cream-palette` on
+warm-white `#F9F6F0`, `overused-font` on Open Sans); both are waived in
+`C:/Users/richm/.claude/design-sources/brand-overrides/config.json` and reported as overridden
+rather than failed. Do not "fix" brand to satisfy a detector.
+
+<!-- design-bridge:end -->

@@ -1,228 +1,243 @@
----
+﻿---
 name: branding-agent
-description: Provides Bishop AI's official brand guidelines for any visual content creation or post-processing. Use this skill whenever the user asks about brand colors, brand fonts, brand styling, or whenever they want to create or apply a consistent visual style to any deliverable — infographics, presentations, slides, social media posts, graphics, PDFs, reports, or anything visual. Also trigger when the user says things like "make it on-brand", "apply our brand", "promptAnything styling", "use our colors", "match our brand", or "brand this". Always use this skill as the authoritative brand reference before creating or modifying any visual content — don't guess at colors or fonts without consulting it.
+description: Provides Bishop AI's and Prompt Anything's official brand guidelines for any visual content creation or post-processing. Use this skill whenever the user asks about brand colors, brand fonts, brand styling, or whenever they want to create or apply a consistent visual style to any deliverable — infographics, presentations, slides, social media posts, graphics, PDFs, reports, or anything visual. Also trigger when the user says things like "make it on-brand", "apply our brand", "promptAnything styling", "use our colors", "match our brand", or "brand this". Always use this skill as the authoritative brand reference before creating or modifying any visual content — don't guess at colors or fonts without consulting it.
 ---
 
 # Bishop AI Brand Guidelines
 
-These are the authoritative brand standards for all Bishop AI visual content. Consult this whenever you're creating, styling, or post-processing anything visual — infographics, presentations, social posts, PDFs, graphics, reports.
-
-Source: Extracted from the 2026 Bishop AI Pitch Deck.
+Source of truth: `bishop-ai-profile/brand/BRAND.md` (human-readable) | `bishop-ai-profile/brand/tokens.json` (machine-readable) | `bishop-ai-profile/brand/brand.css` (CSS properties for HTML content)
 
 ---
 
-## Color Palette
+## Colors
 
-### Main Colors
+| Token | Hex | Role |
+|---|---|---|
+| `deep-black` | `#000814` | Primary dark — text on light bg, dark hero sections |
+| `dark-charcoal` | `#1E2333` | Secondary dark — cards, nav bars, overlays on dark |
+| `gold` | `#E0B848` | Primary accent — highlighted words, CTAs, brush-stroke marks |
+| `blue` | `#1894C9` | Secondary accent — links, tags, supporting callouts |
+| `light-gray` | `#E6E2DE` | Subtle dividers, secondary light surface |
+| `warm-white` | `#F9F6F0` | **Primary background** — default for all light content |
+| `near-white` | `#FAFBFA` | Alternate light surface |
+| `near-black` | `#101319` | Prompt Anything dark surface / logo-tile background |
+| `red` | `#E32E52` | Prompt Anything accent — alerts, emphasis, error states (use sparingly) |
 
-| Name | Hex | RGB | Use |
-|------|-----|-----|-----|
-| White | `#FAFBFA` | rgb(250, 251, 250) | Primary background, light slide backgrounds |
-| Off-White | `#E6E2DE` | rgb(230, 226, 222) | Secondary backgrounds, card surfaces |
-| Dark Navy | `#1D2333` | rgb(29, 35, 51) | Body text, muted elements, captions |
-| Deep Navy | `#000813` | rgb(0, 8, 19) | Primary text on light backgrounds, headlines |
+**Background rule:** Light-first. `#F9F6F0` is the default. Dark (`#000814` / `#1E2333`) is intentional — hero sections, inverted callouts — not a default.
 
-### Accent Colors
+**Prompt Anything** shares this palette and typography. Its kit adds `#101319` (near-black tile) and `#E32E52` (red accent); everything else is identical. The one real difference is the logo — see the Prompt Anything logo section below.
 
-| Name | Hex | RGB | Use |
-|------|-----|-----|-----|
-| Gold | `#E0B848` | rgb(224, 184, 72) | Primary accent — headlines, CTAs, highlights |
-| Blue | `#1894C9` | rgb(24, 148, 201) | Secondary accent — results, positive outcomes, icons |
-| Red/Coral | `#E05252` | rgb(224, 82, 82) | Contrast/problem accent — "The Problem", negative comparisons, before states |
-
-### Smart Color Selection Rules
-
-- **Light background** (White, Off-White) → use Deep Navy (`#000813`) for headings, Dark Navy (`#1D2333`) for body
-- **Accent on light** → Gold (`#E0B848`) for primary highlights; Blue for outcomes/results; Red/Coral for problems/contrast
-- **"Before vs. After" framing** → Red/Coral marks the "before" (problem), Gold marks the "after" (solution)
-- **Non-text shapes, icons** → Gold first, then Blue or Red/Coral based on context
-- **Never use Red/Coral for CTAs or positive elements** — it signals friction or problem, not action
+**Legacy values to correct on sight:** `#0D1B2A`, `#D4AF37`, `#D4A853`, `#F5F0E8` — these are wrong and must be replaced.
 
 ---
 
 ## Typography
 
-### Font Stack
+| Role | Font | Weight |
+|---|---|---|
+| Title / H1 | Poppins | 900 (Black) |
+| Heading / H2 | Poppins | 700 (Bold) |
+| Subheading / H3 | Montserrat | 600 (SemiBold) |
+| Label / caption | Montserrat | 400, uppercase, letter-spacing 1.5px |
+| Body | Open Sans | 400 (Regular) |
+| Body strong | Open Sans | 600 (SemiBold) |
+| Quote | Open Sans | 400 (Regular) |
 
-| Role | Font | Weight | Use |
-|------|------|--------|-----|
-| H1 / Primary Titles (24pt+) | Poppins | ExtraBold | Large headline statements, cover slide headlines |
-| H2 / Subtitles / Subheadings | Montserrat | Bold or SemiBold | Section titles, slide headings, subtitles |
-| Labels / Eyebrows / Callouts | Montserrat | SemiBold or Regular | "THE PROBLEM", stat labels, step numbers |
-| Body / Captions / Smaller Text | Open Sans | Regular or Light | Paragraph text, bullet lists, supporting copy |
-
-### Application Rules
-
-- Poppins is the primary title typeface — use for H1 / hero headings only (ExtraBold)
-- Montserrat is the subtitle typeface — use for H2 / subheadings, labels, and callouts
-- Open Sans for all smaller body text, captions, and running copy
-- Never use more than these three typeface families in a single piece
-- Step numbers and large stat callouts → Poppins ExtraBold at large sizes with Gold color
-
----
-
-## How to Apply This to Visual Deliverables
-
-### In Prompts for AI Image Generation
-
+**Google Fonts:**
 ```
-BRAND STYLE — Bishop AI:
-Background: White (#FAFBFA) or Off-White (#E6E2DE)
-Primary text: Deep Navy (#000813) or Dark Navy (#1D2333)
-Accent colors: Gold (#E0B848) as primary, Blue (#1894C9) for positive/result elements, Red/Coral (#E05252) for problem/contrast elements only
-Typography: Poppins ExtraBold for primary titles, Montserrat Bold for subtitles/subheadings, Open Sans for body
-Overall feel: Light, premium, direct, no-nonsense — confident problem-solver energy
+https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&family=Montserrat:wght@400;600&family=Open+Sans:wght@400;600&display=swap
 ```
 
-### In python-pptx / Code-Based Rendering
-
-```python
-from pptx.util import Pt
-from pptx.dml.color import RGBColor
-
-DEEP_NAVY   = RGBColor(0, 8, 19)
-DARK_NAVY   = RGBColor(29, 35, 51)
-OFF_WHITE   = RGBColor(230, 226, 222)
-WHITE       = RGBColor(250, 251, 250)
-GOLD        = RGBColor(224, 184, 72)
-BLUE        = RGBColor(24, 148, 201)
-RED_CORAL   = RGBColor(224, 82, 82)
-
-# Font assignment:
-# Primary titles (>=24pt)  → "Poppins" weight ExtraBold (fallback: "Arial Black")
-# Subtitles / Subheadings  → "Montserrat" weight Bold or SemiBold (fallback: "Arial Bold")
-# Body / Captions          → "Open Sans" (fallback: "Georgia")
-```
-
-### For Any Visual Deliverable (General Guidance)
-
-1. Background first — default to White (`#FAFBFA`) or Off-White (`#E6E2DE`) for light/premium
-2. Primary titles in Deep Navy (`#000813`), Poppins ExtraBold; subtitles in Montserrat Bold
-3. Primary accent is Gold — use on the most important stat, CTA, or highlight
-4. Use Red/Coral only for contrast/problem framing — never on CTAs or positive claims
-5. Use Blue for outcome/result/positive secondary elements
-6. Keep layout clean and high-contrast — this brand leads with directness, not decoration
+**Never use Inter as body font** — legacy error. Body is Open Sans.
 
 ---
 
-## Brand Voice in Visuals
+## Logo
 
-- **Direct and declarative** — headlines are statements, not questions
-- **Problem-first framing** — establish the problem clearly before the solution
-- **Data-backed** — lead with numbers when possible (11×, 73M+, $390B)
-- **Confident, not boastful** — the copy earns authority through specificity, not adjectives
-- Light-first aesthetic — premium, clean, built for high-contrast digital contexts
+**Variants** (files live in `bishop-ai-profile/assets/logos/`):
+- `bishop-ai-logo-horizontal-dark.png` — for light backgrounds
+- `bishop-ai-logo-horizontal-white.png` — for dark backgrounds
+- `bishop-ai-logo-icon.png` — circular icon only
+
+**Rules:**
+- On light bg: dark version, no filter manipulation
+- On dark bg: white version as-is
+- Minimum width: 120px
+- Clear space: equal to chess piece icon height on all four sides
+- Never stretch, distort, recolor, or add glow/shadow effects
+
+### Prompt Anything logo (updated 2026)
+
+The Prompt Anything mark is a **feather quill inside a rounded speech bubble**, with the "PROMPT / ANYTHING" wordmark below it. This is a distinct mark from Bishop AI — do not swap one for the other.
+
+**Variants** (files live in `assets/logos/promptanything/`):
+- `promptanything-logo-horizontal-dark.png` — full lockup (icon + wordmark), dark ink — for **light** backgrounds
+- `promptanything-logo-horizontal-white.png` — full lockup, white — for **dark** backgrounds
+- `promptanything-logo-icon-dark.png` — icon only (feather-in-bubble), dark — for **light** backgrounds
+- `promptanything-logo-icon-white.png` — icon only, white — for **dark** backgrounds
+
+**Rules:**
+- On light bg use the dark variant; on dark bg use the white variant. Never recolor.
+- Circular-badge placement: clip the icon to a circle only — no border ring of any color.
+- Never stretch, distort, recolor, or add glow/shadow effects.
+- Prefer the icon-only variant where the "PROMPT ANYTHING" name already appears nearby; use the full lockup as the standalone brand mark.
+
+### Prompt Anything mascot
+
+A friendly robot character — glossy white round body, black screen face with **yellow eyes** and a **blue accent ring**. Use it as a spot illustration / character for Prompt Anything content (onboarding, empty states, explainers, social). It is a mascot, not a logo — never use it in place of the logo.
+
+**Files** live in `assets/mascots/promptanything/`:
+- `mascot-sheet.png` — all 10 poses on one sheet
+- Individual poses: `mascot-01-wave`, `-02-fly`, `-03-present`, `-04-happy`, `-05-sleep`, `-06-chart`, `-07-laptop`, `-08-think`, `-09-business`, `-10-celebrate` (`.png`)
+
+**Rules:**
+- Match the pose to context — `think` for problem-solving, `celebrate` for success, `sleep` for idle/empty states, `chart`/`laptop` for work, `business` for professional.
+- Reads well on light and dark backgrounds (it carries its own rim light). No glow needed behind it.
+- Never recolor the body, eyes, or ring; never stretch or distort. Keep the whole character — don't crop off limbs or accessories (lightbulb, Zzz).
 
 ---
 
-## Language & Copy Standards
+## Background Rule
 
-Copy in or accompanying any promptAnything.io visual must be direct, specific, and plain-spoken.
-
-Never use: game-changer, transformative, cutting-edge, seamless, revolutionize, innovative, robust, scalable (as vague praise), synergy, thought leader, pain points, humbled and honored, in today's digital landscape, delve into, holistic, empower, utilize, unprecedented, groundbreaking.
-
-**The standard:** Numbers beat adjectives. "11 rewrites before abandonment" beats "frustrating prompt engineering experience."
+Light-first always. `#F9F6F0` is the default surface for every page, slide, and carousel. Dark backgrounds are intentional decisions, not defaults.
 
 ---
 
-## Color System Design Protocol
+## Layout and Spacing
 
-When asked to analyze, optimize, or apply the color palette, act as a senior brand designer and UI/UX color strategist. The goal is clarity, consistency, and usability across web, product UI, marketing assets, and dashboards.
+- Base unit: 8px
+- Page side padding: 48–64px desktop, 24px mobile
+- Max content width: 1200px centered
+- Section padding: 80–96px vertical
+- Card padding: 32–48px
+- White space is intentional — it signals confidence
 
-### Design Principles
+---
 
-* The brand should feel modern, technical, trustworthy, and minimal.
-* Lighter colors must be used as the PRIMARY visual foundation.
-* Darker colors should support contrast, hierarchy, and readability.
-* Accent colors should be intentional and used sparingly.
+## Visual Motifs
 
-### Extended Color Palette (HEX Reference)
+- **Brush-stroke highlights:** Key words in headlines get a `#E0B848` soft brush-stroke behind them — described in KIE prompts as "like a hand-painted marker swipe"
+- **Grid lines:** Thin structural rule lines dividing sections
+- **Arrow marks:** Simple directional → and ↗ as navigation and emphasis cues
+- **Dark example cards:** `#1E2333` background with light text for code blocks, comparisons, or callouts
 
-#### Light Neutral / Background Candidates
+---
 
-| Name | Hex | Use |
-|------|-----|-----|
-| Light Gray | `#E5E5E5` | Neutral background surface |
-| Warm Light Beige | `#D9D6CF` | Warm neutral surface |
-| Soft Neutral Gray | `#CFCFD1` | Soft neutral surface |
+## Voice and Messaging
 
-#### Brand / Supporting Colors
+- Lead with the audience's problem or result before introducing Richmond or Bishop AI
+- Plain-spoken and practical — make AI feel accessible to non-technical people
+- Richmond's background (athlete-to-founder) is credibility context, not the headline
+- Confident, results-focused, not hype-focused
 
-| Name | Hex | Use |
-|------|-----|-----|
-| Light Blue | `#4FB0D8` | Supporting brand blue |
-| Teal Blue | `#2A8FB3` | Primary brand blue |
-| Gold | `#D4AF37` | Brand gold accent |
+**Hard formatting rules:**
+- No em dashes anywhere
+- Minimal emojis — only when they add meaning, never decorative
+- Never frame AI as replacing humans or suggest firing people
+- No AI-sounding openers, stacked fragments, hollow filler phrases
 
-#### Dark / Contrast Colors
+---
 
-| Name | Hex | Use |
-|------|-----|-----|
-| Navy | `#1F2A3A` | Dark UI surfaces, contrast |
-| Dark Navy | `#202636` | Secondary dark surfaces |
-| Deep Navy | `#0B0F19` | Deep background, almost black |
-| Midnight Blue | `#020A14` | Darkest background option |
+## Per-Format Specs
 
-#### Accent Color
+| Format | Canvas | Output | Notes |
+|---|---|---|---|
+| Carousel | 1080 × 1350px (4:5) | JPG | Instagram + LinkedIn. `#F9F6F0` bg. Gold brush-stroke accents. |
+| Deck | 1920 × 1080px (16:9) | PDF | Never deliver as HTML. Render per-page at scrollHeight, merge with pypdf. |
+| Overlay | 1080 × 1080px (1:1) | PNG | Transparent bg where needed. |
+| Thumbnail | 1280 × 720px (16:9) | JPG | High contrast, face + text, strong focal point. |
+| HTML proposal/report | Responsive | PDF | Import `bishop-ai-profile/brand/brand.css`. Render to PDF via headless browser. |
 
-| Name | Hex | Use |
-|------|-----|-----|
-| Red / Attention | `#E52B4A` | Alerts, errors, urgent CTAs |
+---
 
-### Color System Structure
+## KIE AI Prompt Guidance (for carousel and image generation)
 
-When reorganizing or applying the palette, define these layers:
+KIE does not understand font names — describe visually instead:
 
-#### 1. PRIMARY COLORS
-Use lighter tones as the visual foundation. These should dominate backgrounds, sections, and UI surfaces.
+| Brand element | KIE prompt language |
+|---|---|
+| `#F9F6F0` background | "Warm cream off-white background, solid, clean" |
+| `#E0B848` gold | "Soft golden-amber brush-stroke highlight behind key words, like a hand-painted marker swipe" |
+| `#000814` text | "Ultra-bold deep black sans-serif headline" |
+| `#1E2333` card | "Dark navy-charcoal card with cream-white body text" |
+| `#1894C9` accent | "Clean sky-blue accent tag or label" |
 
-#### 2. SECONDARY COLORS
-Used for components, cards, panels, and supporting UI elements.
+Never reference font names (Poppins, Montserrat, Open Sans) in KIE prompts — use descriptive terms only.
 
-#### 3. ACCENT COLORS
-Used for calls to action, highlights, notifications, and key interactions.
+---
 
-#### 4. TEXT COLORS
-Define:
-* Primary text color
-* Secondary text color
-* Muted text color
-* Inverse text color
+## Pre-flight QA Checklist
 
-#### 5. BACKGROUND SYSTEM
-Define:
-* Main background
-* Section background
-* Card background
-* Hover / subtle surface color
+Before delivering any content, verify:
 
-#### 6. INTERFACE STATES
-Assign colors for:
-* Hover
-* Active
-* Disabled
-* Success
-* Warning
-* Error
-* Info
+- [ ] All colors are from the official palette — no `#0D1B2A`, `#D4AF37`, `#D4A853`, `#F5F0E8`
+- [ ] Fonts: Poppins titles, Montserrat subheadings, Open Sans body
+- [ ] Background defaults to `#F9F6F0` unless dark is intentional
+- [ ] Logo: correct variant for the background, clear space respected
+- [ ] Canvas dimensions match the format spec
+- [ ] No em dashes in any text
+- [ ] No AI-sounding openers, stacked fragments, or hype language
+- [ ] AI framed as amplifying people, not replacing them
+- [ ] Content leads with audience value before Richmond's personal story
 
-#### 7. ACCESSIBILITY
-Ensure all major text/background combinations meet WCAG contrast standards.
 
-#### 8. USAGE RULES
-Provide short, practical rules:
-* When to use light vs dark
-* When to use accent colors
-* Maximum number of colors per screen
-* What colors should never be paired
+<!-- design-bridge:start -->
 
-### Output Format for Color System Deliverables
+## Design bridges: consult before building
 
-Return the final result as a structured design system with:
-* Clear color roles
-* HEX codes
-* Short usage descriptions
-* Logical hierarchy
-* Consistent naming
+Three bridge skills sit under this one. None of them produces deliverables; this
+skill still owns the output.
 
-**Do not redesign the colors. Do not invent new colors unless absolutely necessary. Focus on clarity, balance, and real-world usability.**
+1. **`design-extract`** — MEASURED tokens from one named site, repo, or project.
+   When a design system is active it wins on layout, spacing, type scale,
+   components, motion and interaction states.
+2. **`design-intel`** — RECOMMENDED generic values (layout, spacing, UX,
+   accessibility, chart selection, font pairing) where brand and the active
+   system are silent.
+3. **`design-sources`** — external craft rules plus the deterministic gate. Read
+   `C:/Users/richm/.claude/skills/design-sources/references/brand-graphics.md` for this medium.
+
+**Precedence:** explicit instruction in the request > `branding-agent` (colours,
+fonts, logo) > active extracted system > style preset (`brutalist-skill`,
+`minimalist-skill`) > `design-intel` > skill defaults. Measured beats
+recommended where both cover a decision. Borrow ratios and structure from an
+extracted system; keep brand colours and typefaces from `branding-agent`.
+
+`design-sources` is a **gate, not a precedence layer**: it runs before shipping
+no matter which layer supplied the values.
+
+3. **No gate on image output.** `impeccable detect` parses HTML/CSS/URLs, so there is nothing to scan in a PNG. Do not claim a gate pass on an image. If the graphic is produced by screenshotting HTML, gate that HTML before capture.
+
+**Brand outranks both.** Bishop AI / Prompt Anything / BOB colours and typefaces
+come from `branding-agent` and `tokens.json`, never from an external source.
+Verified: Bishop AI's own palette trips two Impeccable rules (`cream-palette` on
+warm-white `#F9F6F0`, `overused-font` on Open Sans); both are waived in
+`C:/Users/richm/.claude/design-sources/brand-overrides/config.json` and reported as overridden
+rather than failed. Do not "fix" brand to satisfy a detector.
+
+<!-- design-bridge:end -->
+<!-- design-extract:connector v1 -->
+
+---
+
+## Extracted Design System
+
+**First, scan the request for the literal phrase "full <name> system"** (e.g. "full linear
+system").
+
+- **Phrase present** -> that extracted system supersedes this skill for this one
+  deliverable. Use its colors and font families from `~/.claude/design-systems/<slug>/`.
+  State in one line that you did so and why.
+- **Phrase absent** -> this skill is the brand authority, and extracted systems sit beneath
+  it. Bishop AI / Prompt Anything colors, font families, and logo treatment win over any
+  extracted system. An active system may still contribute layout, spacing grid, type scale
+  ratios, component patterns, motion, and interaction states — borrowing a 1.25 type scale
+  while keeping the Bishop typeface is the intended outcome, not a compromise.
+
+Near-miss phrasings do NOT trigger the override: "use Linear's colors", "make it look like
+Linear", "match Linear's branding". Only the literal phrase.
+
+**This skill defines brand values.** When a system is active, read `tokens/` and `DESIGN.md` only to understand what the extracted system offers — never to redefine a Bishop value.
+
+Full contract: `~/.claude/skills/design-extract/references/consumption.md`
+<!-- /design-extract:connector v1 -->

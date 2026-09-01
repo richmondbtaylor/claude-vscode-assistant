@@ -54,3 +54,36 @@ __pycache__/
 # Debug screenshots
 debug_*.png
 screenshot_*.png
+
+# never commit a live session
+cookies.txt
+.ig_cookies_tmp.txt
+ig_cookies.json
+**/mav-refs/cookies.txt
+
+# Style reference reels: large binaries pulled from the source accounts and
+# re-downloadable with scrape_ig_refs.py. The transcripts, manifest.json and
+# analysis.md ARE the reference and stay tracked.
+skills/reelforge/styles/*-refs/*.mp4
+skills/reelforge/styles/*-refs/covers/*.jpg
+skills/reelforge/styles/*-refs/covers/*.jpeg
+skills/reelforge/styles/*-refs/covers/*.png
+skills/reelforge/styles/*-refs/covers/*.webp
+skills/reelforge/styles/*-refs/_sheets/*
+
+# Rendered video projects: deliverables + working files under Unposted/Posted.
+# Large binaries (mp4/mp3/PNG frame sequences) and all regenerable from the
+# raw take + cuts.json + overlay.txt. The index doc stays tracked.
+skills/reelforge/videos/**
+!skills/reelforge/videos/00-INDEX.md
+.superpowers/
+
+# Vendored third-party design source checkouts (each has its own .git).
+# Registry, digests and brand overrides ARE tracked; the checkouts are not.
+design-sources/*/
+!design-sources/digests/
+!design-sources/brand-overrides/
+
+# Vendored third-party skill build, regenerable from the design-sources
+# checkout (see skills/design-sources/SKILL.md). Restore: sync.py update.
+skills/impeccable/

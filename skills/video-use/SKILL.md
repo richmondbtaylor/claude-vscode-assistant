@@ -311,3 +311,40 @@ Things that consistently fail regardless of style:
 - **Editing before confirming the strategy.** Never.
 - **Re-transcribing cached sources.** Immutable outputs of immutable inputs.
 - **Assuming what kind of video it is.** Look first, ask second, edit last.
+
+
+<!-- design-bridge:start -->
+
+## Design bridges: consult before building
+
+Three bridge skills sit under this one. None of them produces deliverables; this
+skill still owns the output.
+
+1. **`design-extract`** — MEASURED tokens from one named site, repo, or project.
+   When a design system is active it wins on layout, spacing, type scale,
+   components, motion and interaction states.
+2. **`design-intel`** — RECOMMENDED generic values (layout, spacing, UX,
+   accessibility, chart selection, font pairing) where brand and the active
+   system are silent.
+3. **`design-sources`** — external craft rules plus the deterministic gate. Read
+   `C:/Users/richm/.claude/skills/design-sources/references/video-motion.md` for this medium.
+
+**Precedence:** explicit instruction in the request > `branding-agent` (colours,
+fonts, logo) > active extracted system > style preset (`brutalist-skill`,
+`minimalist-skill`) > `design-intel` > skill defaults. Measured beats
+recommended where both cover a decision. Borrow ratios and structure from an
+extracted system; keep brand colours and typefaces from `branding-agent`.
+
+`design-sources` is a **gate, not a precedence layer**: it runs before shipping
+no matter which layer supplied the values.
+
+3. **No gate here**, and the adapter is deliberately narrow. Rich's overlay grammar (Saraev / Murph / Mav, safe bands, plate rules, cut pacing, no-zoom) is locked and is **not** open to revision by an external web-design source. Share correctness, never share grammar.
+
+**Brand outranks both.** Bishop AI / Prompt Anything / BOB colours and typefaces
+come from `branding-agent` and `tokens.json`, never from an external source.
+Verified: Bishop AI's own palette trips two Impeccable rules (`cream-palette` on
+warm-white `#F9F6F0`, `overused-font` on Open Sans); both are waived in
+`C:/Users/richm/.claude/design-sources/brand-overrides/config.json` and reported as overridden
+rather than failed. Do not "fix" brand to satisfy a detector.
+
+<!-- design-bridge:end -->

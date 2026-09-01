@@ -1,4 +1,4 @@
----
+﻿---
 name: infographic-generator
 description: Generates professional infographic images using the PRISM Framework and KIE AI pipeline. Use this skill whenever the user wants to create an infographic, data visualization, stats graphic, visual explainer, marketing graphic, educational diagram, or any image that presents information visually. Trigger even if the user just says "make a graphic about X", "show this data visually", "I need a visual for my presentation", or "design something that shows my stats." This skill handles everything from prompt construction to image download — always use it for infographic-type requests, don't try to handle them without it.
 ---
@@ -22,7 +22,7 @@ Confirm these before building the prompt. If not provided, make reasonable assum
 | Requirement | Default |
 |-------------|---------|
 | Topic & data | (required — ask if missing) |
-| Style | Bishop AI brand — minimal & impactful: light background #FAFBFA (white) or #E6E2DE (off-white), Deep Navy #000813 headings, Dark Navy #1D2333 body text, Gold #E0B848 primary accent, Blue #1894C9 for positive/result elements, Red/Coral #E05252 for problem/contrast only, max 3 elements per section, no decorative clutter |
+| Style | Bishop AI brand — modern minimalist: warm-white `#F9F6F0` background, deep-black `#000814` headlines, dark-charcoal `#1E2333` cards/body, gold `#E0B848` accents and brush-stroke highlights, max 2 elements per section, generous negative space |
 | Aspect ratio | `9:16` (social/mobile) |
 | Platform | Instagram/LinkedIn |
 | Resolution | `2K` |
@@ -47,19 +47,36 @@ Save a JSON file with this structure:
 }
 ```
 
+### Layout Archetypes
+
+Pick the archetype that matches the content type before writing the prompt. This determines the layout structure.
+
+**Archetype A — Hero Stat**: Single metric or bold claim. Full canvas = one big number/statement + subline + CTA. Nothing else. Use for hook cards, key stats, quotes.
+
+**Archetype B — Module List**: Courses, frameworks, roadmaps with 4–8 items. Structure:
+- Hero headline (top 15% of canvas)
+- Compact stat strip (optional, narrow row)
+- Module rows: each is a full-width dark-charcoal `#1E2333` card, gold number badge left, white module title in Poppins Bold, ONE subline in Open Sans — no bullet lists inside cards
+- CTA strip (bottom 10%)
+
+**Archetype C — Data Grid**: Stats, comparisons, before/after. 2–3 column grid of large-number cards on warm-white background. Each card: one big number + short label only.
+
+---
+
 ### Prompt Narrative Template
 
 Write the `prompt` value as a single dense string following this structure:
 
 ```
-Professional infographic titled "[TITLE]". Bishop AI brand style: light premium background #FAFBFA (white) or #E6E2DE (off-white), generous whitespace, bold single-idea sections.
-Layout: [describe top to bottom — each section has ONE clear message, maximum 3 elements per section, no visual noise].
-Color palette: White #FAFBFA or Off-White #E6E2DE background, Deep Navy #000813 for primary headlines, Dark Navy #1D2333 for body text, Gold #E0B848 for primary accent/highlights, Blue #1894C9 for positive outcomes/results, Red/Coral #E05252 for problem/contrast sections only — never on CTAs or positive elements. Off-White #E6E2DE for card/panel backgrounds.
-Typography: Poppins ExtraBold for H1 headlines at 64pt minimum, Montserrat Bold for subheadings/labels, Open Sans for body copy at 20pt max — never more than 2 lines of body copy per element.
-Data content: [EXACT DATA — repeat user's numbers verbatim. Present each stat as a BIG number in Poppins ExtraBold + short Montserrat label, nothing else].
-Visual elements: thin single-line dividers only, no icons unless essential, no gradients, no shadows, no decorative borders. Let whitespace do the work.
-Quality directive: ultra-sharp, print-quality, pixel-perfect alignment, zero text rendering errors. Less is more — if an element doesn't add meaning, remove it.
-Negative: dark background, blurry text, garbled typography, illegible fonts, busy layouts, too many colors, decorative clutter, drop shadows, gradients, icons for decoration, more than 4 bullet points per section, stock photo aesthetic, photorealistic faces, lens flare, bokeh, photography lighting, beauty filters, skin textures.
+Professional infographic titled "[TITLE]". Bishop AI brand: modern minimalist, warm-white #F9F6F0 background, premium editorial feel, maximum negative space.
+Layout [Archetype X]: [describe top to bottom — each section has ONE clear message, maximum 2 elements per section, generous padding between sections — approximately 5% canvas height between each block].
+Color palette: Warm-white #F9F6F0 background, Deep Black #000814 for primary headlines, Dark Charcoal #1E2333 for cards and body text, Gold #E0B848 for accents and brush-stroke highlights on key words, Blue #1894C9 for supporting callouts, Light Gray #E6E2DE for 1px dividers. Dark Charcoal #1E2333 cards with white #FFFFFF text inside — this is the signature contrast element.
+Typography: Poppins weight 900 (Black) for H1 at 72pt minimum, Poppins weight 700 (Bold) for H2/module titles, Montserrat SemiBold for subheadings and labels (11px uppercase letter-spaced), Open Sans Regular for body copy at 16pt — never more than 1 line of body copy per card.
+Visual motifs: Gold brush-stroke highlight mark behind [key word or stat] — hand-painted marker swipe effect in #E0B848 behind the most important word in the headline. Thin 1px #E6E2DE horizontal rule lines as section dividers. Simple Gold → arrow marks for emphasis only. Dark charcoal #1E2333 full-width cards with white text for all module/list rows.
+Data content: [EXACT DATA — verbatim numbers only. Each stat: big number in Poppins Black + 2–4 word Montserrat label. Nothing else on that element].
+Visual constraints: no icons, no gradients, no shadows, no decorative borders, no textures, no background patterns. Whitespace IS the design.
+Quality directive: ultra-sharp print-quality render, pixel-perfect text alignment, every character perfectly legible, zero garbled or blurry text.
+Negative: busy background, alternating light row stripes, bullet lists inside cards, more than 6 words per card subline, more than 2 elements per section, photorealistic photography, blurry text, garbled typography, gradients, drop shadows, decorative icons, more than 3 colors in any single section, stock photo aesthetic, bokeh, lens flare, beauty filters, clutter.
 ```
 
 ### Why these details matter
@@ -166,17 +183,41 @@ images/infographics/ai-adoption-v2-bold.jpg
 ### Bishop AI
 **ALWAYS apply this brand kit by default for every infographic unless the user explicitly requests a different style. This is the default brand for all infographic generation.**
 
-- **Background (primary):** `#FAFBFA` (white)
-- **Background (secondary/cards):** `#E6E2DE` (off-white)
-- **Primary text (headlines):** `#000813` (Deep Navy)
-- **Body text:** `#1D2333` (Dark Navy)
-- **Gold accent (primary highlights, CTAs):** `#E0B848`
-- **Blue accent (positive outcomes/results):** `#1894C9`
-- **Red/Coral accent (problem/contrast only — never on CTAs):** `#E05252`
-- **Typography:** Poppins ExtraBold (H1 titles), Montserrat Bold (subheadings/labels), Open Sans (body)
-- **Logo:** NEVER describe or generate the Bishop AI logo in the AI prompt. AI models cannot reproduce the exact logo. Instead: generate the infographic with a blank reserved zone (e.g., "leave a clean empty area in the bottom-left corner, approximately 100x40px, no text or elements in that zone") and instruct the user to overlay the real logo file in Canva, Photoshop, or similar tool after generation.
-- **Logo placement:** Bottom-left corner, reserved blank zone only — user overlays the actual file manually.
+> Authoritative source: `C:\Users\richm\.claude\bishop-ai-profile\bishop-ai-profile\brand\tokens.json` and `bishop-ai-profile\brand\BRAND.md`
+> **Layout composition (MANDATORY):** follow `bishop-ai-profile\brand\COLLATERAL-STYLE.md` — the approved editorial one-pager style (dark masthead band, gold-numbered sections with right-aligned micro-captions, one dark hero card per region, `TYPE · QUALIFIER` kickers, ghost-numeral grids, dark footer with link columns). Reference PDF: `bishop-ai-profile\brand\references\approved-infographic-style-2026-08.pdf`.
+
+**Colors (exact — no substitutions):**
+- **Background (primary):** `#F9F6F0` (warm-white) — default for all light-mode content
+- **Background (secondary/dividers):** `#E6E2DE` (light-gray)
+- **Dark cards:** `#1E2333` (dark-charcoal) — signature contrast element; use for module rows, callout panels, examples
+- **Primary headlines:** `#000814` (deep-black)
+- **Body text inside light sections:** `#1E2333` (dark-charcoal)
+- **Text inside dark cards:** `#FFFFFF` (white)
+- **Gold accent:** `#E0B848` — highlights, CTAs, brush-stroke marks, number badges
+- **Blue accent:** `#1894C9` — supporting callouts only
+- **Never use:** `#FAFBFA`, `#000813`, `#1D2333`, `#0D1B2A`, `#D4AF37`, `#D4A853`, `#F5F0E8` — these are legacy incorrect values
+
+**Typography:**
+- **H1 titles:** Poppins weight 900 (Black), 72pt minimum
+- **H2 headings:** Poppins weight 700 (Bold)
+- **Subheadings/labels:** Montserrat SemiBold 600, 11px uppercase, letter-spacing 1.5px
+- **Body copy:** Open Sans Regular 400, 16pt max, never more than 1 line per card
+- **Never use:** Inter (legacy error), ExtraBold (use Black/900 for H1)
+
+**Visual Motifs (these define the Bishop AI look):**
+- **Brush-stroke highlight:** Gold `#E0B848` painted marker swipe behind the most important word in the headline. Include in every infographic with a text hero.
+- **Dark card panels:** Full-width `#1E2333` cards with white text — the primary way to create visual hierarchy. Every module, step, or list item gets one of these.
+- **Thin grid-line dividers:** 1px `#E6E2DE` horizontal rules between sections only.
+- **Gold arrow marks:** Simple `→` in Gold for directional emphasis — used sparingly, never decorative.
+- **No icons, no gradients, no shadows, no borders, no textures.** Whitespace IS the design.
+
+**Logo:**
+- NEVER describe or generate the Bishop AI logo in the AI prompt — AI cannot reproduce it accurately.
+- Reserve a clean empty zone in the bottom-left corner (approximately 120x45px, no text or elements). User overlays the real logo file in Canva or Photoshop after generation.
+
+**Scripts and paths:**
 - **Script:** `C:/Users/richm/Downloads/generate_kie.py`
+- **Upload script:** `C:/Users/richm/.claude/scripts/upload_gdrive.py`
 - **Env file:** `C:/Users/richm/.env`
 - **Output dir:** `C:/Users/richm/Downloads/images/infographics/`
 - **Prompt dir:** `C:/Users/richm/Downloads/prompts/infographics/`
@@ -186,8 +227,76 @@ images/infographics/ai-adoption-v2-bold.jpg
 
 Any text content in infographics -- headlines, stat labels, callouts, section titles -- must avoid overused AI and corporate language.
 
-**Full banned list:** `~/.claude/skills/references/banned-phrases.md`
+**Full banned list:** `~/.claude/bishop-ai-profile/brand-evals/banned-phrases.md`
 
 Never write headlines or labels using: game-changer, transformative, cutting-edge, revolutionary, innovative, seamless, robust, scalable (vague), synergy, actionable insights, thought leader, skyrocket, dominate, paradigm shift, disruptive, frictionless, unlock (vague), empower, unprecedented, groundbreaking, holistic, multifaceted.
 
 Write headlines as direct, specific claims -- e.g., "AI cuts response time by 40%" not "Transformative AI revolutionizes workflows".
+
+
+<!-- design-bridge:start -->
+
+## Design bridges: consult before building
+
+Three bridge skills sit under this one. None of them produces deliverables; this
+skill still owns the output.
+
+1. **`design-extract`** — MEASURED tokens from one named site, repo, or project.
+   When a design system is active it wins on layout, spacing, type scale,
+   components, motion and interaction states.
+2. **`design-intel`** — RECOMMENDED generic values (layout, spacing, UX,
+   accessibility, chart selection, font pairing) where brand and the active
+   system are silent.
+3. **`design-sources`** — external craft rules plus the deterministic gate. Read
+   `C:/Users/richm/.claude/skills/design-sources/references/brand-graphics.md` for this medium.
+
+**Precedence:** explicit instruction in the request > `branding-agent` (colours,
+fonts, logo) > active extracted system > style preset (`brutalist-skill`,
+`minimalist-skill`) > `design-intel` > skill defaults. Measured beats
+recommended where both cover a decision. Borrow ratios and structure from an
+extracted system; keep brand colours and typefaces from `branding-agent`.
+
+`design-sources` is a **gate, not a precedence layer**: it runs before shipping
+no matter which layer supplied the values.
+
+3. **No gate on image output.** `impeccable detect` parses HTML/CSS/URLs, so there is nothing to scan in a PNG. Do not claim a gate pass on an image. If the graphic is produced by screenshotting HTML, gate that HTML before capture.
+
+**Brand outranks both.** Bishop AI / Prompt Anything / BOB colours and typefaces
+come from `branding-agent` and `tokens.json`, never from an external source.
+Verified: Bishop AI's own palette trips two Impeccable rules (`cream-palette` on
+warm-white `#F9F6F0`, `overused-font` on Open Sans); both are waived in
+`C:/Users/richm/.claude/design-sources/brand-overrides/config.json` and reported as overridden
+rather than failed. Do not "fix" brand to satisfy a detector.
+
+<!-- design-bridge:end -->
+<!-- design-extract:connector v1 -->
+
+---
+
+## Extracted Design System
+
+**First, scan the request for the literal phrase "full <name> system"** (e.g. "full linear
+system"). Near-miss phrasings — "use Linear's colors", "make it look like Linear", "match
+Linear's branding" — do NOT count. Only the literal phrase.
+
+- **Phrase present** -> that extracted system supersedes `branding-agent` for this one
+  deliverable. Read `~/.claude/design-systems/<slug>/DESIGN.md` and `tokens/`, and use its
+  colors and font families directly.
+- **Phrase absent** -> resolve the active system the normal way:
+  1. A system named in the request ("in the linear system", "build this like Stripe"), or a
+     `.design-system` marker file in the working folder.
+  2. If found, read `~/.claude/design-systems/<slug>/DESIGN.md` and `tokens/`.
+  3. **BORROW** from it: layout, spacing grid, type scale ratios, component patterns,
+     motion, easing, interaction states.
+     **KEEP from `branding-agent`:** Bishop AI / Prompt Anything colors, font families, logo
+     treatment.
+  4. Nothing active -> proceed exactly as normal. This block adds no default behavior.
+
+Measured beats recommended: where an active system covers a decision, it outranks
+`design-intel`. Where it is silent — accessibility, chart choice, breakpoints —
+`design-intel` is still the answer.
+
+**This skill emits images or decks.** Read `screens/` and `references/VISUAL_GUIDE.md` to describe the visual language in prompts, and `tokens/` for palette bounds.
+
+Full contract: `~/.claude/skills/design-extract/references/consumption.md`
+<!-- /design-extract:connector v1 -->

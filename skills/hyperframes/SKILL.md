@@ -362,3 +362,71 @@ Skip on small edits (fixing a color, adjusting one duration). Run on new composi
   - Shader transitions are in `@hyperframes/shader-transitions` (`packages/shader-transitions/`) — read package source, not skill files.
 
 GSAP patterns and effects are in the `/gsap` skill.
+
+
+<!-- design-bridge:start -->
+
+## Design bridges: consult before building
+
+Three bridge skills sit under this one. None of them produces deliverables; this
+skill still owns the output.
+
+1. **`design-extract`** — MEASURED tokens from one named site, repo, or project.
+   When a design system is active it wins on layout, spacing, type scale,
+   components, motion and interaction states.
+2. **`design-intel`** — RECOMMENDED generic values (layout, spacing, UX,
+   accessibility, chart selection, font pairing) where brand and the active
+   system are silent.
+3. **`design-sources`** — external craft rules plus the deterministic gate. Read
+   `C:/Users/richm/.claude/skills/design-sources/references/video-motion.md` for this medium.
+
+**Precedence:** explicit instruction in the request > `branding-agent` (colours,
+fonts, logo) > active extracted system > style preset (`brutalist-skill`,
+`minimalist-skill`) > `design-intel` > skill defaults. Measured beats
+recommended where both cover a decision. Borrow ratios and structure from an
+extracted system; keep brand colours and typefaces from `branding-agent`.
+
+`design-sources` is a **gate, not a precedence layer**: it runs before shipping
+no matter which layer supplied the values.
+
+3. **No gate here**, and the adapter is deliberately narrow. Rich's overlay grammar (Saraev / Murph / Mav, safe bands, plate rules, cut pacing, no-zoom) is locked and is **not** open to revision by an external web-design source. Share correctness, never share grammar.
+
+**Brand outranks both.** Bishop AI / Prompt Anything / BOB colours and typefaces
+come from `branding-agent` and `tokens.json`, never from an external source.
+Verified: Bishop AI's own palette trips two Impeccable rules (`cream-palette` on
+warm-white `#F9F6F0`, `overused-font` on Open Sans); both are waived in
+`C:/Users/richm/.claude/design-sources/brand-overrides/config.json` and reported as overridden
+rather than failed. Do not "fix" brand to satisfy a detector.
+
+<!-- design-bridge:end -->
+<!-- design-extract:connector v1 -->
+
+---
+
+## Extracted Design System
+
+**First, scan the request for the literal phrase "full <name> system"** (e.g. "full linear
+system"). Near-miss phrasings — "use Linear's colors", "make it look like Linear", "match
+Linear's branding" — do NOT count. Only the literal phrase.
+
+- **Phrase present** -> that extracted system supersedes `branding-agent` for this one
+  deliverable. Read `~/.claude/design-systems/<slug>/DESIGN.md` and `tokens/`, and use its
+  colors and font families directly.
+- **Phrase absent** -> resolve the active system the normal way:
+  1. A system named in the request ("in the linear system", "build this like Stripe"), or a
+     `.design-system` marker file in the working folder.
+  2. If found, read `~/.claude/design-systems/<slug>/DESIGN.md` and `tokens/`.
+  3. **BORROW** from it: layout, spacing grid, type scale ratios, component patterns,
+     motion, easing, interaction states.
+     **KEEP from `branding-agent`:** Bishop AI / Prompt Anything colors, font families, logo
+     treatment.
+  4. Nothing active -> proceed exactly as normal. This block adds no default behavior.
+
+Measured beats recommended: where an active system covers a decision, it outranks
+`design-intel`. Where it is silent — accessibility, chart choice, breakpoints —
+`design-intel` is still the answer.
+
+**This skill emits motion.** Read `references/ANIMATIONS.md` and `references/INTERACTIONS.md` for real keyframes, durations, and easing curves rather than inventing timings.
+
+Full contract: `~/.claude/skills/design-extract/references/consumption.md`
+<!-- /design-extract:connector v1 -->
