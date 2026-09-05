@@ -34,12 +34,23 @@ class GenParams(BaseModel):
         return out
 
 
+class PromptItem(BaseModel):
+    """A concrete clip: no expansion, its own seed and setting overrides."""
+
+    prompt: str
+    seed: int | None = None
+    params: dict[str, Any] = Field(default_factory=dict)
+
+
 class SubmitRequest(BaseModel):
     """One submission expands into N queued jobs."""
 
     model_id: str = "mock"
     prompt: str = ""
     prompts: list[str] = Field(default_factory=list)
+    # Already-resolved clips, e.g. an export composed elsewhere. Items skip
+    # wildcard expansion and keep their own seed, so a batch round-trips.
+    items: list[PromptItem] = Field(default_factory=list)
     params: GenParams = Field(default_factory=GenParams)
 
     # batch expansion
@@ -55,8 +66,9 @@ class SubmitRequest(BaseModel):
 
     @model_validator(mode="after")
     def _need_a_prompt(self) -> SubmitRequest:
-        if not self.prompt.strip() and not any(p.strip() for p in self.prompts):
-            raise ValueError("provide 'prompt' or a non-empty 'prompts' list")
+        has_item = any(i.prompt.strip() for i in self.items)
+        if not self.prompt.strip() and not any(p.strip() for p in self.prompts) and not has_item:
+            raise ValueError("provide 'prompt', a non-empty 'prompts' list, or 'items'")
         return self
 
     def all_prompts(self) -> list[str]:

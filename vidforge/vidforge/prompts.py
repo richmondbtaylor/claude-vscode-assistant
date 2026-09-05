@@ -61,44 +61,70 @@ def expand(template: str, wildcards: dict[str, list[str]] | None = None,
     return re.sub(r"\s+", " ", text).strip(" ,")
 
 
-def load_prompt_file(path: Path) -> list[str]:
-    """Read prompts from ``.txt`` (one per line), ``.json`` or ``.jsonl``.
+# Keys an item may carry alongside its prompt. Anything here overrides the
+# batch-wide settings for that one clip, so an export round-trips exactly.
+ITEM_PARAMS = (
+    "width", "height", "num_frames", "fps", "steps", "guidance_scale",
+    "negative_prompt", "init_image",
+)
+_PROMPT_KEYS = ("prompt", "text", "positive", "description")
 
-    JSON entries may be plain strings or objects carrying a ``prompt`` key,
-    which is what most prompt generators emit.
+
+def _as_item(obj: object) -> dict | None:
+    """Normalise one entry into ``{"prompt": ..., "seed": ..., "params": {...}}``."""
+    if isinstance(obj, str):
+        prompt = obj.strip()
+        return {"prompt": prompt, "params": {}} if prompt else None
+    if not isinstance(obj, dict):
+        return None
+
+    prompt = next(
+        (obj[k].strip() for k in _PROMPT_KEYS
+         if isinstance(obj.get(k), str) and obj[k].strip()),
+        None,
+    )
+    if not prompt:
+        return None
+
+    item: dict = {"prompt": prompt, "params": {}}
+    seed = obj.get("seed")
+    if isinstance(seed, (int, float)) and not isinstance(seed, bool):
+        item["seed"] = int(seed)
+    nested = obj.get("params") if isinstance(obj.get("params"), dict) else {}
+    for key in ITEM_PARAMS:
+        value = nested.get(key, obj.get(key))
+        if value not in (None, ""):
+            item["params"][key] = value
+    return item
+
+
+def load_prompt_items(path: Path) -> list[dict]:
+    """Read ``.txt`` (one prompt per line), ``.json`` or ``.jsonl``.
+
+    Entries may be plain strings, or objects carrying a prompt plus the seed
+    and settings it was generated with - which is what vidforge itself
+    exports, so a batch composed elsewhere renders exactly as composed.
     """
     text = path.read_text(encoding="utf-8", errors="replace")
     suffix = path.suffix.lower()
 
-    def _from_obj(obj: object) -> str | None:
-        if isinstance(obj, str):
-            return obj.strip() or None
-        if isinstance(obj, dict):
-            for key in ("prompt", "text", "positive", "description"):
-                value = obj.get(key)
-                if isinstance(value, str) and value.strip():
-                    return value.strip()
-        return None
-
     if suffix == ".json":
         data = json.loads(text)
-        items = data if isinstance(data, list) else data.get("prompts", [])
-        return [p for p in (_from_obj(i) for i in items) if p]
-    if suffix == ".jsonl":
-        out = []
-        for line in text.splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            got = _from_obj(json.loads(line))
-            if got:
-                out.append(got)
-        return out
-    return [
-        line.strip()
-        for line in text.splitlines()
-        if line.strip() and not line.lstrip().startswith("#")
-    ]
+        raw = data if isinstance(data, list) else data.get("prompts", [])
+    elif suffix == ".jsonl":
+        raw = [json.loads(line) for line in text.splitlines() if line.strip()]
+    else:
+        raw = [
+            line.strip()
+            for line in text.splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+    return [item for item in (_as_item(entry) for entry in raw) if item]
+
+
+def load_prompt_file(path: Path) -> list[str]:
+    """Just the prompt strings, for callers that do their own expansion."""
+    return [item["prompt"] for item in load_prompt_items(path)]
 
 
 def build_batch(

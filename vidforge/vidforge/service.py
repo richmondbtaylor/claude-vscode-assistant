@@ -58,6 +58,18 @@ class AppContext:
             rng=rng,
         )
 
+    def _work_items(self, req: SubmitRequest, rng: random.Random) -> list[tuple[str, int, dict]]:
+        """Resolve a request into ``(prompt, seed, param overrides)`` triples."""
+        work = [(prompt, seed, {}) for prompt, seed in self.expand(req, rng)]
+        work += [
+            (item.prompt.strip(),
+             int(item.seed) if item.seed is not None else rng.randrange(0, 2**31 - 1),
+             dict(item.params))
+            for item in req.items
+            if item.prompt.strip()
+        ]
+        return work
+
     def submit(self, req: SubmitRequest) -> tuple[str, list[Job]]:
         """Screen, expand and enqueue. Raises ``GuardrailError`` on a refusal."""
         spec = self.settings.model(req.model_id)  # KeyError -> 404 at the API edge
@@ -67,21 +79,23 @@ class AppContext:
         for template in req.all_prompts():
             self.screen(req, template).raise_for_status()
 
-        items = self.expand(req)
-        if not items:
-            raise ValueError("prompt expansion produced nothing to render")
+        work = self._work_items(req, random.Random())
+        if not work:
+            raise ValueError("nothing to render: no prompts survived expansion")
 
-        # Wildcards can introduce terms the template did not contain.
-        for prompt, _seed in items:
+        # Wildcards can introduce terms the template did not contain, and
+        # items arrive already resolved - screen the final text either way.
+        for prompt, _seed, _overrides in work:
             self.screen(req, prompt).raise_for_status()
 
         batch_id = uuid.uuid4().hex[:12]
-        defaults = dict(spec.defaults)
-        params = req.params.merged_with(defaults)
-        negative = params.pop("negative_prompt", "") or ""
+        base = req.params.merged_with(dict(spec.defaults))
 
-        jobs = [
-            Job(
+        jobs = []
+        for prompt, seed, overrides in work:
+            params = {**base, **{k: v for k, v in overrides.items() if v not in (None, "")}}
+            negative = params.pop("negative_prompt", "") or ""
+            jobs.append(Job(
                 id=uuid.uuid4().hex,
                 batch_id=batch_id,
                 model_id=spec.id,
@@ -92,9 +106,7 @@ class AppContext:
                 params=params,
                 label=req.label,
                 created_at=utcnow(),
-            )
-            for prompt, seed in items
-        ]
+            ))
         self.db.add_jobs(jobs)
         self.worker.start()  # no-op if already running
         return batch_id, jobs

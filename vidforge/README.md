@@ -4,7 +4,7 @@ Local video generation with a queue, batch prompt expansion, and a gallery.
 
 Runs open-weights video models on your own hardware. Nothing you type leaves the
 machine, and the post-hoc content filters some pipelines ship with are detached
-at load time — there is **no NSFW filter** in this app. What the model can
+at load time. There is **no NSFW filter** in this app. What the model can
 express is a function of the checkpoint and LoRAs you point it at.
 
 Two things it will not do, and these are in the code path, not the docs:
@@ -24,7 +24,7 @@ uv run vidforge setup
 
 `setup` looks at the machine, picks the torch wheel that matches the card it
 finds (CUDA / ROCm / MPS / CPU), installs the inference extras, and pre-fetches
-a model that fits the VRAM it measured — so the first render is not a 20 GB
+a model that fits the VRAM it measured, so the first render is not a 20 GB
 wait. `--dry-run` prints the commands without running them.
 
 ```
@@ -35,12 +35,12 @@ $ uv run vidforge doctor
   suggested    wan-14b  - Wan 2.2 14B - the good one
 ```
 
-`doctor` exits non-zero when something is wrong, and names it — the common one
+`doctor` exits non-zero when something is wrong, and names it. The common one
 being a GPU present but a CPU-only torch installed over the top of it.
 
 `uv sync` alone is enough for the **mock** model, which renders without a GPU.
 You can also skip torch entirely and drive a running
-[ComfyUI](https://github.com/comfyanonymous/ComfyUI) — see *Backends* below.
+[ComfyUI](https://github.com/comfyanonymous/ComfyUI). See *Backends* below.
 
 ## Run
 
@@ -63,7 +63,7 @@ uv run vidforge serve --tunnel
 ```
 
 That prints a public HTTPS link and a QR code. Scan it, and the phone is
-looking at the queue on your desktop — no port forwarding, no router config, no
+looking at the queue on your desktop: no port forwarding, no router config, no
 Cloudflare account. It shells out to a Cloudflare quick tunnel, downloading
 `cloudflared` into `$VIDFORGE_HOME/bin` if you do not already have it.
 
@@ -73,7 +73,7 @@ Same wifi only, no tunnel:
 uv run vidforge serve --host 0.0.0.0     # prints http://<pc-ip>:8787 and a QR
 ```
 
-The UI is responsive down to ~360px — one column, two-up parameter fields,
+The UI is responsive down to ~360px: one column, two-up parameter fields,
 gallery below the composer. Queue a batch from the couch, watch it fill in.
 
 **Access token.** The server is never open. A token is generated on first run
@@ -93,7 +93,7 @@ Everything lives under `$VIDFORGE_HOME` (default `~/.vidforge`): `models.toml`,
 ## Wiring in your prompt generator
 
 This is the seam the app is built around. Your generator produces prompts;
-vidforge takes it from there — expansion, seed sweeps, queue, gallery.
+vidforge takes it from there: expansion, seed sweeps, queue, gallery.
 
 **A file of prompts** (`.txt` one per line, `.json`, or `.jsonl`; JSON objects
 may use a `prompt`, `text`, `positive`, or `description` key):
@@ -120,13 +120,13 @@ curl -X POST localhost:8787/api/generate -H 'content-type: application/json' -d 
 | `{a\|b\|c}` | pick one; nests, e.g. `{neon {pink\|blue}\|daylight}` |
 | `__camera__` | random line from `$VIDFORGE_HOME/wildcards/camera.txt` |
 | `--variants N` | N random seeds per prompt, re-rolling wildcards each time |
-| `--seed S` (repeatable) | fixed seeds instead — the same prompt, same output |
+| `--seed S` (repeatable) | fixed seeds instead: the same prompt, same output |
 
 `POST /api/prompts/preview` (or **Preview expansion** in the UI) shows exactly
 what a template will queue before you commit a 200-clip sweep to the GPU.
 
 Every render writes a JSON sidecar next to the video with the resolved prompt,
-seed, model, LoRAs and every parameter — so anything in the gallery can be
+seed, model, LoRAs and every parameter, so anything in the gallery can be
 reproduced or re-rolled later.
 
 ---
@@ -155,7 +155,7 @@ model usually needs a registry entry and nothing else.
 
 | Backend | Use it when |
 |---|---|
-| `mock` | no GPU — exercises the queue, UI and tests end to end |
+| `mock` | no GPU; exercises the queue, UI and tests end to end |
 | `diffusers` | local torch inference; strips `safety_checker` and `watermarker` on load |
 | `comfyui` | you already have a working ComfyUI node stack |
 
@@ -179,7 +179,7 @@ finally animated WebP rather than failing.
 denoting a minor, or with a stated age under 18. Ambiguous industry words
 (`teen`, `barely legal`) are cleared by an explicit adult age in the prompt, so
 `nude 19 year old` passes and `nude teen` does not. Only the *positive* prompt
-is scanned — `child` in a negative prompt is good practice and is never
+is scanned, since `child` in a negative prompt is good practice and is never
 penalised. A template is screened before it expands, and each expansion is
 screened again, so a wildcard file cannot smuggle a term past the check.
 
@@ -193,7 +193,7 @@ uv run vidforge gen "..." --init-image jane.png --identity-reference --consent-i
 ```
 
 The register is a plain JSON file you maintain. It does not prove anything on
-its own — it makes the attestation explicit, dated and auditable instead of
+its own. It makes the attestation explicit, dated and auditable instead of
 implicit. Prompt-only naming of a public figure is not reliably detectable and
 the app does not pretend otherwise; the enforceable control is on identity
 references.
@@ -225,7 +225,7 @@ uv run vidforge check "a 25 year old woman, nude, cinematic lighting"   # allowe
 
 Every other route requires the token as `?token=`, an `X-Vidforge-Token`
 header, `Authorization: Bearer`, or the cookie. CORS is open so a page on
-another origin can drive the server, but credentials are off — a cross-origin
+another origin can drive the server, but credentials are off: a cross-origin
 caller has to present the header, and no other site can make a browser attach
 your cookie.
 
@@ -238,13 +238,38 @@ row says.
 uv run pytest
 ```
 
-96 tests covering guardrails, prompt expansion, the SQLite queue, worker
+104 tests covering guardrails, prompt expansion, the SQLite queue, worker
 lifecycle (a failing backend must not kill the worker), token auth and CORS,
 machine detection and wheel selection, tunnel startup failure modes, the
 diffusers backend's filter-stripping and kwarg handling against a stub
 pipeline, and the full HTTP round trip through the mock backend.
 
 No GPU required, and no weights are downloaded.
+
+## Compose from anywhere
+
+`remote/remote.html` is a phone-side prompt deck, published as an Artifact. It
+runs the same wildcard expansion and the same two guardrail checks as the
+server, in the browser, with no rig running: build a batch on the train, screen
+it, and export a `.jsonl`.
+
+Feed that file straight back in:
+
+```bash
+vidforge batch takes.jsonl --model wan-1_3b
+```
+
+Each line carries its own seed and settings, so a batch renders exactly as it
+was composed. `--expand` ignores them and rerolls the wildcards instead. The
+same shape goes through the API as `items`:
+
+```json
+{"model_id": "wan-1_3b", "items": [{"prompt": "...", "seed": 42, "params": {"steps": 20}}]}
+```
+
+The deck cannot reach your rig directly, because a published page is sandboxed
+and cannot call arbitrary hosts. To operate the rig from the phone, use
+`serve --tunnel` and open the link it prints.
 
 ## Layout
 

@@ -18,7 +18,7 @@ import time
 from pathlib import Path
 
 from .guardrails import GuardrailError, check as guard_check
-from .prompts import load_prompt_file
+from .prompts import load_prompt_items
 from .schemas import GenParams, SubmitRequest
 from .service import get_context
 
@@ -65,11 +65,13 @@ def _watch(ctx, batch_id: str) -> int:
     return 1 if failed else 0
 
 
-def _submit(args: argparse.Namespace, prompts: list[str]) -> int:
+def _submit(args: argparse.Namespace, prompts: list[str],
+            items: list[dict] | None = None) -> int:
     ctx = get_context()
     request = SubmitRequest(
         model_id=args.model,
         prompts=prompts,
+        items=items or [],
         params=_params(args),
         variants=args.variants,
         seeds=args.seed or [],
@@ -188,12 +190,21 @@ def cmd_batch(args: argparse.Namespace) -> int:
     if not path.exists():
         print(f"error: no such file: {path}", file=sys.stderr)
         return 2
-    prompts = load_prompt_file(path)
-    if not prompts:
+    items = load_prompt_items(path)
+    if not items:
         print(f"error: no prompts found in {path}", file=sys.stderr)
         return 2
-    print(f"loaded {len(prompts)} prompt(s) from {path}")
-    return _submit(args, prompts)
+
+    # A file that already carries seeds and settings is a resolved batch:
+    # render it exactly as composed rather than re-rolling it.
+    resolved = [i for i in items if "seed" in i or i["params"]]
+    if resolved and not args.expand:
+        detail = f"{len(resolved)} with their own seed/settings"
+        print(f"loaded {len(items)} clip(s) from {path} ({detail})")
+        return _submit(args, [], items=items)
+
+    print(f"loaded {len(items)} prompt(s) from {path}")
+    return _submit(args, [i["prompt"] for i in items])
 
 
 def cmd_models(_args: argparse.Namespace) -> int:
@@ -373,6 +384,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     batch = sub.add_parser("batch", help="render a .txt/.json/.jsonl file of prompts")
     batch.add_argument("file")
+    batch.add_argument("--expand", action="store_true",
+                       help="treat the file as templates, ignoring any seeds it carries")
     add_gen_flags(batch)
     batch.set_defaults(func=cmd_batch)
 

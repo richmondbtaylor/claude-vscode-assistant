@@ -56,3 +56,42 @@ def test_load_prompt_file_formats(tmp_path):
     jl = tmp_path / "p.jsonl"
     jl.write_text('{"prompt": "one"}\n{"text": "two"}\n')
     assert load_prompt_file(jl) == ["one", "two"]
+
+
+# --- resolved batches (an export composed elsewhere) -----------------------
+def test_items_carry_seed_and_settings(tmp_path):
+    from vidforge.prompts import load_prompt_items
+
+    path = tmp_path / "takes.jsonl"
+    path.write_text(
+        '{"prompt": "a quiet street", "seed": 42, "width": 832, "height": 480, "fps": 16}\n'
+        '{"prompt": "a loud street", "seed": 7, "params": {"steps": 12}}\n'
+    )
+    items = load_prompt_items(path)
+    assert [i["prompt"] for i in items] == ["a quiet street", "a loud street"]
+    assert items[0]["seed"] == 42
+    assert items[0]["params"]["width"] == 832
+    assert items[1]["params"] == {"steps": 12}  # nested params work too
+
+
+def test_items_without_a_seed_are_left_open(tmp_path):
+    from vidforge.prompts import load_prompt_items
+
+    path = tmp_path / "p.txt"
+    path.write_text("just a prompt\n")
+    item = load_prompt_items(path)[0]
+    assert "seed" not in item and item["params"] == {}
+
+
+def test_a_boolean_is_not_mistaken_for_a_seed(tmp_path):
+    from vidforge.prompts import load_prompt_items
+
+    path = tmp_path / "p.jsonl"
+    path.write_text('{"prompt": "x", "seed": true}\n')
+    assert "seed" not in load_prompt_items(path)[0]
+
+
+def test_load_prompt_file_still_returns_plain_strings(tmp_path):
+    path = tmp_path / "p.jsonl"
+    path.write_text('{"prompt": "one", "seed": 1}\n{"prompt": "two"}\n')
+    assert load_prompt_file(path) == ["one", "two"]

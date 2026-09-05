@@ -59,7 +59,7 @@ async function loadConsent() {
   const records = await api("/api/consent");
   const select = $("#consent");
   select.innerHTML = records.length
-    ? records.map((r) => `<option value="${r.id}">${r.subject} — ${r.attested_by}</option>`).join("")
+    ? records.map((r) => `<option value="${r.id}">${r.subject} · ${r.attested_by}</option>`).join("")
     : `<option value="">no consent records on file</option>`;
 }
 
@@ -139,7 +139,7 @@ function openDetail(job) {
       <dt>Model</dt><dd>${job.model_id} (${job.backend})</dd>
       <dt>Seed</dt><dd>${job.seed}</dd>
       <dt>Params</dt><dd>${escapeHtml(JSON.stringify(job.params))}</dd>
-      <dt>Status</dt><dd>${job.status}${job.error ? ` — ${escapeHtml(job.error)}` : ""}</dd>
+      <dt>Status</dt><dd>${job.status}${job.error ? `: ${escapeHtml(job.error)}` : ""}</dd>
       ${job.output_path ? `<dt>File</dt><dd>${escapeHtml(job.output_path)}</dd>` : ""}
     </dl>
     <div class="actions">

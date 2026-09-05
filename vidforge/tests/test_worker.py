@@ -1,3 +1,4 @@
+import pytest
 import time
 
 from vidforge.schemas import SubmitRequest
@@ -97,3 +98,53 @@ def test_a_failing_backend_marks_the_job_failed_without_killing_the_worker(ctx):
         params={"width": 64, "height": 64, "num_frames": 2},
     ))
     assert _wait(ctx, good[0].id).status == "done"
+
+
+def test_resolved_items_keep_their_seed_and_overrides(ctx):
+    from vidforge.schemas import PromptItem
+
+    _batch, jobs = ctx.submit(SubmitRequest(
+        model_id="mock",
+        params={"width": 320, "height": 240, "num_frames": 2},
+        items=[
+            PromptItem(prompt="first", seed=111, params={"width": 64}),
+            PromptItem(prompt="second", seed=222),
+        ],
+    ))
+    by_prompt = {j.prompt: j for j in jobs}
+    assert by_prompt["first"].seed == 111
+    assert by_prompt["first"].params["width"] == 64    # item override wins
+    assert by_prompt["second"].params["width"] == 320  # batch value fills in
+    assert by_prompt["second"].seed == 222
+
+
+def test_items_are_not_wildcard_expanded(ctx):
+    from vidforge.schemas import PromptItem
+
+    # A resolved clip is final text; re-rolling it would change what was composed.
+    _batch, jobs = ctx.submit(SubmitRequest(
+        model_id="mock",
+        items=[PromptItem(prompt="a {red|blue} car", seed=1)],
+        params={"width": 64, "height": 64, "num_frames": 2},
+    ))
+    assert jobs[0].prompt == "a {red|blue} car"
+
+
+def test_items_are_screened_like_any_other_prompt(ctx):
+    from vidforge.guardrails import GuardrailError
+    from vidforge.schemas import PromptItem
+
+    with pytest.raises(GuardrailError):
+        ctx.submit(SubmitRequest(
+            model_id="mock", items=[PromptItem(prompt="nude schoolgirl", seed=1)]
+        ))
+
+
+def test_items_without_a_seed_get_one(ctx):
+    from vidforge.schemas import PromptItem
+
+    _batch, jobs = ctx.submit(SubmitRequest(
+        model_id="mock", items=[PromptItem(prompt="no seed given")],
+        params={"width": 64, "height": 64, "num_frames": 2},
+    ))
+    assert isinstance(jobs[0].seed, int) and jobs[0].seed >= 0
