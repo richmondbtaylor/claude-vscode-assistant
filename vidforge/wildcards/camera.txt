@@ -1,0 +1,9 @@
+# One entry per line. Reference from a prompt as __camera__
+slow dolly in
+handheld tracking shot
+locked-off wide shot
+orbiting crane shot
+low-angle push in
+overhead top-down shot
+slow rack focus
+steadicam follow

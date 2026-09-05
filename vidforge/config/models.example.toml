@@ -1,0 +1,105 @@
+# vidforge model registry
+#
+# Copied to $VIDFORGE_HOME/models.toml on first run. Edit that copy - adding a
+# model never requires touching code. Restart vidforge after editing.
+#
+#   backend         "diffusers" (local torch) | "comfyui" (drive a ComfyUI) | "mock"
+#   kind            "t2v" text-to-video, or "i2v" image-to-video
+#   repo            HF repo id, a local directory, or a local .safetensors file
+#   pipeline_class  any pipeline class exported by diffusers
+#   loras           [{ repo = "...", weight = 0.8, name = "style" }, ...]
+#   offload         true keeps peak VRAM low (model CPU offload); false is faster
+#   defaults        per-model generation defaults, overridable per request
+#
+# Weights are pulled from Hugging Face on first use into HF_HOME. Nothing you
+# type is sent anywhere: generation is entirely local.
+
+# --- Wan 2.1 / 2.2 --------------------------------------------------------
+# The small one. Runs on ~8GB and is the right first download.
+[model.wan-1_3b]
+backend = "diffusers"
+kind = "t2v"
+label = "Wan 2.1 T2V 1.3B"
+repo = "Wan-AI/Wan2.1-T2V-1.3B-Diffusers"
+pipeline_class = "WanPipeline"
+dtype = "bfloat16"
+defaults = { width = 832, height = 480, num_frames = 81, fps = 16, steps = 30, guidance_scale = 5.0, negative_prompt = "blurry, low quality, distorted anatomy, extra limbs, watermark, text" }
+
+# The good one. ~24GB class card, or slower with offload on less.
+[model.wan-14b]
+backend = "diffusers"
+kind = "t2v"
+label = "Wan 2.2 T2V 14B"
+repo = "Wan-AI/Wan2.2-T2V-A14B-Diffusers"
+pipeline_class = "WanPipeline"
+dtype = "bfloat16"
+offload = true
+defaults = { width = 1280, height = 720, num_frames = 81, fps = 16, steps = 40, guidance_scale = 5.0 }
+
+[model.wan-i2v]
+backend = "diffusers"
+kind = "i2v"
+label = "Wan 2.1 I2V 14B 480p"
+repo = "Wan-AI/Wan2.1-I2V-14B-480P-Diffusers"
+pipeline_class = "WanImageToVideoPipeline"
+dtype = "bfloat16"
+offload = true
+defaults = { width = 832, height = 480, num_frames = 81, fps = 16, steps = 30, guidance_scale = 5.0 }
+
+# --- LTX-Video: fastest iteration loop ------------------------------------
+[model.ltx]
+backend = "diffusers"
+kind = "t2v"
+label = "LTX-Video"
+repo = "Lightricks/LTX-Video"
+pipeline_class = "LTXPipeline"
+dtype = "bfloat16"
+defaults = { width = 768, height = 512, num_frames = 121, fps = 24, steps = 30, guidance_scale = 3.0 }
+
+# --- HunyuanVideo ---------------------------------------------------------
+[model.hunyuan]
+backend = "diffusers"
+kind = "t2v"
+label = "HunyuanVideo"
+repo = "hunyuanvideo-community/HunyuanVideo"
+pipeline_class = "HunyuanVideoPipeline"
+dtype = "bfloat16"
+offload = true
+defaults = { width = 720, height = 480, num_frames = 61, fps = 15, steps = 30, guidance_scale = 6.0 }
+
+# --- Stable Video Diffusion: animate a still ------------------------------
+# The pipeline that ships an invisible watermarker; vidforge strips it on load.
+[model.svd]
+backend = "diffusers"
+kind = "i2v"
+label = "Stable Video Diffusion XT"
+repo = "stabilityai/stable-video-diffusion-img2vid-xt"
+pipeline_class = "StableVideoDiffusionPipeline"
+dtype = "float16"
+defaults = { width = 1024, height = 576, num_frames = 25, fps = 7, steps = 25 }
+
+# --- A custom checkpoint with LoRAs stacked on top ------------------------
+# Point `repo` at a local folder or a single .safetensors file.
+# [model.house-style]
+# backend = "diffusers"
+# kind = "t2v"
+# label = "Wan 1.3B + house LoRAs"
+# repo = "Wan-AI/Wan2.1-T2V-1.3B-Diffusers"
+# pipeline_class = "WanPipeline"
+# loras = [
+#   { repo = "/models/loras/my-style.safetensors", weight = 0.9, name = "style" },
+#   { repo = "/models/loras/motion.safetensors",   weight = 0.5, name = "motion" },
+# ]
+# defaults = { width = 832, height = 480, num_frames = 81, fps = 16, steps = 30 }
+
+# --- Drive a running ComfyUI ----------------------------------------------
+# Export any working graph with "Save (API Format)", drop it in
+# $VIDFORGE_HOME/workflows/, and put %prompt% / %seed% / %width% / %height% /
+# %num_frames% / %steps% / %cfg% placeholders in the fields you want vidforge
+# to drive. This is the easiest way to use a node stack diffusers cannot load.
+[model.comfy-wan]
+backend = "comfyui"
+kind = "t2v"
+label = "ComfyUI - Wan workflow"
+workflow = "workflows/wan_t2v_api.json"
+defaults = { width = 832, height = 480, num_frames = 81, fps = 16, steps = 25, guidance_scale = 6.0 }
