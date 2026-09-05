@@ -13,6 +13,8 @@ dependencies = [
     # bundles its own ffmpeg, so MP4 output works without a system install
     "imageio[ffmpeg]>=2.35",
     "numpy>=1.26",
+    # pure-python QR, for the phone link printed by `serve --tunnel`
+    "segno>=1.6",
 ]
 
 [project.optional-dependencies]

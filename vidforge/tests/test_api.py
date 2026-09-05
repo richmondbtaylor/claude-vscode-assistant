@@ -4,11 +4,14 @@ import pytest
 from fastapi.testclient import TestClient
 
 from vidforge.api import app
+from vidforge.service import get_context
 
 
 @pytest.fixture(scope="module")
 def client():
     with TestClient(app) as c:
+        # every route needs the token; auth itself is covered in test_auth.py
+        c.headers["x-vidforge-token"] = get_context().token
         yield c
 
 

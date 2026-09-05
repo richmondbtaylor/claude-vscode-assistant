@@ -96,14 +96,86 @@ def _submit(args: argparse.Namespace, prompts: list[str]) -> int:
 
 
 # --- commands --------------------------------------------------------------
+def _local_ip() -> str:
+    """The LAN address of this machine, for the link you open on a phone."""
+    import socket
+
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        try:
+            sock.connect(("10.255.255.255", 1))  # no packets sent; just picks a route
+            return sock.getsockname()[0]
+        except OSError:
+            return "127.0.0.1"
+
+
+def _announce(label: str, url: str, token: str, qr: bool) -> None:
+    from .tunnel import qr_to_terminal
+
+    link = f"{url}/?token={token}"
+    print(f"\n  {label}\n  {link}")
+    if qr:
+        block = qr_to_terminal(link)
+        if block:
+            print(block)
+
+
 def cmd_serve(args: argparse.Namespace) -> int:
+    import threading
+
     import uvicorn
 
     ctx = get_context()
     host = args.host or ctx.settings.host
     port = args.port or ctx.settings.port
-    print(f"vidforge -> http://{host}:{port}   (home: {ctx.settings.home})")
-    uvicorn.run("vidforge.api:app", host=host, port=port, log_level="info")
+    # A tunnel is pointless if the app only listens on loopback for itself, but
+    # cloudflared connects locally, so 127.0.0.1 is still correct there.
+    if args.tunnel and not args.host:
+        host = "127.0.0.1"
+
+    tunnel = None
+    if args.tunnel:
+        from .tunnel import QuickTunnel, TunnelError, wait_for_server
+
+        def _open_tunnel() -> None:
+            nonlocal tunnel
+            if not wait_for_server(f"http://127.0.0.1:{port}", timeout=45):
+                print("vidforge: server did not come up; skipping tunnel")
+                return
+            try:
+                tunnel = QuickTunnel(port=port, home=ctx.settings.home)
+                url = tunnel.start()
+            except TunnelError as exc:
+                print(f"vidforge: tunnel unavailable: {exc}")
+                return
+            _announce("Public (phone, anywhere):", url, ctx.token, qr=not args.no_qr)
+
+        threading.Thread(target=_open_tunnel, name="vidforge-tunnel", daemon=True).start()
+
+    print(f"vidforge  home: {ctx.settings.home}")
+    _announce("This machine:", f"http://127.0.0.1:{port}", ctx.token, qr=False)
+    if host == "0.0.0.0":  # noqa: S104 - deliberate, and the token gates it
+        _announce("Same wifi (phone):", f"http://{_local_ip()}:{port}", ctx.token,
+                  qr=not args.no_qr)
+    print(f"\n  access token: {ctx.token}\n")
+
+    try:
+        uvicorn.run("vidforge.api:app", host=host, port=port, log_level="warning")
+    finally:
+        if tunnel is not None:
+            tunnel.stop()
+    return 0
+
+
+def cmd_token(args: argparse.Namespace) -> int:
+    ctx = get_context()
+    if args.reset:
+        (ctx.settings.home / "token").unlink(missing_ok=True)
+        from .auth import load_or_create_token
+
+        print(load_or_create_token(ctx.settings.home))
+        print("(restart `vidforge serve` to use it)")
+        return 0
+    print(ctx.token)
     return 0
 
 
@@ -194,6 +266,53 @@ def cmd_consent(args: argparse.Namespace) -> int:
     return 2
 
 
+def cmd_doctor(args: argparse.Namespace) -> int:
+    from .bootstrap import detect, doctor_json, report
+
+    info = detect()
+    if args.json:
+        print(doctor_json(info))
+    else:
+        print("vidforge doctor\n")
+        print(report(info))
+        print()
+        if not info.ready:
+            print("  run `vidforge setup` to fix the above")
+    return 0 if info.ready else 1
+
+
+def cmd_setup(args: argparse.Namespace) -> int:
+    from .bootstrap import detect, install, prefetch, recommend, report
+
+    info = detect()
+    print("vidforge setup\n")
+    print(report(info))
+
+    model_id = args.model or recommend(info)[0]
+    if info.vendor == "none" and not args.force:
+        print(
+            "\n  No GPU here, so there is nothing worth installing: torch on CPU will\n"
+            "  technically run a video model but a single clip takes hours. The mock\n"
+            "  model already works. Re-run with --force to install anyway."
+        )
+        return 0
+
+    print("\ninstalling")
+    code = install(info, dry=args.dry_run)
+    if code != 0:
+        print("\n  install failed - see the output above")
+        return code
+
+    if not args.no_download:
+        print(f"\nprefetching weights for {model_id}")
+        prefetch(model_id, get_context().settings, dry=args.dry_run)
+
+    print("\ndone. next:")
+    print(f"  vidforge gen \"a rain-slicked alley at night\" --model {model_id}")
+    print("  vidforge serve --tunnel        # phone link + QR code")
+    return 0
+
+
 def cmd_config(_args: argparse.Namespace) -> int:
     ctx = get_context()
     print(json.dumps({
@@ -215,9 +334,16 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     serve = sub.add_parser("serve", help="run the web UI and API")
-    serve.add_argument("--host")
+    serve.add_argument("--host", help="0.0.0.0 to reach it from a phone on the same wifi")
     serve.add_argument("--port", type=int)
+    serve.add_argument("--tunnel", action="store_true",
+                       help="also expose a public HTTPS URL via a Cloudflare quick tunnel")
+    serve.add_argument("--no-qr", action="store_true", help="do not print a QR code")
     serve.set_defaults(func=cmd_serve)
+
+    token = sub.add_parser("token", help="print the access token")
+    token.add_argument("--reset", action="store_true", help="generate a new one")
+    token.set_defaults(func=cmd_token)
 
     def add_gen_flags(p: argparse.ArgumentParser) -> None:
         p.add_argument("--model", default="mock")
@@ -249,6 +375,17 @@ def build_parser() -> argparse.ArgumentParser:
     batch.add_argument("file")
     add_gen_flags(batch)
     batch.set_defaults(func=cmd_batch)
+
+    setup = sub.add_parser("setup", help="detect this machine and install what it needs")
+    setup.add_argument("--model", help="model to prefetch (default: whatever fits)")
+    setup.add_argument("--no-download", action="store_true", help="skip fetching weights")
+    setup.add_argument("--dry-run", action="store_true", help="print commands, run nothing")
+    setup.add_argument("--force", action="store_true", help="install even with no GPU")
+    setup.set_defaults(func=cmd_setup)
+
+    doctor = sub.add_parser("doctor", help="report what this machine can run")
+    doctor.add_argument("--json", action="store_true")
+    doctor.set_defaults(func=cmd_doctor)
 
     sub.add_parser("models", help="list the model registry").set_defaults(func=cmd_models)
     sub.add_parser("wildcards", help="list wildcard files").set_defaults(func=cmd_wildcards)

@@ -9,6 +9,7 @@ import random
 import uuid
 from functools import lru_cache
 
+from .auth import load_or_create_token
 from .config import Settings, get_settings
 from .db import Database, utcnow
 from .guardrails import ConsentStore, GuardrailError, Verdict, check
@@ -25,6 +26,7 @@ class AppContext:
         self.db = Database(self.settings.db_path)
         self.db.reset_orphans()
         self.consent = ConsentStore(self.settings.consent_file)
+        self.token = load_or_create_token(self.settings.home)
         self.worker = Worker(self.settings, self.db)
 
     def start(self) -> None:

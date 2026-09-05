@@ -9,9 +9,11 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from .auth import COOKIE_MAX_AGE, COOKIE_NAME, PUBLIC_PATHS, matches, presented_token
 from .backends import BackendUnavailable, get_backend
 from .guardrails import GuardrailError
 from .prompts import build_batch
@@ -32,6 +34,77 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="vidforge", version="0.1.0", lifespan=lifespan)
+
+
+# --- auth ------------------------------------------------------------------
+_LOGIN_PAGE = """<!doctype html><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>vidforge</title>
+<style>
+ body{background:#0d0f13;color:#e6e8ec;font:16px/1.5 system-ui,sans-serif;
+      display:grid;place-items:center;min-height:100vh;margin:0;padding:20px}
+ form{background:#14171d;border:1px solid #262b35;border-radius:10px;padding:24px;
+      width:min(360px,100%);display:flex;flex-direction:column;gap:12px}
+ h1{margin:0;font-size:18px}p{margin:0;color:#8b93a3;font-size:13px}
+ input{background:#191d25;border:1px solid #262b35;border-radius:7px;color:inherit;
+       padding:11px;font:inherit}
+ button{background:#ff5a3c;border:0;border-radius:7px;color:#14100f;padding:11px;
+        font:inherit;font-weight:650}
+</style>
+<form method=get action="/">
+ <h1>vidforge</h1>
+ <p>Paste the access token printed by <code>vidforge serve</code>.</p>
+ <input name=token autofocus autocapitalize=off autocorrect=off spellcheck=false
+        placeholder="access token">
+ <button>Unlock</button>
+</form>"""
+
+
+@app.middleware("http")
+async def require_token(request, call_next):
+    """Every route needs the token; the UI trades it for a cookie on first visit."""
+    if request.method == "OPTIONS" or request.url.path in PUBLIC_PATHS:
+        return await call_next(request)
+
+    token = get_context().token
+    presented = presented_token(request)
+    if not matches(presented, token):
+        wants_html = "text/html" in request.headers.get("accept", "")
+        if request.method == "GET" and wants_html:
+            return HTMLResponse(_LOGIN_PAGE, status_code=401)
+        return JSONResponse({"error": "missing or invalid access token"}, status_code=401)
+
+    # A ?token= link is single-use: swap it for a cookie and drop it from the
+    # URL so it stops living in history, screenshots and referrers.
+    if request.method == "GET" and request.query_params.get("token"):
+        clean = request.url.remove_query_params("token")
+        response = RedirectResponse(str(clean), status_code=303)
+    else:
+        response = await call_next(request)
+
+    if not matches(request.cookies.get(COOKIE_NAME), token):
+        response.set_cookie(
+            COOKIE_NAME, token, max_age=COOKIE_MAX_AGE, httponly=True, samesite="lax"
+        )
+    return response
+
+
+# Added last, so it wraps the auth middleware and can answer preflights.
+# Credentials stay off: cross-origin callers authenticate with the header, and
+# no other site can make a browser attach the cookie.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/healthz")
+def healthz() -> dict:
+    """Unauthenticated liveness probe - reveals nothing but that we are up."""
+    return {"ok": True, "app": "vidforge"}
 
 
 @app.exception_handler(GuardrailError)

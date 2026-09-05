@@ -18,19 +18,29 @@ without a consent record on file. Everything else is yours.
 ## Install
 
 ```bash
-uv sync                     # app + web UI + CLI
+uv sync              # app + web UI + CLI
+uv run vidforge setup
 ```
 
-That is enough to run the **mock** model, which renders without a GPU. For real
-generation, install torch for your card first, then the extra:
+`setup` looks at the machine, picks the torch wheel that matches the card it
+finds (CUDA / ROCm / MPS / CPU), installs the inference extras, and pre-fetches
+a model that fits the VRAM it measured — so the first render is not a 20 GB
+wait. `--dry-run` prints the commands without running them.
 
-```bash
-uv pip install torch --index-url https://download.pytorch.org/whl/cu124
-uv pip install -e '.[diffusers]'
+```
+$ uv run vidforge doctor
+  platform     Windows AMD64, python 3.11.9
+  accelerator  NVIDIA GeForce RTX 4090  (24 GB)
+  torch        2.5.1+cu124  [accelerated]
+  suggested    wan-14b  - Wan 2.2 14B - the good one
 ```
 
-Or skip torch entirely and drive a running [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
-instance — see *Backends* below.
+`doctor` exits non-zero when something is wrong, and names it — the common one
+being a GPU present but a CPU-only torch installed over the top of it.
+
+`uv sync` alone is enough for the **mock** model, which renders without a GPU.
+You can also skip torch entirely and drive a running
+[ComfyUI](https://github.com/comfyanonymous/ComfyUI) — see *Backends* below.
 
 ## Run
 
@@ -48,18 +58,32 @@ uv run vidforge models | jobs | wildcards | config
 
 ### From your phone
 
-Bind to the LAN and open it from anything on the same wifi:
-
 ```bash
-uv run vidforge serve --host 0.0.0.0     # then http://<pc-ip>:8787 on the phone
+uv run vidforge serve --tunnel
 ```
 
-The UI is responsive down to ~360px — one column, two-up parameter fields, and
-the gallery below the composer. Queue a batch from the couch, watch it fill in.
+That prints a public HTTPS link and a QR code. Scan it, and the phone is
+looking at the queue on your desktop — no port forwarding, no router config, no
+Cloudflare account. It shells out to a Cloudflare quick tunnel, downloading
+`cloudflared` into `$VIDFORGE_HOME/bin` if you do not already have it.
 
-There is **no authentication**. `0.0.0.0` exposes the queue and gallery to
-everything on the network, so keep it to a network you trust and never port
-forward it.
+Same wifi only, no tunnel:
+
+```bash
+uv run vidforge serve --host 0.0.0.0     # prints http://<pc-ip>:8787 and a QR
+```
+
+The UI is responsive down to ~360px — one column, two-up parameter fields,
+gallery below the composer. Queue a batch from the couch, watch it fill in.
+
+**Access token.** The server is never open. A token is generated on first run
+into `$VIDFORGE_HOME/token`; the printed links embed it, and the first request
+swaps it for a 30-day cookie and strips it back out of the URL so it stops
+living in your history. Open the bare URL and you get a box to paste it into.
+`vidforge token` prints it, `--reset` rolls it.
+
+That matters more than it sounds: a quick tunnel URL is unguessable but public.
+The token is the only thing between it and the internet.
 
 Everything lives under `$VIDFORGE_HOME` (default `~/.vidforge`): `models.toml`,
 `wildcards/`, `outputs/`, `uploads/`, and the SQLite job database.
@@ -197,6 +221,13 @@ uv run vidforge check "a 25 year old woman, nude, cinematic lighting"   # allowe
 | `GET` | `/media/{id}` · `/media/{id}/thumb` | the clip and its poster frame |
 | `POST` | `/api/uploads` | init image for image-to-video |
 | `GET` `POST` `DELETE` | `/api/consent[/{id}]` | likeness consent register |
+| `GET` | `/healthz` | liveness, the one route that needs no token |
+
+Every other route requires the token as `?token=`, an `X-Vidforge-Token`
+header, `Authorization: Bearer`, or the cookie. CORS is open so a page on
+another origin can drive the server, but credentials are off — a cross-origin
+caller has to present the header, and no other site can make a browser attach
+your cookie.
 
 Media is only ever served from inside `$VIDFORGE_HOME`, whatever the database
 row says.
@@ -207,9 +238,13 @@ row says.
 uv run pytest
 ```
 
-49 tests covering guardrails, prompt expansion, the SQLite queue, worker
-lifecycle (including a failing backend not killing the worker), and the full
-HTTP round trip through the mock backend. No GPU required.
+96 tests covering guardrails, prompt expansion, the SQLite queue, worker
+lifecycle (a failing backend must not kill the worker), token auth and CORS,
+machine detection and wheel selection, tunnel startup failure modes, the
+diffusers backend's filter-stripping and kwarg handling against a stub
+pipeline, and the full HTTP round trip through the mock backend.
+
+No GPU required, and no weights are downloaded.
 
 ## Layout
 
@@ -224,6 +259,9 @@ vidforge/
 ├── db.py               SQLite job store
 ├── media.py            frame encoding, thumbnails
 ├── config.py           settings + models.toml registry
+├── auth.py             token generation and presentation
+├── tunnel.py           cloudflared quick tunnel + QR
+├── bootstrap.py        machine detection, wheel selection, prefetch
 ├── backends/           mock · diffusers · comfyui
 └── static/             the web UI (no build step)
 ```
