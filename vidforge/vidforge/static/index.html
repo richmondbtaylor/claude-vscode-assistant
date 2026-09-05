@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vidforge</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23ff5a3c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="mark"></span> vidforge</div>
+  <div id="status-strip" class="status-strip">connecting&hellip;</div>
+</header>
+
+<main class="layout">
+  <!-- compose ------------------------------------------------------------ -->
+  <section class="panel compose" aria-label="Compose">
+    <div class="field">
+      <label for="model">Model</label>
+      <select id="model"></select>
+      <p id="model-note" class="note"></p>
+    </div>
+
+    <div class="field">
+      <label for="prompt">Prompt <span class="hint">one per line &middot; <code>{a|b}</code> &middot; <code>__camera__</code></span></label>
+      <textarea id="prompt" rows="7" spellcheck="false"
+        placeholder="a rain-slicked alley at night, __lighting__, __camera__, {35mm film|digital} look"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="negative">Negative prompt</label>
+      <textarea id="negative" rows="2" spellcheck="false"></textarea>
+    </div>
+
+    <div class="grid-3">
+      <div class="field"><label for="width">Width</label><input id="width" type="number" step="8" min="64"></div>
+      <div class="field"><label for="height">Height</label><input id="height" type="number" step="8" min="64"></div>
+      <div class="field"><label for="frames">Frames</label><input id="frames" type="number" min="1"></div>
+      <div class="field"><label for="fps">FPS</label><input id="fps" type="number" min="1"></div>
+      <div class="field"><label for="steps">Steps</label><input id="steps" type="number" min="1"></div>
+      <div class="field"><label for="cfg">CFG</label><input id="cfg" type="number" step="0.1" min="0"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label for="variants">Variants <span class="hint">seeds per prompt</span></label>
+        <input id="variants" type="number" min="1" max="200" value="1">
+      </div>
+      <div class="field">
+        <label for="seeds">Fixed seeds <span class="hint">comma separated</span></label>
+        <input id="seeds" type="text" placeholder="auto" spellcheck="false">
+      </div>
+    </div>
+
+    <div class="field i2v-only" hidden>
+      <label for="init">Init image <span class="hint">required for image-to-video</span></label>
+      <input id="init" type="file" accept="image/png,image/jpeg,image/webp,image/bmp">
+      <label class="check"><input id="identity" type="checkbox"> This is a real person's face</label>
+      <select id="consent" hidden></select>
+    </div>
+
+    <div class="actions">
+      <button id="preview-btn" class="ghost" type="button">Preview expansion</button>
+      <button id="generate-btn" class="primary" type="button">Generate</button>
+    </div>
+
+    <div id="message" class="message" hidden></div>
+    <ol id="preview-list" class="preview" hidden></ol>
+  </section>
+
+  <!-- queue + gallery ----------------------------------------------------- -->
+  <section class="panel results" aria-label="Results">
+    <div class="results-head">
+      <div class="tabs" role="tablist">
+        <button class="tab is-active" data-filter="" role="tab">All</button>
+        <button class="tab" data-filter="queued" role="tab">Queued</button>
+        <button class="tab" data-filter="running" role="tab">Running</button>
+        <button class="tab" data-filter="done" role="tab">Done</button>
+        <button class="tab" data-filter="failed" role="tab">Failed</button>
+      </div>
+      <div class="results-tools">
+        <input id="search" type="search" placeholder="Search prompts" spellcheck="false">
+        <button id="clear-queue" class="ghost small" type="button">Clear queue</button>
+      </div>
+    </div>
+    <div id="grid" class="grid"></div>
+    <p id="empty" class="empty">Nothing rendered yet. The <strong>mock</strong> model works with no GPU &mdash; use it to try the queue.</p>
+  </section>
+</main>
+
+<dialog id="detail" class="detail">
+  <div class="detail-body"></div>
+  <form method="dialog"><button class="ghost">Close</button></form>
+</dialog>
+
+<script src="/app.js"></script>
+</body>
+</html>

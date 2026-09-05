@@ -118,3 +118,12 @@ context-mode/content/
 # extraction can pull any commercial face. Re-running extract.py restores them,
 # so tracking none of them costs a command and risks nothing.
 design-systems/*/fonts/
+
+# Session cookies and browser profiles: these are live credentials.
+# Patterns alone do not untrack a file already committed, which is how
+# linkedin_cookies.json stayed in a public repo for four weeks.
+**/linkedin_cookies.json
+**/whatsapp_session/
+**/*_session/
+**/Network/Cookies
+**/Network/Cookies-journal

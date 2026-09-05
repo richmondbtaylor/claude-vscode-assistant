@@ -1,0 +1,682 @@
+<title>Vidforge Remote</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root {
+  /* A deliberate single visual world: this is a control deck for a dark
+     desktop app, and it reads the same on a phone at 2am as the rig does.
+     Every colour is painted explicitly so the page never borrows the host
+     ground. */
+  color-scheme: dark;
+  --ground:   #131110;
+  --deck:     #1c1917;
+  --deck-2:   #241f1c;
+  --rule:     #322b27;
+  --rule-firm:#4a3f39;
+  --ink:      #f2ece7;
+  --ink-soft: #a99c94;
+  --accent:   #ff5a3c;
+  --accent-in:#1a0f0c;
+  --ok:       #56c493;
+  --ok-bg:    #16281f;
+  --stop:     #ff6b87;
+  --stop-bg:  #2d1319;
+  --hold:     #e5b84b;
+  --hold-bg:  #2b2314;
+  --ui: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap { max-width: 680px; margin: 0 auto; padding: 0 0 64px; }
+
+/* --- masthead --------------------------------------------------------- */
+.mast {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  padding: 18px 18px 14px;
+  border-bottom: 2px solid var(--ink);
+}
+.mast h1 {
+  margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.02em;
+}
+.mast h1 span { color: var(--accent); }
+.mast .sub {
+  font-family: var(--mono); font-size: 11px; color: var(--ink-soft);
+  letter-spacing: .04em; text-transform: uppercase;
+}
+
+/* --- modules ---------------------------------------------------------- */
+.mod { border-bottom: 1px solid var(--rule); padding: 18px; }
+.mod > h2 {
+  margin: 0 0 12px; font-size: 11px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+  display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+}
+.mod > h2 em { font-style: normal; font-family: var(--mono); letter-spacing: 0; text-transform: none; }
+
+label { display: block; font-size: 11px; font-weight: 600; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--ink-soft); margin-bottom: 5px; }
+
+textarea, input, select {
+  width: 100%; font-family: var(--mono); font-size: 16px; /* 16px: iOS will not zoom */
+  color: var(--ink); background: var(--deck);
+  border: 1px solid var(--rule-firm); border-radius: 4px; padding: 10px 11px;
+}
+textarea { line-height: 1.55; resize: vertical; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.chip {
+  font-family: var(--mono); font-size: 12px; padding: 5px 9px;
+  background: var(--deck-2); border: 1px solid var(--rule); border-radius: 999px;
+  color: var(--ink-soft); cursor: pointer;
+}
+.chip:hover, .chip:focus-visible { border-color: var(--accent); color: var(--accent); }
+
+.dials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.dials input { text-align: center; padding: 9px 4px; font-variant-numeric: tabular-nums; }
+@media (max-width: 400px) { .dials { grid-template-columns: repeat(2, 1fr); } }
+
+.readout {
+  margin-top: 12px; padding-top: 11px; border-top: 1px dashed var(--rule);
+  font-family: var(--mono); font-size: 12px; color: var(--ink-soft);
+  display: flex; flex-wrap: wrap; gap: 4px 16px; font-variant-numeric: tabular-nums;
+}
+.readout b { color: var(--ink); font-weight: 500; }
+
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* --- verdict ---------------------------------------------------------- */
+.verdict {
+  display: flex; gap: 11px; align-items: flex-start;
+  padding: 12px 14px; border-radius: 4px; font-size: 13.5px;
+  border: 1px solid transparent;
+}
+.verdict .tag {
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  padding: 3px 7px; border-radius: 3px; white-space: nowrap; margin-top: 1px;
+}
+.verdict.pass { background: var(--ok-bg); border-color: color-mix(in srgb, var(--ok) 35%, transparent); }
+.verdict.pass .tag { background: var(--ok); color: var(--ground); }
+.verdict.stop { background: var(--stop-bg); border-color: color-mix(in srgb, var(--stop) 40%, transparent); }
+.verdict.stop .tag { background: var(--stop); color: var(--ground); }
+.verdict p { margin: 0; }
+.verdict code { font-family: var(--mono); font-size: 12px; }
+
+/* --- takes ------------------------------------------------------------ */
+ol.takes { list-style: none; margin: 0; padding: 0; }
+ol.takes li {
+  display: grid; grid-template-columns: 30px 1fr; gap: 12px;
+  padding: 11px 0; border-top: 1px solid var(--rule);
+}
+ol.takes li:first-child { border-top: 0; }
+.take-n {
+  font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent);
+  padding-top: 2px; font-variant-numeric: tabular-nums;
+}
+.take-p { font-family: var(--mono); font-size: 13px; line-height: 1.5; word-break: break-word; }
+.take-m {
+  font-family: var(--mono); font-size: 11px; color: var(--ink-soft); margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.more { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); padding-top: 11px;
+        border-top: 1px solid var(--rule); }
+
+/* --- buttons ---------------------------------------------------------- */
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+button {
+  font-family: var(--ui); font-size: 14px; font-weight: 600; cursor: pointer;
+  border-radius: 4px; padding: 11px 15px; border: 1px solid var(--rule-firm);
+  background: var(--deck); color: var(--ink); flex: 1 1 auto;
+}
+button:hover { border-color: var(--ink-soft); }
+button.go { background: var(--accent); border-color: var(--accent); color: var(--accent-in); }
+button.go:hover { filter: brightness(1.07); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button.mini { flex: 0 0 auto; padding: 6px 10px; font-size: 12px; }
+
+.toast {
+  margin-top: 11px; font-family: var(--mono); font-size: 12px; color: var(--ok);
+}
+.toast.warn { color: var(--hold); }
+
+/* --- saved ------------------------------------------------------------ */
+.saved { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.saved li {
+  display: flex; gap: 10px; align-items: center; justify-content: space-between;
+  padding: 10px 12px; background: var(--deck); border: 1px solid var(--rule); border-radius: 4px;
+}
+.saved .meta { min-width: 0; }
+.saved .meta b { display: block; font-family: var(--mono); font-size: 12.5px; font-weight: 500;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.saved .meta span { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
+.empty { font-size: 13px; color: var(--ink-soft); margin: 0; }
+
+/* --- export ----------------------------------------------------------- */
+#jsonl {
+  width: 100%; height: 150px; font-family: var(--mono); font-size: 11.5px;
+  background: var(--deck-2); border: 1px solid var(--rule); border-radius: 4px;
+  padding: 10px; color: var(--ink); white-space: pre; overflow: auto;
+}
+.hint { font-size: 12.5px; color: var(--ink-soft); margin: 10px 0 0; }
+.hint code, .cmd {
+  font-family: var(--mono); font-size: 12px;
+  background: var(--deck-2); border: 1px solid var(--rule); border-radius: 3px; padding: 1px 5px;
+}
+.cmd { display: block; padding: 10px 12px; margin-top: 9px; overflow-x: auto; white-space: pre; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <h1>vid<span>forge</span> remote</h1>
+    <div class="sub">prompt deck · offline</div>
+  </header>
+
+  <section class="mod">
+    <h2>Compose <em id="tpl-count">1 template</em></h2>
+    <textarea id="prompt" rows="5" spellcheck="false" autocapitalize="off"></textarea>
+    <div class="chips" id="chips"></div>
+    <div style="margin-top:14px">
+      <label for="negative">Negative</label>
+      <textarea id="negative" rows="2" spellcheck="false" autocapitalize="off"></textarea>
+    </div>
+  </section>
+
+  <section class="mod">
+    <h2>Shot</h2>
+    <div class="dials">
+      <div><label for="w">Width</label><input id="w" type="number" inputmode="numeric" value="832"></div>
+      <div><label for="h">Height</label><input id="h" type="number" inputmode="numeric" value="480"></div>
+      <div><label for="frames">Frames</label><input id="frames" type="number" inputmode="numeric" value="81"></div>
+      <div><label for="fps">FPS</label><input id="fps" type="number" inputmode="numeric" value="16"></div>
+      <div><label for="steps">Steps</label><input id="steps" type="number" inputmode="numeric" value="30"></div>
+      <div><label for="cfg">CFG</label><input id="cfg" type="number" inputmode="decimal" step="0.5" value="5"></div>
+    </div>
+    <div class="readout" id="readout"></div>
+  </section>
+
+  <section class="mod">
+    <h2>Spread</h2>
+    <div class="pair">
+      <div><label for="variants">Variants</label><input id="variants" type="number" inputmode="numeric" min="1" max="200" value="4"></div>
+      <div><label for="seeds">Fixed seeds</label><input id="seeds" type="text" inputmode="numeric" placeholder="auto" spellcheck="false"></div>
+    </div>
+    <div class="readout"><span>Model</span><b id="model-pick">wan-1_3b</b></div>
+    <div style="margin-top:10px"><select id="model">
+      <option value="wan-1_3b">wan-1_3b · Wan 2.1 T2V 1.3B (~8GB)</option>
+      <option value="wan-14b">wan-14b · Wan 2.2 T2V 14B (~24GB)</option>
+      <option value="wan-i2v">wan-i2v · Wan 2.1 I2V 14B</option>
+      <option value="ltx">ltx · LTX-Video</option>
+      <option value="hunyuan">hunyuan · HunyuanVideo</option>
+      <option value="comfy-wan">comfy-wan · your ComfyUI workflow</option>
+      <option value="mock">mock · no GPU, placeholder frames</option>
+    </select></div>
+  </section>
+
+  <section class="mod">
+    <h2>Screening</h2>
+    <div id="verdict" class="verdict pass"><span class="tag">PASS</span><p></p></div>
+  </section>
+
+  <section class="mod">
+    <h2>Takes <em id="take-count"></em></h2>
+    <ol class="takes" id="takes"></ol>
+    <div class="row" style="margin-top:15px">
+      <button class="go" id="reroll">Reroll</button>
+      <button id="save">Save batch</button>
+    </div>
+    <p class="toast" id="toast" hidden></p>
+  </section>
+
+  <section class="mod">
+    <h2>Saved batches <em id="saved-count"></em></h2>
+    <ul class="saved" id="saved"></ul>
+    <p class="empty" id="saved-empty">Nothing saved yet. Build a batch above and hit Save.</p>
+  </section>
+
+  <section class="mod">
+    <h2>Hand off to the rig</h2>
+    <textarea id="jsonl" readonly spellcheck="false"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button id="copy">Copy JSONL</button>
+      <button id="download" hidden>Download .jsonl</button>
+    </div>
+    <p class="hint">Drop it on the machine with the GPU and run this. Each line carries
+      its own seed and settings, so it renders exactly what you composed here.
+      Add <code>--expand</code> to reroll the wildcards instead.</p>
+    <code class="cmd" id="cmd"></code>
+    <p class="hint">To drive that machine from this phone instead, run
+      <code>vidforge serve --tunnel</code> on it and open the link it prints.
+      This page can't reach your rig directly: published pages are sandboxed
+      and can't call arbitrary hosts.</p>
+  </section>
+</div>
+
+<script>
+/* ---------------------------------------------------------------------- *
+ * Wildcards: the same files vidforge ships in $VIDFORGE_HOME/wildcards
+ * ---------------------------------------------------------------------- */
+const WILDCARDS = {
+  camera: ["slow dolly in", "handheld tracking shot", "locked-off wide shot",
+    "orbiting crane shot", "low-angle push in", "overhead top-down shot",
+    "slow rack focus", "steadicam follow"],
+  lighting: ["golden hour backlight", "hard neon rim light", "soft window daylight",
+    "single practical lamp, deep shadows", "overcast diffuse light", "firelight flicker",
+    "moonlit blue key", "harsh overhead fluorescent"],
+  mood: ["intimate and quiet", "tense and claustrophobic", "dreamlike and hazy",
+    "raw and unpolished", "lush and cinematic", "cold and clinical"],
+};
+
+/* ---------------------------------------------------------------------- *
+ * Guardrails: a faithful port of vidforge/guardrails.py, so a prompt that
+ * passes here passes on the rig. Positive prompt only: "child" in a
+ * negative prompt is good practice and is never penalised.
+ * ---------------------------------------------------------------------- */
+const HARD = ["csam", "child porn", "childporn", "child pornography", "lolicon", "loli",
+  "shotacon", "shota", "jailbait", "pedophil", "paedophil"];
+const AGE = ["child", "children", "kid", "kids", "toddler", "infant", "newborn", "baby",
+  "babies", "minor", "underage", "under-age", "preteen", "pre-teen", "tween", "prepubescent",
+  "pre-pubescent", "schoolgirl", "school girl", "schoolboy", "school boy", "elementary school",
+  "middle school", "junior high", "kindergarten", "little girl", "little boy", "young girl",
+  "young boy", "small girl", "small boy", "grade schooler"];
+const SOFT_AGE = ["teen", "teens", "teenage", "teenager", "adolescent", "youngster", "barely legal"];
+const SEXUAL = ["nude", "nudity", "naked", "nsfw", "explicit", "sex", "sexual", "sexy", "erotic",
+  "erotica", "porn", "hentai", "topless", "bottomless", "undress", "strip", "genital", "breast",
+  "nipple", "cleavage", "lingerie", "aroused", "orgasm", "intercourse", "penetration",
+  "masturbat", "fetish", "bdsm", "seductive", "provocative", "suggestive"];
+const IMPERSONATION = ["deepfake", "deep fake", "face swap", "faceswap", "swap her face",
+  "swap his face", "swap their face", "likeness of", "looks exactly like", "identical to",
+  "celebrity", "famous actress", "famous actor", "real person", "my ex", "my coworker",
+  "my co-worker", "my neighbor", "my neighbour", "someone i know", "from her instagram",
+  "from his instagram"];
+
+const SUFFIX = "(?:[bdglmnprt])?(?:e|es|s|ed|ing|ion|ions|er|ers|ly|ia|ic)?";
+const esc = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const hits = (text, terms) => terms.filter((t) =>
+  new RegExp("(?<![a-z0-9])" + esc(t) + SUFFIX + "(?![a-z0-9])").test(text));
+
+const NUM_AGE = /\b(?:aged?\s*)?(\d{1,2})\s*[-\s]?\s*(?:yo\b|y\/?o\b|yrs?\b|years?[-\s]old)/g;
+const UNDER_18 = /\bunder\s*(?:the\s*age\s*of\s*)?(?:18|eighteen)\b/;
+const ADULT_AGE = /\b(?:1[89]|[2-9]\d)\s*[-\s]?\s*(?:yo\b|y\/?o\b|yrs?\b|years?[-\s]old)|\b18\+|\bover\s*18\b|\badult\b|\bgrown\s+(?:wo)?man\b|\bin\s+(?:her|his|their)\s+(?:20s|30s|40s|50s)\b/;
+
+function numericMinor(text) {
+  if (UNDER_18.test(text)) return true;
+  NUM_AGE.lastIndex = 0;
+  for (const m of text.matchAll(NUM_AGE)) if (parseInt(m[1], 10) < 18) return true;
+  return false;
+}
+
+function screen(prompt) {
+  const text = (prompt || "").toLowerCase();
+  const hard = hits(text, HARD);
+  if (hard.length) {
+    return { ok: false, code: "minor_sexual_content", matched: hard,
+      why: "These terms only describe child sexual abuse material." };
+  }
+  const sexual = hits(text, SEXUAL);
+  if (sexual.length) {
+    let age = hits(text, AGE);
+    if (numericMinor(text)) age.push("stated age under 18");
+    if (!age.length && !ADULT_AGE.test(text)) age = hits(text, SOFT_AGE);
+    if (age.length) {
+      return { ok: false, code: "minor_sexual_content", matched: [...new Set(age)].sort(),
+        why: "This reads as sexual content involving a minor. If the subject is an adult, state the age (“25 year old”) and drop the youth descriptors." };
+    }
+  }
+  const imp = hits(text, IMPERSONATION);
+  if (imp.length) {
+    return { ok: false, code: "identity_consent_required", matched: imp.sort(),
+      why: "This aims at a specific real person. The rig needs a consent record: vidforge consent add --subject … --attested-by …" };
+  }
+  return { ok: true, matched: [] };
+}
+
+/* ---------------------------------------------------------------------- *
+ * Prompt expansion: {a|b|c}, nestable, plus __wildcard__
+ * ---------------------------------------------------------------------- */
+const ALT = /\{([^{}]*)\}/g;
+const WILD = /__([A-Za-z0-9_][A-Za-z0-9_./-]*)__/g;
+const pick = (list, rng) => list[Math.floor(rng() * list.length)];
+
+function expand(template, rng) {
+  let text = template;
+  for (let pass = 0; pass < 20; pass++) {
+    const before = text;
+    text = text.replace(ALT, (_m, body) => pick(body.split("|").map((o) => o.trim()), rng));
+    text = text.replace(WILD, (m, name) => (WILDCARDS[name] ? pick(WILDCARDS[name], rng) : m));
+    if (text === before) break;
+  }
+  return text.replace(/\s+/g, " ").replace(/^[\s,]+|[\s,]+$/g, "");
+}
+
+// Mulberry32: a seeded PRNG, so Reroll is reproducible within a session.
+function makeRng(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ---------------------------------------------------------------------- *
+ * State
+ * ---------------------------------------------------------------------- */
+const $ = (s) => document.querySelector(s);
+const SEED_MAX = 2147483647;
+let rollSeed = Math.floor(Math.random() * SEED_MAX);
+let takes = [];
+let db = null;
+let downloads = null;
+
+const DEFAULT_PROMPT =
+  "a rain-slicked alley at 2am, one figure under a broken sign, __lighting__, __camera__, {35mm film grain|clean digital} look, __mood__";
+const DEFAULT_NEGATIVE = "blurry, low quality, distorted anatomy, extra limbs, watermark, text";
+
+const num = (sel, fallback) => {
+  const v = parseFloat($(sel).value);
+  return Number.isFinite(v) ? v : fallback;
+};
+
+function templates() {
+  return $("#prompt").value.split("\n").map((l) => l.trim()).filter(Boolean);
+}
+
+function fixedSeeds() {
+  return $("#seeds").value.split(",").map((s) => s.trim()).filter(Boolean)
+    .map(Number).filter((n) => Number.isFinite(n) && n >= 0);
+}
+
+function params() {
+  return {
+    width: num("#w", 832), height: num("#h", 480),
+    num_frames: num("#frames", 81), fps: num("#fps", 16),
+    steps: num("#steps", 30), guidance_scale: num("#cfg", 5),
+    negative_prompt: $("#negative").value.trim(),
+  };
+}
+
+/* ---------------------------------------------------------------------- *
+ * Render
+ * ---------------------------------------------------------------------- */
+function renderReadout() {
+  const p = params();
+  const seconds = p.fps > 0 ? p.num_frames / p.fps : 0;
+  const mp = ((p.width * p.height) / 1e6).toFixed(2);
+  $("#readout").innerHTML =
+    `<span>Clip <b>${seconds.toFixed(2)}s</b></span>` +
+    `<span>Frame <b>${p.width}×${p.height}</b> (${mp} MP)</span>` +
+    `<span>Denoise <b>${p.steps} steps</b></span>` +
+    `<span>CFG <b>${p.guidance_scale}</b></span>`;
+  $("#model-pick").textContent = $("#model").value;
+}
+
+function renderVerdict() {
+  const box = $("#verdict");
+  const bad = templates().map(screen).find((v) => !v.ok)
+    || takes.map((t) => screen(t.prompt)).find((v) => !v.ok);
+  if (!bad) {
+    box.className = "verdict pass";
+    box.innerHTML = `<span class="tag">PASS</span><p>Clear on both checks. No content filter beyond these. The rest is down to your checkpoint and LoRAs.</p>`;
+    return;
+  }
+  box.className = "verdict stop";
+  box.innerHTML = `<span class="tag">STOP</span><p>${bad.why}` +
+    (bad.matched.length ? ` <code>${bad.matched.join(", ")}</code>` : "") + `</p>`;
+}
+
+function build() {
+  const tpls = templates();
+  const seeds = fixedSeeds();
+  const variants = Math.max(1, Math.min(200, num("#variants", 1)));
+  const rng = makeRng(rollSeed);
+  takes = [];
+  for (const tpl of tpls) {
+    const chosen = seeds.length ? seeds
+      : Array.from({ length: variants }, () => Math.floor(rng() * SEED_MAX));
+    for (const seed of chosen) {
+      const prompt = expand(tpl, rng);
+      if (prompt) takes.push({ prompt, seed });
+    }
+  }
+  $("#tpl-count").textContent = `${tpls.length} template${tpls.length === 1 ? "" : "s"}`;
+  renderTakes();
+  renderVerdict();
+  renderExport();
+}
+
+function renderTakes() {
+  const p = params();
+  const seconds = p.fps > 0 ? p.num_frames / p.fps : 0;
+  const list = $("#takes");
+  const shown = takes.slice(0, 12);
+  list.innerHTML = shown.map((t, i) => `
+    <li>
+      <div class="take-n">${String(i + 1).padStart(2, "0")}</div>
+      <div>
+        <div class="take-p">${escapeHtml(t.prompt)}</div>
+        <div class="take-m">seed ${t.seed} · ${p.num_frames}f @ ${p.fps}fps · ${seconds.toFixed(2)}s</div>
+      </div>
+    </li>`).join("");
+  if (takes.length > shown.length) {
+    list.insertAdjacentHTML("beforeend",
+      `<div class="more">+ ${takes.length - shown.length} more in the export</div>`);
+  }
+  const total = takes.length * seconds;
+  $("#take-count").textContent = takes.length
+    ? `${takes.length} clips · ${total.toFixed(1)}s total`
+    : "nothing to render";
+}
+
+function jsonl() {
+  const p = params();
+  return takes.map((t) => JSON.stringify({ prompt: t.prompt, seed: t.seed, ...p })).join("\n");
+}
+
+function renderExport() {
+  $("#jsonl").value = jsonl();
+  $("#cmd").textContent = `vidforge batch takes.jsonl --model ${$("#model").value}`;
+}
+
+function escapeHtml(t) {
+  return String(t).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function toast(message, warn) {
+  const el = $("#toast");
+  el.textContent = message;
+  el.className = warn ? "toast warn" : "toast";
+  el.hidden = false;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { el.hidden = true; }, 4000);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Saved batches: db when the viewer has it, localStorage otherwise
+ * ---------------------------------------------------------------------- */
+const LOCAL_KEY = "vidforge.batches";
+
+function localBatches() {
+  try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); } catch { return []; }
+}
+function writeLocal(list) {
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(list.slice(0, 60))); } catch { /* full or blocked */ }
+}
+
+async function saveBatch() {
+  if (!takes.length) return toast("Nothing to save. Write a prompt first.", true);
+  const record = {
+    label: takes[0].prompt.slice(0, 70),
+    count: takes.length,
+    model: $("#model").value,
+    template: $("#prompt").value,
+    negative: $("#negative").value,
+    params: params(),
+    variants: num("#variants", 1),
+    seeds: fixedSeeds().join(","),
+    created: Date.now(),
+  };
+  if (db) {
+    try {
+      await db.collection("batches").add(record);
+      return toast(`Saved ${record.count} clips.`);
+    } catch (err) {
+      toast("Could not sync, so it stayed on this device.", true);
+    }
+  }
+  writeLocal([{ id: "l" + record.created, ...record }, ...localBatches()]);
+  renderSaved(localBatches());
+  if (!db) toast(`Saved ${record.count} clips to this device.`);
+}
+
+function renderSaved(list) {
+  const ul = $("#saved");
+  $("#saved-empty").hidden = list.length > 0;
+  $("#saved-count").textContent = list.length ? `${list.length}` : "";
+  ul.innerHTML = list.map((b) => `
+    <li>
+      <div class="meta">
+        <b>${escapeHtml(b.label || "untitled")}</b>
+        <span>${b.count} clips · ${b.model} · ${new Date(b.created).toLocaleDateString()}</span>
+      </div>
+      <div class="row" style="flex:0 0 auto">
+        <button class="mini" data-load="${b.id}">Load</button>
+        <button class="mini" data-drop="${b.id}">×</button>
+      </div>
+    </li>`).join("");
+
+  ul.querySelectorAll("[data-load]").forEach((btn) => {
+    btn.onclick = () => {
+      const b = list.find((x) => x.id === btn.dataset.load);
+      if (!b) return;
+      $("#prompt").value = b.template || "";
+      $("#negative").value = b.negative || "";
+      $("#model").value = b.model || "wan-1_3b";
+      $("#variants").value = b.variants || 1;
+      $("#seeds").value = b.seeds || "";
+      const p = b.params || {};
+      for (const [sel, key] of [["#w", "width"], ["#h", "height"], ["#frames", "num_frames"],
+        ["#fps", "fps"], ["#steps", "steps"], ["#cfg", "guidance_scale"]]) {
+        if (p[key] != null) $(sel).value = p[key];
+      }
+      renderReadout(); build();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      toast("Loaded.");
+    };
+  });
+  ul.querySelectorAll("[data-drop]").forEach((btn) => {
+    btn.onclick = async () => {
+      const id = btn.dataset.drop;
+      if (db && !id.startsWith("l")) {
+        try { await db.doc(`batches/${id}`).delete(); return; } catch { /* fall through */ }
+      }
+      writeLocal(localBatches().filter((x) => x.id !== id));
+      renderSaved(localBatches());
+    };
+  });
+}
+
+/* ---------------------------------------------------------------------- *
+ * Wiring
+ * ---------------------------------------------------------------------- */
+function insertToken(token) {
+  const box = $("#prompt");
+  const at = box.selectionStart ?? box.value.length;
+  const before = box.value.slice(0, at);
+  const sep = before && !/[\s,]$/.test(before) ? ", " : "";
+  box.value = before + sep + token + box.value.slice(at);
+  const caret = (before + sep + token).length;
+  box.focus();
+  box.setSelectionRange(caret, caret);
+  build();
+}
+
+function wire() {
+  $("#chips").innerHTML = Object.keys(WILDCARDS)
+    .map((name) => `<button class="chip" data-token="__${name}__">__${name}__ <span style="opacity:.6">${WILDCARDS[name].length}</span></button>`)
+    .join("") + `<button class="chip" data-token="{a|b}">{a|b}</button>`;
+  $("#chips").querySelectorAll("[data-token]").forEach((chip) => {
+    chip.onclick = () => insertToken(chip.dataset.token);
+  });
+
+  ["#prompt", "#negative", "#variants", "#seeds"].forEach((sel) => {
+    $(sel).addEventListener("input", build);
+  });
+  ["#w", "#h", "#frames", "#fps", "#steps", "#cfg"].forEach((sel) => {
+    $(sel).addEventListener("input", () => { renderReadout(); renderTakes(); renderExport(); });
+  });
+  $("#model").addEventListener("change", () => { renderReadout(); renderExport(); });
+
+  $("#reroll").onclick = () => { rollSeed = Math.floor(Math.random() * SEED_MAX); build(); };
+  $("#save").onclick = saveBatch;
+
+  $("#copy").onclick = async () => {
+    const text = jsonl();
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("Copied.");
+    } catch {
+      // Clipboard is often unavailable in a sandboxed frame; select it so a
+      // long-press copy still works on a phone.
+      const box = $("#jsonl");
+      box.focus(); box.select(); box.setSelectionRange(0, text.length);
+      toast("Selected. Long-press to copy.", true);
+    }
+  };
+}
+
+function boot() {
+  $("#prompt").value = DEFAULT_PROMPT;
+  $("#negative").value = DEFAULT_NEGATIVE;
+  wire();
+  renderReadout();
+  build();
+  renderSaved(localBatches());
+
+  // Capabilities arrive late, or never. The page is fully usable either way.
+  if (window.claude?.use) {
+    claude.use("db").then((handle) => {
+      if (!handle) return;
+      db = handle;
+      db.collection("batches").orderBy("created", "desc").limit(50)
+        .onSnapshot(
+          (snap) => renderSaved(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+          () => renderSaved(localBatches()),
+        );
+    }).catch(() => {});
+
+    claude.use("downloads").then((handle) => {
+      if (!handle) return;
+      downloads = handle;
+      const btn = $("#download");
+      btn.hidden = false;
+      btn.onclick = async () => {
+        try {
+          await downloads.save({ filename: "takes.jsonl", data: jsonl() });
+          toast("Saved takes.jsonl.");
+        } catch {
+          toast("Download declined.", true);
+        }
+      };
+    }).catch(() => {});
+  }
+}
+
+boot();
+</script>
