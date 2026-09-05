@@ -46,6 +46,21 @@ uv run vidforge batch prompts.jsonl --model wan-1_3b --variants 2
 uv run vidforge models | jobs | wildcards | config
 ```
 
+### From your phone
+
+Bind to the LAN and open it from anything on the same wifi:
+
+```bash
+uv run vidforge serve --host 0.0.0.0     # then http://<pc-ip>:8787 on the phone
+```
+
+The UI is responsive down to ~360px — one column, two-up parameter fields, and
+the gallery below the composer. Queue a batch from the couch, watch it fill in.
+
+There is **no authentication**. `0.0.0.0` exposes the queue and gallery to
+everything on the network, so keep it to a network you trust and never port
+forward it.
+
 Everything lives under `$VIDFORGE_HOME` (default `~/.vidforge`): `models.toml`,
 `wildcards/`, `outputs/`, `uploads/`, and the SQLite job database.
 

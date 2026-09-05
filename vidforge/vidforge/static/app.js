@@ -1,6 +1,6 @@
 /* vidforge UI - vanilla, no build step. */
 const $ = (sel) => document.querySelector(sel);
-const state = { models: [], filter: "", search: "", initImage: null, poll: null };
+const state = { models: [], filter: "", search: "", initImage: null, poll: null, sig: null };
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -105,13 +105,19 @@ function escapeHtml(text) {
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-async function refreshJobs() {
+async function refreshJobs({ force = false } = {}) {
   const params = new URLSearchParams({ limit: "60" });
   if (state.filter) params.set("status", state.filter);
   if (state.search) params.set("search", state.search);
   const { jobs } = await api(`/api/jobs?${params}`);
-  const grid = $("#grid");
-  grid.replaceChildren(...jobs.map(card));
+
+  // Rebuilding the grid on every poll tears out whatever the user is
+  // touching mid-tap, so only redraw when something actually moved.
+  const sig = jobs.map((j) => `${j.id}:${j.status}:${j.progress}`).join("|");
+  if (!force && sig === state.sig) return;
+  state.sig = sig;
+
+  $("#grid").replaceChildren(...jobs.map(card));
   $("#empty").hidden = jobs.length > 0;
 }
 
@@ -253,13 +259,13 @@ function wire() {
       document.querySelectorAll(".tab").forEach((t) => t.classList.remove("is-active"));
       tab.classList.add("is-active");
       state.filter = tab.dataset.filter;
-      refreshJobs();
+      refreshJobs({ force: true });
     });
   });
   let debounce;
   $("#search").addEventListener("input", (e) => {
     clearTimeout(debounce);
-    debounce = setTimeout(() => { state.search = e.target.value.trim(); refreshJobs(); }, 250);
+    debounce = setTimeout(() => { state.search = e.target.value.trim(); refreshJobs({ force: true }); }, 250);
   });
 }
 

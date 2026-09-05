@@ -16,6 +16,13 @@
 
 * { box-sizing: border-box; }
 
+/* Grid tracks default to min-content width, and a bare <input> has a wide
+   intrinsic size - without min-width:0 the panel refuses to shrink and the
+   whole column runs off the side of a phone screen. */
+.panel, .field, .grid-2 > *, .grid-3 > * { min-width: 0; }
+input, select, textarea { min-width: 0; }
+
+
 /* .field sets display:flex, which outranks the UA sheet's [hidden] rule -
    without this, hiding a field by attribute silently does nothing. */
 [hidden] { display: none !important; }
@@ -53,8 +60,6 @@ body {
   padding: 16px;
   align-items: start;
 }
-@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
-
 .panel {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -150,3 +155,26 @@ button.small { padding: 6px 10px; font-size: 12px; }
 .detail dt { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
 .detail dd { margin: 0; font-family: var(--mono); font-size: 12px; word-break: break-word; }
 .detail form { display: flex; justify-content: flex-end; }
+
+/* --- responsive: must stay last so it outranks the rules above --- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  /* A sticky, independently scrolling column is wrong on a phone: let the
+     page scroll as one document. */
+  .compose { position: static; max-height: none; overflow: visible; }
+}
+
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; gap: 6px; padding: 10px 14px; }
+  .status-strip { text-align: left; font-size: 11px; }
+  .layout { padding: 10px; gap: 10px; }
+  .panel { padding: 13px; }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .results-head { flex-direction: column; align-items: stretch; }
+  .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .results-tools input { width: auto; flex: 1; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .actions { flex-wrap: wrap; }
+  /* iOS zooms the page in on focus for anything under 16px */
+  input, select, textarea { font-size: 16px; }
+}
