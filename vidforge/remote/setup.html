@@ -1,0 +1,339 @@
+<title>Vidforge Startup Checklist</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root {
+  /* Same console world as the app and the prompt deck: one visual family
+     across the three surfaces. Every colour painted explicitly. */
+  color-scheme: dark;
+  --ground:  #131110;
+  --deck:    #1c1917;
+  --deck-2:  #241f1c;
+  --rule:    #322b27;
+  --rule-2:  #4a3f39;
+  --ink:     #f2ece7;
+  --soft:    #a99c94;
+  --accent:  #ff5a3c;
+  --on-acc:  #1a0f0c;
+  --ok:      #56c493;
+  --hold:    #e5b84b;
+  --ui: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font-family: var(--ui); font-size: 16px; line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 660px; margin: 0 auto; padding: 0 0 70px; }
+
+/* --- head ------------------------------------------------------------- */
+.head { padding: 26px 20px 20px; border-bottom: 2px solid var(--ink); }
+.head h1 { margin: 0 0 10px; font-size: 27px; line-height: 1.2; letter-spacing: -.02em; text-wrap: balance; }
+.head p { margin: 0; color: var(--soft); font-size: 15px; max-width: 46ch; }
+
+/* --- progress --------------------------------------------------------- */
+.bar-wrap { padding: 14px 20px; border-bottom: 1px solid var(--rule); display: flex;
+            align-items: center; gap: 12px; }
+.bar { flex: 1; height: 5px; background: var(--deck-2); border-radius: 3px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 100%; background: var(--accent);
+         transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
+.bar-n { font-family: var(--mono); font-size: 12px; color: var(--soft); white-space: nowrap;
+         font-variant-numeric: tabular-nums; }
+
+/* --- steps ------------------------------------------------------------ */
+.step { display: grid; grid-template-columns: 34px 1fr; gap: 14px;
+        padding: 22px 20px; border-bottom: 1px solid var(--rule); }
+.tick {
+  width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--rule-2);
+  background: transparent; color: var(--soft); font-family: var(--mono);
+  font-size: 12px; font-weight: 700; cursor: pointer; padding: 0;
+  display: grid; place-items: center; margin-top: 2px;
+}
+.tick[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: var(--ground); }
+.step h2 { margin: 0 0 6px; font-size: 18px; line-height: 1.3; letter-spacing: -.01em; }
+.step.done h2, .step.done .say { opacity: .45; text-decoration-color: var(--soft); }
+.say { margin: 0 0 12px; color: var(--soft); font-size: 15px; }
+.say b { color: var(--ink); font-weight: 600; }
+
+/* --- command blocks --------------------------------------------------- */
+.cmd { position: relative; margin: 0 0 10px; }
+.cmd pre {
+  margin: 0; padding: 13px 15px 13px 34px; background: var(--deck);
+  border: 1px solid var(--rule-2); border-radius: 5px;
+  font-family: var(--mono); font-size: 13px; line-height: 1.65; color: var(--ink);
+  overflow-x: auto; white-space: pre;
+}
+/* A shell prompt marks these as things to type, which a coloured rail only
+   implied. It sits on the first line and does not scroll with the text. */
+.cmd::before {
+  content: ">"; position: absolute; left: 15px; top: 13px;
+  font-family: var(--mono); font-size: 13px; line-height: 1.65;
+  color: var(--accent); pointer-events: none;
+}
+.copy {
+  margin-top: 7px; font-family: var(--ui); font-size: 12.5px; font-weight: 600;
+  background: var(--deck-2); color: var(--soft); border: 1px solid var(--rule);
+  border-radius: 4px; padding: 6px 11px; cursor: pointer;
+}
+.copy:hover, .copy:focus-visible { color: var(--accent); border-color: var(--accent); }
+.copy.done { color: var(--ok); border-color: var(--ok); }
+
+.expect {
+  font-size: 14px; color: var(--soft); padding: 10px 13px; background: var(--deck);
+  border: 1px solid var(--rule); border-radius: 5px;
+}
+.expect strong { color: var(--ink); font-weight: 700; display: block; margin-bottom: 3px;
+                 font-size: 13.5px; }
+.expect code { font-family: var(--mono); font-size: 13px; }
+
+/* --- fork ------------------------------------------------------------- */
+.fork { padding: 22px 20px; border-bottom: 1px solid var(--rule); }
+.fork > h2 { margin: 0 0 4px; font-size: 18px; }
+.fork > p { margin: 0 0 14px; color: var(--soft); font-size: 15px; }
+.picker { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+.pick {
+  text-align: left; font-family: var(--ui); font-size: 14.5px; font-weight: 600;
+  background: var(--deck); color: var(--ink); border: 1px solid var(--rule);
+  border-radius: 5px; padding: 12px 14px; cursor: pointer;
+}
+.pick span { display: block; font-weight: 400; font-size: 13px; color: var(--soft); margin-top: 2px; }
+.pick[aria-pressed="true"] { border-color: var(--accent); background: var(--deck-2); }
+.pick[aria-pressed="true"]::before { content: "▸ "; color: var(--accent); }
+
+.road h3 { margin: 0 0 8px; font-size: 15px; letter-spacing: .04em; text-transform: uppercase;
+           color: var(--accent); font-family: var(--mono); font-weight: 700; }
+.road p { margin: 0 0 12px; font-size: 15px; }
+.road p.dim { color: var(--soft); }
+.road ol { margin: 0 0 12px; padding-left: 20px; }
+.road li { margin-bottom: 7px; }
+
+/* --- reality ---------------------------------------------------------- */
+.reality { margin: 0 20px; padding: 18px; background: var(--deck);
+           border: 1px solid color-mix(in srgb, var(--hold) 45%, var(--rule)); border-radius: 5px; }
+.reality h2 { margin: 0 0 8px; font-size: 17px; }
+.reality p { margin: 0 0 11px; font-size: 15px; }
+.reality p:last-child { margin-bottom: 0; }
+.reality .flag { font-family: var(--mono); font-size: 12px; letter-spacing: .02em;
+                 color: var(--hold); margin: 0 0 7px; }
+
+.tail { padding: 24px 20px; color: var(--soft); font-size: 14.5px; }
+.tail b { color: var(--ink); }
+
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <h1>Getting your first clip out</h1>
+    <p>You do not need to know what hardware you have. Step 3 finds out and tells us both.</p>
+  </header>
+
+  <div class="bar-wrap">
+    <div class="bar"><i id="bar-fill"></i></div>
+    <div class="bar-n" id="bar-n">0 of 4</div>
+  </div>
+
+  <section class="step" data-step="1">
+    <button class="tick" aria-pressed="false" aria-label="Mark step 1 done">1</button>
+    <div>
+      <h2>Open PowerShell in your Claude folder</h2>
+      <p class="say">This is the folder that already syncs to GitHub. The app landed inside it.</p>
+      <div class="cmd"><pre>cd C:\Users\richm\.claude</pre><button class="copy">Copy</button></div>
+    </div>
+  </section>
+
+  <section class="step" data-step="2">
+    <button class="tick" aria-pressed="false" aria-label="Mark step 2 done">2</button>
+    <div>
+      <h2>Pull the app down</h2>
+      <p class="say">It is on a branch, so you have to switch to it once.</p>
+      <div class="cmd"><pre>git fetch origin
+git checkout claude/uncensored-video-generation-app-ae86jx</pre><button class="copy">Copy</button></div>
+      <div class="expect"><strong>You should see</strong>
+        A line ending <code>Switched to branch ...</code>, and a new <code>vidforge</code> folder.</div>
+    </div>
+  </section>
+
+  <section class="step" data-step="3">
+    <button class="tick" aria-pressed="false" aria-label="Mark step 3 done">3</button>
+    <div>
+      <h2>Install it</h2>
+      <p class="say">Takes a couple of minutes. You already have <b>uv</b>, so nothing else to set up.</p>
+      <div class="cmd"><pre>cd vidforge
+uv sync</pre><button class="copy">Copy</button></div>
+    </div>
+  </section>
+
+  <section class="step" data-step="4">
+    <button class="tick" aria-pressed="false" aria-label="Mark step 4 done">4</button>
+    <div>
+      <h2>Ask it what your machine can do</h2>
+      <p class="say">This is the one that answers your question. <b>Send me what it prints</b> and I will tell you exactly which model to run.</p>
+      <div class="cmd"><pre>uv run vidforge doctor</pre><button class="copy">Copy</button></div>
+      <div class="expect"><strong>It prints four lines</strong>
+        platform, accelerator, torch, suggested. The <code>accelerator</code> line is the one that matters:
+        it either names a graphics card and its memory, or says none detected.</div>
+    </div>
+  </section>
+
+  <section class="fork">
+    <h2>What happens next</h2>
+    <p>Three roads, depending on that one line. Tap whichever sounds like you.</p>
+    <div class="picker">
+      <button class="pick" data-road="unknown" aria-pressed="true">I have no idea what is in my PC
+        <span>Most likely answer. Nothing to do yet.</span></button>
+      <button class="pick" data-road="gpu" aria-pressed="false">It named a graphics card
+        <span>Something like NVIDIA GeForce RTX, with a number of GB.</span></button>
+      <button class="pick" data-road="none" aria-pressed="false">It said none detected
+        <span>No usable graphics card, or a laptop without one.</span></button>
+    </div>
+
+    <div class="road" data-road="unknown">
+      <h3>Then stop here</h3>
+      <p>Genuinely. Run the four steps above, paste me the output, and I will write the next
+        instructions for your actual machine instead of guessing at it.</p>
+      <p class="dim">While you are waiting, the app already works without a graphics card. The
+        <b>mock</b> model renders placeholder clips so you can see the queue, the batching and
+        the gallery for real before committing to any download.</p>
+      <div class="cmd"><pre>uv run vidforge serve</pre><button class="copy">Copy</button></div>
+    </div>
+
+    <div class="road" data-road="gpu" hidden>
+      <h3>You are close</h3>
+      <ol>
+        <li>Run <code>uv run vidforge setup</code>. It picks the right graphics driver build,
+          installs it, and downloads a model sized to your card. This is the long one:
+          expect several GB.</li>
+        <li>Render something: <code>uv run vidforge gen "a rain-slicked alley at night"</code></li>
+        <li>Put it on your phone: <code>uv run vidforge serve --tunnel</code>, then scan
+          the QR code it prints.</li>
+      </ol>
+      <p class="dim">Rough guide from that memory number: 8 GB or more runs the small Wan model,
+        24 GB runs the good one. Under 6 GB and you are better off with the cloud option below.</p>
+    </div>
+
+    <div class="road" data-road="none" hidden>
+      <h3>Not a dead end</h3>
+      <p>Video models need a real graphics card. Without one, a single clip takes hours rather
+        than minutes. Two ways round it:</p>
+      <ol>
+        <li><b>Rent one by the hour.</b> RunPod or Vast.ai, a few dollars a day. Same four steps
+          on the rented machine, then <code>serve --tunnel</code> and you drive it from your phone
+          exactly as if it were under your desk.</li>
+        <li><b>Use a service for the model, this app for everything else.</b> Slower to set up and
+          it gives up the no-filter part, so probably not what you want.</li>
+      </ol>
+      <p class="dim">Tell me which and I will write that setup out properly.</p>
+    </div>
+  </section>
+
+  <div class="reality">
+    <p class="flag">Worth knowing before you spend an evening</p>
+    <h2>Getting explicit output needs one more piece</h2>
+    <p>The app applies no content filter. But the standard models were never trained on explicit
+      material, so removing a filter does not conjure it up. You get mangled anatomy, not results.</p>
+    <p>The missing piece is an add-on file, a <b>LoRA</b>, trained for it and stacked on top of the
+      base model. Civitai is where people get them. Download one, send me the filename, and I will
+      wire it into your config so it loads automatically.</p>
+    <p>Same story for realism, by the way. Five seconds at 480p is where open models are right now.
+      Good, not indistinguishable, and you will burn a lot of attempts. That is why the app batches.</p>
+  </div>
+
+  <p class="tail">If you already run <b>ComfyUI</b> and have a working video setup in it, skip all of
+    this. Export the graph with Save (API Format), point vidforge at the file, and it becomes the
+    queue and gallery on top of what you already have. Say the word and I will set that up instead.</p>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const STORE = "vidforge.setup.v1";
+let db = null;
+let state = { done: [], road: "unknown" };
+
+/* --- persistence: db where the viewer has it, localStorage otherwise --- */
+function readLocal() {
+  try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; }
+}
+function writeLocal() {
+  try { localStorage.setItem(STORE, JSON.stringify(state)); } catch { /* blocked or full */ }
+}
+async function persist() {
+  writeLocal();
+  if (db) { try { await db.doc("progress/checklist").set(state); } catch { /* keep local */ } }
+}
+
+/* --- render ------------------------------------------------------------ */
+function render() {
+  $$(".step").forEach((step) => {
+    const n = step.dataset.step;
+    const done = state.done.includes(n);
+    step.classList.toggle("done", done);
+    step.querySelector(".tick").setAttribute("aria-pressed", String(done));
+    step.querySelector(".tick").textContent = done ? "✓" : n;
+  });
+  const total = $$(".step").length;
+  const count = state.done.length;
+  $("#bar-fill").style.transform = `scaleX(${count / total})`;
+  $("#bar-n").textContent = count === total ? "all four done" : `${count} of ${total}`;
+
+  $$(".pick").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.road === state.road)));
+  $$(".road").forEach((r) => { r.hidden = r.dataset.road !== state.road; });
+}
+
+/* --- wiring ------------------------------------------------------------ */
+$$(".tick").forEach((tick) => {
+  tick.addEventListener("click", () => {
+    const n = tick.closest(".step").dataset.step;
+    state.done = state.done.includes(n) ? state.done.filter((x) => x !== n) : [...state.done, n];
+    render(); persist();
+  });
+});
+
+$$(".pick").forEach((pick) => {
+  pick.addEventListener("click", () => { state.road = pick.dataset.road; render(); persist(); });
+});
+
+$$(".copy").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const text = btn.closest(".cmd").querySelector("pre").textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = "Copied"; btn.classList.add("done");
+    } catch {
+      // Clipboard is often unavailable in a sandboxed frame. Select it so a
+      // long-press copy still works on a phone.
+      const range = document.createRange();
+      range.selectNodeContents(btn.closest(".cmd").querySelector("pre"));
+      const sel = window.getSelection();
+      if (sel) { sel.removeAllRanges(); sel.addRange(range); }
+      btn.textContent = "Selected, long-press to copy";
+    }
+    setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("done"); }, 2500);
+  });
+});
+
+const saved = readLocal();
+if (saved) state = { ...state, ...saved };
+render();
+
+if (window.claude?.use) {
+  claude.use("db").then((handle) => {
+    if (!handle) return;
+    db = handle;
+    db.doc("progress/checklist").onSnapshot((snap) => {
+      if (!snap.exists) return;
+      const data = snap.data();
+      state = { done: Array.isArray(data.done) ? data.done.map(String) : [],
+                road: typeof data.road === "string" ? data.road : "unknown" };
+      writeLocal(); render();
+    }, () => {});
+  }).catch(() => {});
+}
+</script>
