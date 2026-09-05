@@ -324,6 +324,124 @@ def cmd_setup(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_lora(args: argparse.Namespace) -> int:
+    """Put a LoRA on disk and register a model that loads it."""
+    from .fetch import DownloadError, download
+    from .registry import clone_with_loras
+
+    ctx = get_context()
+
+    if args.lora_cmd == "list":
+        stacked = [s for s in ctx.settings.models.values() if s.loras]
+        if not stacked:
+            print("no models stack a LoRA yet; add one with `vidforge lora add <file>`")
+            return 0
+        for spec in sorted(stacked, key=lambda s: s.id):
+            names = ", ".join(
+                f"{lora.get('name') or '?'}@{lora.get('weight', 1.0)}" for lora in spec.loras
+            )
+            print(f"{spec.id:<24} {names}")
+        return 0
+
+    source = args.source
+
+    if source.startswith(("http://", "https://")):
+        into = ctx.settings.home / "loras"
+        print(f"downloading into {into}")
+        try:
+            path = download(source, into, api_key=args.api_key, filename=args.filename)
+        except DownloadError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+    else:
+        path = Path(source).expanduser().resolve()
+        if not path.exists():
+            print(f"error: no such file: {path}", file=sys.stderr)
+            return 2
+
+    name = args.name or path.stem.replace(" ", "-").lower()
+    new_id = args.id or f"{args.base}-{name}"
+    lora = {"repo": str(path), "weight": args.weight, "name": name}
+    try:
+        entry = clone_with_loras(ctx.settings.models_file, args.base, new_id,
+                                 [lora], overwrite=args.force)
+    except (KeyError, ValueError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+
+    print(f"\nregistered {new_id}")
+    print(f"  base    {args.base} ({entry.get('repo') or entry.get('workflow')})")
+    print(f"  lora    {path.name} @ {args.weight}")
+    print(f"\ntry it:\n  vidforge gen \"your prompt\" --model {new_id} --variants 4")
+    return 0
+
+
+def cmd_comfy(args: argparse.Namespace) -> int:
+    ctx = get_context()
+
+    if args.comfy_cmd == "status":
+        from .backends import BackendUnavailable, get_backend
+
+        backend = get_backend("comfyui", ctx.settings)
+        try:
+            backend.preflight()
+        except BackendUnavailable as exc:
+            print(f"not reachable: {exc}")
+            return 1
+        print(f"ComfyUI is up at {ctx.settings.comfy_url}")
+        try:
+            import httpx
+
+            with httpx.Client(base_url=ctx.settings.comfy_url, timeout=20) as client:
+                nodes = client.get("/object_info").json()
+            print(f"  {len(nodes)} node types installed")
+            for wanted in ("VHS_VideoCombine", "SaveAnimatedWEBP", "WanImageToVideo",
+                           "EmptyHunyuanLatentVideo"):
+                print(f"  {'yes' if wanted in nodes else 'no ':<4} {wanted}")
+        except Exception as exc:  # a node listing failure is not fatal
+            print(f"  (could not list nodes: {exc})")
+        return 0
+
+    if args.comfy_cmd == "import":
+        from .comfy_import import ImportError_, import_workflow
+        from .registry import add_model
+
+        source = Path(args.file).expanduser()
+        if not source.exists():
+            print(f"error: no such file: {source}", file=sys.stderr)
+            return 2
+        destination = ctx.settings.home / "workflows" / f"{args.name}.json"
+        try:
+            report = import_workflow(source, destination)
+        except ImportError_ as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+
+        print(f"wrote {destination}\n")
+        print("vidforge will now drive these fields:")
+        for line in report.changes:
+            print(line)
+        for warning in report.warnings:
+            print(f"\n  warning: {warning}")
+
+        try:
+            add_model(ctx.settings.models_file, args.name, {
+                "backend": "comfyui", "kind": args.kind,
+                "label": f"ComfyUI - {args.name}",
+                "workflow": f"workflows/{args.name}.json",
+                "defaults": {"width": 832, "height": 480, "num_frames": 81,
+                             "fps": 16, "steps": 25, "guidance_scale": 6.0},
+            }, overwrite=args.force)
+        except ValueError as exc:
+            print(f"\nnote: {exc}")
+        else:
+            print(f"\nregistered model {args.name}")
+        print(f"\ntry it:\n  vidforge gen \"your prompt\" --model {args.name}")
+        return 0 if not report.warnings else 1
+
+    return 2
+
+
 def cmd_config(_args: argparse.Namespace) -> int:
     ctx = get_context()
     print(json.dumps({
@@ -395,6 +513,32 @@ def build_parser() -> argparse.ArgumentParser:
     setup.add_argument("--dry-run", action="store_true", help="print commands, run nothing")
     setup.add_argument("--force", action="store_true", help="install even with no GPU")
     setup.set_defaults(func=cmd_setup)
+
+    # `lora add` rather than a bare `lora <file>`, to match `consent add`.
+    lora = sub.add_parser("lora", help="add a LoRA and register a model that uses it")
+    lsub = lora.add_subparsers(dest="lora_cmd", required=True)
+    add = lsub.add_parser("add", help="download or register a LoRA file")
+    add.add_argument("source", help="a local .safetensors path, or a direct download URL")
+    add.add_argument("--base", default="wan-1_3b", help="model to stack it on")
+    add.add_argument("--weight", type=float, default=0.9)
+    add.add_argument("--name", help="adapter name (default: the filename)")
+    add.add_argument("--id", help="id for the new model (default: <base>-<name>)")
+    add.add_argument("--filename", help="save the download under this name")
+    add.add_argument("--api-key", dest="api_key",
+                     help="site API key, for files behind a login")
+    add.add_argument("--force", action="store_true", help="replace an existing entry")
+    lsub.add_parser("list", help="show models that stack a LoRA")
+    lora.set_defaults(func=cmd_lora)
+
+    comfy = sub.add_parser("comfy", help="work with a running ComfyUI")
+    csub = comfy.add_subparsers(dest="comfy_cmd", required=True)
+    csub.add_parser("status", help="check the connection and the installed nodes")
+    imp = csub.add_parser("import", help="turn a Save (API Format) export into a workflow")
+    imp.add_argument("file")
+    imp.add_argument("--name", default="comfy-wan", help="model id to register")
+    imp.add_argument("--kind", default="t2v", choices=("t2v", "i2v"))
+    imp.add_argument("--force", action="store_true")
+    comfy.set_defaults(func=cmd_comfy)
 
     doctor = sub.add_parser("doctor", help="report what this machine can run")
     doctor.add_argument("--json", action="store_true")
